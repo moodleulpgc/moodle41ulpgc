@@ -1,0 +1,12 @@
+/**
+ * local_sinculpgc styles
+ *
+ */
+
+#page-admin-local-sinculpgc-managerules .single_button .custom-select {
+    margin: 0 8px;
+}
+
+table.sinculpgcrules .dimmed {
+    color: gray;
+}

@@ -1,0 +1,38 @@
+body.format-multitopic ul.sections {
+    list-style: none;
+}
+
+/* INCLUDED from theme/boost/style/moodle.css */
+body.format-multitopic ul.sections li.section .content.collapse:not(.show) {
+    display: none;
+}
+/* END INCLUDED */
+
+/* ADDED */
+
+/* Header */
+body.format-multitopic:not([class*=" cmid-"]) .page-header-headings {
+    display: none;
+}
+body.format-multitopic #course-header {
+    width: 100%;
+}
+
+body.format-multitopic ul.sections li.section .sectionname .inplaceeditable {
+    display: inline;
+}
+
+/* Hide activity navigation. */
+body.format-multitopic.path-mod.pagelayout-incourse #page #page-content .activity-navigation {
+    display: none;
+}
+
+/* Course Index */
+body.format-multitopic .courseindex .courseindex-section.dropready .courseindex-item-content {
+    padding-bottom: 0;
+}
+body.format-multitopic.editing .courseindex .courseindex-section.dropready .courseindex-item-content .courseindex-sectioncontent {
+    padding-bottom: 1em;
+}
+
+/* END ADDED */

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>antiword</location>
+    <name>Windows Word text extractor</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>jquery/jqplot</location>
+    <name>MIT JQplot</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>jquery/jqwidgets</location>
+    <name>JQWidgets</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>jquery/sparklines</location>
+    <name>SParklines</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>pdf2svg</location>
+    <name>PDF to SVG Converter</name>
+    <license>SDK/Apache2</license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>tcpdf</location>
+    <name>PDF Text writer</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>timeline_api_2.3.0</location>
+    <name>Time line js widget</name>
+    <license></license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>xpdf</location>
+    <name>PDF Text extractor</name>
+    <license>SDK/Apache2</license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>__patch</location>
+    <name>Moodle core patched files</name>
+    <license>GPL v3</license>
+    <version></version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>__reference</location>
+    <name>Moodle core files</name>
+    <license>GPL</license>
+    <version>v3</version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>

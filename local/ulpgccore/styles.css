@@ -1,0 +1,181 @@
+/* ULPGC additional classes
+-------------------------*/
+
+.availabilityinfo {
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    padding: 4px 12px;
+    position: absolute;
+    top: 1.4em;
+    right: 24px;
+    z-index: -100;
+    max-width: 75%;
+    background-color: #EDEDFF;
+    opacity: 0;
+    border: 1px solid #003867;
+}
+
+.section.sectiondraggable .activity .availabilityinfo {
+       max-width: 60%;
+}
+
+.contentwithoutlink:hover~.availabilityinfo,
+.activityinstance:hover~.availabilityinfo {
+    opacity: 1;
+    z-index: 100;
+}
+
+.sectionname:hover~.section_availability .availabilityinfo {
+    opacity: 1;
+    z-index: 100;
+    top: unset;
+    position: absolute;
+}
+
+.format-flexsections .sectionname:hover~.availabilityinfo {
+    opacity: 1;
+    z-index: 100;
+    top: unset;
+    position: absolute;
+}
+
+.format-onetopic .content .section_availability:hover .availabilityinfo {
+    opacity: 1;
+    z-index: 100;
+    top: inherit;
+    right: 6.5em;    
+}
+
+
+.format-flexsections .availabilityinfo:not(:empty) {
+    font-family: FontAwesome;
+    content: "\f05e";
+    float: left;
+    margin-top: -3.4rem;
+}
+
+
+.section_availability:not(:empty)::before {
+    font-family: FontAwesome;
+    content: "\f05e";
+    float: left;
+    margin-top: -3.4rem;
+}
+
+.section.current h3.sectionname::after {
+    font-family: FontAwesome;
+    content: "\f097";
+    margin-left: 1.0rem;
+}
+
+.section .activity .restriction {
+    position: absolute;
+    right: -15px;
+    top: 0px;
+}
+
+.activity .availabilityinfo:hover{
+    z-index: 100;
+    opacity: 1;
+}
+
+
+.author-groups-container .rounded-circle {
+    position: absolute;
+    top: 5;
+    width: 24px !important;
+    z-index: -100;
+    opacity: 0;
+}
+
+.author-groups-container .rounded-circle:hover {
+    position: relative;
+    z-index: 100;
+    opacity: 1;
+}
+
+
+/* user profile list & like styles
+ ========================================================================= */
+
+.userprofile .profile_tree .node_category .contentnode {
+    list-style-type: initial;
+    margin-left: 0px;
+}
+
+
+/* mod_forum styles
+ ========================================================================= */
+
+#page-mod-forum-view .forumaddnew {
+    text-align: center;
+    display: table;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.path-mod-forum .forumheaderlist {
+    border-collapse: collapse !important;
+}
+
+
+.path-mod-forum .forumheaderlist th {
+    border: 1px solid;
+    border-color: #bbb; 
+    border-style: solid;
+    background-color: #e9e9e9;
+}
+
+.forumheaderlist td.lastpost {
+    font-size: 0.75em;
+    word-wrap: normal;
+}
+
+.forumheaderlist tbody tr:hover>td {
+    background-color: #FAFADA;
+}
+
+/* mod_dialogue styles
+ ========================================================================= */
+
+.availability-dialogue ul button {
+    float: left;
+    margin-left: 1em;
+    margin-right: 1em;
+    min-width: 140px;
+    margin-top: 4px;
+}
+
+.availability-dialogue label {
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 1em;
+}
+
+body.path-mod-dialogue #region-main .dropdown-menu > li > a {
+    padding: 3px 10px;
+}
+
+body.path-mod-dialogue #region-main  .btn.btn-small.disabled {
+    background-color: #5CB85C;
+    color: #000;
+    font-weight: bold;
+}
+
+.chooser-container  .btn.btn-icon.icon-size-3 {
+    height: 18px !important;
+}
+
+.chooser-container .optionname {
+    line-height: 1.1rem !important;
+}
+
+.chooser-container .grouplabel {
+    padding-left: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+.chooser-container .optionicon {
+    margin-top: 0.25rem !important;
+}

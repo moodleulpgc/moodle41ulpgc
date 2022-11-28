@@ -1,0 +1,557 @@
+
+Para acceder a los contenidos a través de esta API:
+
+Colección Teleformación en SUdocument@
+
+https://nodobu.ulpgc.es/api/item_sets/25653
+
+Listado de ítems de Teleformación en SUdocument@
+
+https://nodobu.ulpgc.es/api/items?item_set_id=25653
+
+Ficha de un ítem de Teleformación en SUdocument@
+
+https://nodobu.ulpgc.es/api/items?item_set_id=25653
+
+El resultado de esa consulta nos dará el/los objetos/s digital/es asociado/s a ese ítem:
+
+"o:media": [
+        {
+            "@id": "https://nodobu.ulpgc.es/api/media/25676",
+            "o:id": 25676
+        }
+    ],
+
+Ficha de un objeto digital de Teleformación en SUdocument@
+
+https://nodobu.ulpgc.es/api/media/25676
+
+El resultado de esa consulta nos dará el enlace a dicho objeto digital
+
+"o:source": "Libro blanco Manual de Derecho de las Empresas Turísticas.pdf",
+    "o:media_type": "application/pdf",
+    "o:sha256": "dd03f2d0827839491cb30e594d34185bfee9f439e8b74fa5d2f53a23ef5cfab9",
+    "o:size": 2012842,
+    "o:filename": "3e4dbae9e550471798786f19976d958d290a6137.pdf",
+    "o:lang": null,
+    "o:original_url": "https://nodobu.ulpgc.es/files/original/3e4dbae9e550471798786f19976d958d290a6137.pdf",
+    "o:thumbnail_urls": [],
+    "data": [],
+
+Búsquedas usando la API
+
+Se puede realizar una búsqueda utilizando la API con los parámetros indicados. Por ejemplo, si quisiéramos buscar los ítems en cuyo título esté la palabra "matemáticas", sería:
+
+https://nodobu.ulpgc.es/api/items?property[0][property]=1&property[0][type]=in&property[0][text]=matemáticas
+
+donde:
+property[0][property]=1 => título
+property[0][type]=in => contenga
+property[0][text]=matemáticas => texto a buscar = matemáticas
+
+Este filtro puede ser más específico añadiendo otras propiedades:
+
+https://nodobu.ulpgc.es/api/items?property[0][property]=1&property[0][type]=in&property[0][text]=matemáticas&property[1][property]=2&property[1][type]=in&property[1][text]=morales
+
+property[0][property]=1 => título
+property[0][type]=in => contenga
+property[0][text]=matemáticas => texto a buscar = matemáticas
+property[1][property]=2 => autor
+property[1][type]=in => contenga
+property[1][text]=morales => texto a buscar = morales
+
+Y así sucesivamente. Las propiedades más importantes son:
+
+Título = 1
+Autoría = 2
+Materias = 3
+Descripción = 4
+Fecha = 7
+Tipo de documento = 8
+Identificador = 10
+
+Así, si quisiéramos buscar ítems relacionados con el turismo, buscaríamos en "Materias" que contengan la palabra "turismo":
+https://nodobu.ulpgc.es/api/items?property[0][property]=3&property[0][type]=in&property[0][text]=turismo
+
+De la misma manera se podría buscar un objeto digital sustituyendo la palabra "items" por "media" en la url. El siguiente ejemplo busca todos los objetos digitales que contengan la palabra "manual" en su título: 
+
+https://nodobu.ulpgc.es/api/media?property[0][property]=1&property[0][type]=in&property[0][text]=manual
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+efectivamente, en la respuesta de la API van todas las propiedades. En el ejemplo, te destaco en color rojo las propiedades y sus identificadores numéricos para las búsquedas. En color violeta te señalo los objetos digitales de este ítem:
+
+{
+    "@context": "https://nodobu.ulpgc.es/api-context",
+    "@id": "https://nodobu.ulpgc.es/api/items/25665",
+    "@type": [
+        "o:Item",
+        "dctype:Text"
+    ],
+    "o:id": 25665,
+    "o:is_public": true,
+    "o:owner": {
+        "@id": "https://nodobu.ulpgc.es/api/users/5",
+        "o:id": 5
+    },
+    "o:resource_class": {
+        "@id": "https://nodobu.ulpgc.es/api/resource_classes/31",
+        "o:id": 31
+    },
+    "o:resource_template": {
+        "@id": "https://nodobu.ulpgc.es/api/resource_templates/3",
+        "o:id": 3
+    },
+    "o:thumbnail": null,
+    "o:title": "Derecho de las Empresas Turísticas",
+    "o:created": {
+        "@value": "2020-05-19T10:15:40+00:00",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "o:modified": {
+        "@value": "2020-06-27T14:56:50+00:00",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "o:media": [
+        {
+            "@id": "https://nodobu.ulpgc.es/api/media/25676",
+            "o:id": 25676
+        }
+    ],
+    "o:item_set": [
+        {
+            "@id": "https://nodobu.ulpgc.es/api/item_sets/9286",
+            "o:id": 9286
+        },
+        {
+            "@id": "https://nodobu.ulpgc.es/api/item_sets/9367",
+            "o:id": 9367
+        },
+        {
+            "@id": "https://nodobu.ulpgc.es/api/item_sets/25653",
+            "o:id": 25653
+        },
+        {
+            "@id": "https://nodobu.ulpgc.es/api/item_sets/25656",
+            "o:id": 25656
+        },
+        {
+            "@id": "https://nodobu.ulpgc.es/api/item_sets/25659",
+            "o:id": 25659
+        }
+    ],
+    "dcterms:title": [
+        {
+            "type": "literal",
+            "property_id": 1,
+            "property_label": "Title",
+            "is_public": true,
+            "@value": "Derecho de las Empresas Turísticas",
+            "@language": "es"
+        }
+    ],
+    "dcterms:description": [
+        {
+            "type": "literal",
+            "property_id": 4,
+            "property_label": "Description",
+            "is_public": true,
+            "@value": "Manuales universitarios de teleformación",
+            "@language": "es"
+        }
+    ],
+    "dcterms:creator": [
+        {
+            "type": "literal",
+            "property_id": 2,
+            "property_label": "Creator",
+            "is_public": true,
+            "@value": "González Cabrera, Inmaculada",
+            "@language": "es"
+        }
+    ],
+    "dcterms:identifier": [
+        {
+            "type": "literal",
+            "property_id": 10,
+            "property_label": "Identifier",
+            "is_public": true,
+            "@value": "https://hdl.handle.net/11730/sudoc/944"
+        }
+    ],
+    "dcterms:created": [
+        {
+            "type": "literal",
+            "property_id": 20,
+            "property_label": "Date Created",
+            "is_public": true,
+            "@value": "2020"
+        }
+    ],
+    "dcterms:date": [
+        {
+            "type": "literal",
+            "property_id": 7,
+            "property_label": "Date",
+            "is_public": true,
+            "@value": "2020"
+        }
+    ],
+    "dcterms:type": [
+        {
+            "type": "literal",
+            "property_id": 8,
+            "property_label": "Type",
+            "is_public": true,
+            "@value": "Libro",
+            "@language": "es"
+        }
+    ],
+    "dcterms:subject": [
+        {
+            "type": "literal",
+            "property_id": 3,
+            "property_label": "Subject",
+            "is_public": true,
+            "@value": "560503 Derecho mercantil",
+            "@language": "es"
+        },
+        {
+            "type": "literal",
+            "property_id": 3,
+            "property_label": "Subject",
+            "is_public": true,
+            "@value": "531290 Economía sectorial: turismo",
+            "@language": "es"
+        }
+    ],
+    "dcterms:language": [
+        {
+            "type": "literal",
+            "property_id": 12,
+            "property_label": "Language",
+            "is_public": true,
+            "@value": "spa",
+            "@language": "es"
+        }
+    ],
+    "dcterms:publisher": [
+        {
+            "type": "literal",
+            "property_id": 5,
+            "property_label": "Publisher",
+            "is_public": true,
+            "@value": "Universidad de Las Palmas de Gran Canaria, Vicerrectorado de Ordenación Académica y Espacio Europeo de Educación Superior",
+            "@language": "es"
+        }
+    ],
+    "isbd:P1033": [
+        {
+            "type": "literal",
+            "property_id": 540,
+            "property_label": "tiene título clave",
+            "is_public": true,
+            "@value": "Turismo",
+            "@language": "es"
+        },
+        {
+            "type": "literal",
+            "property_id": 540,
+            "property_label": "tiene título clave",
+            "is_public": true,
+            "@value": "Derecho",
+            "@language": "es"
+        }
+    ],
+    "dcterms:audience": [
+        {
+            "type": "literal",
+            "property_id": 16,
+            "property_label": "Audience",
+            "is_public": true,
+            "@value": "Ciencias Sociales y Jurídicas",
+            "@language": "es"
+        }
+    ],
+    "o-module-comment:comment": []
+}
+
+
+Para buscar por título deberías usar:
+
+property[0][property]=1 => título (dcterms:title)
+property[0][type]=in => contenga
+property[0][text]=matemáticas => texto a buscar = matemáticas
+
+Por materia:
+
+property[0][property]=3 => materia (dcterms:subject)
+property[0][type]=in => contenga
+property[0][text]=matemáticas => texto a buscar = matemáticas
+
+Por fecha de publicación:
+
+property[0][property]=7 => fecha de publicación (dcterms:date)
+property[0][type]=in => contenga
+property[0][text]=matemáticas => texto a buscar = matemáticas
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Si tenemos una asignatura de la que lo que sabemos es su código de
+titulación y asignatura
+Cod.Tit = 4036
+Cod.asig = 43603
+
+Necesito construir una llamada REST que me permita obtener ese
+identificador item=29293 que corresponde a esto, SIN conocerlo
+previamente.
+
+Y si hay VARIOS recursos que coinciden, poder identificar el más
+reciente, eso imagino que si en property_id = 7, Date.
+
+Por ejemplo, por lo que parece , en property_id=438, si
+Cod.Tit = 4036
+Cod.asig = 43600
+corresponde item = 29291
+identifier "https://hdl.handle.net/11730/sudoc/1126"
+
+Por ejemplo, por lo que parece , en property_id=438, si
+Cod.Tit = 4036
+Cod.asig = 43601
+corresponde item = 29292
+identifier "https://hdl.handle.net/11730/sudoc/1127"
+
+
+
+La llamada REST a la API de NODO para obtener los ítems de la titulación 4036 y de la asignatura 43683 sería:
+
+https://apinodo.ulpgc.es/api/items?property[0][property]=438&property[0][type]=eq&property[0][text]=43683&property[1][property]=438&property[1][type]=in&property[1][text]=4036
+
+Fíjate que pongo en la primera condición "eq" y en la segunda "in", ya que los valores de los campos en el ítem son:
+Titulación: 4036 Grado en Educación Primaria
+Asignatura: 43683 
+Si hubiera más de un ítem, el más reciente sería, como bien dices, el que tenga la fecha mayor (property_id = 7).
+
+ 
+
+Además, un problema adicional es, conocidos esos handles
+
+al handle "https://hdl.handle.net/11730/sudoc/1126"
+corresponde el fichero
+https://sudocument.ulpgc.es/page/objetodigital?id=fb35b7d35cb2481690f4e1253197ed4e03d2ea34.pdf
+
+¿Como obtengo el número y dirección de esos objestso digitales,
+archivos, asociados a un handle, via API REST?
+
+
+Una vez hecha la llamada REST, el resultado te devuelve todos los metadatos, entre ellos, el del objeto digital asociado. Este metadato es: 
+
+"o:media":[
+
+ 
+         {
+
+
+            "@id":"https:\/\/apinodo.ulpgc.es\/api\/media\/29380",
+
+            "o:id":29380
+
+
+
+         
+}
+
+ 
+       ],
+
+Esto significa que el objeto digital está en: https://apinodo.ulpgc.es/api/media/29380
+
+Esa nueva llamada a la API nos da como resultado los metadatos del objeto digital
+
+{
+
+ 
+   "@context":"https:\/\/apinodo.ulpgc.es\/api-context",
+
+   "@id":"https:\/\/apinodo.ulpgc.es\/api\/media\/29380",
+
+   "@type":[
+
+
+      "o:Media",
+
+      "dctype:Text"
+
+
+
+   
+],
+
+   "o:id":29380,
+
+   "o:is_public":true,
+
+   "o:owner":{
+
+
+      "@id":"https:\/\/apinodo.ulpgc.es\/api\/users\/5",
+
+      "o:id":5
+
+
+
+   
+},
+
+   "o:resource_class":{
+
+
+      "@id":"https:\/\/apinodo.ulpgc.es\/api\/resource_classes\/31",
+
+      "o:id":31
+
+
+
+   
+},
+
+   "o:resource_template":{
+
+
+      "@id":"https:\/\/apinodo.ulpgc.es\/api\/resource_templates\/3",
+
+      "o:id":3
+
+
+
+   
+},
+
+   "o:thumbnail":null,
+
+   "o:title":null,
+
+   "o:created":{
+
+
+      "@value":"2020-07-22T16:34:49+00:00",
+
+      "@type":"http:\/\/www.w3.org\/2001\/XMLSchema#dateTime"
+
+
+
+   
+},
+
+   "o:modified":{
+
+
+      "@value":"2020-07-22T16:48:24+00:00",
+
+      "@type":"http:\/\/www.w3.org\/2001\/XMLSchema#dateTime"
+
+
+
+   
+},
+
+   "o:ingester":"upload",
+
+   "o:renderer":"file",
+
+   "o:item":{
+
+
+      "@id":"https:\/\/apinodo.ulpgc.es\/api\/items\/29334",
+
+      "o:id":29334
+
+
+
+   
+},
+
+   "o:source":"M-111_4036_00_00-43683-060-2015.pdf",
+
+   "o:media_type":"application\/pdf",
+
+   "o:sha256":"a1aaa610c5605173c3fe847922d5e73322e3acc84e8758586262f5463bf01402",
+
+   "o:size":4015303,
+ = 
+   "o:filename":"058f30b96a5be18a7d184640ec90c38f067182ef.pdf",
+
+   "o:lang":null,
+
+   "o:original_url":"https:\/\/apinodo.ulpgc.es\/files\/original\/058f30b96a5be18a7d184640ec90c38f067182ef.pdf",
+
+   "o:thumbnail_urls":[
+
+
+
+
+
+
+   
+],
+
+   "data":[
+
+
+
+
+
+
+   
+],
+
+   "dcterms:accessRights":[
+
+
+      {
+
+
+         "type":"literal",
+
+         "property_id":47,
+
+         "property_label":"Access Rights",
+
+         "is_public":true,
+
+         "@value":"ULPGC"
+
+
+
+      
+}
+
+
+
+   
+]
+
+}
+
+
+ 
+
+En principio NO queremso que el usuario vaya y vea la página
+https://hdl.handle.net/11730/sudoc/1126
+y entonces tenga que pinchar en el objeto digital para abrir el PDF y
+poder leerlo. Queremos que pinche en moodle y s ela abra directamente
+el visualizador de PDF con el documento YA ahí. Sin más pasos.
+
+
+
+de donde se puede construir el enlace de descarga que sería algo así:
+
+<a href="https://sudocument.ulpgc.es/page/objetodigital?id=[o:filename]
+">[o:source]</a>
+

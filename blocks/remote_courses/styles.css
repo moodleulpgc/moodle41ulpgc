@@ -1,0 +1,18 @@
+.block_remote_courses .list li {
+    padding: 5px;
+}
+
+
+.block_remote_courses ul.list-courses {
+    list-style: disc !important;
+    margin: 4px;
+    padding: 0;
+}
+
+.block_remote_courses ul.list-courses li {
+    margin-bottom: 0.2rem;
+}
+
+.list-courses li.remote_courses  .my-course-name {
+    font-weight: bolder;
+}

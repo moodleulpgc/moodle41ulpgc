@@ -1,0 +1,40 @@
+<h3>2. Marcado y anulado</h3>
+
+<p>Las casillas para marcar la respuesta son cuadrados huecos de 5 mm de lado dispuestos en una fila.
+El número de la Pregunta a la que corresponden está a la izquierda 
+y la opción está indicada por la etiqueta (a, b, c d ...) superior de la columna. <br />
+Este sistema permite que distintas preguntas tengan distinto nº de posibles opciones de respuesta.
+Además una pregunta puede tener una única respuesta correcta o múltiples,
+consulte las instrucciones específicas de cada examen paar saber cólo responder.</p>
+
+<p style="margin: 2em"><img src="antwortbogen.jpg" border="1"></p>
+
+<p>La respuesta se marca escribiendo una cruz X en la calilla (o casillas) que crea adecuado.
+Use un bolígrafo negro o azul oscuro para ello. Marque una cruz nítida, X, bien definida, 
+no un punto o un garabato.</p>
+
+<p>Si se equivoca de casilla y quiere marcar otra distinta como correcta puede hacerlo
+pero entonces deberá anular la marca original. Para ello tache completamente la casilla,
+esto es, rellene completamente el cuadrado de la casilla. 
+Eso se interpreta igual que si la casilla estuviera completamente vacía, sin marcar.</p>
+
+<p>Obviamente, una vez así anulada una casilla NO puede ser marcada otra vez con una X
+para indicar que es la opción correcta, por lo lo tanto sea prudente en estas anulaciones.</p>
+
+<p>¿Qué marca será interpretada como una respuesta con seguridad?</p>
+<form action="index.php" method="get" id="page2" class="popupform">
+<input type="hidden" name="id" value="<?php echo $id ?>">
+<input type="hidden" name="page" value="3">
+<p style="margin: 2em">a)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="1">
+&nbsp;&nbsp;&nbsp;<img src="blass.jpg" style="position:relative; top:6px;" border="1"></p>
+<p style="margin: 2em">b)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="2">
+&nbsp;&nbsp;&nbsp;<img src="kreuz.jpg" style="position:relative; top:6px;" border="1"></p>
+<p style="margin: 2em">c)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="3">
+&nbsp;&nbsp;&nbsp;<img src="dick.jpg" style="position:relative; top:6px;" border="1"></p>
+<p style="margin: 2em">d)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="4">
+&nbsp;&nbsp;&nbsp;<img src="leer.jpg" style="position:relative; top:6px;" border="1"></p>
+<p style="margin: 2em">e)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="5">
+&nbsp;&nbsp;&nbsp;<img src="voll.jpg" style="position:relative; top:6px;" border="1"></p>
+
+<p style="margin-left: 6em"><input class="btn btn-primary" type="submit" value="Continue &gt;"></p></form><p>&nbsp;</p>
+<p>Pruebe varias opciones para obtener comentarios adecuados a cada tipo de marcado.</p> 

@@ -1,0 +1,172 @@
+.tcs-answerspecificfeedback {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+/* Editing form. */
+.tcs-container div[id^=fitem_id_][id*=answer_] {
+    background: #eee;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border: 1px solid #bbb;
+    border-bottom: 0;
+}
+
+.tcs-container div[id^=fitem_id_][id*=answer_] .fitemtitle {
+    font-weight: bold;
+}
+
+.tcs-container div[id^=fitem_id_] .fitemtitle {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 6px;
+    padding-right: 0;
+}
+
+.tcs-container div[id^=fitem_id_][id*=fraction_] {
+    background: #eee;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border: 1px solid #bbb;
+    border-top: 0;
+    border-bottom: 0;
+}
+
+.tcs-container div[id^=fitem_id_][id*=feedback_] {
+    background: #eee;
+    margin-bottom: 2em;
+    margin-top: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border: 1px solid #bbb;
+    border-top: 0;
+}
+
+.tcs-container p.whitebackground {
+    background-color: #fff;
+}
+
+.tcs-container .outsidefieldcompetence {
+    margin-bottom: 0.5em;
+}
+
+.tcs-container .Rtable {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 0.5em 0;
+    padding: 0;
+}
+
+.tcs-container .Rtable-cell {
+    box-sizing: border-box;
+    flex-grow: 1;
+    width: 100%;
+    padding: 0.8em 0.5em;
+    overflow: hidden;
+    list-style: none;
+    padding-bottom: 0.2em;
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+}
+
+.tcs-container .Rtable--2cols > .Rtable-cell {
+    width: 50%;
+}
+
+.tcs-container .Rtable {
+    position: relative;
+    top: 3px;
+    left: 3px;
+}
+
+.tcs-container .Rtable-cell {
+    margin: -3px 0 0 -3px;
+    background-color: #f3f3f3;
+}
+
+.tcs-container .Rtable-cell--head {
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 5px solid #dee2e6;
+    font-weight: bold;
+    background-color: transparent;
+    padding-left: 0;
+}
+
+@media all and (max-width: 1400px) {
+    .drawer-open-left .tcs-container .Rtable--collapse {
+        display: block;
+    }
+    .drawer-open-left .tcs-container .Rtable--collapse > .Rtable-cell {
+        width: 100% !important;
+    }
+}
+
+.tcs-container .progress-container .progress {
+    min-width: 200px;
+    background-color: #fff;
+}
+
+@media all and (min-width: 768px) and (max-width: 780px) {
+    .drawer-open-left .tcs-container .progress-container .progress {
+        min-width: 160px;
+    }
+}
+
+@media all and (max-width: 600px) {
+    .tcs-container .Rtable--collapse {
+        display: block;
+    }
+    .tcs-container .Rtable--collapse > .Rtable-cell {
+        width: 100% !important;
+    }
+}
+
+.tcs-container .answer-item input {
+    margin-right: 0.5rem;
+}
+
+.tcs-container .progress-container {
+    display: flex;
+    margin-top: 0.2em;
+}
+
+.tcs-container .progress-container span {
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.tcs-container .answer .answer-line {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-flow: wrap;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+.tcs-container .answer .answer-item,
+.tcs-container .answer .feedback-item {
+    width: 100%;
+}
+
+.tcs-container .answerfeedback,
+.tcs-container .answerfeedback textarea {
+    width: 100%;
+}
+
+.tcs-container label[for$=answerfeedback] {
+    font-weight: bold;
+    margin-top: 1em;
+    display: block;
+}
+
+.que .tcs-container .qtext {
+    margin-bottom: 0.5em;
+}

@@ -1,0 +1,40 @@
+<h3>3. La Hoja de Respuestas</h3>
+
+<p>La Hoja de Respuestas contiene un bloque para incluir su nombre y apellidos (A),
+un bloque para su Nº de Identificación (DNI o MoodleID) (B) y un bloque para las casillas de respuestas (C). </p>
+
+<p>Rellene su nombre y apellidos en el bloque A y firme en el recuadro. Es lo primero que debe realizar.
+El sistema automatizado NO interpreta su escritura manual pero rellenar esos datos claramente
+es especialmente importante para identificarle correctamente en caso de que el sistema automático falle.</p>
+
+<p style="margin: 2em"><img src="ulpgc-answers-form.png" width="640px" border="1"></p>
+
+<p>Su identificación se realiza por las marcas en el bloque B de Nº de Identificación. <br />
+Debe usar su DNI sin letra final, solo los dígitos, escribiéndolo en la fila superior y
+marcando las casillas adecuadas en la matriz inferior.</p>
+
+<p>Alternativamente, puede usar su nº de ID de Moodle. <br />
+En este caso es obligatorio que marque la casilla <strong>MoodleID</strong> de la derecha. 
+Si no lo hace así, se tratará de buscar ese número en el campo DNI,
+con lo que el sistema automatizado NO podrá identificarle.</p>
+
+</p>Errores en la especificación del Nº de Identificación (DNI o MoodleID) conducirán a la
+necesidad de identificación manual por el profesor, con los consiguientes retrasos o
+problemas de atribución del resultado. </p>
+
+<p>¿Cómo identifica el sistema automatizado a la persona que responde al examen? <br />¿Como se asigna la Hoja de Respuestas a una persona? </p>
+<form action="index.php" method="get" id="page3" class="popupform">
+<input type="hidden" name="id" value="<?php echo $id ?>">
+<input type="hidden" name="page" value="4">
+<table cellspacing=10 cellpadding=10 border=0 style="margin-left: 2em;">
+<tr><td width=70px>a)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="2" style="vertical-align: bottom;">
+&nbsp;&nbsp;&nbsp;</td><td>El sistema procesa su nombre y apellidos manuscritos con un algoritmo OCR de reconocimiento de caracteres.</td></tr>
+<tr><td width=70px valign=top>b)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="3" style="vertical-align: bottom;">
+&nbsp;&nbsp;&nbsp;</td><td>Su firma y rúbrica se escanean y se procesan con un programa similar a los de reconocimiento de huellas dactilares.</td></tr>
+<tr><td width=70px valign=top>c)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="1" style="vertical-align: bottom;">
+&nbsp;&nbsp;&nbsp;</td><td>Solo se interpretan las cruces marcadas en la matriz numérica para reconocer su Nº de Identificación (DNI o Moodle ID).</td></tr>
+<tr><td width=70px valign=top>d)&nbsp;&nbsp;&nbsp;<input type="radio" name="answer" value="4" style="vertical-align: bottom;">
+&nbsp;&nbsp;&nbsp;</td><td>El sistema lee el nº de identificación manuscrito usando un mecanismo OCR de reconocimiento óptico de caracteres.</td></tr>
+<tr><td width=70px ></td><td><input class="btn btn-primary" type="submit" value="Continue &gt;"></td></tr>
+</table>
+<p style="margin-left: 8em"></p></form>&nbsp;</p>

@@ -1,0 +1,160 @@
+
+.path-mod-examboard .label {
+    font-size: 1.0em;
+    font-weight: bold;
+}
+
+.path-mod-examboard .iteminfo .label {
+    float: left; 
+}
+
+.path-mod-examboard .namingmenu {
+    float: right;
+    margin-left: 1.0rem;
+}
+
+.path-mod-examboard .pagebuttons {
+    text-align:center;
+}
+
+.path-mod-examboard .tablefilters {
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+
+.path-mod-examboard .tablefilters .singleselect {
+    margin: 2px 2px;
+    padding-left: 10px;
+}
+
+.path-mod-examboard .collapsibleregion.tablefilters {
+    margin-bottom: 1.0rem;
+}
+
+.path-mod-examboard .iteminfo .boardactivebutton, 
+.path-mod-examboard .pagebuttons .continuebutton,
+.path-mod-examboard .pagebuttons .actionselect label,
+.path-mod-examboard .singleboardtable .cell .continuebutton {
+    display: inline-block;
+}
+
+.path-mod-examboard .pagebuttons .continuebutton {
+    margin: 6px 1.0rem;
+}
+
+.path-mod-examboard #mod_examboard_view_exams_table th.header.c1 {
+    min-width: 18%;
+}
+
+.path-mod-examboard div.usersummary div.usersummarysection img.userpicture {
+    width: 100px;
+    height: 100px;
+    border-radius: 20%;
+}
+
+.path-mod-examboard .singleboardtable i.fa {
+    font-size: 1.5em;
+}
+
+.path-mod-examboard .label-info{
+    padding: 8px;
+}
+
+
+.nameslist {
+    display: table-cell;
+}
+
+.examinee, .usergrades {
+    margin-bottom: 6px;
+    display: table:
+}
+
+.usergrades .collapsibleregioninner {
+    max-inline-size: 15.0rem;
+    word-wrap: break-word;
+}
+
+
+.examineename {
+    margin-top: 4px;
+    margin-bottom: 6px;
+    float: left;
+}
+
+.examinee .collapsibleregion.tutors.collapsed {
+    min-height: 2.2em;
+}
+
+.examinee .tutors .collapsibleregioncaption {
+    text-decoration: none;
+}
+
+.tutors {
+    /* display: table; */
+}
+
+.tutor {
+    /*display: inline-table-row;*/
+    display: inline-table;
+}
+
+.tutorname, .tutortitle {
+    display: table-cell;
+}
+
+.tutortitle {
+    width: 5%;
+}
+
+table.flexible.admintable .btn {
+    padding: 3px 12px;
+}
+
+.path-mod-examboard .csverror {
+    text-align: left;
+}
+
+.path-mod-examboard .mform textarea.form-control {
+    width: 100%;
+}
+
+.path-mod-examboard td .box.py-3 {
+    padding: 0 !important; 
+}
+
+.path-mod-examboard div.no-overflow  {
+    overflow: inherit;
+}
+
+.path-mod-examboard .dimmed, .path-mod-examboard .dimmed a 
+{
+    color: #868e96 !important; 
+}
+
+.path-mod-examboard .inplaceeditable.inplaceeditingon input {
+    width: 12.0rem;
+}
+
+.path-mod-examboard #mod_examboard_view_exams_table .sessionurl {
+    font-weight: bold;
+}
+
+.path-mod-examboard .submissionsummary {
+    display: -webkit-inline-box;
+    display: flow-root;
+}
+
+.path-mod-examboard .submissionsummary .gradeablelinks, {
+    display: inline-block;
+}
+
+.path-mod-examboard .submissionsummary .submission {
+    float: left;
+    padding-right: 2.0rem;
+}
+    
+.path-mod-examboard .submissionsummary .fileviewupload {
+    float: right;
+    padding-left: 2.0rem;
+}

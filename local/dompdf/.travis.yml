@@ -1,0 +1,58 @@
+
+sudo: true
+
+language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.npm
+
+services:
+  - mysql
+
+env:
+  global:
+    - DB=mysqli
+    - IGNORE_PATHS=vendor/composer
+    - IGNORE_NAMES=autoload.php
+
+matrix:
+ include:
+  - php: "7.1"
+    env: MOODLE_BRANCH=MOODLE_35_STABLE
+  - php: "7.1"
+    env: MOODLE_BRANCH=MOODLE_36_STABLE
+  - php: "7.1"
+    env: MOODLE_BRANCH=MOODLE_37_STABLE
+  - php: "7.1"
+    env: MOODLE_BRANCH=MOODLE_38_STABLE
+  - php: "7.2"
+    env: MOODLE_BRANCH=MOODLE_39_STABLE
+  - php: "7.2"
+    env: MOODLE_BRANCH=MOODLE_310_STABLE
+  - php: "7.3"
+    env: MOODLE_BRANCH=MOODLE_311_STABLE
+
+before_install:
+  - nvm install --no-progress v14.15.0
+  - nvm use v14.15.0
+  - cd ../..
+  - composer selfupdate
+  - composer create-project -n --no-dev --no-progress --no-scripts --prefer-dist --no-ansi moodlehq/moodle-plugin-ci ci ^3
+  - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+
+install:
+  - moodle-plugin-ci install
+
+script:
+  - moodle-plugin-ci phplint
+  - moodle-plugin-ci phpmd
+  - moodle-plugin-ci codechecker
+  - moodle-plugin-ci validate
+  - moodle-plugin-ci savepoints
+  - moodle-plugin-ci mustache
+  - moodle-plugin-ci grunt
+  - moodle-plugin-ci phpdoc
+  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci behat

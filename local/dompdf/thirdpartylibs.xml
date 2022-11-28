@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>vendor/dompdf/dompdf</location>
+        <name>DomPdf</name>
+        <version>v2.0.1</version>
+        <license>LGPL</license>
+        <licenseversion>2.1</licenseversion>
+    </library>
+    <library>
+        <location>vendor/phenx/php-font-lib</location>
+        <name>PHP Font Lib</name>
+        <version>0.5.4</version>
+        <license>LGPL</license>
+        <licenseversion>3.0</licenseversion>
+    </library>
+    <library>
+        <location>vendor/phenx/php-svg-lib</location>
+        <name>SVG file parsing and rendering lib</name>
+        <version>v0.5.0</version>
+        <license>LGPL</license>
+        <licenseversion>3.0</licenseversion>
+    </library>
+    <library>
+        <location>vendor/sabberworm/php-css-parser</location>
+        <name>PHP CSS Parser</name>
+        <version>8.4.0</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>vendor/masterminds/html5</location>
+        <name>An HTML5 parser and serializer</name>
+        <version>2.7.6</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+</libraries>

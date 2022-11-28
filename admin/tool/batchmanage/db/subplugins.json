@@ -1,0 +1,5 @@
+{
+    "plugintypes": {
+        "managejob": "admin\/tool\/batchmanage\/managejob"
+    }
+}

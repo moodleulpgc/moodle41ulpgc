@@ -1,0 +1,122 @@
+/* Course termlist Block
+-------------------------*/
+/*
+.block_course_termlist {
+    border-style: none !important;
+}
+
+
+.block_course_termlist h2.my-category {
+    margin: 0.4em 0.5em 0.4em !important;
+}
+
+.block_course_termlist .coursebox {
+    margin-right: -5px  !important;
+    padding-right: -5px  !important;
+    margin-bottom: 5px;
+}
+
+h3.my-term {
+    margin: 0em 1.0em 0.2em !important;
+    font-weight: normal !important;
+}
+
+.block_course_termlist .my-courses-list {
+    padding-left: 0.5em;
+    margin-left: 2.5em;
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.block_course_termlist .my-course-name {
+    line-height: 2.0em;
+}
+
+.block_course_termlist .my-course-name .fa {
+    color: #ff9a00;
+    font-size: smaller;
+    vertical-align: super;
+}
+
+*/
+
+.block_course_termlist .my-course-name .fa {
+    color: #ff9a00;
+    font-size: x-small;
+    vertical-align: super;
+}
+
+.block_course_termlist .dimmed {
+    color: #999 !important;
+    font-style: normal !important;
+}
+
+/* From course overview on campus */
+
+/* Positioning of icons */
+.block_course_termlist .hidecourseicon {
+    float: right;
+    margin-left: 20px;
+}
+
+.block_course_termlist a:first-of-type > .icon {
+    margin-left: inherit; /* Get rid of a unneeded Moodle core behaviour here */
+}
+
+
+/* Used for hiding courses in courselist */
+.ctl-hidden {
+    display: none;
+}
+
+
+/* Hidden courses management */
+#ctl-hiddencoursesmanagement-bottom,
+#ctl-hiddencoursesmanagement-top {
+    font-size: 90%;
+    text-align: center; /* For some reason, the Bootstrap class text-center does not work here yet */
+}
+
+#ctl-hiddencoursescount {
+    color: darkred;
+}
+
+/* Filter submit appearance */
+#ctl-filtersubmit {
+    text-align: center; /* For some reason, the Bootstrap class justify-content-center does not work here yet */
+}
+
+.jsenabled #ctl-filtersubmit {
+    display: none; /* Hide submit button when JS is enabled */
+}
+
+
+#ctl-courselist .coursebox h2.my-category {
+   font-size: 1.3rem;
+   font-weight: 380;
+}
+
+/* Course list appearance */
+#ctl-courselist .coursebox h3 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0; /* Remove standard margin from h3 heading*/
+    padding: 0; /* Keep some of the left padding where the course news icon was previously */
+}
+
+#ctl-courselist .coursebox h4 {
+    font-size: 0.85rem;
+    font-weight: 300;
+    margin: 0;
+    line-height: 0.85rem;
+}
+
+#ctl-courselist .ctl-metainfo {
+    font-size: 85%;
+    font-weight: normal; /* To prevent the text from being shown in bold as it's still a h3 heading*/
+    white-space: pre-wrap; /* To support multiple whitespaces before and after pipe */
+}
+
+.categorybox .my-term {
+    margin-right: -20px;
+}

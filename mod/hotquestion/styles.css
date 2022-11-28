@@ -1,0 +1,28 @@
+.path-mod-hotquestion .author {
+    color: grey;
+    font-style: italic;
+    font-size: 90%;
+}
+
+.path-mod-hotquestion .toolbar {
+    text-align: right;
+    padding: 5px;
+}
+
+.path-mod-hotquestion .toolbar .rawusergrade {
+    margin-right: 1.0rem;
+}
+
+.path-mod-hotquestion ul#toolbar {
+    display: inline;
+    list-style: none;
+}
+
+.path-mod-hotquestion #toolbar li {
+    display: inline;
+    padding: 0 5px;
+}
+
+.path-mod-hotquestion .dis_toolbutton {
+    color: black;
+}

@@ -1,0 +1,50 @@
+/** General Styles **/
+.path-mod-videolib .card {
+    display: block;
+}
+
+.path-mod-videolib .mediaplugin {
+    max-width: 80%;
+    margin: auto;
+}
+
+.path-mod-videolib .mediaplugin {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    -o-user-select: none;
+    user-select: none;
+}
+
+.path-mod-videolib .videotitle {
+    margin-top: 1.0rem;
+    padding-top: 1.0rem;    
+}
+
+.path-mod-videolib .videolibvideo {
+    margin: 0 auto;
+}
+
+.path-mod-videolib iframe {
+    display: block;
+    height: 100vh;
+}
+
+.path-mod-videolib .video-responsive {
+    position: relative;
+    padding-bottom: 56.25%; /* 16/9 ratio */
+    padding-top: 30px; /* IE6 workaround */
+    height: 0;
+    overflow: hidden;
+   
+}
+
+.path-mod-videolib .video-responsive iframe,
+.path-mod-videolib .video-responsive object,
+.path-mod-videolib .video-responsive embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

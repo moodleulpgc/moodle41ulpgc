@@ -1,0 +1,17 @@
+
+<!-- local_vflibs/jqxprogressbar -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#{{name}}").jqxProgressBar({
+            width: "{{width}}",
+            height: "{{height}}",
+            value: {{value}},
+            template: '{{template}}',
+            animationDuration: {{animation}}
+        }
+    );
+});
+</script>
+<div style="margin-top: 10px; overflow: hidden;" id="{{name}}" title="{{#str}}completionpercent, local_vflibs, {{value}} {{/str}}">
+</div>
+<!-- /local_vflibs/jqxprogressbar -->

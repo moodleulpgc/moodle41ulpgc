@@ -1,0 +1,28 @@
+<h3>1. Hojas de Preguntas y de Respuestas</h3>
+
+<p>En el examen los estudiantes dispondrán de dos documentos:
+uno con las Preguntas del examen y el otro con una serie de casillas para marcar sus respuestas. <br /> 
+Tanto el documento con las Preguntas del Examen como, obviamente, la Hoja de Respuestas,
+disponen de espacios para escribir el nombre del estudiante.</p>
+
+<p>Las preguntas estarán numeradas, como las casillas, y las diferentes opciones de respuesta identificadas
+con una etiqueta (a, b, c, d ... usualmente). <br />
+Después del examen las hojas de Respuesta son escaneadas e interpretadas las marcas por un sistema automatizado.</p>
+
+<p>La Hoja de Respuestas debe ser entregada al final del examen para poder ser calificado.
+En general, los estudiantes también deberán entregar el docuemnto con las Preguntas de examen,
+aunque eso puede depender de las instrucciones específicas en cada asignatura o tipo de examen.</p>
+
+<p style="margin: 2em"><img src="fragebogen.gif" width="520px" border="1"></p>
+
+<div>Esta imagen muestra:&nbsp;&nbsp;&nbsp;<form action="index.php" method="get" id="page1" class="popupform"><div>
+<input type="hidden" name="id" value="<?php echo $id ?>">
+<input type="hidden" name="page" value="2">
+<select class="form-control" name="answer" style="width:18em;">
+   <option value="0">Elija...</option>
+   <option value="1">Una Hoja de Respuestas</option>
+   <option value="2">Una Hoja de Preguntas</option>
+</select>&nbsp;&nbsp;&nbsp;<input class="btn btn-secondary" type="submit" value="Continue &gt;"></form>
+</div>
+
+<p>&nbsp;</p><p>&nbsp;</p>

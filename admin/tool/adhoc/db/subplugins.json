@@ -1,0 +1,5 @@
+{
+    "plugintypes": {
+        "queue": "admin\/tool\/adhoc\/queue"
+    }
+}
