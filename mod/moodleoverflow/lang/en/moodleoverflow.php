@@ -54,6 +54,7 @@ $string['moodleoverflow:reviewpost']          = 'Review a post';
 $string['moodleoverflow:viewdiscussion']      = 'View discussion';
 $string['moodleoverflow:view']                = 'View discussionlist';
 $string['moodleoverflow:marksolved']          = 'Mark a post as solution';
+$string['moodleoverflow:reviewpost']          = 'Review (approve or reject) posts';
 $string['nowallsubscribed']                   = 'All forums in {$a} are subscribed.';
 $string['nowallunsubscribed']                 = 'All forums in {$a} are unsubscribed.';
 
@@ -294,6 +295,8 @@ $string['subscriptionoptional']         = 'Optional subscription';
 $string['subscriptionforced']           = 'Forced subscription';
 $string['subscriptionauto']             = 'Auto subscription';
 $string['subscriptiondisabled']         = 'Subscription disabled';
+$string['switchtooptional']             = 'If you switch to the optional subscription, all currently subscribed users will be unsubscribed from this forum!';
+$string['switchtoauto']                 = 'If you switch to the auto subscription, all enrolled users will be subscribed to this forum!';
 $string['trackingoff']                  = 'Off';
 $string['trackingon']                   = 'Forced';
 $string['trackingoptional']             = 'Optional';
@@ -447,8 +450,8 @@ $string['give_a_reason'] = 'Give a reason (optional)';
 $string['approve'] = 'Approve';
 $string['reject'] = 'Reject';
 $string['reviewpossibleaftertime'] = 'Review possible after (secs)';
-$string['reviewpossibleaftertime_desc'] = 'A teacher can only reject or approve a post at least this amount of time (in seconds) after the creation of the post. After a teacher has approved a post, the post cannot be edited by it\'s author anymore, even if still within the maxeditingtime duration.';
-$string['pending_review_but_cannot_now'] = 'Pending review, but can only be approved at least {$a} after the creation of this post to allow the author a bit of time to edit it.';
+$string['reviewpossibleaftertime_desc'] = 'A teacher cannot reject or approve a post until this amount of time (in seconds) after the creation of the post. After a teacher has approved a post, the post cannot be edited by it\'s author anymore, even if still within the maxeditingtime duration.';
+$string['pending_review_but_cannot_now'] = 'Pending review, but cannot be approved until {$a} after the creation of this post to allow the author a bit of time to edit it.';
 
 $string['review_needed'] = 'Review needed!';
 

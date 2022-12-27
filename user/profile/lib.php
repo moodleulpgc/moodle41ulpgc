@@ -582,6 +582,15 @@ class profile_field_base {
     public function get_field_properties() {
         return array(PARAM_RAW, NULL_NOT_ALLOWED);
     }
+
+    /**
+     * Check if the field should convert the raw data into user-friendly data when exporting
+     *
+     * @return bool
+     */
+    public function is_transform_supported(): bool {
+        return false;
+    }
 }
 
 /**
@@ -687,6 +696,7 @@ function profile_definition_after_data(MoodleQuickForm $mform, int $userid): voi
     }
 
     if($ulpgc = get_config('local_ulpgccore','version')) {  // ecastro ULPGC custom user form restrictions
+        global $CFG; 
         include_once($CFG->dirroot.'/local/ulpgccore/lib.php');
         local_ulpgccore_custom_profile_form($mform);
     }

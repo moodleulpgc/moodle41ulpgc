@@ -18,14 +18,14 @@
  * Theme Boost Union - Version file
  *
  * @package    theme_boost_union
- * @copyright  2022 Moodle an Hochschulen e.V. <kontakt@moodle-an-hochschulen.de>
+ * @copyright  2022 Alexander Bias, lern.link GmbH <alexander.bias@lernlink.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'theme_boost_union';
-$plugin->version = 2022080913;
+$plugin->version = 2022080914;
 $plugin->release = 'v4.0-r8';
 $plugin->requires = 2022041900;
 $plugin->supported = [400, 400];

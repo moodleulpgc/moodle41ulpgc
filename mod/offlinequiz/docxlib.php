@@ -692,6 +692,20 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         $table->addCell($width*7, array('valign' => 'bottom') + $cellstyle)->addText($text, 'subStyle');
         $table->addCell(null, array('vMerge' => 'continue'));
         
+        /* removed ecastro ULPGC
+        $section->addText(offlinequiz_str_html_docx(get_string('questionsheet', 'offlinequiz') . ' - ' . get_string('group', 'offlinequiz') .
+                                                    " $groupletter"), 'hStyle', 'cStyle');
+        $section->addTextBreak(2);
+
+        $table = $section->addTable('tableStyle');
+        $table->addRow();
+        $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('name')) . ':  ', 'brStyle');
+
+        $table->addRow();
+        $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('idnumber', 'offlinequiz')) .
+                                                          ':  ', 'brStyle');
+        */
+
         if ($offlinequiz->printstudycodefield) {
             $table->addRow($height);
             $text = offlinequiz_str_html_docx(get_string('studycode', 'offlinequiz'));

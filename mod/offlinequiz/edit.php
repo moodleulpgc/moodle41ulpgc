@@ -47,6 +47,7 @@ require_once($CFG->dirroot . '/mod/offlinequiz/locallib.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/offlinequiz.class.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/addrandomform.php');
 require_once($CFG->dirroot . '/question/category_class.php');
+require_once($CFG->dirroot . '/mod/offlinequiz/report/statistics/lib.php');
 
 // These params are only passed from page request to request while we stay on
 // this page otherwise they would go in question_edit_setup.
@@ -112,33 +113,29 @@ $recordupdateanddocscreated = null;
 $PAGE->set_url($thispageurl);
 
 // Update version references before get_structure().
-if ($newquestionid = optional_param('lastchanged', false, PARAM_INT)) {
-    $questionupdate = $DB->get_record_sql('SELECT qv.version, qr.id, qr.itemid
-                                        FROM {question_versions} qv
-                                        JOIN {question_references} qr ON qv.questionbankentryid = qr.questionbankentryid
-                                        WHERE qv.questionid = ?', [$newquestionid]);
+if ($newquestionid = optional_param('lastchanged', null, PARAM_INT)) {
+    $sql = "SELECT DISTINCT ogq.questionid AS oldquestionid,
+                   ogq.maxmark AS maxmark,
+                   (SELECT COUNT(*)
+                      FROM {question_answers} qa
+                     WHERE qa.question = ogq.questionid) AS answercount
+              FROM {offlinequiz_group_questions} ogq
+              JOIN {question_versions} qv1 ON qv1.questionid = ogq.questionid
+              JOIN {question_versions} qv2 ON qv1.questionbankentryid = qv2.questionbankentryid AND qv1.version <> qv2.version
+             WHERE ogq.offlinequizid = :offlinequizid
+               AND qv2.questionid = :newquestionid";
 
-    if ($questionupdate) {
-        if (!$docscreated) {
-            $updategroupquestion = new stdClass();
-            $updategroupquestion->id = $questionupdate->itemid;
-            $updategroupquestion->questionid = $newquestionid;
-
-            $DB->update_record('offlinequiz_group_questions', $updategroupquestion);
-
-            $updatereference = new stdClass();
-            $updatereference->id = $questionupdate->id;
-            $updatereference->version = $questionupdate->version;
-
-            $DB->update_record('question_references', $updatereference);
-        } else {
-            $recordupdateanddocscreated = get_string('recordupdateanddocscreated', 'offlinequiz');
-
-            $updatereference = new stdClass();
-            $updatereference->id = $questionupdate->id;
-            $updatereference->version = $questionupdate->version - 1;
-
-            $DB->update_record('question_references', $updatereference);
+    $questionupdates = $DB->get_records_sql($sql, ['offlinequizid' => $offlinequiz->id, 'newquestionid' => $newquestionid]);
+    $newanswercount = $DB->count_records('question_answers', ['question' => $newquestionid]);
+    foreach ($questionupdates as $questionupdate) {
+        if (!$docscreated || $questionupdate->answercount == $newanswercount) {
+            offlinequiz_update_question_instance($offlinequiz,
+                                                $questionupdate->oldquestionid,
+                                                $questionupdate->maxmark,
+                                                $newquestionid);
+            offlinequiz_update_all_attempt_sumgrades($offlinequiz);
+            offlinequiz_update_grades($offlinequiz, 0, true);
+            offlinequiz_delete_statistics_caches($offlinequiz->id);
         }
     }
 }

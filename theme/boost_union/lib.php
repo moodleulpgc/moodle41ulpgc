@@ -18,7 +18,7 @@
  * Theme Boost Union - Library
  *
  * @package    theme_boost_union
- * @copyright  2022 Moodle an Hochschulen e.V. <kontakt@moodle-an-hochschulen.de>
+ * @copyright  2022 Alexander Bias, lern.link GmbH <alexander.bias@lernlink.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,10 +26,10 @@
 define('THEME_BOOST_UNION_SETTING_SELECT_YES', 'yes');
 define('THEME_BOOST_UNION_SETTING_SELECT_NO', 'no');
 
-define('THEME_BOOST_UNION_SETTING_IMPRINTLINKPOSITION_NONE', 'none');
-define('THEME_BOOST_UNION_SETTING_IMPRINTLINKPOSITION_FOOTNOTE', 'footnote');
-define('THEME_BOOST_UNION_SETTING_IMPRINTLINKPOSITION_FOOTER', 'footer');
-define('THEME_BOOST_UNION_SETTING_IMPRINTLINKPOSITION_BOTH', 'both');
+define('THEME_BOOST_UNION_SETTING_STATICPAGELINKPOSITION_NONE', 'none');
+define('THEME_BOOST_UNION_SETTING_STATICPAGELINKPOSITION_FOOTNOTE', 'footnote');
+define('THEME_BOOST_UNION_SETTING_STATICPAGELINKPOSITION_FOOTER', 'footer');
+define('THEME_BOOST_UNION_SETTING_STATICPAGELINKPOSITION_BOTH', 'both');
 
 define('THEME_BOOST_UNION_SETTING_INFOBANNER_COUNT', 5);
 define('THEME_BOOST_UNION_SETTING_INFOBANNERPAGES_MY', 'mydashboard');

@@ -24,6 +24,11 @@
 
 namespace mod_scheduler\model;
 
+defined('MOODLE_INTERNAL') || die();
+
+// Elements from lib.php needed for grade functionality.
+require_once($CFG->dirroot.'/mod/scheduler/lib.php');
+
 /**
  * A class for representing a scheduler appointment.
  *

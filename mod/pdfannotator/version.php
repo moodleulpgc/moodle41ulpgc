@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_pdfannotator';
-$plugin->version   = 2022111600;
-$plugin->release  = 'PDF Annotator v1.5 release 1';
+$plugin->version   = 2022120500;
+$plugin->release  = 'PDF Annotator v1.5 release 3';
 $plugin->requires  = 2021051700;
 $plugin->maturity  = MATURITY_STABLE;

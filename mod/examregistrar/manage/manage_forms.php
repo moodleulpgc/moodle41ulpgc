@@ -860,7 +860,7 @@ abstract class examregistrar_examfileform_base extends moodleform {
                            1 => get_string('printsingle', 'examregistrar'),);
         $mform->addElement('select', 'printmode', get_string('printmode', 'examregistrar'), $printmenu);
         $mform->addHelpButton('printmode', 'printmode', 'examregistrar');
-        $mform->setDefault('printmode', 1);    
+        $mform->setDefault('printmode', 0);    
     
         $mform->addElement('static', 'allowings', '', get_string('examallows', 'examregistrar'));
     

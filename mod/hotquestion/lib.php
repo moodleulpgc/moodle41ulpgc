@@ -254,23 +254,26 @@ function hotquestion_print_recent_activity($course, $viewfullnames, $timestart) 
     global $CFG, $USER, $DB, $OUTPUT;
 
     $dbparams = array($timestart, $course->id, 'hotquestion');
+    $userfieldsapi = \core_user\fields::for_userpic();
+    $namefields = $userfieldsapi->get_sql('u', false, '', 'userid', false)->selects;
 
-    if ($CFG->branch > 30) { // If Moodle less than version 3.1 skip this.
-        $userfieldsapi = \core_user\fields::for_userpic();
-        $namefields = $userfieldsapi->get_sql('u', false, '', 'duserid', false)->selects;
-    } else {
-        $namefields = user_picture::fields('u', null, 'userid');
-    }
-    $sql = "SELECT hqq.id, hqq.time, cm.id AS cmid, $namefields
-         FROM {hotquestion_questions} hqq
-              JOIN {hotquestion} hq         ON hq.id = hqq.hotquestion
-              JOIN {course_modules} cm ON cm.instance = hq.id
-              JOIN {modules} md        ON md.id = cm.module
-              JOIN {user} u            ON u.id = hqq.userid
-         WHERE hqq.time > ? AND
-               hq.course = ? AND
-               md.name = ?
-         ORDER BY hqq.time ASC
+    $sql = "SELECT hqq.id,
+                   hqq.time,
+                   cm.id AS cmid,
+                   $namefields
+              FROM {hotquestion_questions} hqq
+              JOIN {hotquestion} hq
+                ON hq.id = hqq.hotquestion
+              JOIN {course_modules} cm
+                ON cm.instance = hq.id
+              JOIN {modules} md
+                ON md.id = cm.module
+              JOIN {user} u
+                ON u.id = hqq.userid
+             WHERE hqq.time > ?
+               AND hq.course = ?
+               AND md.name = ?
+          ORDER BY hqq.time ASC
     ";
 
     $newentries = $DB->get_records_sql($sql, $dbparams);
@@ -281,7 +284,6 @@ function hotquestion_print_recent_activity($course, $viewfullnames, $timestart) 
     $showrecententries = get_config('hotquestion', 'showrecentactivity');
 
     foreach ($newentries as $anentry) {
-
         if (!array_key_exists($anentry->cmid, $modinfo->get_cms())) {
             continue;
         }
@@ -336,7 +338,7 @@ function hotquestion_print_recent_activity($course, $viewfullnames, $timestart) 
         return false;
     }
 
-    echo $OUTPUT->heading(get_string('modulenameplural', 'hotquestion').':', 3);
+    echo $OUTPUT->heading(get_string('modulenameplural', 'hotquestion').':', 6);
 
     foreach ($show as $submission) {
         $cm = $modinfo->get_cm($submission->cmid);
@@ -435,68 +437,39 @@ function hotquestion_reset_course_form_definition(&$mform) {
  */
 function hotquestion_supports($feature) {
     global $CFG;
-    if ($CFG->branch > 311) {
-        switch($feature) {
-            case FEATURE_MOD_PURPOSE:
-                return MOD_PURPOSE_COLLABORATION;
-            case FEATURE_BACKUP_MOODLE2:
-                return true;
-            case FEATURE_COMMENT:
-                return true;
-            case FEATURE_COMPLETION_HAS_RULES:
-                return true;
-            case FEATURE_COMPLETION_TRACKS_VIEWS:
-                return true;
-            case FEATURE_GRADE_HAS_GRADE:
-                return true;
-            case FEATURE_GRADE_OUTCOMES:
-                return false;
-            case FEATURE_GROUPS:
-                return true;
-            case FEATURE_GROUPINGS:
-                return true;
-            case FEATURE_GROUPMEMBERSONLY:
-                return true;
-            case FEATURE_MOD_INTRO:
-                return true;
-            case FEATURE_RATE:
-                return false;
-            case FEATURE_SHOW_DESCRIPTION:
-                return true;
-
-            default:
-                return null;
+    if ((int)$CFG->branch > 311) {
+        if ($feature === FEATURE_MOD_PURPOSE) {
+            return MOD_PURPOSE_COLLABORATION;
         }
-    } else {
-        switch($feature) {
-            case FEATURE_BACKUP_MOODLE2:
-                return true;
-            case FEATURE_COMMENT:
-                return true;
-            case FEATURE_COMPLETION_HAS_RULES:
-                return true;
-            case FEATURE_COMPLETION_TRACKS_VIEWS:
-                return true;
-            case FEATURE_GRADE_HAS_GRADE:
-                return true;
-            case FEATURE_GRADE_OUTCOMES:
-                return false;
-            case FEATURE_GROUPS:
-                return true;
-            case FEATURE_GROUPINGS:
-                return true;
-            case FEATURE_GROUPMEMBERSONLY:
-                return true;
-            case FEATURE_MOD_INTRO:
-                return true;
-            case FEATURE_RATE:
-                return false;
-            case FEATURE_SHOW_DESCRIPTION:
-                return true;
+    }
+    switch($feature) {
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        case FEATURE_COMMENT:
+            return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_GRADE_HAS_GRADE:
+            return true;
+        case FEATURE_GRADE_OUTCOMES:
+            return false;
+        case FEATURE_GROUPS:
+            return true;
+        case FEATURE_GROUPINGS:
+            return true;
+        case FEATURE_GROUPMEMBERSONLY:
+            return true;
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_RATE:
+            return false;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
 
-            default:
-                return null;
-        }
+        default:
+            return null;
     }
 }
     /**
