@@ -39,6 +39,8 @@ define('LOCAL_BOOSTNAVIGATION_MOVEBEFORE_COMPETENCIES', 'competencies');
 function local_boostnavigation_extend_navigation(global_navigation $navigation) {
     global $CFG, $PAGE, $COURSE, $USER;
 
+    return; // ecastro ULPGC  do nothing in 4.x
+    
     // Fetch config.
     $config = get_config('local_boostnavigation');
 
@@ -963,6 +965,8 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
 function local_boostnavigation_extend_navigation_course(navigation_node $navigation) {
     global $PAGE, $COURSE;
 
+    return; // ecastro ULPGC  do nothing in 4.x
+    
     // Fetch config.
     $config = get_config('local_boostnavigation');
 

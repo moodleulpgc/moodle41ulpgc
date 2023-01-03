@@ -162,6 +162,12 @@ Moodle core ships with FontAwesome 4 icons which are fine, but FontAwesome has e
 
 In this tab there are the following settings:
 
+##### Primary navigation
+
+###### Hide nodes in primary navigation
+
+With this setting, you can hide one or multiple nodes from the primary navigation.
+
 ##### Navigation
 
 ###### Back to top button
@@ -370,10 +376,11 @@ Contributors
 
 This theme is a collaboration result of multiple organisations.
 
-Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order) for their work:
+Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
 
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
+* Ruhr University Bochum, Melanie Treitinger: Code
 * RWTH Aachen, Josha Bartsch: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
 * Zurich University of Applied Sciences (ZHAW): Funding

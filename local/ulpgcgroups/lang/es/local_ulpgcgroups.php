@@ -9,7 +9,6 @@
 
 $string['pluginname'] = 'Grupos ULPGC';
 $string['[ulpgcgroups:manage'] = 'Gestionar grupos ULPGC';
-
 // settings
 $string['groupssettings'] = 'Grupos ULPGC';
 $string['enabledadvancedgroups'] = 'Habilitar interfaz avanzado';
@@ -49,7 +48,6 @@ $string['singlegroupmembership'] = 'Forzar pertenencia a un único grupo';
 $string['singlegroupmembership_help'] = 'En muchas actividades los usuariso deberían estar distribuidos de forma que cada uno pertenezca a solo un grupo como máximo. 
 Esta opción permite establecer una señal para indicar que se debe activar la comprobación de pertenecia múltiples grupos, para identificar y resaltar esos casos. ';
 $string['explainsinglegroupmembership'] = 'Los usuarios deben pertenecer a un único grupo del Agrupamiento. Habilita el chequeo activo.';
-
 $string['exportgroupselector'] = 'Indicar grupos a exportar';
 $string['exportdataselector'] = 'Indicar datos a listar para cada miembro de grupo';
 $string['exportuserselector'] = 'Indicar usuarios a incluir en cada listado de grupo';
@@ -110,4 +108,4 @@ $string['grouproles'] = 'Roles para el grupo {$a}';
 $string['explaingrouproles'] = 'The users with the selected roles, in any context, will be synched as group members in group {$a}. 
 Leave empty to disable and not use roles as frontpage group assignment mechanism.';
 $string['nonexportable'] = 'No hay grupos exportables con esta combinación de parámetros de búsqueda.';
-
+$string['nolinks'] = 'No hay herramientas de Grupos que mostrar.';

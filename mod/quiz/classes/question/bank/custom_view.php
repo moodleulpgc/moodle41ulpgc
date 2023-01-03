@@ -248,9 +248,9 @@ class custom_view extends \core_question\local\bank\view {
     }
 */
     // ecastro ULPGC ecastro ULPGC to allow marking of used questions in question selector popup
-    protected function print_table_row($question, $rowcount) { 
+    protected function print_table_row($question, $rowcount): void { 
         if(!isset($this->questions) || !$this->questions) {
-            return parent::print_table_row($question, $rowcount);
+            parent::print_table_row($question, $rowcount);
         }
         // ecastro ULPGC to allow marking of used questions in question selector popup
         // only works if advanced interface, flagged bu questions property

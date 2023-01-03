@@ -33,118 +33,8 @@ defined('MOODLE_INTERNAL') || die;
  */
 function local_ulpgccore_extend_navigation(global_navigation $navigation) {
     global $PAGE;
-    
-    $keys = $navigation->get_children_key_list();
-    //print_object($keys);
-        
-    $coursehomenode = $PAGE->navigation->find($PAGE->course->id, navigation_node::TYPE_COURSE);
-    
-    //$beforekey = $coursehomenode ?  $coursehomenode->key : 'home';
-    $beforekey = $coursehomenode ?  '1' : 'home';
-    //home 1 myprofile currentcourse mycourses courses users
-    
-    // Check if admin wants us to insert custom nodes for users in Boost's nav drawer.
-        // Fetch config.
-    $customnodes = get_config('local_ulpgccore', 'customnavnodes');
-    if (isset($customnodes) && !empty($customnodes)) {
-        // If yes, do it.
-        /*
-        $customnodesret = local_ulpgccore_build_custom_nav_nodes($customnodes, $navigation, $beforekey,
-                'localulpgccorecustomnav', true, true, true);
-                */
-/*
-        // Check if admin wanted us to also collapse the custom nodes for users.
-        if ($config->collapsecustomnodesusers == true) {
-            // Remember the collapsible node for JavaScript.
-            $collapsenodesforjs = array_merge($collapsenodesforjs, $customnodesret);
-        }
-        */
-        if($node1 = $navigation->find('1', global_navigation::TYPE_COURSE)) {
-        // Create course edit node.
-        $edit = $PAGE->user_is_editing() ? 'off' : 'on';
-        $editingnode = navigation_node::create(' XXXX ',
-                new moodle_url('/course/view.php', array('id' => $PAGE->course->id, 
-                                                            'sesskey'=>sesskey(), 'edit'=>$edit)),
-                navigation_node::TYPE_SETTING,
-                null,
-                'ulpgccorenode1',
-                null);
-        // Add the course edit node.
-        $editingnode->icon = new pix_icon('i/edit', '');
-        $editingnode->showinflatnavigation = true;
-        $node1->add_node($editingnode, 'frontpageloaded');
-        }
-        
-        
-    }
-    
-    
-    
-    $keys = $navigation->get_children_key_list();
-    //print_object($keys);
-    foreach($keys as $key) {
-        if($root = $navigation->find($key, null)) {
-            //print_object("rootkey = $key");
-            //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($root));
-        }
-    }
-    
 
-    //print_object("==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  ==  "); 
-    
-    
-    
-    if($coursehomenode) { 
-        // Only proceed if we are inside a course and we are _not_ on the frontpage.
-        if ($context = $PAGE->context->get_course_context(false)) {
-            if(($context->contextlevel == CONTEXT_COURSE) && $PAGE->course->id != SITEID && 
-                ((strpos($PAGE->pagetype, 'course-view') === 0) || (strpos($PAGE->pagetype, 'mod-') === 0))) {
-                if($PAGE->user_allowed_editing()) {
-                    // Create course edit node.
-                    $edit = $PAGE->user_is_editing() ? 'off' : 'on';
-                    $editingnode = navigation_node::create(get_string('courseedit'.$edit, 'local_ulpgccore'),
-                            new moodle_url('/course/view.php', array('id' => $PAGE->course->id, 
-                                                                        'sesskey'=>sesskey(), 'edit'=>$edit)),
-                            navigation_node::TYPE_SETTING,
-                            null,
-                            'flateditcourse',
-                            null);
-                    // Add the course edit node.
-                    $editingnode->icon = new pix_icon('i/edit', '');
-                    $coursehomenode->add_node($editingnode, 'participants');
-                }
-    
-                $adminoptions = course_get_user_administration_options($PAGE->course, $context);
-                if($adminoptions->update) {
-                    // Create coursesettings node.
-                    $editingnode = navigation_node::create(get_string('editsettings', 'local_ulpgccore', get_string('course')),
-                            new moodle_url('/course/edit.php', array('id' => $PAGE->course->id)),
-                            navigation_node::TYPE_SETTING,
-                            null,
-                            'flatcoursesettings',
-                            null);
-                    // Add the coursesettings node.
-                    $editingnode->icon = new pix_icon('t/edit', '');
-                    $coursehomenode->add_node($editingnode, 'participants');
-                }
-            }
-
-            if (($PAGE->context->contextlevel == CONTEXT_MODULE && 
-                has_all_capabilities(array('local/ulpgccore:modedit', 'moodle/course:manageactivities'), $context))) {
-                // Create modedit node.
-                $mod = get_string('pluginname', $PAGE->activityname);
-                $editingnode = navigation_node::create(get_string('editsettings', 'local_ulpgccore', $mod),
-                        new moodle_url('/course/modedit.php', array('update' => $PAGE->cm->id, 'return'=>1)),
-                        navigation_node::TYPE_SETTING,
-                        null,
-                        'flatmodedit',
-                        null);
-                // Add the modedit node.
-                $editingnode->icon = new pix_icon('t/edit', '');
-                $coursehomenode->add_node($editingnode, 'participants');
-            }
-        }
-    }
+    //local_ulpgccore_boostnav_get_all_childrenkeys    
 }
 
 /**
@@ -159,6 +49,7 @@ function local_ulpgccore_extend_navigation_course(navigation_node $navigation) {
     if(strpos($PAGE->pagetype, 'mod-') !== false) {
         $PAGE->force_settings_menu(true);
     }
+    
 }    
     
 function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, context $context) {
@@ -166,8 +57,15 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
     
     // modifications in course pages
     if ($PAGE->course && $PAGE->course->id != 1) {
-        
+        if($coursenode =  $nav->find('courseadmin', navigation_node::TYPE_COURSE)) {    
+            //print_object($coursenode->get_children_key_list());
+            $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
+            $coursenode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'courselog', new pix_icon('i/report', ''));
+            $url = new moodle_url('/report/loglive/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
+            $coursenode->add(get_string('pluginname', 'report_loglive'), $url, navigation_node::TYPE_SETTING, null, 'courseloglive', new pix_icon('i/report', ''));
+        }
     }
+    
    if ($settingsnode = $nav->find('users', navigation_node::TYPE_CONTAINER)) {
         $url = new moodle_url('/local/ulpgccore/exportusers.php', array('id'=>$PAGE->course->id));
         $node = $settingsnode->create(get_string('exportusers', 'local_ulpgccore'), $url, navigation_node::TYPE_SETTING, null, 'exportusers', new pix_icon('i/export', ''));
@@ -197,7 +95,44 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
                 }
             }          
         }
+        
+        if($modnode =  $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {    
+            //print_object($modnode->get_children_key_list());
+            $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
+            $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
+            
+        }        
     }
+
+    // always make this into more, or last positions 
+    if ($node = $nav->find('contextlocking', navigation_node::TYPE_SETTING)) {
+        $node->set_force_into_more_menu(true);
+    }
+    
+    //print_object("Estoy en localulpgccore");    
+    //print_object($PAGE->navigation->get_children_key_list());
+    //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->navigation));
+/*
+    print_object("Estoy en localulpgccore");    
+    print_object("Estoy en localulpgccore");
+    print_object($PAGE->primarynav->get_children_key_list());
+    print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->primarynav));
+    if(isset($PAGE->primarynav)) {
+        print_object("Primary Navigation");    
+        print_object($PAGE->primarynav->get_children_key_list());
+        print_object("Primary Navigation");
+    } else {print_object("NOT EXISTS  Primary Navigation");}
+    
+    print_object($PAGE->secondarynav->get_children_key_list());
+    print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->secondarynav));
+    if(!empty($PAGE->secondarynav)) {
+        print_object("Secondary Navigation");    
+        print_object($PAGE->secondarynav->get_children_key_list());
+        print_object("Secondary Navigation");        
+    //local_ulpgccore_boostnav_get_all_childrenkeys        
+    } else {print_object("NOT EXISTS  Secondary Navigation");}        
+*/
+  
 
 }
 

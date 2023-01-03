@@ -30,16 +30,15 @@ function local_ulpgcgroups_extend_settings_navigation(settings_navigation $nav, 
     $course = $PAGE->course;
     // modifications in course pages
 
-    return;
     if (($course->groupmode || !$course->groupmodeforce) && has_capability('moodle/course:managegroups', $context)) {
         if($coursenode =  $nav->find('courseadmin', navigation_node::TYPE_COURSE)) {
             if ($settingsnode = $nav->find('groups', navigation_node::TYPE_SETTING)) {
-                $url = new moodle_url('/group/index.php', array('id'=>$course->id));
+                $url = new moodle_url('/local/ulpgcgroups/index.php', array('id'=>$course->id));
                 $groupsnode = $coursenode->create(get_string('managegroups', 'local_ulpgcgroups'), $url, navigation_node::TYPE_CONTAINER, null, 'groupscontainer');
-                $coursenode->add_node($groupsnode, 'users');
-                $settingsnode->remove();
-                $groupsnode->add_node($settingsnode);
-
+                
+                $url = new moodle_url('/group/index.php', array('id'=>$course->id));
+                $groupsnode->add(get_string('groups', 'core_group'), $url, navigation_node::TYPE_SETTING, null, 'group', new pix_icon('i/withsubcat', ''));
+                
                 $url = new moodle_url('/group/groupings.php', array('id'=>$course->id));
                 $groupsnode->add(get_string('groupings', 'core_group'), $url, navigation_node::TYPE_SETTING, null, 'groupings', new pix_icon('i/withsubcat', ''));
                 
@@ -55,14 +54,15 @@ function local_ulpgcgroups_extend_settings_navigation(settings_navigation $nav, 
                 $settings = array('report_autogroups', 'report_syncgroups', 'report_o365channels');
                 foreach($settings as $setting) {
                     if ($settingsnode = $nav->find($setting, navigation_node::TYPE_SETTING)) {
-                        $settingsnode->remove();
+                        //$settingsnode->remove(); // transitory removal. While theme developing & testing  
                         $groupsnode->add_node($settingsnode);                   
                     }
                 }
+                
+                $coursenode->add_node($groupsnode, 'users');                
             }
         }
     }
-
 }
 
 /**

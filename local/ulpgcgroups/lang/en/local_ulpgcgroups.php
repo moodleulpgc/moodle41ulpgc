@@ -9,9 +9,6 @@
 
 $string['pluginname'] = 'ULPGC groups';
 $string['ulpgcgroups:manage'] = 'Manage ULPGC groups';
-
-
-
 // settings
 $string['groupssettings'] = 'ULPGC Groups settings';
 $string['enabledadvancedgroups'] = 'Enable advanced groups interface';
@@ -22,10 +19,8 @@ $string['onlyactiveenrolments'] = 'Only active enrolments';
 $string['explainonlyactiveenrolments'] = 'If enabled, then only users with active enrolments will be listed in group related listings.';
 $string['colorrestricted'] = 'Color for restrictions';
 $string['explaincolorrestricted'] = 'Group and members names will be marked in this color on listings.';
-
 $string['managegroups'] = 'Groups management';
 $string['exportgroups'] = 'Export groups';
-
 $string['controlledgroups'] = 'Los grupos y usuarios con nombre en color son gestionados por el sistema. Esos ítems no se pueden borrar.';
 $string['anygrouping'] = 'Any grouping';
 $string['groupingmenu'] = 'Groups in';
@@ -53,17 +48,6 @@ $string['singlegroupmembership'] = 'Force single group membership';
 $string['singlegroupmembership_help'] = 'For many activities the users should be distributed in such a way that each user belongs to just one and only one group. 
 This setting allows to set a flag to activate checking of user memebrships to detect cases where a user belongs to several grpups of tis grouping, marking them.';
 $string['explainsinglegroupmembership'] = 'Users should belong to just one group in grouping. Enable active checking.';
-
-/*
-$string['enrol'] = 'Enrol method';
-
-
-$string['forceexclusive'] = 'Force exclusive single group in grouping';
-$string['controlledgroupalert'] = 'This group is managed by an external plugin. Members in color cannot be deleted or moved';
-
-$string['groupfrom'] = 'Parent group (only users of this group)';
-$string['nogroupusers'] = 'Users without a group assigned';
-*/
 $string['exportgroupselector'] = 'Select groups to export';
 $string['exportdataselector'] = 'Select data to collect for each group member';
 $string['exportuserselector'] = 'Indicate users to include un each group listing';
@@ -93,16 +77,13 @@ $string['exportextracolumns'] = 'Extra columns';
 $string['exportextracolumns_help'] = 'A comma separated list of column headings. 
 
 If specified, then these extra columns will be added (with empty values) to the right of the table to accomodate further data.';
-
 $string['exportformatselector'] = 'Export format';
 $string['exportdownload'] = 'Download';
-
 $string['groupmembershipexists'] = 'Already a member';
 $string['notenrolledincourse'] = 'Not added, User not enrolled in course';
 $string['groupmembershipfailed'] = 'Not added, failure on adding membership';
 $string['groupmembershipadded'] = 'User added as group member';
 $string['usernotfoundskip'] = 'User not found, skipped';
-
 $string['enclosure'] = 'Field enclosure';
 $string['enclosure_help'] = 'Character enclosing text fields in CSV texts and files. 
 
@@ -121,5 +102,4 @@ $string['grouproles'] = 'Roles para el grupo {$a}';
 $string['explaingrouproles'] = 'The users with the selected roles, in any context, will be synched as group members in group {$a}. 
 Leave empty to disable and not use roles as frontpage group assignment mechanism.';
 $string['nonexportable'] = 'No exportable groups';
-
-
+$string['nolinks'] = 'No groups tools to display';

@@ -36,6 +36,7 @@ function local_assigndata_extend_settings_navigation(settings_navigation $nav, c
                         new moodle_url('/local/assigndata/view.php', array('id'=>$PAGE->cm->id)),
                         navigation_node::TYPE_SETTING, null, 'assigndata_managefields',
                         new pix_icon('i/withsubcat', ''));
+                $node->set_force_into_more_menu(true);
                 $settingsnode->add_node($node);
             }
         }

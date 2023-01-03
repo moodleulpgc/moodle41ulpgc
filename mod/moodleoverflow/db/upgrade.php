@@ -345,14 +345,16 @@ function xmldb_moodleoverflow_upgrade($oldversion) {
 
     if ($oldversion < 2022110700) {
 
-        foreach (get_archetype_roles('manager') as $role) {
-            unassign_capability('mod/moodleoverflow:reviewpost', $role->id);
-        }
+        if($DB->record_exists('capabilities', ['name' => 'mod/moodleoverflow:reviewpost'])) { // ecastro ULPGC
+            foreach (get_archetype_roles('manager') as $role) {
+                unassign_capability('mod/moodleoverflow:reviewpost', $role->id);
+            }
 
-        foreach (get_archetype_roles('teacher') as $role) {
-            assign_capability(
-                    'mod/moodleoverflow:reviewpost', CAP_ALLOW, $role->id, context_system::instance()
-            );
+            foreach (get_archetype_roles('teacher') as $role) {
+                assign_capability(
+                        'mod/moodleoverflow:reviewpost', CAP_ALLOW, $role->id, context_system::instance()
+                );
+            }
         }
 
         // Moodleoverflow savepoint reached.
