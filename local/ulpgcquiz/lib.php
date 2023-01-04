@@ -29,6 +29,24 @@ function local_ulpgcquiz_extend_settings_navigation(settings_navigation $nav, co
     global $CFG, $PAGE;
     
     if(strpos($PAGE->pagetype, 'mod-quiz') !== false) {
+        
+        if ($settingsnode = $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {
+            // always make this into more, or last positions 
+            if ($node = $settingsnode->find('questionbank', navigation_node::TYPE_CONTAINER)) {
+                $node->set_force_into_more_menu(true);
+            }
+            // ensure a new overrides node NOT moved by module navivation/views
+            if ($node = $settingsnode->find('mod_quiz_useroverrides', navigation_node::TYPE_SETTING)) {
+                //if (has_any_capability(['mod/quiz:manageoverrides', 'mod/quiz:viewoverrides'], $settings->get_page()->cm->context)) {
+                    $url = new moodle_url('/mod/quiz/overrides.php', ['cmid' => $PAGE->cm->id, 'mode' => 'user']);
+                    $newnode = navigation_node::create(get_string('overrides', 'quiz'),
+                                $url, navigation_node::TYPE_SETTING, null, 'overrides');
+                    $settingsoverride = $settingsnode->add_node($newnode, 'mod_quiz_useroverrides');
+                    $node->remove();
+                //}
+            }                
+        }
+        
         $enabled = get_config('quiz_makeexam', 'enabled');
         if($lockenabled = get_config('quizaccess_makeexamlock', 'enabled')) {
             $prefix = get_config('examregistrar', 'quizexamprefix');
@@ -73,7 +91,6 @@ function local_ulpgcquiz_extend_settings_navigation(settings_navigation $nav, co
             }
         }
         
-        
         // remove  quiz_report_makeexam link from all quiz pages
         if ($settingsnode = $nav->find('quiz_report_makeexam', navigation_node::TYPE_SETTING)) {
             if ($rootnode = $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {
@@ -84,6 +101,7 @@ function local_ulpgcquiz_extend_settings_navigation(settings_navigation $nav, co
                 }
                 // add quiz_report_makeexam link only if enabled
                 if($enabled) {
+                    $settingsnode->set_force_into_more_menu(true);
                     $rootnode->add_node($settingsnode, $key);
                 }
             }
@@ -100,11 +118,20 @@ function local_ulpgcquiz_extend_settings_navigation(settings_navigation $nav, co
  * @param $others bool indicate if checking should extend to other quizzes, storez as Exam versions in module Exam registrer
  * @return array of unique ids
  */
-function local_ulpgcquiz_get_all_questionids($quiz, $others) {
+function local_ulpgcquiz_get_all_questionids($quiz, $cmid, $others) {
     global $CFG, $DB;
 
-    $questions = $DB->get_records_menu('quiz_slots', array('quizid' => $quiz->id), 'slot', 'slot, questionid');
-
+    $context = \context_module::instance($cmid);
+    
+    $sql = "SELECT s.slot, qv.questionid 
+                  FROM {quiz_slots} s 
+                    JOIN  {question_references} qr ON s.id = qr.itemid 
+                                        AND qr.questionarea = 'slot' AND qr.component = 'mod_quiz' 
+                    JOIN {question_versions} qv ON  qv.questionbankentryid = qr.questionbankentryid  
+                                        AND ((qv.version =  qr.version) OR (qr.version IS NULL))
+                WHERE s.quizid = :quizid  AND qr.usingcontextid = :ctxid "; 
+    $questions = $DB->get_records_sql_menu($sql, ['quizid' => $quiz->id, 'ctxid' => $context->id]);
+    
     if($others && $makeexam = get_config('quiz_makeexam')) {
         if($makeexam->enabled && $makeexam->uniquequestions) {
             include_once($CFG->dirroot.'/mod/quiz/report/makeexam/lib.php');

@@ -591,7 +591,7 @@ class structure {
             global $CFG;
             include_once($CFG->dirroot.'/mod/quiz/report/makeexam/lib.php');
             $quiz = $this->quizobj->get_quiz();
-            if($warning = quiz_makeexam_quiz_current_attempt($quiz)) {
+            if($warning = quiz_makeexam_quiz_current_attempt($quiz->id)) {
                 $warnings[] = $warning;
             }
         }

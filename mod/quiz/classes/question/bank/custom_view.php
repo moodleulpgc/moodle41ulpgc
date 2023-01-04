@@ -63,7 +63,7 @@ class custom_view extends \core_question\local\bank\view {
         if(get_config('local_ulpgcquiz', 'enabledadvancedquiz')) {
             global $CFG;
             include_once($CFG->dirroot.'/local/ulpgcquiz/lib.php');
-            $this->questions = local_ulpgcquiz_get_all_questionids($quiz, true); // ecastro ULPGC
+            $this->questions = local_ulpgcquiz_get_all_questionids($quiz, $cm->id, true); // ecastro ULPGC
         }
 
         $this->pagesize = self::DEFAULT_PAGE_SIZE;

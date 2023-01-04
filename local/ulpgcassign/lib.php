@@ -37,6 +37,24 @@ define('ASSIGN_FILTER_SUBMITTED_LATE', 'submitted_late');
 
 function local_ulpgcassign_extend_settings_navigation(settings_navigation $nav, context $context) {
     global $CFG, $PAGE;
+    
+    if(strpos($PAGE->pagetype, 'mod-assign') !== false) {
+        
+        if ($settingsnode = $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {
+            //print_object($settingsnode->get_children_key_list());
+            // ensure a new overrides node NOT moved by module navigation/views
+            if ($node = $settingsnode->find('mod_assign_useroverrides', navigation_node::TYPE_SETTING)) {
+                //if (has_any_capability(['mod/quiz:manageoverrides', 'mod/quiz:viewoverrides'], $settings->get_page()->cm->context)) {
+                    $url = new moodle_url('/mod/assign/overrides.php', ['cmid' => $PAGE->cm->id, 'mode' => 'user']);
+                    $newnode = navigation_node::create(get_string('overrides', 'assign'),
+                                $url, navigation_node::TYPE_SETTING, null, 'overrides');
+                    $settingsoverride = $settingsnode->add_node($newnode, 'mod_assign_useroverrides');
+                    $node->remove();
+                //}
+            }                
+        }    
+    }
+    
 }
 
 /**
