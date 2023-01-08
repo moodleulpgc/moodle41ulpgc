@@ -77,6 +77,14 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
                 get_string('configtitlefunctionality', 'theme_boost_union', null, true),
                 'theme/boost_union:configure');
         $ADMIN->add('theme_boost_union', $tab);
+
+        // Create Flavours settings page as external page
+        // (and allow users with the theme/boost_union:configure capability to access it).
+        $flavourspage = new admin_externalpage('theme_boost_union_flavours',
+                get_string('configtitleflavours', 'theme_boost_union', null, true),
+                new moodle_url('/theme/boost_union/flavours/overview.php'),
+                'theme/boost_union:configure');
+        $ADMIN->add('theme_boost_union', $flavourspage);
     }
 
     // Create full settings page structure.
@@ -358,6 +366,98 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
+
+        // Add tab to settings page.
+        $page->add($tab);
+
+
+        // Create course tab.
+        $tab = new admin_settingpage('theme_boost_union_look_course',
+                get_string('coursetab', 'theme_boost_union', null, true));
+
+        // Create course header heading.
+        $name = 'theme_boost_union/courseheaderheading';
+        $title = get_string('courseheaderheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Display the course image in the course header.
+        $name = 'theme_boost_union/courseheaderimageenabled';
+        $title = get_string('courseheaderimageenabled', 'theme_boost_union', null, true);
+        $description = get_string('courseheaderimageenabled_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Setting: Fallback course header image.
+        $name = 'theme_boost_union/courseheaderimagefallback';
+        $title = get_string('courseheaderimagefallback', 'theme_boost_union', null, true);
+        $description = get_string('courseheaderimagefallback_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'courseheaderimagefallback', 0,
+                array('maxfiles' => 1, 'accepted_types' => 'web_image'));
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/courseheaderimagefallback', 'theme_boost_union/courseheaderimageenabled', 'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES);
+
+        // Setting: Course header image layout.
+        $name = 'theme_boost_union/courseheaderimagelayout';
+        $title = get_string('courseheaderimagelayout', 'theme_boost_union', null, true);
+        $description = get_string('courseheaderimagelayout_desc', 'theme_boost_union', null, true);
+        $courseheaderimagelayoutoptions = array(
+                THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDDARK =>
+                        get_string('courseheaderimagelayoutstackeddark', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDLIGHT =>
+                        get_string('courseheaderimagelayoutstackedlight', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_HEADINGABOVE =>
+                        get_string('courseheaderimagelayoutheadingabove', 'theme_boost_union'));
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_HEADINGABOVE, $courseheaderimagelayoutoptions);
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/courseheaderimagelayout', 'theme_boost_union/courseheaderimageenabled', 'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES);
+
+        // Setting: Course header image height.
+        $name = 'theme_boost_union/courseheaderimageheight';
+        $title = get_string('courseheaderimageheight', 'theme_boost_union', null, true);
+        $description = get_string('courseheaderimageheight_desc', 'theme_boost_union', null, true);
+        $courseheaderimageheightoptions = array(
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_100PX => THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_100PX,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_150PX => THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_150PX,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_200PX => THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_200PX,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_250PX => THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_250PX);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_150PX,
+                $courseheaderimageheightoptions);
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/courseheaderimageheight', 'theme_boost_union/courseheaderimageenabled', 'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES);
+
+        // Setting: Course header image position.
+        $name = 'theme_boost_union/courseheaderimageposition';
+        $title = get_string('courseheaderimageposition', 'theme_boost_union', null, true);
+        $description = get_string('courseheaderimageposition_desc', 'theme_boost_union', null, true);
+        $courseheaderimagepositionoptions = array(
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_CENTER =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_CENTER,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_TOP =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_TOP,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_BOTTOM =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_BOTTOM,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_TOP =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_TOP,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_CENTER =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_CENTER,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_BOTTOM =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_BOTTOM,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_TOP =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_TOP,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_CENTER =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_CENTER,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_BOTTOM =>
+                        THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_BOTTOM);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_CENTER, $courseheaderimagepositionoptions);
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/courseheaderimageposition', 'theme_boost_union/courseheaderimageenabled', 'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES);
 
         // Add tab to settings page.
         $page->add($tab);
@@ -1081,5 +1181,14 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
 
         // Add settings page to the admin settings category.
         $ADMIN->add('theme_boost_union', $page);
+
+
+        // Create Flavours settings page as external page
+        // (and allow users with the theme/boost_union:configure capability to access it).
+        $flavourspage = new admin_externalpage('theme_boost_union_flavours',
+                get_string('configtitleflavours', 'theme_boost_union', null, true),
+                new moodle_url('/theme/boost_union/flavours/overview.php'),
+                'theme/boost_union:configure');
+        $ADMIN->add('theme_boost_union', $flavourspage);
     }
 }

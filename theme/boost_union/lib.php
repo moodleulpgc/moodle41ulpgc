@@ -50,6 +50,24 @@ define('THEME_BOOST_UNION_SETTING_FAVERSION_FA6FREE', 'fa6free');
 define('THEME_BOOST_UNION_SETTING_FAFILES_MANDATORY', 'm');
 define('THEME_BOOST_UNION_SETTING_FAFILES_OPTIONAL', 'o');
 
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_100PX', '100px');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_150PX', '150px');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_200PX', '200px');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_250PX', '250px');
+
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_CENTER', 'center center');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_TOP', 'center top');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_BOTTOM', 'center bottom');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_TOP', 'left top');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_CENTER', 'left center');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_BOTTOM', 'left bottom');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_TOP', 'right top');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_CENTER', 'right center');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_BOTTOM', 'right bottom');
+
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDDARK', 'stackeddark');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDLIGHT', 'stackedlight');
+define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_HEADINGABOVE', 'headingabove');
 
 /**
  * Returns the main SCSS content.
@@ -215,6 +233,11 @@ function theme_boost_union_get_extra_scss($theme) {
     $content .= "background-attachment: fixed;";
     $content .= '}';
 
+    // Note: Boost Union is also capable of overriding the background image in its flavours.
+    // In contrast to the other flavour assets like the favicon overriding, this isn't done here in place as this function
+    // is composing Moodle core CSS which has to remain flavour-independent.
+    // Instead, the flavour is overriding the background image later in flavours/styles.php.
+
     return $content;
 }
 
@@ -241,15 +264,49 @@ function theme_boost_union_get_precompiled_css() {
  * @return bool
  */
 function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $CFG;
+
+    // Serve the files from the admin settings.
     if ($context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'logo' || $filearea === 'backgroundimage' ||
         $filearea === 'loginbackgroundimage' || $filearea === 'favicon' || $filearea === 'additionalresources' ||
-                $filearea === 'customfonts' || $filearea === 'fontawesome')) {
+                $filearea === 'customfonts' || $filearea === 'fontawesome' || $filearea === 'courseheaderimagefallback')) {
         $theme = theme_config::load('boost_union');
         // By default, theme files must be cache-able by both browsers and proxies.
         if (!array_key_exists('cacheability', $options)) {
             $options['cacheability'] = 'public';
         }
         return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
+
+        // Serve the files from the theme flavours.
+    } else if ($filearea === 'flavours_look_logocompact' || $filearea === 'flavours_look_logo' ||
+            $filearea === 'flavours_look_favicon' || $filearea === 'flavours_look_backgroundimage') {
+        // Flavour files should not be top secret.
+        // Even if they apply to particular contexts or cohorts, we do not do any hard checks if a user should be
+        // allowed to request a file.
+        // We just make sure that the forcelogin setting is respected. This is ok as there isn't any possibility
+        // to apply a flavour to the login page / for non-logged-in users at the moment.
+        if ($CFG->forcelogin) {
+            require_login();
+        }
+
+        // Get file storage.
+        $fs = get_file_storage();
+
+        // Get the file from the filestorage.
+        $filename = array_pop($args);
+        array_pop($args); // This is the themerev number in the $args array which is used for browser caching, here we ignore it.
+        $itemid = array_pop($args);
+        if ((!$file = $fs->get_file($context->id, 'theme_boost_union', $filearea, $itemid, '/', $filename)) ||
+                $file->is_directory()) {
+            send_file_not_found();
+        }
+
+        // Unlock session during file serving.
+        \core\session\manager::write_close();
+
+        // Send stored file (and cache it for 90 days, similar to other static assets within Moodle).
+        send_stored_file($file, DAYSECS * 90, 0, $forcedownload, $options);
+
     } else {
         send_file_not_found();
     }
@@ -258,21 +315,30 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
 /**
  * Callback to add head elements.
  *
- * We use this callback to inject the FontAwesome CSS code to the page.
+ * We use this callback to inject the FontAwesome CSS code and the flavour's CSS code to the page.
  *
  * @return string
  */
 function theme_boost_union_before_standard_html_head() {
     global $CFG;
 
-    // Require local library.
-    require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
-
     // Initialize HTML (even though we do not add any HTML at this stage of the implementation).
     $html = '';
 
+    // If another theme than Boost Union is active, return directly.
+    // This is necessary as the before_standard_html_head() callback is called regardless of the active theme.
+    if ($CFG->theme != 'boost_union') {
+        return $html;
+    }
+
+    // Require local library.
+    require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
+
     // Add the FontAwesome icons to the page.
     theme_boost_union_add_fontawesome_to_page();
+
+    // Add the flavour CSS to the page.
+    theme_boost_union_add_flavourcss_to_page();
 
     // Return an empty string to keep the caller happy.
     return $html;

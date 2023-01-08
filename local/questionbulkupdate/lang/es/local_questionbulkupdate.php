@@ -34,13 +34,14 @@ $string['selectcategoryheader'] = 'Seleccionar categoría para actualizar pregun
 $string['updatequestions'] = 'Actualizar preguntas';
 
 // ecastro ULPGC 
-$string['hidden'] = 'Visibilidad';
-$string['hidden_help'] = 'Cambia el estado de visible/oculta de todas las preguntas. 
+$string['status'] = 'Estado';
+$string['status_help'] = 'Cambia el estado de lista/borrador/oculta de todas las preguntas. 
 
 "Invertir" simplemente alterna el estado actual. Si oculta, muetra y al revés. ';
-$string['hiddenhidden'] = 'Ocultar';
-$string['hiddenshow'] = 'Mostrar';
-$string['hiddentoggle'] = 'Invertir';
+$string['statushidden'] = 'Ocultar';
+$string['statusready'] = 'Mostrar';
+$string['statusdraft'] = 'Borrador';
+$string['statustoggle'] = 'Invertir';
 $string['ownership'] = 'Asignación';
 $string['ownership_help'] = 'El usuario al que se atribuye la creación de la pregunta. 
 La operación solo cambia el usuario creador para preguntas que carecen de el o bien ya no está matriculado en el curso,

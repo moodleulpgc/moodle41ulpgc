@@ -57,11 +57,27 @@ class local_unusedquestions_question_bank_search_condition extends core_question
 
     private function init() {
         global $DB;
+        // ecastro ULPGC
+        $questionused = "SELECT 1 
+                                      FROM {question_versions} wv
+                                       JOIN {question_bank_entries} wbe ON wbe.id = wv.questionbankentryid
+                                       JOIN {question_references} wqr ON wqr.questionbankentryid  = wv.questionbankentryid
+                                       JOIN {quiz_slots} ws ON  wqr.itemid = ws.id  AND wqr.questionarea = 'slot' AND wqr.component = 'mod_quiz'                                  
+                                    WHERE wv.questionid = q.id ";
+
+        if ($this->onlyused == self::ONLYUSED) {
+            $this->where = "(EXISTS ( $questionused ))";
+        } else if ($this->onlyused == self::ONLYUNUSED) {
+            $this->where = "(NOT EXISTS ( $questionused ))";
+        }        
+        // ecastro ULPGC
+        /*
         if ($this->onlyused == self::ONLYUSED) {
             $this->where = '(q.id IN (SELECT questionid FROM {quiz_slots}))';
         } else if ($this->onlyused == self::ONLYUNUSED) {
             $this->where = '(q.id NOT IN (SELECT questionid FROM {quiz_slots}))';
         }
+        */
     }
 
 }

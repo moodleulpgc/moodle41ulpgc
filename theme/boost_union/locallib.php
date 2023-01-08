@@ -1084,6 +1084,41 @@ function theme_boost_union_get_fontawesome_checks_templatecontext() {
 }
 
 /**
+ * Helper function to compose the title of an external admin page.
+ * This is adopted from /admin/settings.php and done to make sure that the external admin pages look as similar as possible
+ * to the standard admin pages.
+ *
+ * @param string $pagename The page's name.
+ *
+ * @return string
+ */
+function theme_boost_union_get_externaladminpage_title($pagename) {
+    global $SITE;
+
+    $title = $SITE->shortname.': ';
+    $title .= get_string('administration', 'core').': ';
+    $title .= get_string('appearance', 'core').': ';
+    $title .= get_string('themes', 'core').': ';
+    $title .= get_string('pluginname', 'theme_boost_union').': ';
+    $title .= $pagename;
+
+    return $title;
+}
+
+/**
+ * Helper function to compose the heading of an external admin page.
+ * This is adopted from /admin/settings.php and done to make sure that the external admin pages look as similar as possible
+ * to the standard admin pages.
+ *
+ * @return string
+ */
+function theme_boost_union_get_externaladminpage_heading() {
+    global $SITE;
+
+    return $SITE->fullname;
+}
+
+/**
  * Helper function which adds the CSS files from the fontawesome file area to the Moodle page.
  * This function uses the fontawesome cache definition, i.e. it does not load the files from the filearea directly.
  * It's meant to be called by theme_boost_union_before_standard_html_head() only.
@@ -1123,4 +1158,78 @@ function theme_boost_union_add_fontawesome_to_page() {
             $PAGE->requires->css($facssurl);
         }
     }
+}
+
+/**
+ * Helper function which adds the CSS file from the flavour to the Moodle page.
+ * It's meant to be called by theme_boost_union_before_standard_html_head() only.
+ * *
+ * @throws coding_exception
+ * @throws dml_exception
+ * @throws moodle_exception
+ */
+function theme_boost_union_add_flavourcss_to_page() {
+    global $CFG, $PAGE;
+
+    // Require flavours library.
+    require_once($CFG->dirroot . '/theme/boost_union/flavours/flavourslib.php');
+
+    // If any flavour applies to this page.
+    $flavour = theme_boost_union_get_flavour_which_applies();
+    if ($flavour != null) {
+        // Build the flavour CSS file URL.
+        $flavourcssurl = new moodle_url('/theme/boost_union/flavours/styles.php',
+                array('id' => $flavour->id, 'rev' => theme_get_revision()));
+
+        // Add the CSS file to the page.
+        $PAGE->requires->css($flavourcssurl);
+    }
+}
+
+/**
+ * Helper function which returns the course header image url, picking the current course from the course settings
+ * or the fallback image from the theme.
+ * If no course header image can should be shown for the current course, the function returns null.
+ *
+ * @return null | string
+ */
+function theme_boost_union_get_course_header_image_url() {
+    global $PAGE;
+
+    // If the current course is the frontpage course (which means that we are not within any real course),
+    // directly return null.
+    if (isset($PAGE->course->id) && $PAGE->course->id == SITEID) {
+        return null;
+    }
+
+    // Get the course image.
+    $courseimage = \core_course\external\course_summary_exporter::get_course_image($PAGE->course);
+
+    // If the course has a course image.
+    if ($courseimage) {
+        // Then return it directly.
+        return $courseimage;
+
+        // Otherwise, if a fallback image is configured.
+    } else if (get_config('theme_boost_union', 'courseheaderimagefallback')) {
+        // Get the system context.
+        $systemcontext = \context_system::instance();
+
+        // Get filearea.
+        $fs = get_file_storage();
+
+        // Get all files from filearea.
+        $files = $fs->get_area_files($systemcontext->id, 'theme_boost_union', 'courseheaderimagefallback',
+            false, 'itemid', false);
+
+        // Just pick the first file - we are sure that there is just one file.
+        $file = reset($files);
+
+        // Build and return the image URL.
+        return moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
+            $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+    }
+
+    // As no picture was found, return null.
+    return null;
 }

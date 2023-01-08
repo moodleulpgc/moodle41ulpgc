@@ -24,6 +24,11 @@
 
 namespace local_questionbulkupdate;
 
+// ecastro ULPGC
+use core_question\local\bank\question_version_status;
+use qbank_editquestion\external\update_question_version_status;
+// ecastro ULPGC
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -120,13 +125,30 @@ class helper {
     protected function update_questions_in_category($categoryid, $context, $includingsubcategories, $onlymine, $data) {
         global $DB, $USER;
 
+
         $conditions = [
             'category' => $categoryid,
         ];
+        /*
         if ($onlymine) {
             $conditions['createdby'] = $USER->id;
         }
         $questions = $DB->get_recordset('question', $conditions);
+        */
+        //ecastro ULPGC
+        $creatorwhere = '';
+        if ($onlymine) {
+            $conditions['createdby'] = $USER->id;
+            $creatorwhere = ' AND q.createdby = :createdby ';
+        }
+        
+        $sql = "SELECT q.*, qb.questioncategoryid AS category, qv.version, qv.status 
+                      FROM {question} q 
+                       JOIN {question_versions} qv ON qv.questionid = q.id 
+                       JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+                    WHERE  qb.questioncategoryid = :category $creatorwhere ";
+        $questions = $DB->get_recordset_sql($sql, $conditions);        
+        
         $count = 0;
         foreach ($questions as $question) {
             $this->update_question($question, $data, $context);
@@ -176,7 +198,13 @@ class helper {
             if (property_exists($question, $key)) {
                 // ecastro ULPGC
                 if($value == 'toggle') {
-                    $value = !$question->$key;
+                    if($question->$key == question_version_status::QUESTION_STATUS_READY) {
+                        $value = question_version_status::QUESTION_STATUS_HIDDEN;
+                    } elseif($question->$key == question_version_status::QUESTION_STATUS_HIDDEN) {
+                        $value = question_version_status::QUESTION_STATUS_READY;
+                    } else {
+                        $value = $question->$key;
+                    }
                 }
                 // ecastro ULPGC
                 $question->$key = $value;
@@ -202,8 +230,15 @@ class helper {
             $question->timemodified = time();
             $question->modifiedby = $USER->id;
             // Give the question a unique version stamp determined by question_hash().
-            $question->version = question_hash($question);
+            //$question->version = question_hash($question); // ecastro ULPGC no more 
+            
             $DB->update_record('question', $question);
+
+            if(property_exists($data, 'status')) {
+                 $result = update_question_version_status::execute($question->id, $question->status);
+            }
+            
+            
             // Purge this question from the cache.
             \question_bank::notify_question_edited($question->id);
             // Trigger event.

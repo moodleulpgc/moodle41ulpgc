@@ -74,6 +74,13 @@ function local_questionbulkupdate_extend_navigation_course(navigation_node $cour
         null,
         'questionbulkupdate'
     );
+
+    //ecastro ULPGC
+    $url = new moodle_url('/local/questionbulkupdate/bulkupdate.php', array('courseid' => $context->instanceid));
+    $newnode = navigation_node::create(get_string('navandheader', 'local_questionbulkupdate'),
+                $url, navigation_node::TYPE_SETTING, null, 'cquestionbulkupdate');
+    $coursenode->add_node($newnode, 'filtermanagement');    
+
 }
 
 /**
@@ -116,4 +123,11 @@ function local_questionbulkupdate_extend_settings_navigation(navigation_node $na
         null,
         'questionbulkupdate'
     );
+
+    //ecastro ULPGC
+    $url = new moodle_url('/local/questionbulkupdate/bulkupdate.php', array('courseid' => $context->instanceid));
+    $newnode = navigation_node::create(get_string('navandheader', 'local_questionbulkupdate'),
+                $url, navigation_node::TYPE_SETTING, null, 'cquestionbulkupdate');
+    $parentnode->add_node($newnode, 'contentbank');  
+    
 }

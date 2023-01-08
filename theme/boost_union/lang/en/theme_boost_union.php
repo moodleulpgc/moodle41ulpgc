@@ -105,6 +105,25 @@ $string['activityiconcolorcontentsetting_desc'] = 'The activity icon color for "
 $string['activityiconcolorinterfacesetting'] = 'Activity icon color for "Interface"';
 $string['activityiconcolorinterfacesetting_desc'] = 'The activity icon color for "Interface"';
 
+// Settings: Course tab.
+$string['coursetab'] = 'Course';
+// ... Section: Course header.
+$string['courseheaderheading'] = 'Course Header';
+// ... ... Setting: Course header.
+$string['courseheaderimageenabled'] = 'Display the course image in the course header';
+$string['courseheaderimageenabled_desc'] = 'When enabled, the course image (which can be uploaded in a course\'s course settings) is displayed in the header of a course. The course images are shown there in addition to the \'My courses\' page where they are always shown.';
+$string['courseheaderimagefallback'] = 'Fallback course header image';
+$string['courseheaderimagefallback_desc'] = 'If you upload an image in this setting, it is used as fallback image and is displayed in the course header if no course image is uploaded in a particular course\'s course settings. If you do not upload an image here, a course header image is only shown in a particular course if a course image is uploaded in this particular course\'s course settings.';
+$string['courseheaderimageheight'] = 'Course header image height';
+$string['courseheaderimageheight_desc'] = 'With this setting, you control the height of the presented course header image.';
+$string['courseheaderimagelayout'] = 'Course header image layout';
+$string['courseheaderimagelayout_desc'] = 'With this setting, you control the layout of the course header image and the course title.';
+$string['courseheaderimagelayoutstackeddark'] = 'Course title stacked on course image (white font color for dark background images)';
+$string['courseheaderimagelayoutstackedlight'] = 'Course title stacked on course image (black font color for light background images)';
+$string['courseheaderimagelayoutheadingabove'] = 'Course title above of course image';
+$string['courseheaderimageposition'] = 'Course header image position';
+$string['courseheaderimageposition_desc'] = 'With this setting, you control the positioning of the course header image within the course header image container. The first value is the horizontal position, the second value is the vertical position.';
+
 // Settings: E-Mail branding tab.
 $string['emailbrandingtab'] = 'E-Mail branding';
 $string['templateemailhtmlprefix'] = '';
@@ -413,15 +432,60 @@ $string['showhintcourseguestaccesslink'] = 'To have full access to the course, y
 // ... ... Setting: Show hint for unrestricted self enrolment.
 $string['showhintcourseselfenrolsetting'] = 'Show hint for self enrolment without enrolment key';
 $string['showhintcourseselfenrolsetting_desc'] = 'With this setting a hint will appear in the course header if the course is visible and an enrolment without enrolment key is currently possible.';
-$string['showhintcourseselfenrolstartcurrently'] = 'This course is currently visible and <strong>self enrolment without enrolment key</strong> is currently possible.';
-$string['showhintcourseselfenrolstartfuture'] = 'This course is currently visible and <strong>self enrolment without enrolment key</strong> is planned to become possible.';
-$string['showhintcourseselfenrolunlimited'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment infinitely.';
+$string['showhintcourseselfenrolstartcurrently'] = 'This course is currently visible to everyone and <strong>self enrolment without an enrolment key</strong> is possible.';
+$string['showhintcourseselfenrolstartfuture'] = 'This course is currently visible to everyone and <strong>self enrolment without an enrolment key</strong> is planned to become possible.';
+$string['showhintcourseselfenrolunlimited'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment indefinitely.';
 $string['showhintcourseselfenroluntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment until {$a->until}.';
 $string['showhintcourseselfenrolfrom'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment from {$a->from} on.';
 $string['showhintcourseselfenrolsince'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment currently.';
 $string['showhintcourseselfenrolfromuntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment from {$a->from} until {$a->until}.';
 $string['showhintcourseselfenrolsinceuntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment until {$a->until}.';
-$string['showhintcourseselfenrolinstancecallforaction'] = 'If you don\'t want that any Moodle user can enrol into this course freely, please restrict the self enrolment settings.';
+$string['showhintcourseselfenrolinstancecallforaction'] = 'If you don\'t want any Moodle user to have access to this course freely, please restrict the self enrolment settings.';
+
+// Settings: Flavours page.
+$string['configtitleflavours'] = 'Flavours';
+$string['flavoursappliesto'] = 'Applies to';
+$string['flavoursapplytocategories'] = 'Apply to course categories';
+$string['flavoursapplytocategories_help'] = 'Here, you define if this flavour should be applied to course categories.';
+$string['flavoursapplytocategories_ids'] = 'Course categories';
+$string['flavoursapplytocategories_ids_help'] = 'Here, you define one or more particular course categories which this flavour should be applied to. As soon as the rendered Moodle page is located within one of the configured course categories, the flavour is applied.';
+$string['flavoursapplytocohorts'] = 'Apply to cohorts';
+$string['flavoursapplytocohorts_help'] = 'Here, you define if this flavour should be applied to cohorts.';
+$string['flavoursapplytocohorts_ids'] = 'Cohorts';
+$string['flavoursapplytocohorts_ids_help'] = 'Here, you define one or more particular cohorts which this flavour should be applied to. As soon as the user is a member of one of the configured cohorts, the flavour is applied.<br /><br />Please note that, if you define more than one cohorts, there is no need for the user to be a member of all of them at the same time.<br /><br />Please also note that at the current state of implementation category cohorts are treated just as if they were system cohorts.';
+$string['flavoursbackgroundimage'] = 'Background image';
+$string['flavoursbackgroundimage_help'] = 'With this setting, the flavour will override the background image which is configured in Boost Union\'s look settings.';
+$string['flavoursbacktooverview'] = 'Back to flavour overview';
+$string['flavourscreateflavour'] = 'Create flavour';
+$string['flavourscustomcss'] = 'Custom CSS';
+$string['flavourscustomcss_help'] = 'With this setting, you can write custom CSS for the flavour. It will be appended to the stack of CSS code which is shipped to the browser as soon as the flavour applies. Please note that in the current state of implementation, this setting only allows the usage of custom CSS, not SCSS.';
+$string['flavoursdelete'] = 'Delete';
+$string['flavoursdeleteflavour'] = 'Delete flavour';
+$string['flavoursdeleteconfirmation'] = 'Do you really want to delete the flavour <em>{$a}</em>?';
+$string['flavoursdescription'] = 'Description';
+$string['flavoursdescription_help'] = 'The flavour\'s description is just used internally to allow you to identify a particular flavour in the list of flavours.';
+$string['flavoursedit'] = 'Edit';
+$string['flavourseditflavour'] = 'Edit flavour';
+$string['flavoursfavicon'] = 'Favicon';
+$string['flavoursfavicon_help'] = 'With this setting, the flavour will override the favicon which is configured in Boost Union\'s look settings.';
+$string['flavoursflavours'] = 'Flavours';
+$string['flavoursgeneralsettings'] = 'General settings';
+$string['flavoursincludesubcategories'] = 'Include subcategories';
+$string['flavoursincludesubcategories_help'] = 'If checked, the flavour will also be applied to the subcategories of the chosen categories.';
+$string['flavourslogo'] = 'Logo';
+$string['flavourslogo_help'] = 'With this setting, the flavour will override the logo which is configured in Moodle\'s global appearance settings.';
+$string['flavourslogocompact'] = 'Compact logo';
+$string['flavourslogocompact_help'] = 'With this setting, the flavour will override the logo which is configured in Moodle\'s global appearance settings.';
+$string['flavoursnotificationcreated'] = 'The flavour was created successfully';
+$string['flavoursnotificationdeleted'] = 'The flavour was deleted successfully';
+$string['flavoursnotificationedited'] = 'The flavour was edited successfully';
+$string['flavoursnothingtodisplay'] = 'There aren\'t any flavours created yet. Please create your first flavour to get things going.';
+$string['flavoursoverview_desc'] = '<p>Boost Union\'s flavours offer a possibility to override particular Moodle look & feel settings in particular contexts. On this page, you can create and manage flavours.</p><p>Within each flavour, you define if it should be applied to particular course categories or particular cohorts. Afterwards, during each Moodle page rendering, Boost Union checks if any flavour applies. Please note that, for each Moodle page rendering, only the first matching flavour in the list is applied and the remaining flavours are ignored. Thus, the order of the flavours on this page is key.</p><p>Please note as well that after each change which you make to the set of flavours, the theme cache is purged. This is necessary to make sure that all assets are shipped properly and up-to-date to the browser.</p>';
+$string['flavourspreview'] = 'Preview';
+$string['flavourspreviewflavour'] = 'Preview flavour';
+$string['flavourspreviewblindtext'] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nunc id cursus metus aliquam eleifend mi in nulla. Felis imperdiet proin fermentum leo vel orci porta. Sed nisi lacus sed viverra tellus in hac habitasse. Vivamus arcu felis bibendum ut. Nisi porta lorem mollis aliquam ut porttitor. Odio euismod lacinia at quis risus sed vulputate odio. Sed felis eget velit aliquet sagittis id consectetur purus. Nec ullamcorper sit amet risus nullam eget. Pellentesque sit amet porttitor eget dolor. Cursus mattis molestie a iaculis at erat pellentesque.';
+$string['flavourstitle'] = 'Title';
+$string['flavourstitle_help'] = 'The flavour\'s title is just used internally to allow you to document a particular flavour in the list of flavours.';
 
 // Privacy API.
 $string['privacy:metadata'] = 'The Boost Union theme does not store any personal data about any user.';
@@ -433,3 +497,4 @@ $string['boost_union:viewhintinhiddencourse'] = 'To be able to see a hint in a h
 
 // Caches.
 $string['cachedef_fontawesome'] = 'FontAwesome files (which are uploaded in the Boost Union settings)';
+$string['cachedef_flavours'] = 'Flavours which apply to a given page category ID for the current user';

@@ -23,6 +23,7 @@
  */
 
 namespace local_questionbulkupdate;
+use  \core_question\local\bank\question_version_status;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -255,17 +256,18 @@ class form extends \moodleform {
     
         // visibility 
         $hiddenoptions = [helper::DO_NOT_CHANGE => $this->strdonotchange, 
-                            1 => get_string('hiddenhidden', 'local_questionbulkupdate'),
-                            0 => get_string('hiddenshow', 'local_questionbulkupdate'),
-                            'toggle' => get_string('hiddentoggle', 'local_questionbulkupdate'), 
+                            question_version_status::QUESTION_STATUS_HIDDEN => get_string('statushidden', 'local_questionbulkupdate'),
+                            question_version_status::QUESTION_STATUS_READY => get_string('statusready', 'local_questionbulkupdate'),
+                            question_version_status::QUESTION_STATUS_DRAFT => get_string('statusdraft', 'local_questionbulkupdate'),
+                            'toggle' => get_string('statustoggle', 'local_questionbulkupdate'), 
                          ];
         $mform->addElement(
             'select',
-            'hidden',
-            get_string('hidden', 'local_questionbulkupdate'),
+            'status',
+            get_string('status', 'local_questionbulkupdate'),
             $hiddenoptions);
-        $mform->setDefault('hidden', helper::DO_NOT_CHANGE);   
-        $mform->addHelpButton('hidden', 'hidden', 'local_questionbulkupdate');
+        $mform->setDefault('status', helper::DO_NOT_CHANGE);   
+        $mform->addHelpButton('status', 'status', 'local_questionbulkupdate');
         
         // ownership  
         if(has_capability('moodle/question:editall', $context)) { 

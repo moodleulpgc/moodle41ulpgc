@@ -32,13 +32,14 @@ $string['selectcategoryheader'] = 'Select category to update questions';
 $string['updatequestions'] = 'Update questions';
 
 // ecastro ULPGC 
-$string['hidden'] = 'Visibility status';
-$string['hidden_help'] = 'Change hidden/visible status for all questions. 
+$string['status'] = 'Visibility status';
+$string['status_help'] = 'Change ready/draft/hidden status for all questions. 
 
 Toggle will invert the current status. ';
-$string['hiddenhidden'] = 'hidden';
-$string['hiddenshow'] = 'visible';
-$string['hiddentoggle'] = 'toggle';
+$string['statusdraft'] = 'Draft';
+$string['statushidden'] = 'Hidden';
+$string['statusready'] = 'Ready';
+$string['statustoggle'] = 'toggle';
 $string['ownership'] = 'Ownership';
 $string['ownership_help'] = 'The user question creation wil be attributed to. 
 The tool only changes ownership of questions that do not have an owner, 
