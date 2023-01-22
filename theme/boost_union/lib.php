@@ -45,29 +45,41 @@ define('THEME_BOOST_UNION_SETTING_INFOBANNERPAGES_LOGIN', 'login');
 define('THEME_BOOST_UNION_SETTING_INFOBANNERMODE_PERPETUAL', 'perp');
 define('THEME_BOOST_UNION_SETTING_INFOBANNERMODE_TIMEBASED', 'time');
 
+define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_COUNT', 12);
+define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_COLUMN_COUNT', 4);
+define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_FRONTPAGEPOSITION_BEFORE', 1);
+define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_FRONTPAGEPOSITION_AFTER', 2);
+
 define('THEME_BOOST_UNION_SETTING_FAVERSION_NONE', 'none');
 define('THEME_BOOST_UNION_SETTING_FAVERSION_FA6FREE', 'fa6free');
 define('THEME_BOOST_UNION_SETTING_FAFILES_MANDATORY', 'm');
 define('THEME_BOOST_UNION_SETTING_FAFILES_OPTIONAL', 'o');
 
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_100PX', '100px');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_150PX', '150px');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_200PX', '200px');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEHEIGHT_250PX', '250px');
+define('THEME_BOOST_UNION_SETTING_HEIGHT_100PX', '100px');
+define('THEME_BOOST_UNION_SETTING_HEIGHT_150PX', '150px');
+define('THEME_BOOST_UNION_SETTING_HEIGHT_200PX', '200px');
+define('THEME_BOOST_UNION_SETTING_HEIGHT_250PX', '250px');
 
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_CENTER', 'center center');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_TOP', 'center top');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_CENTER_BOTTOM', 'center bottom');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_TOP', 'left top');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_CENTER', 'left center');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_LEFT_BOTTOM', 'left bottom');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_TOP', 'right top');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_CENTER', 'right center');
-define('THEME_BOOST_UNION_SETTING_COURSEIMAGEPOSITION_RIGHT_BOTTOM', 'right bottom');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_CENTER_CENTER', 'center center');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_CENTER_TOP', 'center top');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_CENTER_BOTTOM', 'center bottom');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_LEFT_TOP', 'left top');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_LEFT_CENTER', 'left center');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_LEFT_BOTTOM', 'left bottom');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_RIGHT_TOP', 'right top');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_RIGHT_CENTER', 'right center');
+define('THEME_BOOST_UNION_SETTING_IMAGEPOSITION_RIGHT_BOTTOM', 'right bottom');
 
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDDARK', 'stackeddark');
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDLIGHT', 'stackedlight');
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_HEADINGABOVE', 'headingabove');
+
+define('THEME_BOOST_UNION_SETTING_LINKTARGET_SAMEWINDOW', 'same');
+define('THEME_BOOST_UNION_SETTING_LINKTARGET_NEWTAB', 'new');
+
+define('THEME_BOOST_UNION_SETTING_LOGINFORMPOS_CENTER', 'center');
+define('THEME_BOOST_UNION_SETTING_LOGINFORMPOS_LEFT', 'left');
+define('THEME_BOOST_UNION_SETTING_LOGINFORMPOS_RIGHT', 'right');
 
 /**
  * Returns the main SCSS content.
@@ -248,7 +260,8 @@ function theme_boost_union_get_extra_scss($theme) {
  */
 function theme_boost_union_get_precompiled_css() {
     global $CFG;
-    return file_get_contents($CFG->dirroot . '/theme/boost_union/style/moodle.css');
+    // Get the fallback CSS file from Boost Core as long as Boost Union does not use a fallback file of its own.
+    return file_get_contents($CFG->dirroot . '/theme/boost/style/moodle.css');
 }
 
 /**
@@ -269,7 +282,8 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
     // Serve the files from the admin settings.
     if ($context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'logo' || $filearea === 'backgroundimage' ||
         $filearea === 'loginbackgroundimage' || $filearea === 'favicon' || $filearea === 'additionalresources' ||
-                $filearea === 'customfonts' || $filearea === 'fontawesome' || $filearea === 'courseheaderimagefallback')) {
+                $filearea === 'customfonts' || $filearea === 'fontawesome' || $filearea === 'courseheaderimagefallback' ||
+                preg_match("/tilebackgroundimage[2-9]|1[0-2]?/", $filearea))) {
         $theme = theme_config::load('boost_union');
         // By default, theme files must be cache-able by both browsers and proxies.
         if (!array_key_exists('cacheability', $options)) {

@@ -21,6 +21,8 @@ On the other hand, many Moodle installations share the same basic functional nee
 
 One highlight is the main design principle of Boost Union: As soon as it is activated on a Moodle site, it does not change anything yet and simply behaves as Boost from Moodle core does. The admin can enable and configure only the theme features he needs and does not need to care about side effects from other, disabled theme features.
 
+As a side note, it is quite easy to create a grandchild theme of Boost Union. That way, you can benefit from all the / only the Boost Union features you need, but you can also add additional local features or settings (that are not interesting as a pull request or feature request for the whole Boost Union community) to your local grandchild theme at the same time.
+
 
 Installation
 ------------
@@ -103,6 +105,22 @@ Here, you can upload a custom image (.ico or .png format) that the browser will 
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
 Please note: This will not interfere with the setting "theme_boost_union | loginbackgroundimage" which means that the pictures uploaded here will be shown on all pages except the login page.
 
+##### Brand colors
+
+###### Brand color
+
+This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
+
+##### Bootstrap colors
+
+With these settings, you can overwrite the Bootstrap colors which are used within the Moodle GUI.
+
+##### Activity icon colors
+
+With these settings, you can overwrite the activity icon colors which are used within courses.
+
+#### Tab "Login page"
+
 ##### Login page background images
 
 ###### Login page background images
@@ -120,21 +138,15 @@ For example:
 
 As text color, you can use the values "dark" or "light".
 
-You can declare texts for a arbitrary amount of your uploaded login background images. The texts will be added only to those images that match their filename with the identifier declared in this setting.
+You can declare texts for an arbitrary amount of your uploaded login background images. The texts will be added only to those images that match their filename with the identifier declared in this setting.
 
-##### Brand colors
+##### Login form position
 
-###### Brand color
+With this setting, you can optimize the login form to fit to a greater variety of background images. By default, the login form is displayed centered on the login page. Alternatively, you can move it to the left or to the right of the login page to let other parts of the background image shine through. Of course, you can also change this setting if no background images are uploaded at all.
 
-This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
+##### Login form transparency
 
-##### Bootstrap colors
-
-With these settings, you can overwrite the Bootstrap colors which are used within the Moodle GUI.
-
-##### Activity icon colors
-
-With these settings, you can overwrite the activity icon colors which are used within courses.
+With this setting, you can make the login form slightly transparent to let the background image shine through even more.
 
 #### Tab "Course"
 
@@ -261,6 +273,10 @@ With these settings, you can add rich text content which will be shown on a main
 #### Tab "Information banners"
 
 In this tab, you can enable and configure multiple information banners to be shown on selected pages.
+
+#### Tab "Advertisement tiles"
+
+In this tab, you can enable and configure multiple advertisement tiles to be shown on site home.
 
 ### Settings page "Functionality"
 
@@ -407,10 +423,12 @@ This theme is a collaboration result of multiple organisations.
 Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
 
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
+* Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
+* moodleSCHULE e.V., Ralf Krause: German translation and curation
 * Ruhr University Bochum, Melanie Treitinger: Code
 * RWTH Aachen, Josha Bartsch: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
 * Zurich University of Applied Sciences (ZHAW): Funding
 
-Additionally, we thank all other contributors who contributed ideas, feedback and code snippets within the Github issues and pull requests.
+Additionally, we thank all other contributors who contributed ideas, feedback and code snippets within the Github issues and pull requests as well as all contributors who contributed additional translations in AMOS, the Moodle translation tool.

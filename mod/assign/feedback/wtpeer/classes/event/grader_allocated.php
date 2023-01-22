@@ -46,7 +46,8 @@ class grader_allocated extends \mod_assign\event\base {
      * Init method.
      */
     protected function init() {
-        parent::init();
+        $this->data['crud'] = 'c';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'assignfeedback_wtpeer_allocs';
     }
 

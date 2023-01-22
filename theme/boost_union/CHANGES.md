@@ -4,7 +4,21 @@ moodle-theme_boost_union
 Changes
 -------
 
-### Unreleased
+### v4.0-r11
+
+* 2023-01-21 - Improvement: Add note about grandchild themes to the README file, solves #122.
+* 2023-01-16 - Improvement: Remove Boost Union's own fallback CSS file for now, relates to #89.
+
+### v4.0-r10
+
+* 2023-01-15 - Improvement: Trim 'dark' and 'light' for login bg images, solves #192.
+* 2023-01-15 - Improvement: Note to assure matching login image/login image text.
+* 2023-01-15 - Feature: Login page layouts, solves #37.
+* 2023-01-14 - Tests: Add Behat test steps for multilanguage static page content.
+* 2023-01-13 - Improvement: Static pages headings and the links to the static pages now support multilang, solves #188.
+* 2023-01-09 - Feature: Add advertisement tiles which can be displayed on site home, solves #161.
+* 2023-01-08 - Tests: Avoid to burn too much CPU time by testing all available course image options.
+* 2023-01-08 - Bugfix: Infobanners were sometimes incorrectly ordered if the same order was given to multiple banners, solves #181.
 * 2023-01-06 - Improvement: Small language tweaks in self enrolment course banners
 * 2023-01-05 - Bugfix: Unparsable JSON in templates/core/full_header.mustache
 

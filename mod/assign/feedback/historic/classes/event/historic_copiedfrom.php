@@ -34,7 +34,7 @@ class historic_copiedfrom extends base {
 
         $otherassign = $this->other['related'];
         return "The user with id '$this->userid' has Copied grades into Historic with course module id '$this->contextinstanceid'".
-        .$otherassign;
+                        $otherassign;
     }
 
     /**

@@ -137,7 +137,7 @@ class mod_hotquestion {
             } else {
                 $DB->delete_records('hotquestion_votes', array('question' => $question->id, 'voter' => $USER->id));
             }
-            // Update completion state for current user.
+            // Update viewed completion state for current user.
             $this->update_completion_state();
         }
         // Contrib by ecastro ULPGC, update grades for questions author and voters.
@@ -178,7 +178,7 @@ class mod_hotquestion {
             } else {
                 $DB->delete_records('hotquestion_votes', array('question' => $question->id, 'voter' => $USER->id));
             }
-            // Update completion state for current user.
+            // Update viewed completion state for current user.
             $this->update_completion_state();
             // Contrib by ecastro ULPGC, update grades for question author and voters.
             $this->update_users_grades([$question->userid, $USER->id]);

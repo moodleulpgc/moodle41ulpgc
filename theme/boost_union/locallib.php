@@ -300,7 +300,8 @@ function theme_boost_union_get_staticpage_link($page) {
  */
 function theme_boost_union_get_staticpage_pagetitle($page) {
     // Get the configured page title.
-    $pagetitleconfig = get_config('theme_boost_union', $page.'pagetitle');
+    $pagetitleconfig = format_string(get_config('theme_boost_union', $page.'pagetitle'), true,
+    ['context' => \context_system::instance()]);
 
     // If there is a string configured.
     if ($pagetitleconfig) {
@@ -402,22 +403,23 @@ function theme_boost_union_infobanner_is_shown_on_page($bannerno) {
 }
 
 /**
- * Helper function to compare two infobanner orders.
+ * Helper function to compare either infobanner or tiles orders.
  *
  * @param int $a The first value
  * @param int $b The second value
  *
  * @return boolean.
  */
-function theme_boost_union_infobanner_compare_order($a, $b) {
+function theme_boost_union_compare_order($a, $b) {
+    // If the same 'order' attribute is given to both items.
     if ($a->order == $b->order) {
-        // Basically, we should return 0 in this case.
-        // But due to the way how usort works internally, info banners with the same order would end up in the result array
-        // in reversed order (compared to the numbering order on the theme settings page).
-        // Thus, we do a little trick and tell the sorting algorithm that the first item is greater than the second one
-        // by returning a positive number.
-        return 1;
+        // We have to compare the 'no' attribute.
+        // This way, we make sure that the item which is presented first in the admin settings is still placed first in the
+        // ordered list even if the same order is configured.
+        return ($a->no < $b->no) ? -1 : 1;
     }
+
+    // Otherwise, compare both items based on their 'order' attribute.
     return ($a->order < $b->order) ? -1 : 1;
 }
 
@@ -539,6 +541,53 @@ function theme_boost_union_get_loginbackgroundimage_files() {
 }
 
 /**
+ *
+ * Get the advertisement tile's background image URL from the filearea 'tilebackgroundimage'.tileno.
+ *
+ * Note:
+ * Calling this function for each tile separately is maybe not performant. Originally it was planed to put
+ * all files in one filearea. However, at the time of development
+ * https://github.com/moodle/moodle/blob/master/lib/outputlib.php#L2062
+ * did not support itemids in setting-files of themes.
+ *
+ * @param int $tileno The tile number.
+ * @return string|null
+ */
+function theme_boost_union_get_urloftilebackgroundimage($tileno) {
+    // If the tile number is apparently not valid, return.
+    // Note: We just check the tile's number, we do not check if the tile is enabled or not.
+    if ($tileno < 0 || $tileno > THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_COUNT) {
+        return null;
+    }
+
+    // Get the background image config for this tile.
+    $bgconfig = get_config('theme_boost_union', 'tile'.$tileno.'backgroundimage');
+
+    // If a background image is configured.
+    if (!empty($bgconfig)) {
+        // Get the system context.
+        $systemcontext = context_system::instance();
+
+        // Get filearea.
+        $fs = get_file_storage();
+
+        // Get all files from filearea.
+        $files = $fs->get_area_files($systemcontext->id, 'theme_boost_union', 'tilebackgroundimage'.$tileno,
+                false, 'itemid', false);
+
+        // Just pick the first file - we are sure that there is just one file.
+        $file = reset($files);
+
+        // Build and return the image URL.
+        return moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
+                $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+    }
+
+    // As no image was found, return null.
+    return null;
+}
+
+/**
  * Add background images from setting 'loginbackgroundimage' to SCSS.
  *
  * @return string
@@ -598,14 +647,17 @@ function theme_boost_union_get_loginbackgroundimage_text() {
                 continue;
             }
             // Compare the filenames for a match.
-            if (strcmp($filename, $settings[0]) == 0) {
+            if (strcmp($filename, trim($settings[0])) == 0) {
+                // Trim the second parameter as we need it more than once.
+                $settings[2] = trim($settings[2]);
+
                 // If the color value is not acceptable, replace it with dark.
                 if ($settings[2] != 'dark' && $settings[2] != 'light') {
                     $settings[2] = 'dark';
                 }
 
                 // Return the text + text color that belongs to the randomly selected image.
-                return array(format_string($settings[1]), $settings[2]);
+                return array(format_string(trim($settings[1])), $settings[2]);
             }
         }
     }

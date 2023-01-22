@@ -1,4 +1,32 @@
 /*=======================================
+ * Settings: Look -> Login page
+ ======================================*/
+
+/*---------------------------------------
+ * Setting: Login form position
+ --------------------------------------*/
+
+/* Move the login window to the side based on the theme settings.
+   While the classes login-wrapper-left and login-wrapper-right are set here,
+   the class login-wrapper-center is not set here as the login form is already centered by Moodle core. */
+.login-wrapper.login-wrapper-left {
+    justify-content: left;
+}
+.login-wrapper.login-wrapper-right {
+    justify-content: right;
+}
+
+/*---------------------------------------
+ * Setting: Login form transparency
+ --------------------------------------*/
+
+/* Make background of login panel slightly transparent. */
+.login-container.login-container-80t {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+
+/*=======================================
  * Settings: Look -> Course
  ======================================*/
 
@@ -223,6 +251,26 @@ body.pagelayout-login:not(.loginbackgroundimage) #footnote {
 /* Remove margin after last paragraph for a nicer look. */
 .themeboostunioninfobanner p:last-child {
     margin-bottom: 0;
+}
+
+/*=======================================
+ * Settings: Content -> Advertisement tiles.
+ ======================================*/
+
+/* Remove horizontal paddings on the tile container on smaller screens to align it with the main frontpage content. */
+@include media-breakpoint-down(sm) {
+    #themeboostunionadvtiles {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* Style the advertisement tile cards. */
+#themeboostunionadvtiles [class*="col-"] .card {
+    background-size: cover;
+    /* d-flex align-items-stretch align-self-stretch classes in mustache template require to set width to inherit
+       (Otherwise width is flexible dependent on content). */
+    width: inherit;
 }
 
 
