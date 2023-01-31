@@ -1,0 +1,338 @@
+Entrando 'admin/tool/advuserbulk'
+En la rama MDL_23
+Tu rama está adelantada a 'origin/MDL_23' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'admin/tool/crawler'
+En la rama MOODLE_310_STABLE
+Tu rama está actualizada con 'origin/MOODLE_310_STABLE'.
+
+Entrando 'admin/tool/lockstats'
+En la rama MOODLE_310_STABLE
+Tu rama está actualizada con 'origin/MOODLE_310_STABLE'.
+
+Entrando 'admin/tool/objectfs'
+En la rama MOODLE_310_STABLE
+Tu rama está actualizada con 'origin/MOODLE_310_STABLE'.
+
+Entrando 'admin/tool/userdebug'
+En la rama MOODLE_39_STABLE
+Tu rama está actualizada con 'origin/MOODLE_39_STABLE'.
+
+Entrando 'auth/basic'
+En la rama MOODLE_310_STABLE
+Tu rama está actualizada con 'origin/MOODLE_310_STABLE'.
+
+Entrando 'auth/oidc'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+Entrando 'blocks/configurable_reports'
+En la rama MOODLE_36_STABLE
+Tu rama está actualizada con 'origin/MOODLE_36_STABLE'.
+
+Entrando 'blocks/microsoft'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+
+Entrando 'blocks/remote_courses'
+Tu rama está adelantada a 'origin/main' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'blocks/section'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'course/format/flexsections'
+En la rama MOODLE_400_STABLE
+Tu rama está actualizada con 'origin/MOODLE_400_STABLE'.
+
+
+Entrando 'course/format/menutopic'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+
+Entrando 'enrol/groupsync'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+
+Entrando 'enrol/waitlist'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'filter/jmol'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'filter/oembed'
+En la rama MOODLE_311_STABLE
+Tu rama está actualizada con 'origin/MOODLE_311_STABLE'.
+
+Entrando 'grade/grading/form/checklist'
+
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'lib/editor/atto/plugins/generico'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'lib/editor/atto/plugins/styles'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'local/o365'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+Entrando 'local/onenote'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+Entrando 'local/questionbulkupdate'
+Tu rama está adelantada a 'origin/master' por 4 commits.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'local/searchquestions'
+
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'local/unusedquestions'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'local/vflibs'
+En la rama MOODLE_38_WORKING
+Tu rama está actualizada con 'origin/MOODLE_38_WORKING'.
+
+Entrando 'local/webhooks'
+En la rama v3.0.0-stable
+Tu rama está actualizada con 'origin/v3.0.0-stable'.
+
+
+
+Entrando 'mod/activequiz'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/assign/feedback/onenote'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+
+Entrando 'mod/assign/feedback/solutionsheet'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'mod/assign/submission/geogebra'
+En la rama MOODLE_27_STABLE
+Tu rama está actualizada con 'origin/MOODLE_27_STABLE'.
+
+
+Entrando 'mod/assign/submission/gradereviews'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/assign/submission/onenote'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+
+Entrando 'mod/attendance'
+En la rama MOODLE_401_STABLE
+Tu rama está adelantada a 'origin/MOODLE_401_STABLE' por 4 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+
+Entrando 'mod/bootstrapelements'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/customcert'
+En la rama MOODLE_400_STABLE
+Tu rama está actualizada con 'origin/MOODLE_400_STABLE'.
+
+
+Entrando 'mod/datalynx'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/dialogue'
+En la rama MOODLE_400_STABLE
+Tu rama está adelantada a 'origin/MOODLE_400_STABLE' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/game'
+En la rama MOODLE_20_STABLE
+Tu rama está actualizada con 'origin/MOODLE_20_STABLE'.
+
+
+
+Entrando 'mod/hotquestion'
+Tu rama está adelantada a 'origin/master' por 5 commits.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'mod/moodleoverflow'
+Tu rama está adelantada a 'origin/master' por 3 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/offlinequiz'
+
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'mod/pdfannotator'
+Tu rama está adelantada a 'origin/main' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/qcreate'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/quiz/accessrule/delayed'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+
+Entrando 'mod/quiz/accessrule/offlinemode'
+Tu rama está adelantada a 'origin/main' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/quiz/report/mcq'
+En la rama MOODLE_27_STABLE
+Tu rama está adelantada a 'origin/MOODLE_27_STABLE' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/scheduler'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'mod/simplecertificate'
+En la rama MOODLE_35
+Tu rama está actualizada con 'origin/MOODLE_35'.
+
+Entrando 'mod/tab'
+En la rama MOODLE_37_STABLE
+Tu rama está adelantada a 'origin/MOODLE_37_STABLE' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/tracker'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/turnitintooltwo'
+En la rama develop
+Tu rama está actualizada con 'origin/develop'.
+
+
+Entrando 'mod/unedtrivial'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'mod/vpl'
+En la rama V4.0.1
+Tu rama está actualizada con 'origin/V4.0.1'.
+
+
+Entrando 'plagiarism/turnitin'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+
+Entrando 'question/format/giftmedia'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'question/type/easyonewman'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'question/type/formulas'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'question/type/pmatch'
+Tu rama está adelantada a 'origin/main' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'question/type/regexp'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'question/type/type_calc_sheet'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'report/coursesize'
+En la rama MOODLE_39_STABLE
+Tu rama está actualizada con 'origin/MOODLE_39_STABLE'.
+
+Entrando 'report/forumgraph'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+Entrando 'report/offlinequizcron'
+En la rama MOODLE_311_STABLE
+Tu rama está actualizada con 'origin/MOODLE_311_STABLE'.
+
+Entrando 'repository/geogebratube'
+En la rama MOODLE_27_STABLE
+Tu rama está actualizada con 'origin/MOODLE_27_STABLE'.
+
+
+Entrando 'repository/office365'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+
+Entrando 'repository/searchable'
+Tu rama está adelantada a 'origin/master' por 1 commit.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'theme/boost_campus'
+Tu rama está adelantada a 'origin/master' por 2 commits.
+  (usa "git push" para publicar tus commits locales)
+
+
+Entrando 'theme/boost_o365teams'
+En la rama MOODLE_41_STABLE
+Tu rama está actualizada con 'origin/MOODLE_41_STABLE'.
+
+Entrando 'theme/moove'
+Tu rama está adelantada a 'origin/main' por 3 commits.
+  (usa "git push" para publicar tus commits locales)
+

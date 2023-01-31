@@ -8,7 +8,9 @@ for plugin in $PLUGINS
 do
   git config --global --add safe.directory "/var/www/html/moodle41ulpgc/$plugin"
   cd $plugin
-  git add --all && git commit -am"Updated to 2022-11-26. First 4.1 version" && git push origin master && cd /var/www/html/moodle41ulpgc
+#  git add --all && git commit -am"Updated to 2022-11-26. First 4.1 version" && git push origin master && cd /var/www/html/moodle41ulpgc
+#  git push origin master && cd /var/www/html/moodle41ulpgc
+git status && echo  $plugin && cd /var/www/html/moodle41ulpgc
 done
 
 
