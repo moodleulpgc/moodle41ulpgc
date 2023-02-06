@@ -100,6 +100,10 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $yesnooption = array(THEME_BOOST_UNION_SETTING_SELECT_YES => get_string('yes'),
                 THEME_BOOST_UNION_SETTING_SELECT_NO => get_string('no'));
 
+        // Prepare regular expression for checking if the value is a percent number (from 0% to 100%) or a pixel number
+        // (with 3 or 4 digits) or a viewport width number (from 0 to 100).
+        $widthregex = '/^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{3,4}px)$/';
+
 
         // Create Look settings page with tabs
         // (and allow users with the theme/boost_union:configure capability to access it).
@@ -184,9 +188,9 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Create page tab.
         $tab = new admin_settingpage('theme_boost_union_look_page', get_string('pagetab', 'theme_boost_union', null, true));
 
-        // Create layout heading.
-        $name = 'theme_boost_union/layoutheading';
-        $title = get_string('layoutheading', 'theme_boost_union', null, true);
+        // Create page width heading.
+        $name = 'theme_boost_union/pagewidthheading';
+        $title = get_string('pagewidthheading', 'theme_boost_union', null, true);
         $setting = new admin_setting_heading($name, $title, null);
         $tab->add($setting);
 
@@ -195,10 +199,31 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $title = get_string('coursecontentmaxwidthsetting', 'theme_boost_union', null, true);
         $description = get_string('coursecontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
         $default = '830px';
-        // Regular expression for checking if the value is a percent number (from 0% to 100%) or a pixel number (with 3 or 4 digits)
-        // or a viewport width number (from 0 to 100).
-        $regex = '/^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{3,4}px)$/';
-        $setting = new admin_setting_configtext($name, $title, $description, $default, $regex, 6);
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Medium content max width.
+        $name = 'theme_boost_union/mediumcontentmaxwidth';
+        $title = get_string('mediumcontentmaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('mediumcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '1120px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Create content width heading.
+        $name = 'theme_boost_union/contentwidthheading';
+        $title = get_string('contentwidthheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: H5P content bank max width.
+        $name = 'theme_boost_union/h5pcontentmaxwidth';
+        $title = get_string('h5pcontentmaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('h5pcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '960px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
@@ -209,18 +234,52 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Create branding tab.
         $tab = new admin_settingpage('theme_boost_union_look_branding', get_string('brandingtab', 'theme_boost_union', null, true));
 
+        // Create logos heading.
+        $name = 'theme_boost_union/logosheading';
+        $title = get_string('logosheading', 'theme_boost_union', null, true);
+        $notificationurl = new moodle_url('/admin/settings.php', array('section' => 'logos'));
+        $notification = new \core\output\notification(get_string('logosheading_desc', 'theme_boost_union', $notificationurl->out()),
+                \core\output\notification::NOTIFY_INFO);
+        $notification->set_show_closebutton(false);
+        $description = $OUTPUT->render($notification);
+        $setting = new admin_setting_heading($name, $title, $description);
+        $tab->add($setting);
+
+        // Replicate the logo setting from core_admin.
+        $name = 'theme_boost_union/logo';
+        $title = get_string('logosetting', 'theme_boost_union', null, true);
+        $description = get_string('logosetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo', 0,
+                array('maxfiles' => 1, 'accepted_types' => 'web_image'));
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Replicate the compact logo setting from core_admin.
+        $name = 'theme_boost_union/logocompact';
+        $title = get_string('logocompactsetting', 'theme_boost_union', null, true);
+        $description = get_string('logocompactsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'logocompact', 0,
+                array('maxfiles' => 1, 'accepted_types' => 'web_image'));
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
         // Create favicon heading.
         $name = 'theme_boost_union/faviconheading';
         $title = get_string('faviconheading', 'theme_boost_union', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
+        $notificationurl = new moodle_url('/admin/settings.php', array('section' => 'logos'));
+        $notification = new \core\output\notification(get_string('faviconheading_desc', 'theme_boost_union',
+                $notificationurl->out()), \core\output\notification::NOTIFY_INFO);
+        $notification->set_show_closebutton(false);
+        $description = $OUTPUT->render($notification);
+        $setting = new admin_setting_heading($name, $title, $description);
         $tab->add($setting);
 
-        // Setting: Favicon.
+        // Replicate the favicon setting from core_admin.
         $name = 'theme_boost_union/favicon';
         $title = get_string('faviconsetting', 'theme_boost_union', null, true);
         $description = get_string('faviconsetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configstoredfile($name, $title, $description, 'favicon', 0,
-                array('maxfiles' => 1, 'accepted_types' => array('.ico', '.png')));
+                array('maxfiles' => 1, 'accepted_types' => 'image'));
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
@@ -232,8 +291,8 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
 
         // Replicate the Background image setting from theme_boost.
         $name = 'theme_boost_union/backgroundimage';
-        $title = get_string('backgroundimage', 'theme_boost', null, true);
-        $description = get_string('backgroundimage_desc', 'theme_boost', null, true);
+        $title = get_string('backgroundimagesetting', 'theme_boost_union', null, true);
+        $description = get_string('backgroundimagesetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configstoredfile($name, $title, $description, 'backgroundimage', 0,
                 array('maxfiles' => 1, 'accepted_types' => 'web_image'));
         $setting->set_updatedcallback('theme_reset_all_caches');
@@ -780,6 +839,52 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             $setting = new admin_setting_description($name, $title, $description);
             $tab->add($setting);
         }
+
+        // Add tab to settings page.
+        $page->add($tab);
+
+
+        // Create mobile app tab.
+        $tab = new admin_settingpage('theme_boost_union_look_mobile',
+                get_string('mobiletab', 'theme_boost_union', null, true));
+
+        // Create Mobile appearance heading.
+        $name = 'theme_boost_union/mobileappearanceheading';
+        $title = get_string('mobileappearanceheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Additional CSS for Mobile app.
+        $name = 'theme_boost_union/mobilescss';
+        $title = get_string('mobilecss', 'theme_boost_union', null, true);
+        $description = get_string('mobilecss_desc', 'theme_boost_union', null, true);
+        $mobilecssurl = new moodle_url('/admin/settings.php', array('section' => 'mobileappearance'));
+        // If another Mobile App CSS URL is set already (in the $CFG->mobilecssurl setting), we add a warning to the description.
+        if (isset($CFG->mobilecssurl) && !empty($CFG->mobilecssurl) &&
+                strpos($CFG->mobilecssurl, '/boost_union/mobile/styles.php') == false) {
+            $mobilescssnotification = new \core\output\notification(
+                    get_string('mobilecss_overwrite', 'theme_boost_union',
+                            array('url' => $mobilecssurl->out(), 'value' => $CFG->mobilecssurl)).' '.
+                    get_string('mobilecss_donotchange', 'theme_boost_union'),
+                    \core\output\notification::NOTIFY_WARNING);
+            $mobilescssnotification->set_show_closebutton(false);
+            $description .= $OUTPUT->render($mobilescssnotification);
+
+            // Otherwise, we just add a note to the description.
+        } else {
+            $mobilescssnotification = new \core\output\notification(
+                    get_string('mobilecss_set', 'theme_boost_union',
+                            array('url' => $mobilecssurl->out())).' '.
+                    get_string('mobilecss_donotchange', 'theme_boost_union'),
+                    \core\output\notification::NOTIFY_INFO);
+            $mobilescssnotification->set_show_closebutton(false);
+            $description .= $OUTPUT->render($mobilescssnotification);
+        }
+        // Using admin_setting_scsscode is not 100% right here as this setting does not support SCSS.
+        // However, is shouldn't harm if the CSS code is parsed by the setting.
+        $setting = new admin_setting_scsscode($name, $title, $description, '', PARAM_RAW);
+        $setting->set_updatedcallback('theme_boost_union_set_mobilecss_url');
+        $tab->add($setting);
 
         // Add tab to settings page.
         $page->add($tab);

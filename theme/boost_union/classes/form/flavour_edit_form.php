@@ -85,7 +85,7 @@ class flavour_edit_form extends \moodleform {
                 get_string('logo', 'admin'), null, [
                         'subdirs' => 0,
                         'maxfiles' => 1,
-                        'accepted_types' => ['.jpg', '.png'],
+                        'accepted_types' => 'web_image',
                         'return_types' => FILE_INTERNAL
                 ]);
         $mform->addHelpButton('flavours_look_logo', 'flavourslogo', 'theme_boost_union');
@@ -95,7 +95,7 @@ class flavour_edit_form extends \moodleform {
                 get_string('logocompact', 'admin'), null, [
                         'subdirs' => 0,
                         'maxfiles' => 1,
-                        'accepted_types' => ['.jpg', '.png'],
+                        'accepted_types' => 'web_image',
                         'return_types' => FILE_INTERNAL
                 ]);
         $mform->addHelpButton('flavours_look_logocompact', 'flavourslogocompact', 'theme_boost_union');
@@ -105,14 +105,14 @@ class flavour_edit_form extends \moodleform {
                 get_string('faviconsetting', 'theme_boost_union'), null, [
                         'subdirs' => 0,
                         'maxfiles' => 1,
-                        'accepted_types' => ['.ico', '.png'],
+                        'accepted_types' => 'image',
                         'return_types' => FILE_INTERNAL
                 ]);
         $mform->addHelpButton('flavours_look_favicon', 'flavoursfavicon', 'theme_boost_union');
 
         // Add backgroundimage as filemanager element.
         $mform->addElement('filemanager', 'flavours_look_backgroundimage',
-                get_string('backgroundimage', 'theme_boost'), null, [
+                get_string('backgroundimagesetting', 'theme_boost_union'), null, [
                         'subdirs' => 0,
                         'maxfiles' => 1,
                         'accepted_types' => 'web_image',

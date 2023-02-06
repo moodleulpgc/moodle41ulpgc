@@ -82,21 +82,41 @@ This setting is already available in the Moodle core theme Boost. For more infor
 
 In this tab there are the following settings:
 
-##### Layout
+##### Page width
 
 ###### Course content max width
 
-With this setting, you can override Moodle's default content width without manual SCSS modifications.
+With this setting, you can override Moodle's course content width without manual SCSS modifications.
+
+###### Medium content max width
+
+With this setting, you can override Moodle's default medium width without manual SCSS modifications.
+
+##### Content width
+
+###### H5P content bank max width
+
+With this setting, you can override Moodle's H5P content bank width without manual SCSS modifications.
 
 #### Tab "Branding"
 
 In this tab there are the following settings:
 
+##### Logos
+
+###### Logo
+
+Here, you can upload a full logo to be used as decoration. This image is especially used on the login page. This image can be quite high resolution because it will be scaled down for use.
+
+###### Compact logo
+
+Here, you can upload a compact version of the same logo as above, such as an emblem, shield or icon. This image is especially used in the navigation bar at the top of each Moodle page. The image should be clear even at small sizes.
+
 ##### Favicon
 
 ###### Favicon
 
-Here, you can upload a custom image (.ico or .png format) that the browser will show as the favicon of your Moodle website. If no custom favicon is uploaded, a standard Moodle favicon will be used.
+Here, you can upload a custom image that the browser will show as the favicon of your Moodle website. If no custom favicon is uploaded, a standard Moodle favicon will be used.
 
 ##### Background images
 
@@ -191,6 +211,14 @@ With this setting you can upload custom fonts to the theme. The advantage of upl
 ##### FontAwesome
 
 Moodle core ships with FontAwesome 4 icons which are fine, but FontAwesome has evolved since then. If you want to use more recent FontAwesome icons, you can do this with this setting. As soon as you choose another version than FontAwesome 4, additional settings will appear where you can upload more recent FontAwesome versions.
+
+#### Tab "Mobile app"
+
+##### Mobile appearance 
+
+###### Additional CSS for Mobile app
+
+With this setting, you can write custom CSS code to customise your mobile app interface. The CSS code will be only added to the Mobile app depiction of this Moodle instance and will not be shown in the webbrowser version.
 
 ### Settings page "Feel"
 
@@ -425,6 +453,7 @@ Moodle an Hochschulen e.V. would like to thank these main contributors (in alpha
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
+* Lower Saxony (Federal state of Germany): Funding
 * moodleSCHULE e.V., Ralf Krause: German translation and curation
 * Ruhr University Bochum, Melanie Treitinger: Code
 * RWTH Aachen, Josha Bartsch: Code

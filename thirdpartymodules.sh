@@ -261,6 +261,8 @@ git submodule add https://github.com/maths/moodle-qbehaviour_dfcbmexplicitvailda
 git submodule add https://github.com/maths/moodle-qbehaviour_dfexplicitvaildate.git         question/behaviour/dfexplicitvaildate
 git submodule add https://github.com/rezeau/moodle-qbehaviour_regexpadaptivewithhelp.git            question/behaviour/regexpadaptivewithhelp
 git submodule add https://github.com/rezeau/moodle-qbehaviour_regexpadaptivewithhelpnopenalty.git   question/behaviour/regexpadaptivewithhelpnopenalty
+# required by recordrtc
+git submodule add https://github.com/moodleou/moodle-qbehaviour_selfassess.git      question/behaviour/selfassess 
 
 #Question formats
 git submodule add https://github.com/dthies/moodle-qformat_crossxml.git     question/format/crossxml

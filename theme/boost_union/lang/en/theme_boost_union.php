@@ -42,21 +42,42 @@ $string['scssheading'] = 'Raw SCSS';
 
 // Settings: Page tab.
 $string['pagetab'] = 'Page';
-// ... Section: Layout.
-$string['layoutheading'] = 'Layout';
+// ... Section: Page width.
+$string['pagewidthheading'] = 'Page width';
 // ... ... Setting: Course content max width.
 $string['coursecontentmaxwidthsetting'] = 'Course content max width';
-$string['coursecontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s default content width without manual SCSS modifications. By default, Moodle uses a course content max width of 830px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
+$string['coursecontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s course content width without manual SCSS modifications. This width is used as page width of course pages and within several activities. By default, Moodle uses a course content max width of 830px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
+// ... ... Setting: Medium content max width.
+$string['mediumcontentmaxwidthsetting'] = 'Medium content max width';
+$string['mediumcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s medium content width without manual SCSS modifications. This page width is used in certain activities like the database activity. By default, Moodle uses a medium content max width of 1120px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
+// ... Section: Content width.
+$string['contentwidthheading'] = 'Content width';
+// ... ... Setting: H5P content bank max width.
+$string['h5pcontentmaxwidthsetting'] = 'H5P content bank max width';
+$string['h5pcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s H5P content bank width without manual SCSS modifications. This width is used for the H5P editor within the content bank. It is <em>not</em> used for the width of the H5P activity. By default, Moodle uses a H5P content bank max width of 960px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
 
 // Settings: Branding tab.
 $string['brandingtab'] = 'Branding';
+// ... Section: Logos.
+$string['logosheading'] = 'Logos';
+$string['logosheading_desc'] = 'Please note: Boost Union has its own logo upload and does not use the logo from <a href="{$a}">Moodle core\'s logo setting</a>.<br />Boost Union especially allows you to upload more image formats that Moodle core allows and allows you to override the uploaded logos within its flavours.';
+// ... ... Setting: Logo.
+$string['logosetting'] = 'Logo';
+$string['logosetting_desc'] = 'Here, you can upload a full logo to be used as decoration. This image is especially used on the login page. This image can be quite high resolution because it will be scaled down for use.';
+// ... ... Setting: Compact logo.
+$string['logocompactsetting'] = 'Compact logo';
+$string['logocompactsetting_desc'] = 'Here, you can upload a compact version of the same logo as above, such as an emblem, shield or icon. This image is especially used in the navigation bar at the top of each Moodle page. The image should be clear even at small sizes.';
 // ... Section: Favicon.
 $string['faviconheading'] = 'Favicon';
+$string['faviconheading_desc'] = 'Please note: Boost Union has its own favicon upload and does not use the favicon from <a href="{$a}">Moodle core\'s favicon setting</a>.<br />Boost Union especially allows you to override the uploaded favicon within its flavours.';
 // ... ... Setting: Favicon
 $string['faviconsetting'] = 'Favicon';
 $string['faviconsetting_desc'] = 'Here, you can upload a custom image (.ico or .png format) that the browser will show as the favicon of your Moodle website. If no custom favicon is uploaded, a standard Moodle favicon will be used.';
 // ... Section: Background images.
 $string['backgroundimagesheading'] = 'General background images';
+// ... ... Setting: Background image
+$string['backgroundimagesetting'] = 'Background image';
+$string['backgroundimagesetting_desc'] = 'Here, you can upload a custom image to display as a background of the site. The background image you upload here will override the background image in your theme preset files.';
 // ... Section: Brand colors.
 $string['brandcolorsheading'] = 'Brand colors';
 // ... Section: Bootstrap colors.
@@ -252,6 +273,16 @@ $string['fontawesomecheck-fa6free-newstuff-title'] = 'FontAwesome 6 icons';
 $string['fontawesomecheck-fa6free-newstuff-description'] = 'Newer FontAwesome versions ship with additional icons compared to the FontAwesome 4 iconset. If you see a virus icon on the left hand side, your FontAwesome 6 version is properly showing new icons which are new in FontAwesome 6.';
 $string['fontawesomecheck-fa6free-filter-title'] = 'FontAwesome filter';
 $string['fontawesomecheck-fa6free-filter-description'] = 'As you have the FontAwesome filter plugin installed, you should be sure that the filter handles the new FontAwesome 6 icons correctly as well. If you see a users icon on the left hand side, the filter is working properly with the FontAwesome 6 version icons.';
+// Settings: Mobile app tab.
+$string['mobiletab'] = 'Mobile app';
+// ... Section: Mobile appearance.
+$string['mobileappearanceheading'] = 'Mobile appearance';
+// ... ... Setting: Additional CSS for Mobile app.
+$string['mobilecss'] = 'Additional CSS for Mobile app';
+$string['mobilecss_desc'] = 'With this setting, you can write custom CSS code to customise your mobile app interface. The CSS code will be only added to the Mobile app depiction of this Moodle instance and will not be shown in the webbrowser version. Read more about this feature in the <a href="https://moodledev.io/general/app/customisation/remote-themes#how-do-remote-themes-work">Moodle dev docs</a>.';
+$string['mobilecss_set'] = 'As soon as you add any CSS code to this setting and save the setting, the <a href="{$a->url}">Moodle core setting <em>mobilecssurl</em></a> will be automatically set to a URL of the Boost Union theme.';
+$string['mobilecss_overwrite'] = 'As soon as you add any CSS code to this setting and save the setting, the <a href="{$a->url}">Moodle core setting <em>mobilecssurl</em></a> will be automatically overwritten with a URL of the Boost Union theme. Currently this setting is set to <a href="{$a->value}">{$a->value}</a>.';
+$string['mobilecss_donotchange'] = 'This step is necessary to ship the CSS code to the Mobile app. Do not change the URL there unless you really want to remove the CSS code from the Mobile app again.';
 
 // Settings: Feel page.
 $string['configtitlefeel'] = 'Feel';
@@ -489,9 +520,9 @@ $string['flavoursgeneralsettings'] = 'General settings';
 $string['flavoursincludesubcategories'] = 'Include subcategories';
 $string['flavoursincludesubcategories_help'] = 'If checked, the flavour will also be applied to the subcategories of the chosen categories.';
 $string['flavourslogo'] = 'Logo';
-$string['flavourslogo_help'] = 'With this setting, the flavour will override the logo which is configured in Moodle\'s global appearance settings.';
+$string['flavourslogo_help'] = 'With this setting, the flavour will override the logo which is configured in Boost Union\'s look settings.';
 $string['flavourslogocompact'] = 'Compact logo';
-$string['flavourslogocompact_help'] = 'With this setting, the flavour will override the logo which is configured in Moodle\'s global appearance settings.';
+$string['flavourslogocompact_help'] = 'With this setting, the flavour will override the logo which is configured in Boost Union\'s look settings.';
 $string['flavoursnotificationcreated'] = 'The flavour was created successfully';
 $string['flavoursnotificationdeleted'] = 'The flavour was deleted successfully';
 $string['flavoursnotificationedited'] = 'The flavour was edited successfully';
@@ -550,3 +581,10 @@ $string['boost_union:viewhintinhiddencourse'] = 'To be able to see a hint in a h
 // Caches.
 $string['cachedef_fontawesome'] = 'FontAwesome files (which are uploaded in the Boost Union settings)';
 $string['cachedef_flavours'] = 'Flavours which apply to a given page category ID for the current user';
+
+// Upgrade notices.
+$string['upgradenotice_2022080922'] = 'From this release on, Boost Union has its own logo and compact logo settings and does not use these files from the Moodle core settings anymore.';
+$string['upgradenotice_2022080922_logo'] = 'logo';
+$string['upgradenotice_2022080922_logocompact'] = 'compact logo';
+$string['upgradenotice_2022080922_copied'] = 'The existing <strong>{$a}</strong> from the Moodle core settings has been copied to the Boost Union {$a} setting during this upgrade. Please double-check the result.';
+$string['upgradenotice_2022080922_notcopied'] = 'The <strong>{$a}</strong> setting within Boost Union is empty now. If you want to use a {$a} within Boost Union from now on, just upload it into the Boost Union {$a} setting later.';

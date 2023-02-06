@@ -194,7 +194,11 @@
                 if ($course->id == SITEID) {
                     redirect($CFG->wwwroot . '/?redirect=0');
                 } else {
-                    redirect(course_get_url($course));
+                    if ($format->get_course_display() == COURSE_DISPLAY_MULTIPAGE) {
+                        redirect(course_get_url($course));
+                    } else {
+                        redirect(course_get_url($course, $destsection));
+                    }
                 }
             } else {
                 echo $OUTPUT->notification('An error occurred while moving a section');
@@ -233,8 +237,9 @@
     }
 
     $PAGE->set_heading($course->fullname);
+    
     echo $OUTPUT->header();
-
+    
     if ($USER->editing == 1) {
 
         // MDL-65321 The backup libraries are quite heavy, only require the bare minimum.

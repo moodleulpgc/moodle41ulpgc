@@ -19,6 +19,7 @@
  *
  * @package   mod_hotquestion
  * @copyright 2022 Enrique Castro
+ * @copyright AL Rachels (drachels@drachels.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,16 +39,17 @@ require_once($CFG->libdir . '/tablelib.php');
 require_once($CFG->libdir . '/gradelib.php');
 
 /**
- * Class mod_hotquestion_responses_table
+ * Class mod_hotquestion_responses_table.
  *
  * @package   mod_hotquestion
  * @copyright 2022 Enrique Castro
+ * @copyright AL Rachels (drachels@drachels.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class viewgrades extends table_sql {
 
     /**
-     * Maximum number of hotquestion questions to display in the "Show responses" table
+     * Maximum number of hotquestion questions to display in the "Show responses" table.
      */
     const PREVIEWCOLUMNSLIMIT = 10;
 
@@ -262,7 +264,7 @@ class viewgrades extends table_sql {
     }
 
     /**
-     * Current context
+     * Current context.
      * @return context_module
      */
     public function get_context(): \context {
@@ -429,7 +431,7 @@ class viewgrades extends table_sql {
     }
 
     /**
-     * Returns total number of reponses (without any filters applied)
+     * Returns total number of reponses (without any filters applied).
      * @return int
      */
     public function get_total_users_count() {
@@ -442,7 +444,7 @@ class viewgrades extends table_sql {
     }
 
     /**
-     * Defines columns
+     * Defines columns.
      * @param array $columns an array of identifying names for columns. If
      * columns are sorted then column names must correspond to a field in sql.
      */
@@ -455,7 +457,7 @@ class viewgrades extends table_sql {
     }
 
     /**
-     * Displays the table
+     * Displays the table.
      */
     public function display() {
         global $OUTPUT;

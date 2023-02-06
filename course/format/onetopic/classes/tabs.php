@@ -92,6 +92,7 @@ class tabs {
 
             if ($tab->has_childs()) {
                 $newtab->secondrow = $tab->get_childs()->get_list(true);
+                $newtab->haschilds = true;
             }
 
             $tabstree[] = $newtab;
@@ -126,6 +127,7 @@ class tabs {
     public function get_secondlist() : object {
 
         $tabstree = new \stdClass();
+        $tabstree->tabs = [];
 
         foreach ($this->tabslist as $tab) {
             if ($tab->selected) {

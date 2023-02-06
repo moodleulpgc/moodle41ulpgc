@@ -4,6 +4,23 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r1
+
+* 2023-02-04 - Upgrade: Persist the dedicated favicon setting in Boost Union even though Moodle core has a favicon setting in 4.1 as well, solves #78.
+* 2023-02-04 - Upgrade: The back-top-top button must respect the presence of the new sticky footer, solves #186.
+* 2023-02-04 - Upgrade: Add .footer-support-link class to Boost Union's footer links to align them with Boost Core in 4.1 again
+* 2023-02-04 - Upgrade: Allow the admin to change medium width pages which were introduced for the database activity in 4.1 as well.
+* 2023-02-04 - Upgrade: Adopt upstream changes in footer.mustache
+* 2023-02-04 - Upgrade: Fix Behat tests which broke with Moodle 4.1.
+* 2023-02-04 - Prepare compatibility for Moodle 4.1.
+
+### v4.0-r12
+
+* 2023-01-30 - Feature: Allow the admin to set CSS rules for the Moodle Mobile App, solves #195.
+* 2023-01-28 - Improvement: Do not resize SVG logo files during serving, helps to solve #160.
+* 2023-01-26 - Feature: Add dedicated logo settings to Boost Union, solves #211.
+* 2023-01-22 - Feature: Allow the admin to change the H5P content bank width, solves #201.
+
 ### v4.0-r11
 
 * 2023-01-21 - Improvement: Add note about grandchild themes to the README file, solves #122.

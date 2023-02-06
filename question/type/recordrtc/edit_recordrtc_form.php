@@ -65,10 +65,11 @@ class qtype_recordrtc_edit_form extends question_edit_form {
         }
         // Creating new question.
         // The next line needs to match the default below.
-        return $this->get_default_value_wrapper('mediatype', qtype_recordrtc::MEDIA_TYPE_AUDIO);
+        return $this->get_default_value('mediatype', qtype_recordrtc::MEDIA_TYPE_AUDIO);
     }
 
     protected function definition_inner($mform) {
+        global $CFG;
         $currentmediatype = $this->get_current_mediatype();
 
         // Field for mediatype.
@@ -80,7 +81,7 @@ class qtype_recordrtc_edit_form extends question_edit_form {
         $mediatype = $mform->createElement('select', 'mediatype', get_string('mediatype', 'qtype_recordrtc'), $mediaoptions);
         $mform->insertElementBefore($mediatype, 'questiontext');
         $mform->addHelpButton('mediatype', 'mediatype', 'qtype_recordrtc');
-        $mform->setDefault('mediatype', $this->get_default_value_wrapper('mediatype', qtype_recordrtc::MEDIA_TYPE_AUDIO));
+        $mform->setDefault('mediatype', $this->get_default_value('mediatype', qtype_recordrtc::MEDIA_TYPE_AUDIO));
 
         // Add instructions and widget placeholder templates for question authors to copy and paste into the question text.
         $placeholders = [
@@ -101,6 +102,10 @@ class qtype_recordrtc_edit_form extends question_edit_form {
         $mform->addHelpButton('avplaceholdergroup', 'avplaceholder', 'qtype_recordrtc');
 
         // Add the update-form button.
+        // This is sort-of a no-submit button, but acutally, when it is clicked,
+        // we want to validate the question text. So, we make it a normal submit
+        // button, and then in the validation, we ensure that at least one 'error' is
+        // displayed.
         $verify = $mform->createElement('submit', 'updateform', get_string('updateform', 'qtype_recordrtc'));
         if ($currentmediatype !== qtype_recordrtc::MEDIA_TYPE_CUSTOM_AV) {
             // If the question is currently using custom A/V, then the refresh form button must always be visible,
@@ -108,18 +113,36 @@ class qtype_recordrtc_edit_form extends question_edit_form {
             $mform->hideIf('updateform', 'mediatype', 'noteq', qtype_recordrtc::MEDIA_TYPE_CUSTOM_AV);
         }
         $mform->insertElementBefore($verify, 'defaultmark');
-        $mform->registerNoSubmitButton('updateform');
 
         // Field for timelimitinseconds.
         $mform->addElement('duration', 'timelimitinseconds', get_string('timelimit', 'qtype_recordrtc'),
                 ['units' => [60, 1], 'optional' => false]);
         $mform->addHelpButton('timelimitinseconds', 'timelimit', 'qtype_recordrtc');
         $mform->setDefault('timelimitinseconds',
-                $this->get_default_value_wrapper('timelimitinseconds', qtype_recordrtc::DEFAULT_TIMELIMIT));
+                $this->get_default_value('timelimitinseconds', qtype_recordrtc::DEFAULT_TIMELIMIT));
 
         $mform->addElement('selectyesno', 'allowpausing', get_string('allowpausing', 'qtype_recordrtc'), '');
         $mform->addHelpButton('allowpausing', 'allowpausing', 'qtype_recordrtc');
         $mform->setDefault('allowpausing', $this->get_default_value('allowpausing', 0));
+
+        // Settings for self-assessment - but only if the behaviour is installed.
+        if (is_readable($CFG->dirroot . '/question/behaviour/selfassess/behaviour.php')) {
+            $mform->addElement('header', 'selfassessmentheading', get_string('selfassessmentheading', 'qtype_recordrtc'));
+
+            $mform->addElement('selectyesno', 'canselfrate', get_string('canselfrate', 'qtype_recordrtc'), '');
+            $mform->addHelpButton('canselfrate', 'canselfrate', 'qtype_recordrtc');
+            $mform->setDefault('canselfrate', $this->get_default_value('canselfrate', 0));
+
+            $mform->addElement('selectyesno', 'canselfcomment', get_string('canselfcomment', 'qtype_recordrtc'), '');
+            $mform->addHelpButton('canselfcomment', 'canselfcomment', 'qtype_recordrtc');
+            $mform->setDefault('canselfcomment', $this->get_default_value('canselfcomment', 0));
+        } else {
+            $mform->addElement('hidden', 'canselfrate', 0);
+            $mform->setType('canselfrate', PARAM_BOOL);
+
+            $mform->addElement('hidden', 'canselfcomment', 0);
+            $mform->setType('canselfcomment', PARAM_BOOL);
+        }
 
         // Fields for widget feedback.
         if ($currentmediatype === qtype_recordrtc::MEDIA_TYPE_CUSTOM_AV) {
@@ -162,21 +185,6 @@ class qtype_recordrtc_edit_form extends question_edit_form {
      */
     protected function feedback_field_name(string $widgetname): string {
         return 'feedbackfor' . $widgetname;
-    }
-
-    /**
-     * Wrapper around get_default_value so we can still support older Moodle versions.
-     *
-     * @param string $name the name of the form field.
-     * @param mixed $default default value.
-     * @return string|null default value for a given form element.
-     */
-    protected function get_default_value_wrapper(string $name, $default): ?string {
-        if (method_exists($this, 'get_default_value')) {
-            return $this->get_default_value($name, $default);
-        } else {
-            return $default;
-        }
     }
 
     public function data_preprocessing($question): stdClass {
@@ -224,10 +232,22 @@ class qtype_recordrtc_edit_form extends question_edit_form {
         $errors = parent::validation($fromform, $files);
 
         // Validate placeholders in the question text.
-        $placeholdererrors = (new qtype_recordrtc)->validate_widget_placeholders(
+        [$placeholdererrors, $updatedqtext] = (new qtype_recordrtc())->validate_widget_placeholders(
                 $fromform['questiontext']['text'], $fromform['mediatype']);
         if ($placeholdererrors) {
             $errors['questiontext'] = $placeholdererrors;
+        }
+        if ($updatedqtext) {
+            /** @var MoodleQuickForm_editor $editor */
+            $editor = $this->_form->getElement('questiontext');
+            $editor->setValue(['text' => $updatedqtext]);
+        }
+
+        // If the Update form button was clicked, and there are no errors
+        // in the question text, then ensure the form does not submit
+        // by displaying a message.
+        if (!empty($fromform['updateform']) && !$placeholdererrors) {
+            $errors['updateform'] = get_string('updateformdone', 'qtype_recordrtc');
         }
 
         // Validate the time limit.

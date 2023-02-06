@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_recordrtc_question extends question_with_responses {
+    use \qbehaviour_selfassess\question_with_self_assessment;
 
     /**
      * @var qtype_recordrtc\widget_info[] the widgets that appear in this question, indexed by the widget name.
@@ -74,15 +75,19 @@ class qtype_recordrtc_question extends question_with_responses {
         if (!isset($response['recording']) || $response['recording'] === '') {
             return get_string('norecording', 'qtype_recordrtc');
         }
-
         $files = $response['recording']->get_files();
-        $file = reset($files);
-
-        if (!$file) {
+        $savedfiles = [];
+        foreach ($this->widgets as $widget) {
+            $filename = qtype_recordrtc::get_media_filename($widget->name, $widget->type);
+            $file = $this->get_file_from_response($filename, $files);
+            if ($file) {
+                $savedfiles[] = s($file->get_filename());
+            }
+        }
+        if (!$savedfiles) {
             return get_string('norecording', 'qtype_recordrtc');
         }
-
-        return get_string('filex', 'qtype_recordrtc', $file->get_filename());
+        return implode(', ', $savedfiles);
     }
 
     public function is_complete_response(array $response): bool {
@@ -114,8 +119,8 @@ class qtype_recordrtc_question extends question_with_responses {
     /**
      * Get a specific file from the array of files in a resonse (or null).
      *
-     * To support questions answered before we switched recording format from OGG to MP3,
-     * if you are looking for file.mp3, and file.ogg is found, then that is returned,
+     * To support questions answered with recording format OGG to MP3, before we switched back again,
+     * if you are looking for file.ogg, and file.mp3 is found, then that is returned,
      * and $filename (passed by reference) is updated.
      *
      * @param string $filename the file we want.
@@ -124,8 +129,8 @@ class qtype_recordrtc_question extends question_with_responses {
      */
     public function get_file_from_response(string &$filename, array $files): ?stored_file {
         $legacyfilename = null;
-        if (substr($filename, -4) === '.mp3') {
-            $legacyfilename = substr($filename, 0, -4) . '.ogg';
+        if (substr($filename, -4) === '.ogg') {
+            $legacyfilename = substr($filename, 0, -4) . '.mp3';
         }
         foreach ($files as $file) {
             if ($file->get_filename() === $filename) {

@@ -171,6 +171,26 @@ function modinv($a, $m) {
     return ($s < 0) ? $s + $orig_m : $s;
 }
 
+/**
+ * Calculate the floating point remainder of the division of
+ * the arguments, i. e. x - m * floor(x / m). There is no
+ * canonical definition for this function; some calculators
+ * use flooring (round down to nearest integer) and others
+ * use truncation (round to nearest integer, but towards zero).
+ * This implementation gives the same results as e. g. Wolfram Alpha.
+ *
+ * @author Philipp Imhof
+ * @param float $x the dividend
+ * @param float $m the modulus
+ * @return float remainder of $x modulo $m
+ */
+function fmod($x, $m) {
+    if ($m === 0) {
+        throw new Exception(get_string('error_eval_numerical', 'qtype_formulas'));
+    }
+    return $x - $m * floor($x / $m);
+}
+
 function npr($n, $r) {
     $n = (int)$n;
     $r = (int)$r;
@@ -1296,13 +1316,22 @@ class variables {
                     break;
                 }
                 if ($sz == 1) {
-                    $values[1] = $values[0];
+                    // If we have one list, we use natural sorting.
+                    $tmp = $values[0];
+                    natsort($tmp);
+                    $this->replace_middle($vstack, $expression, $l, $r, $types[0], array_values($tmp));
+                    return true;
                 }
                 if (mycount($values[0]) != mycount($values[1])) {
                     break;
                 }
-                $tmp = array_combine($values[1], $values[0]);
-                ksort($tmp);
+                // Still here? That means we have two lists of the same size. Use the latter
+                // as the sort order.
+                $tmp = $values[0];
+                $order = $values[1];
+                uksort($tmp, function($a, $b) use ($order) {
+                    return strnatcmp($order[$a], $order[$b]);
+                });
                 $this->replace_middle($vstack, $expression, $l, $r, $types[0], array_values($tmp));
                 return true;
             case 'sublist':

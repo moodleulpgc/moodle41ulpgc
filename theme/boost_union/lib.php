@@ -150,6 +150,14 @@ function theme_boost_union_get_pre_scss($theme) {
     if (isset($theme->settings->coursecontentmaxwidth)) {
         $scss .= '$course-content-maxwidth: '.$theme->settings->coursecontentmaxwidth.";\n";
     }
+    // Set variables which are influenced by the mediumcontentmaxwidth setting.
+    if (isset($theme->settings->mediumcontentmaxwidth)) {
+        $scss .= '$medium-content-maxwidth: ' . $theme->settings->mediumcontentmaxwidth . ";\n";
+    }
+    // Set variables which are influenced by the h5pcontentmaxwidth setting.
+    if (isset($theme->settings->h5pcontentmaxwidth)) {
+        $scss .= '$h5p-content-maxwidth: '.$theme->settings->h5pcontentmaxwidth.";\n";
+    }
 
     // Overwrite Boost core SCSS variables which are stored in a SCSS map and thus couldn't be added to $configurable above.
     // Set variables for the activity icon colors.
@@ -279,9 +287,76 @@ function theme_boost_union_get_precompiled_css() {
 function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $CFG;
 
-    // Serve the files from the admin settings.
-    if ($context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'logo' || $filearea === 'backgroundimage' ||
-        $filearea === 'loginbackgroundimage' || $filearea === 'favicon' || $filearea === 'additionalresources' ||
+    // Serve the (general) logo files or favicon file from the theme settings.
+    // This code is copied and modified from core_admin_pluginfile() in admin/lib.php.
+    if (in_array($filearea, ['logo', 'logocompact', 'favicon'])) {
+        $size = array_shift($args); // The path hides the size.
+        $itemid = clean_param(array_shift($args), PARAM_INT);
+        $filename = clean_param(array_shift($args), PARAM_FILE);
+        $themerev = theme_get_revision();
+        if ($themerev <= 0) {
+            // Normalise to 0 as -1 doesn't place well with paths.
+            $themerev = 0;
+        }
+
+        // Extract the requested width and height.
+        $maxwidth = 0;
+        $maxheight = 0;
+        if (preg_match('/^\d+x\d+$/', $size)) {
+            list($maxwidth, $maxheight) = explode('x', $size);
+            $maxwidth = clean_param($maxwidth, PARAM_INT);
+            $maxheight = clean_param($maxheight, PARAM_INT);
+        }
+
+        $lifetime = 0;
+        if ($itemid > 0 && $themerev == $itemid) {
+            // The itemid is $CFG->themerev, when 0 or less no caching. Also no caching when they don't match.
+            $lifetime = DAYSECS * 60;
+        }
+
+        // Anyone, including guests and non-logged in users, can view the logos.
+        $options = ['cacheability' => 'public'];
+
+        // Check if we've got a cached file to return. When lifetime is 0 then we don't want to cached one.
+        $candidate = $CFG->localcachedir . "/theme_boost_union/$themerev/$filearea/{$maxwidth}x{$maxheight}/$filename";
+        if (file_exists($candidate) && $lifetime > 0) {
+            send_file($candidate, $filename, $lifetime, 0, false, false, '', false, $options);
+        }
+
+        // Find the original file.
+        $fs = get_file_storage();
+        $filepath = "/{$context->id}/theme_boost_union/{$filearea}/0/{$filename}";
+        if (!$file = $fs->get_file_by_hash(sha1($filepath))) {
+            send_file_not_found();
+        }
+
+        // No need for resizing, but if the file should be cached we save it so we can serve it fast next time.
+        if (empty($maxwidth) && empty($maxheight)) {
+            if ($lifetime) {
+                file_safe_save_content($file->get_content(), $candidate);
+            }
+            send_stored_file($file, $lifetime, 0, false, $options);
+        }
+
+        // Proceed with the resizing.
+        $filedata = $file->resize_image($maxwidth, $maxheight);
+        if (!$filedata) {
+            send_file_not_found();
+        }
+
+        // If we don't want to cached the file, serve now and quit.
+        if (!$lifetime) {
+            send_content_uncached($filedata, $filename);
+        }
+
+        // Save, serve and quit.
+        file_safe_save_content($filedata, $candidate);
+        send_file($candidate, $filename, $lifetime, 0, false, false, '', false, $options);
+
+        // Serve all other (general) image and resource files from the theme settings.
+        // This code is copied and modified from theme_boost_pluginfile() in theme/boost/lib.php.
+    } else if ($context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'backgroundimage' ||
+        $filearea === 'loginbackgroundimage' || $filearea === 'additionalresources' ||
                 $filearea === 'customfonts' || $filearea === 'fontawesome' || $filearea === 'courseheaderimagefallback' ||
                 preg_match("/tilebackgroundimage[2-9]|1[0-2]?/", $filearea))) {
         $theme = theme_config::load('boost_union');
@@ -307,9 +382,9 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
         $fs = get_file_storage();
 
         // Get the file from the filestorage.
-        $filename = array_pop($args);
+        $filename = clean_param(array_pop($args), PARAM_FILE);
         array_pop($args); // This is the themerev number in the $args array which is used for browser caching, here we ignore it.
-        $itemid = array_pop($args);
+        $itemid = clean_param(array_pop($args), PARAM_INT);
         if ((!$file = $fs->get_file($context->id, 'theme_boost_union', $filearea, $itemid, '/', $filename)) ||
                 $file->is_directory()) {
             send_file_not_found();

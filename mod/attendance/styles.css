@@ -332,6 +332,14 @@
     overflow-x: initial;
 }
 
+#page-mod-attendance-preferences .form-control.studentavailability,
+.form-control.studentavailability {
+    display: none;
+    margin: 3% auto;
+    width: 50%;
+    text-align: center;
+}
+
 /* ecastro ULPGC */
 .seatsgrid .seat {
     display: inline-grid;

@@ -41,10 +41,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
      * This renderer function is copied and modified from /lib/outputrenderers.php
      *
      * It checks if the favicon is overridden in a flavour and, if yes, it serves this favicon.
-     * If there isn't a favicon in any flavour set, it continues with the logic from Moodle core.
-
-     * Doing this, it uses the same logic as Moodle 4.1 which introduces a Moodle core favicon setting,
-     * but picks the favicon from the theme_boost_union settings for the time being.
+     * If there isn't a favicon in any flavour set, it serves the general favicon.
      *
      * @since Moodle 2.5.1 2.6
      * @return moodle_url The moodle_url for the favicon
@@ -95,7 +92,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
             }
         }
 
-        // Apparently, there isn't any flavour favicon set. Let's continue with the logic adopted from Moodle 4.1 core.
+        // Apparently, there isn't any flavour favicon set. Let's continue with the logic to serve the general favicon.
         $logo = null;
         if (!during_initial_install()) {
             $logo = get_config('theme_boost_union', 'favicon');
@@ -105,7 +102,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
         }
 
         // Use $CFG->themerev to prevent browser caching when the file changes.
-        return moodle_url::make_pluginfile_url(context_system::instance()->id, 'theme_boost_union', 'favicon', '',
+        return moodle_url::make_pluginfile_url(context_system::instance()->id, 'theme_boost_union', 'favicon', '64x64/',
                 theme_get_revision(), $logo);
     }
 
@@ -115,7 +112,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
      * This renderer function is copied and modified from /lib/outputrenderers.php
      *
      * It checks if the logo is overridden in a flavour and, if yes, it serves this logo.
-     * If there isn't a logo in any flavour set, it continues with the logic from Moodle core.
+     * If there isn't a logo in any flavour set, it serves the general logo.
      *
      * @param int $maxwidth The maximum width, or null when the maximum width does not matter.
      * @param int $maxheight The maximum height, or null when the maximum height does not matter.
@@ -166,8 +163,33 @@ class core_renderer extends \theme_boost\output\core_renderer {
             }
         }
 
-        // Apparently, there isn't any flavour logo set. Let's continue with the logic from Moodle core.
-        return parent::get_logo_url($maxwidth, $maxheight);
+        // Apparently, there isn't any flavour logo set. Let's continue to serve the general logo.
+        $logo = get_config('theme_boost_union', 'logo');
+        if (empty($logo)) {
+            return false;
+        }
+
+        // If the logo is a SVG image, do not add a size to the path.
+        $logoextension = pathinfo($logo, PATHINFO_EXTENSION);
+        if (in_array($logoextension, ['svg', 'svgz'])) {
+            // The theme_boost_union_pluginfile() function will look for a filepath and will try to extract the size from that.
+            // Thus, we cannot drop the filepath from the URL completely.
+            // But we can add a path without an 'x' in it which will then be interpreted by theme_boost_union_pluginfile()
+            // as "no resize requested".
+            $filepath = '1/';
+
+            // Otherwise, add a size to the path.
+        } else {
+            // 200px high is the default image size which should be displayed at 100px in the page to account for retina displays.
+            // It's not worth the overhead of detecting and serving 2 different images based on the device.
+
+            // Hide the requested size in the file path.
+            $filepath = ((int) $maxwidth . 'x' . (int) $maxheight) . '/';
+        }
+
+        // Use $CFG->themerev to prevent browser caching when the file changes.
+        return moodle_url::make_pluginfile_url(context_system::instance()->id, 'theme_boost_union', 'logo', $filepath,
+                theme_get_revision(), $logo);
     }
 
     /**
@@ -176,7 +198,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
      * This renderer function is copied and modified from /lib/outputrenderers.php
      *
      * It checks if the logo is overridden in a flavour and, if yes, it serves this logo.
-     * If there isn't a logo in any flavour set, it continues with the logic from Moodle core.
+     * If there isn't a logo in any flavour set, it serves the general compact logo.
      *
      * @param int $maxwidth The maximum width, or null when the maximum width does not matter.
      * @param int $maxheight The maximum height, or null when the maximum height does not matter.
@@ -227,8 +249,30 @@ class core_renderer extends \theme_boost\output\core_renderer {
             }
         }
 
-        // Apparently, there isn't any flavour logo set. Let's continue with the logic from Moodle core.
-        return parent::get_compact_logo_url($maxwidth, $maxheight);
+        // Apparently, there isn't any flavour logo set. Let's continue to service the general compact logo.
+        $logo = get_config('theme_boost_union', 'logocompact');
+        if (empty($logo)) {
+            return false;
+        }
+
+        // If the logo is a SVG image, do not add a size to the path.
+        $logoextension = pathinfo($logo, PATHINFO_EXTENSION);
+        if (in_array($logoextension, ['svg', 'svgz'])) {
+            // The theme_boost_union_pluginfile() function will look for a filepath and will try to extract the size from that.
+            // Thus, we cannot drop the filepath from the URL completely.
+            // But we can add a path without an 'x' in it which will then be interpreted by theme_boost_union_pluginfile()
+            // as "no resize requested".
+            $filepath = '1/';
+
+            // Otherwise, add a size to the path.
+        } else {
+            // Hide the requested size in the file path.
+            $filepath = ((int)$maxwidth . 'x' . (int)$maxheight) . '/';
+        }
+
+        // Use $CFG->themerev to prevent browser caching when the file changes.
+        return moodle_url::make_pluginfile_url(context_system::instance()->id, 'theme_boost_union', 'logocompact', $filepath,
+                theme_get_revision(), $logo);
     }
 
     /**

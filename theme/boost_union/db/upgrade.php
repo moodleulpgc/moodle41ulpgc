@@ -29,7 +29,7 @@
  * @return bool result
  */
 function xmldb_theme_boost_union_upgrade($oldversion) {
-    global $DB;
+    global $DB, $OUTPUT;
 
     $dbman = $DB->get_manager();
 
@@ -65,6 +65,75 @@ function xmldb_theme_boost_union_upgrade($oldversion) {
 
         // Boost_union savepoint reached.
         upgrade_plugin_savepoint(true, 2022080916, 'theme', 'boost_union');
+    }
+
+    if ($oldversion < 2022080922) {
+
+        // Start composing the notification to inform the admin.
+        $message = html_writer::tag('p', get_string('upgradenotice_2022080922', 'theme_boost_union'));
+
+        // Handle the logo and compact logo (which have got now new settings in Boost Union).
+        foreach (['logo', 'logocompact'] as $setting) {
+            // Initialize the logo copying status.
+            $logocopied = false;
+
+            // Fetch the logo config from Moodle core.
+            $logocore = get_config('core_admin', $setting);
+
+            // If a logo exists in Moodle core.
+            if (!empty($logocore)) {
+                // Get the system context.
+                $systemcontext = \context_system::instance();
+
+                // Get file storage.
+                $fs = get_file_storage();
+
+                // Get the files.
+                $files = $fs->get_area_files($systemcontext->id, 'core_admin', $setting, false, 'itemid', false);
+                if ($files) {
+                    // Just pick the first file - we are sure that there is just one file.
+                    $file = reset($files);
+
+                    // Create the filerecord with the modified information.
+                    $filerecord = array(
+                            'component' => 'theme_boost_union',
+                            'filearea' => $setting,
+                    );
+
+                    // Copy the logo file to Boost Union.
+                    $newfile = $fs->create_file_from_storedfile($filerecord, $file);
+
+                    // Set the theme config to the file name.
+                    set_config($setting, '/'.$newfile->get_filename(), 'theme_boost_union');
+
+                    // Remember the logo copying status.
+                    $logocopied = true;
+                }
+            }
+
+            // If the logo has been copied.
+            if ($logocopied == true) {
+                // Add the corresponding note to the notification.
+                $message .= html_writer::tag('p', get_string('upgradenotice_2022080922_copied', 'theme_boost_union',
+                        get_string('upgradenotice_2022080922_'.$setting, 'theme_boost_union')));
+
+                // Otherwise, if no logo was copied.
+            } else {
+                // Add the corresponding note to the notification.
+                $message .= html_writer::tag('p', get_string('upgradenotice_2022080922_notcopied', 'theme_boost_union',
+                        get_string('upgradenotice_2022080922_'.$setting, 'theme_boost_union')));
+            }
+        }
+
+        // Show the notification.
+        // (If this notification is shown during a CLI upgrade, the p and strong HTML tags are shown as well.
+        // We accept this glitch as it's just a one-time glitch and the admin can still read the notification.
+        $notification = new \core\output\notification($message, \core\output\notification::NOTIFY_SUCCESS);
+        $notification->set_show_closebutton(false);
+        echo $OUTPUT->render($notification);
+
+        // Boost_union savepoint reached.
+        upgrade_plugin_savepoint(true, 2022080922, 'theme', 'boost_union');
     }
 
     return true;

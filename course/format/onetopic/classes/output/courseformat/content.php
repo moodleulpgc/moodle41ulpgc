@@ -219,6 +219,7 @@ class content extends content_base {
         $sections = $modinfo->get_section_info_all();
         $numsections = count($sections);
         $displaysection = $this->format->get_section_number();
+        $enablecustomstyles = get_config('format_onetopic', 'enablecustomstyles');
 
         // Can we view the section in question?
         $context = \context_course::instance($course->id);
@@ -252,21 +253,28 @@ class content extends content_base {
                 $formatoptions = course_get_format($course)->get_format_options($thissection);
 
                 $sectionname = get_section_name($course, $thissection);
+                $title = $sectionname;
+
+                if (!$thissection->visible || !$thissection->available) {
+                    $title .= ': '. get_string('hiddenfromstudents');
+                }
 
                 $customstyles = '';
                 $level = 0;
                 if (is_array($formatoptions)) {
 
-                    if (!empty($formatoptions['fontcolor'])) {
-                        $customstyles .= 'color: ' . $formatoptions['fontcolor'] . '; ';
-                    }
+                    if ($enablecustomstyles) {
+                        if (!empty($formatoptions['fontcolor'])) {
+                            $customstyles .= 'color: ' . $formatoptions['fontcolor'] . '; ';
+                        }
 
-                    if (!empty($formatoptions['bgcolor'])) {
-                        $customstyles .= 'background-color: ' . $formatoptions['bgcolor'] . '; ';
-                    }
+                        if (!empty($formatoptions['bgcolor'])) {
+                            $customstyles .= 'background-color: ' . $formatoptions['bgcolor'] . '; ';
+                        }
 
-                    if (!empty($formatoptions['cssstyles'])) {
-                        $customstyles .= $formatoptions['cssstyles'] . '; ';
+                        if (!empty($formatoptions['cssstyles'])) {
+                            $customstyles .= $formatoptions['cssstyles'] . '; ';
+                        }
                     }
 
                     if (isset($formatoptions['level']) && $section > $firstsection) {
@@ -306,7 +314,7 @@ class content extends content_base {
                     }
                 }
 
-                $newtab = new \format_onetopic\singletab($section, $sectionname, $url, $sectionname,
+                $newtab = new \format_onetopic\singletab($section, $sectionname, $url, $title,
                                         $availablemessage, $customstyles, $specialclass);
                 $newtab->active = !$inactivetab;
 
