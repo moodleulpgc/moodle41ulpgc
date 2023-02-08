@@ -1424,3 +1424,31 @@ function local_ulpgccore_shorten_titles($text, $replaces = array('shortenitems')
 
     return shorten_text($text, 50);
 }
+
+function local_ulpgccore_render_navbar_output(\renderer_base $renderer) {
+    global $USER; 
+    
+    $output = '';
+    
+    // Add the notifications popover.
+    $enabled = \core_message\api::is_processor_enabled("popup");
+    if ($enabled) {
+        $unreadcount = \message_popup\api::count_unread_popup_notifications($USER->id);
+        $items = \message_popup\api::get_popup_notifications($USER->id);
+        $caneditownmessageprofile = has_capability('moodle/user:editownmessageprofile', context_system::instance());
+        $preferencesurl = $caneditownmessageprofile ? new moodle_url('/message/notificationpreferences.php') : null;
+        
+        $context = [
+            'userid' => $USER->id,
+            'unreadcount' => $unreadcount,
+            'urls' => [
+                'seeall' => (new moodle_url('/message/output/popup/notifications.php'))->out(),
+                'preferences' => $preferencesurl ? $preferencesurl->out() : null,
+            ],
+            'items' => $items,
+        ];
+        $output .= $renderer->render_from_template('local_ulpgccore/notification_popover', $context);
+    }    
+    
+    return $output; 
+}
