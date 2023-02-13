@@ -14,8 +14,8 @@
         <FIELD NAME="openingtime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="closingtime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="membership" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="allowedpresenters" TYPE="CHAR" LENGTH="30" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
-        <FIELD NAME="lobbybypass" TYPE="CHAR" LENGTH="30" NOTNULL="true" DEFAULT="" SEQUENCE="false"/>
+        <FIELD NAME="allowedpresenters" TYPE="CHAR" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="lobbybypass" TYPE="CHAR" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="joinannounce" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>        
         <FIELD NAME="authtype" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="showrecordings" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

@@ -72,6 +72,9 @@ class restore_teamsmeeting_activity_structure_step extends restore_activity_stru
         
         $data->openingtime = $this->apply_date_offset($data->closingtime);
         $data->closingtime = $this->apply_date_offset($data->closingtime);
+        if(!isset($data->authtype)) {
+            $data->authtype = '';
+        }
         
         // insert the record
         $newitemid = $DB->insert_record('teamsmeeting', $data);

@@ -77,8 +77,18 @@ class renderer extends plugin_renderer_base {
             $url = $fcontrols->att->url_sessions()->out(true, ['action' => mod_attendance_sessions_page_params::ACTION_ADD]);
             $context->addsession = $this->output->single_button($url, get_string('addsession', 'attendance'), 'post',
              ['class' => 'addsession', 'primary' => true]);
-        }
 
+            // ecastro ULPGC
+            
+            
+            
+            $url = clone $fcontrols->att->url_sessions();
+            $url->param('action', mod_attendance_sessions_page_params::ACTION_AUTO);
+            $button = new \single_button($url, get_string('autosession', 'attendance'), 'post',['class' => 'autosession', 'primary' => true]);
+            $context->autosession = $this->render_password_button($button);
+            // ecastro ULPGC
+        }
+        
         $context->curdatecontrols = $this->render_curdate_controls($fcontrols);
         $context->pagingcontrols = $this->render_paging_controls($fcontrols);
         $context->viewcontrols = $this->render_view_controls($fcontrols);
@@ -86,6 +96,19 @@ class renderer extends plugin_renderer_base {
         return $this->render_from_template('attendance/filter_controls', $context);
     }
 
+    /**
+     * Renders a password button widget.
+     *
+     * This will return HTML to display a form containing a single button.
+     *
+     * @param single_button $button
+     * @return string HTML fragment
+    */
+    protected function render_password_button(\single_button $button) {
+        return $this->render_from_template('attendance/password_button', $button->export_for_template($this));
+    }    
+    
+    
     /**
      * Render group selector
      *

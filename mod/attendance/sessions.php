@@ -62,6 +62,39 @@ $PAGE->navbar->add($att->name);
 
 $formparams = array('course' => $course, 'cm' => $cm, 'modcontext' => $context, 'att' => $att);
 switch ($att->pageparams->action) {
+    case mod_attendance_sessions_page_params::ACTION_AUTO: // ecastro ULPGC
+            $now = time();
+            $formdata = new stdClass();
+            $formdata->addmultiply = null;
+            $formdata->sessiondate = usergetmidnight($now);
+            $datetime = usergetdate($now);
+            $formdata->sestime['starthour'] = $datetime['hours'];
+            $formdata->sestime['startminute'] = $datetime['minutes'];
+            $datetime = usergetdate($now + 60*10);
+            $formdata->sestime['endhour']  = $datetime['hours'];
+            $formdata->sestime['endminute'] = $datetime['minutes'];
+            $formdata->studentscanmark = 1;
+            $formdata->randompassword = 1;
+            $formdata->includeqrcode = 1;
+            $formdata->rotateqrcode = 0;
+            $formdata->sdescription['itemid'] = 0;
+            $formdata->sdescription['text'] = 'Sesión de clase';
+            $formdata->sdescription['format'] = 0;           
+            $formdata->statusset = 0;
+            $formdata->subnet = ''; 
+                        $formdata->sessiontype = mod_attendance_structure::SESSION_COMMON;
+            
+            $sessions = attendance_construct_sessions_data_for_add($formdata, $att);
+            $att->add_sessions($sessions);
+            $att->save_customfields($sessions, $formdata);     
+            
+            //print_object($sessions);
+
+            //die;
+            $url = (new moodle_url('/mod/attendance/password.php', [
+            'session' => $sessions[0]->id]))->out(false);
+            redirect($url);
+        break;
     case mod_attendance_sessions_page_params::ACTION_ADD:
         $url = $att->url_sessions(array('action' => mod_attendance_sessions_page_params::ACTION_ADD));
         $mform = new \mod_attendance\form\addsession($url, $formparams);
@@ -71,7 +104,14 @@ switch ($att->pageparams->action) {
         }
 
         if ($formdata = $mform->get_data()) {
+            print_object($formdata);
+            
             $sessions = attendance_construct_sessions_data_for_add($formdata, $att);
+            
+            print_object($sessions);
+            
+            die;
+            
             $att->add_sessions($sessions);
             $att->save_customfields($sessions, $formdata);
 

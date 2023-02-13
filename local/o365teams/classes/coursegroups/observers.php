@@ -70,7 +70,7 @@ class observers {
         $courseid = $event->courseid;
 
         // Check if course is enabled.
-        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid)) !== true) {
+        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid) !== true) {
             return false;
         }
 
@@ -160,12 +160,12 @@ class observers {
         $courseid = $event->courseid;
 
         // Check if course is enabled.
-        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid)) !== true) {
+        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid) !== true) {
             return false;
         }
 
-        $todeletegroupids[];
-        $todeleteo365recids[];
+        $todeletegroupids = [];
+        $todeleteo365recids = [];
         $result = '';
         if($createusergroups) {
             // Look up group.
@@ -230,7 +230,7 @@ class observers {
         $courseid = $event->courseid;
 
         // Check if course is enabled.
-        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid)) !== true) {
+        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid) !== true) {
             return false;
         }
         
@@ -270,7 +270,7 @@ class observers {
                 // get teams for course and channel
                 $select = 'type = ? AND (subtype = ? OR  subtype = ?) AND moodleid = ? ';
                 $params = ['group', 'courseteam', 'teamfromgroup', $courseid];
-                $teamobjs = $DB->get_records_select('local_o365_objects', $select, $params):
+                $teamobjs = $DB->get_records_select('local_o365_objects', $select, $params);
                 $teamsobjectrec = null;
                 foreach($teamobjs as $team) {
                     if($apiclient->get_channel($team->objectid, $channelobjectrec->objectid)) {
@@ -333,7 +333,7 @@ class observers {
         $courseid = $event->courseid;
 
         // Check if course is enabled.
-        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid)) !== true) {
+        if (\local_o365\feature\coursesync\utils::is_course_sync_enabled($courseid) !== true) {
             return false;
         }
 
@@ -378,7 +378,7 @@ class observers {
                 // get teams for course and channel
                 $select = 'type = ? AND (subtype = ? OR  subtype = ?) AND moodleid = ? ';
                 $params = ['group', 'courseteam', 'teamfromgroup', $courseid];
-                $teamobjs = $DB->get_records_select('local_o365_objects', $select, $params):
+                $teamobjs = $DB->get_records_select('local_o365_objects', $select, $params);
                 $teamsobjectrec = null;
                 foreach($teamobjs as $team) {
                     if($apiclient->get_channel($team->objectid, $channelobjectrec->objectid)) {

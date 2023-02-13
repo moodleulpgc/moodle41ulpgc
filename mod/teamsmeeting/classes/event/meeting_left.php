@@ -35,7 +35,62 @@ defined('MOODLE_INTERNAL') || die();
  */
 class meeting_left extends \core\event\base {
 
-    // For more information about the Events API, please visit:
-    // https://docs.moodle.org/dev/Event_2
+    /**
+     * Returns description of what happened.
+     *
+     * @return string
+     */
+    public function get_description() {
+        $usertext = "The user with id '$this->userid'";
+        if($this->userid != $this->relateduserid) {
+            $usertext .= ", acting as user '$this->relateduserid',";
+        }
+        return "$usertext has left the videoconference '{$this->other['meetingidid']}' in teamsmeeting activity with id '$this->objectid' 
+            with course module id '$this->contextinstanceid'. ";
+    }
+
+    /**
+     * Return localised event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('eventmeetingleft', 'mod_teamsmeeting');
+    }
+
+    /**
+     * Get URL related to the action
+     *
+     * @return \moodle_url
+     */
+    public function get_url() {
+        return new \moodle_url('/mod/teamsmeeting/view.php', array('id' => $this->contextinstanceid));
+    }
+
+    /**
+     * Init method.
+     *
+     * @return void
+     */
+    protected function init() {
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = 'teamsmeeting';
+    }
+
+    /**
+     * Custom validation.
+     *
+     * @throws \coding_exception
+     * @return void
+     */
+    protected function validate_data() {
+        parent::validate_data();
+
+        if (!isset($this->other['meetingid'])) {
+            throw new \coding_exception('The \'meetingid\' value must be set in other.');
+        }
+    }
+
 
 }
