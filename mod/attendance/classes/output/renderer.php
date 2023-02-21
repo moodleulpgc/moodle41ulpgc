@@ -1400,29 +1400,27 @@ class renderer extends plugin_renderer_base {
             }
 
             if (!empty($sess->statusid)) {
-                $status = $userdata->statuses[$sess->statusid];
-                $row->cells[] = $status->description;
+                $updatelink = '';
+                // ecastro ULPGC 
+                $seat = '';
                 if($userdata->filtercontrols->att->seating) {
-                    // ecastro ULPGC
-                    $seat = ''; 
                     $seatinfo->row = '';
                     $seatinfo->col = '';
                     if($sess->seat) {
                         list($seatinfo->row, $seatinfo->col) = explode('_', $sess->seat);
                         $seat = get_string('seatlabel', 'attendance', $seatinfo);
                     }
-                    // ecastro ULPGC
-                    
-                    $update = '';
-                    list($canmark, $reason) = attendance_can_student_mark($sess, false);
-                    if($canmark) {
-                        // URL to the page that lets the student modify their attendance.
-                        $url = new moodle_url('/mod/attendance/attendance.php',
+                }
+                // ecastro ULPGC
+
+                $status = $userdata->statuses[$sess->statusid];
+                list($canmark, $reason) = attendance_can_student_mark($sess, false);
+                if (attendance_check_allow_update($sess->id) && $canmark) {
+                    $url = new moodle_url('/mod/attendance/attendance.php',
                                 array('sessid' => $sess->id, 'sesskey' => sesskey()));
-                        $update = html_writer::link($url, get_string('updateplace', 'attendance'));
-                    }
-                    $row->cells[] = $seat.' '.$update;
-                }  else {              
+                    $updatelink = $seat."<br>".html_writer::link($url, get_string('updateattendance', 'attendance')); // ecastro
+                }
+                $row->cells[] = $status->description.$updatelink;
                 $row->cells[] = format_float($status->grade, 1, true, true) . ' / ' .
                                     format_float($statussetmaxpoints[$status->setnumber], 1, true, true);
                 }
@@ -1459,7 +1457,11 @@ class renderer extends plugin_renderer_base {
                         // URL to the page that lets the student modify their attendance.
                         $url = new moodle_url('/mod/attendance/attendance.php',
                                 array('sessid' => $sess->id, 'sesskey' => sesskey()));
-                        $cell = new html_table_cell(html_writer::link($url, $strsubmitattendance)); // ecastro ULPGC  setrows in submitattendance
+                        if (attendance_session_open_for_students($sess)) {
+                            $cell = new html_table_cell(html_writer::link($url, $strsubmitattendance)); // ecastro ULPGC  setrows in submitattendance
+                        } else {
+                            $cell = new html_table_cell(html_writer::link($url, get_string('submitattendancefuture', 'attendance')));
+                        }
                     }
                     $cell->colspan = 3;
                     $row->cells[] = $cell;
@@ -2091,7 +2093,11 @@ class renderer extends plugin_renderer_base {
 
                             $url = new moodle_url('/mod/attendance/attendance.php',
                             array('sessid' => $sess->id, 'sesskey' => sesskey()));
-                            $cell = new html_table_cell(html_writer::link($url, get_string('submitattendance', 'attendance')));
+                            if (attendance_session_open_for_students($sess)) {
+                                $cell = new html_table_cell(html_writer::link($url, get_string('submitattendance', 'attendance')));
+                            } else {
+                                $cell = new html_table_cell(html_writer::link($url, get_string('submitattendancefuture', 'attendance')));
+                            }
                             $cell->colspan = 3;
                             $row->cells[] = $cell;
                         } else { // Student cannot mark their own attendace.

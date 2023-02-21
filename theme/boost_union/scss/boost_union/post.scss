@@ -8,6 +8,7 @@
 
 /* Add an explicit height to the logo in the navbar.
    This is necessary to render SVG logos properly as their size is calculated different than pixel-based images. */
+.navbar-brand,
 .navbar-brand .logo {
     height: 100%;
     width: auto;
@@ -274,6 +275,14 @@ body.pagelayout-login:not(.loginbackgroundimage) #footnote {
 /*=======================================
  * Settings: Content -> Info banner.
  ======================================*/
+
+/* Adjust the margins of the info banners to align with the header and main content on larger screens. */
+@include media-breakpoint-up(md) {
+    .themeboostunioninfobanner {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+}
 
 /* Remove margin after last paragraph for a nicer look. */
 .themeboostunioninfobanner p:last-child {

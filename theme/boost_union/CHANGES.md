@@ -4,6 +4,16 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r2
+
+* 2023-02-12 - Feature: Enable admins to upload css code for mod_h5p and mod_hvp, solves #166 #207.
+* 2023-02-12 - Cleanup: Change the "Advanced settings" tab to "SCSS", solves #226.
+* 2023-02-12 - Cleanup: Create a dedicated "H5P" tab, solves #227.
+* 2023-02-11 - Cleanup: Course related hints feature was handled twice in drawers.php, solves #223.
+* 2023-02-11 - Improvement: Remove the 'no.' suffix from the info banners and tiles, solves #203.
+* 2023-02-10 - Bugfix: Align horizontal margins for the info banners, solves #218.
+* 2023-02-09 - Bugfix: Fix svg logo display problem in Firefox, solves #160.
+
 ### v4.1-r1
 
 * 2023-02-04 - Upgrade: Persist the dedicated favicon setting in Boost Union even though Moodle core has a favicon setting in 4.1 as well, solves #78.

@@ -46,7 +46,7 @@ if (!empty($attforsession->groupid) && !groups_is_member($attforsession->groupid
     throw new moodle_exception('cannottakethisgroup', 'attendance');
 }
 
-if ($DB->record_exists('attendance_log', ['sessionid' => $id, 'studentid' => $USER->id])) {
+if ($DB->record_exists('attendance_log', ['sessionid' => $id, 'studentid' => $USER->id]) && !attendance_check_allow_update($id)) {
     $url = new moodle_url('/mod/attendance/view.php', ['id' => $cm->id]);
     throw new moodle_exception('attendance_already_submitted', 'mod_attendance', $url);
 }
@@ -208,6 +208,10 @@ if ($mform->is_cancelled()) {
     }
 
     if (!empty($fromform->status)) {
+        [$statuses, $unused] = $att->get_student_statuses($attforsession);
+        if (!isset($statuses[$fromform->status])) {
+            throw new moodle_exception('attendance_status_not_allowed', 'mod_attendance', $url);
+        }
         $success = $att->take_from_student($fromform);
 
         $url = new moodle_url('/mod/attendance/view.php', array('id' => $cm->id));

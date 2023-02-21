@@ -111,8 +111,10 @@ git submodule add git@bitbucket.org:moodleulpgc/moodle-qformat_ulpgctf.git      
 git submodule set-branch -b moodle41 --  question/format/ulpgctf
 
 #Report plugins
+git submodule add git@bitbucket.org:moodleulpgc/moodle-report_attendancetools.git    report/attendancetools
+git submodule set-branch -b moodle41 -- report/attendancetools 
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_autogroups.git    report/autogroups
-git submodule set-branch -b moodle41 --
+git submodule set-branch -b moodle41 -- report/autogroups
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_datacheck.git     report/datacheck
 git submodule set-branch -b moodle41 -- report/datacheck
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_supervision.git   report/supervision

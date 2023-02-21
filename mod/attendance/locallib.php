@@ -156,7 +156,7 @@ function attendance_get_user_sessions_log_full($userid, $pageparams) {
     // ats.groupid 0 => get all sessions that are for all students enrolled in course
     // al.id not null => get all marked sessions whether or not user currently still in group.
     $sql = "SELECT ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description, ats.statusset,
-                   al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus,
+                   al.statusid, al.remarks, ats.studentscanmark, ats.allowupdatestatus, ats.autoassignstatus,
                    ats.preventsharedip, ats.preventsharediptime, ats.studentsearlyopentime,
                    ats.attendanceid, att.name AS attname, att.course AS courseid, c.fullname AS cname
               FROM {attendance_sessions} ats
@@ -493,7 +493,8 @@ function attendance_remove_status($status, $context = null, $cm = null) {
  * @return array
  */
 function attendance_update_status($status, $acronym, $description, $grade, $visible,
-                                  $context = null, $cm = null, $studentavailability = null, $availablebeforesession = false, $setunmarked = false) {
+                                  $context = null, $cm = null, $studentavailability = null,
+                                  $availablebeforesession = false, $setunmarked = false) {
     global $DB;
 
     if (empty($context)) {
@@ -576,16 +577,40 @@ function attendance_random_string($length=6) {
 }
 
 /**
+ * This functions checks if this session is open for students.
+ *
+ * @param stdclass $sess the session record from attendance_sessions.
+ * @return boolean
+ */
+function attendance_session_open_for_students($sess) {
+    $sessionopens = empty($sess->studentsearlyopentime) ? $sess->sessdate : $sess->sessdate - $sess->studentsearlyopentime;
+    if (time() > $sessionopens) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
  * Does this session have a status with availablebeforesession enabled.
  *
  * @param int $sessionid the id in attendance_sessions.
  * @return boolean
  */
-function is_status_availablebeforesession($sessionid) {
+function attendance_check_allow_update($sessionid) {
     global $DB;
+    return $DB->record_exists('attendance_sessions', ['studentscanmark' => 1, 'allowupdatestatus' => 1, 'id' => $sessionid]);
+}
 
+/**
+ * Check to see if this session have a status with availablebeforesession enabled.
+ *
+ * @param int $sessionid the id in attendance_sessions.
+ * @return boolean
+ */
+function attendance_is_status_availablebeforesession($sessionid) {
+    global $DB;
     $attendanceid = $DB->get_field('attendance_sessions', 'attendanceid', array('id' => $sessionid));
-
     return $DB->record_exists('attendance_statuses', ['deleted' => 0, 'visible' => 1, 'availablebeforesession' => 1,
                                                       'attendanceid' => $attendanceid]);
 }
@@ -614,7 +639,7 @@ function attendance_can_student_mark($sess, $log = true) {
             // ecastro ULPGC
             
         } elseif (empty($attconfig->studentscanmarksessiontime) ||
-            (is_status_availablebeforesession($sess->id)) && time() < $sess->sessdate) {
+            (attendance_is_status_availablebeforesession($sess->id)) && time() < $sess->sessdate) {
             $canmark = true;
             $reason = '';
         } else {
@@ -775,6 +800,10 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
         $formdata->studentscanmark = 0;
     }
 
+    if (empty(get_config('attendance', 'allowupdatestatus'))) {
+        $formdata->allowupdatestatus = 0;
+    }
+
     $calendarevent = 0;
     if (isset($formdata->calendarevent)) { // Calendar event should be created.
         $calendarevent = 1;
@@ -848,6 +877,11 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
 
                     if (isset($formdata->studentscanmark)) { // Students will be able to mark their own attendance.
                         $sess->studentscanmark = 1;
+                        if (isset($formdata->allowupdatestatus)) {
+                            $sess->allowupdatestatus = $formdata->allowupdatestatus;
+                        } else {
+                            $sess->allowupdatestatus = 0;
+                        }
                         if (isset($formdata->autoassignstatus)) {
                             $sess->autoassignstatus = 1;
                         }
@@ -908,6 +942,7 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
         $sess->calendarevent = $calendarevent;
         $sess->timemodified = $now;
         $sess->studentscanmark = 0;
+        $sess->allowupdatestatus = 0;
         $sess->autoassignstatus = 0;
         $sess->subnet = '';
         $sess->studentpassword = '';
@@ -958,6 +993,11 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
         if (isset($formdata->studentscanmark) && !empty($formdata->studentscanmark)) {
             // Students will be able to mark their own attendance.
             $sess->studentscanmark = 1;
+            if (!empty($formdata->allowupdatestatus)) {
+                $sess->allowupdatestatus = $formdata->allowupdatestatus;
+            } else {
+                $sess->allowupdatestatus = 0;
+            }
             if (isset($formdata->autoassignstatus) && !empty($formdata->autoassignstatus)) {
                 $sess->autoassignstatus = 1;
             }

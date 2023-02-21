@@ -1,6 +1,6 @@
 /* ULPGC additional classes
 -------------------------*/
-
+/*
 .availabilityinfo {
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
@@ -55,7 +55,6 @@
     margin-top: -3.4rem;
 }
 
-
 .section_availability:not(:empty)::before {
     font-family: FontAwesome;
     content: "\f05e";
@@ -79,7 +78,7 @@
     z-index: 100;
     opacity: 1;
 }
-
+*/
 
 .author-groups-container .rounded-circle {
     position: absolute;

@@ -64,7 +64,7 @@ This setting is already available in the Moodle core theme Boost. For more infor
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
 Please note: This will not override the setting "theme_boost_campus | loginbackgroundimage" which means that the pictures uploaded to the login page background will be displayed anyway.
 
-#### Tab "Advanced settings"
+#### Tab "SCSS"
 
 In this tab there are the following settings:
 
@@ -91,12 +91,6 @@ With this setting, you can override Moodle's course content width without manual
 ###### Medium content max width
 
 With this setting, you can override Moodle's default medium width without manual SCSS modifications.
-
-##### Content width
-
-###### H5P content bank max width
-
-With this setting, you can override Moodle's H5P content bank width without manual SCSS modifications.
 
 #### Tab "Branding"
 
@@ -211,6 +205,20 @@ With this setting you can upload custom fonts to the theme. The advantage of upl
 ##### FontAwesome
 
 Moodle core ships with FontAwesome 4 icons which are fine, but FontAwesome has evolved since then. If you want to use more recent FontAwesome icons, you can do this with this setting. As soon as you choose another version than FontAwesome 4, additional settings will appear where you can upload more recent FontAwesome versions.
+
+#### Tab "H5P"
+
+##### Raw CSS for H5P
+
+###### Raw CSS for H5P
+
+Use this field to provide CSS code which will be applied to the presentation of H5P content by mod_h5p and mod_hvp. Please inspect the H5P content types to find the necessary CSS selectors.
+
+##### Content width
+
+###### H5P content bank max width
+
+With this setting, you can override Moodle's H5P content bank width without manual SCSS modifications.
 
 #### Tab "Mobile app"
 
@@ -453,10 +461,12 @@ Moodle an Hochschulen e.V. would like to thank these main contributors (in alpha
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
+* lern.link GmbH, Beata Waloszczyk: Code
 * Lower Saxony (Federal state of Germany): Funding
 * moodleSCHULE e.V., Ralf Krause: German translation and curation
 * Ruhr University Bochum, Melanie Treitinger: Code
 * RWTH Aachen, Josha Bartsch: Code
+* University of Graz, André Menrath: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
 * Zurich University of Applied Sciences (ZHAW): Funding
 

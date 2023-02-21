@@ -154,8 +154,8 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $page->add($tab);
 
 
-        // Create advanced settings tab.
-        $tab = new admin_settingpage('theme_boost_union_look_advanced', get_string('advancedsettings', 'theme_boost', null, true));
+        // Create SCSS tab.
+        $tab = new admin_settingpage('theme_boost_union_look_scss', get_string('scsstab', 'theme_boost_union', null, true));
 
         // Create Raw SCSS heading.
         $name = 'theme_boost_union/scssheading';
@@ -208,21 +208,6 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $title = get_string('mediumcontentmaxwidthsetting', 'theme_boost_union', null, true);
         $description = get_string('mediumcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
         $default = '1120px';
-        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $tab->add($setting);
-
-        // Create content width heading.
-        $name = 'theme_boost_union/contentwidthheading';
-        $title = get_string('contentwidthheading', 'theme_boost_union', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
-        $tab->add($setting);
-
-        // Setting: H5P content bank max width.
-        $name = 'theme_boost_union/h5pcontentmaxwidth';
-        $title = get_string('h5pcontentmaxwidthsetting', 'theme_boost_union', null, true);
-        $description = get_string('h5pcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
-        $default = '960px';
         $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
@@ -839,6 +824,44 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             $setting = new admin_setting_description($name, $title, $description);
             $tab->add($setting);
         }
+
+        // Add tab to settings page.
+        $page->add($tab);
+
+
+        // Create H5P tab.
+        $tab = new admin_settingpage('theme_boost_union_look_h5p',
+                get_string('h5ptab', 'theme_boost_union', null, true));
+
+        // Create Raw CSS for H5P heading.
+        $name = 'theme_boost_union/cssh5pheading';
+        $title = get_string('cssh5pheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Raw CSS for H5P.
+        $name = 'theme_boost_union/cssh5p';
+        $title = get_string('cssh5psetting', 'theme_boost_union', null, true);
+        $description = get_string('cssh5psetting_desc', 'theme_boost_union', null, true);
+        $default = '';
+        $setting = new admin_setting_scsscode($name, $title, $description, $default, PARAM_RAW);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Create content bank width heading.
+        $name = 'theme_boost_union/contentwidthheading';
+        $title = get_string('contentwidthheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: H5P content bank max width.
+        $name = 'theme_boost_union/h5pcontentmaxwidth';
+        $title = get_string('h5pcontentmaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('h5pcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '960px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
 
         // Add tab to settings page.
         $page->add($tab);
