@@ -737,10 +737,10 @@ class mod_attendance_structure {
             $record->seat = optional_param('seat', '', PARAM_TEXT); // ecastro ULPGC
         }
 
+        $session = $this->get_session_info($mformdata->sessid); // ecastro ULPGC moved here     
         $existingattendance = $DB->get_field('attendance_log', 'id',
                             array('sessionid' => $mformdata->sessid, 'studentid' => $USER->id));
-
-        $session = $this->get_session_info($mformdata->sessid); // ecastro ULPGC moved here     
+        
         // ecastro ULPGC check for no duplicate users in the same seat
         if($record->seat &&  $session->seatrows) {
             $select = 'sessionid = :sid AND seat = :seat AND studentid <> :userid';
@@ -752,14 +752,22 @@ class mod_attendance_structure {
             }      
         }
 
-        if ($existingattendance && !attendance_check_allow_update($mformdata->sessid)) {
-            // Already recorded do not save.
-            return false;
-        } else if (attendance_check_allow_update($mformdata->sessid)) {
-            $record->id = $existingattendance;
-            $logid = $DB->update_record('attendance_log', $record, false);
+        if (!empty($existingattendance)) {
+            // ecastro ULPGC
+            if($this->seating && $session->seatrows) {
+                if(($session->sessdate + $session->duration + DAYSECS*7) < $now) {
+                    // we are late, do no t save.
+                    return false;                    
+                }
+            } elseif (!attendance_check_allow_update($mformdata->sessid)) {
+                // Already recorded do not save.
+                return false;
+            } else {
+                $record->id = $existingattendance;
+                $DB->update_record('attendance_log', $record);
+            }
         } else {
-            $logid = $DB->insert_record('attendance_log', $record, false);
+            $logid = $DB->insert_record('attendance_log', $record);
             $record->id = $logid;
         }
 

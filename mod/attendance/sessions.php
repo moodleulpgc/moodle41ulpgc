@@ -62,6 +62,8 @@ $PAGE->navbar->add($att->name);
 
 $formparams = array('course' => $course, 'cm' => $cm, 'modcontext' => $context, 'att' => $att);
 switch ($att->pageparams->action) {
+    /*
+    // ecastro ULPGC auto attendance, removel upon report_attendancetools gets the same without changes here
     case mod_attendance_sessions_page_params::ACTION_AUTO: // ecastro ULPGC
             $now = time();
             $formdata = new stdClass();
@@ -95,6 +97,7 @@ switch ($att->pageparams->action) {
             'session' => $sessions[0]->id]))->out(false);
             redirect($url);
         break;
+    */
     case mod_attendance_sessions_page_params::ACTION_ADD:
         $url = $att->url_sessions(array('action' => mod_attendance_sessions_page_params::ACTION_ADD));
         $mform = new \mod_attendance\form\addsession($url, $formparams);
@@ -104,14 +107,7 @@ switch ($att->pageparams->action) {
         }
 
         if ($formdata = $mform->get_data()) {
-            print_object($formdata);
-            
             $sessions = attendance_construct_sessions_data_for_add($formdata, $att);
-            
-            print_object($sessions);
-            
-            die;
-            
             $att->add_sessions($sessions);
             $att->save_customfields($sessions, $formdata);
 

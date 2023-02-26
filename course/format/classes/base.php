@@ -86,6 +86,10 @@ abstract class base {
     /** @var array plugin name => class name. */
     private static $classesforformat = array('site' => 'site');
 
+    /** @var int flag to indicate where activity indentation is enabled or not */ 
+    protected $activityindentationenabled = 0; // ecastro ULPGC
+    
+    
     /**
      * Creates a new instance of class
      *
@@ -98,6 +102,10 @@ abstract class base {
     protected function __construct($format, $courseid) {
         $this->format = $format;
         $this->courseid = $courseid;
+        
+        if(get_config('local_ulpgccore', 'activityindentationenabled')) { // ecastro ULPGC
+            $this->activityindentationenabled = 1;
+        }
     }
 
     /**
@@ -822,6 +830,37 @@ abstract class base {
         return array();
     }
 
+    
+    /**
+     * Definitions of the default options that this course format uses for course
+     * Used for activityindentation
+     * 
+     * @auth ecastro ULPGC
+     * 
+     * @param array $options
+     * @param bool $foreditform
+     * @return array of options
+     */
+    public function course_default_options(&$options, $foreditform = false) {
+            if($this->activityindentationenabled) { // ecastro ULPGC
+                if(!isset($options['activityindentation'])) { 
+                    $options['activityindentation'] = [
+                        'default' => $this->course->activityindentation,
+                        'type' => PARAM_INT,
+                    ];
+                   
+                    if ($foreditform ) {
+                        $options['activityindentation'] = [
+                            'label' => new lang_string('activityindentation', 'local_ulpgccore'),
+                            'element_type' => 'advcheckbox',
+                            'help' => 'activityindentation',
+                            'help_component' => 'local_ulpgccore',
+                        ];
+                    }
+                }
+            } 
+    }
+    
     /**
      * Definitions of the additional options that this course format uses for section
      *
@@ -867,6 +906,7 @@ abstract class base {
         global $DB;
         if ($section === null) {
             $options = $this->course_format_options();
+            $this->course_default_options($options); // ecastro ULPGC
         } else {
             $options = $this->section_format_options();
         }
@@ -935,6 +975,7 @@ abstract class base {
             $options = $this->section_format_options(true);
         } else {
             $options = $this->course_format_options(true);
+            $this->course_default_options($options, true); // ecastro ULPGC
         }
         foreach ($options as $optionname => $option) {
             if (!isset($option['element_type'])) {
@@ -1002,6 +1043,7 @@ abstract class base {
     protected function validate_format_options(array $rawdata, int $sectionid = null) : array {
         if (!$sectionid) {
             $allformatoptions = $this->course_format_options(true);
+            $this->course_default_options($allformatoptions, true); // ecastro ULPGC
         } else {
             $allformatoptions = $this->section_format_options(true);
         }
@@ -1042,6 +1084,7 @@ abstract class base {
         $data = $this->validate_format_options((array)$data, $sectionid);
         if (!$sectionid) {
             $allformatoptions = $this->course_format_options();
+            $this->course_default_options($allformatoptions); // ecastro ULPGC
             $sectionid = 0;
         } else {
             $allformatoptions = $this->section_format_options();

@@ -43,6 +43,7 @@ mod/registry
 mod/teamsmeeting
 mod/videolib
 question/format/ulpgctf
+report/attendancetools
 report/autogroups
 report/datacheck
 report/o365channels

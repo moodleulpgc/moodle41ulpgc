@@ -89,7 +89,9 @@ if ($hassiteconfig) {
     
     $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/shortennavbar', get_string('shortennavbar','local_ulpgccore'), get_string('explainshortennavbar','local_ulpgccore'), 0));    
     
-    $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/blockalert', get_string('blockalert','local_ulpgccore'), get_string('explainblockalert','local_ulpgccore'), 0));        
+    $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/blockalert', get_string('blockalert','local_ulpgccore'), get_string('explainblockalert','local_ulpgccore'), 0));
+    
+    $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/activityindentationenabled', get_string('activityindentationenabled','local_ulpgccore'), get_string('explainactivityindentationenabled','local_ulpgccore'), 0));        
     
     $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/enabledadvchooser', 
                     get_string('enableadvchooser','local_ulpgccore'), get_string('explainenableadvchooser','local_ulpgccore'), 0));

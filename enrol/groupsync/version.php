@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'enrol_groupsync';
 $plugin->release = '1.2.2';
-$plugin->version = 2019111203; // ecastro ULPGC +3 
+$plugin->version = 2019111200;
 $plugin->requires = 2016052000;
-//$plugin->cron = 3600;
+$plugin->cron = 3600;
 $plugin->maturity = MATURITY_STABLE;

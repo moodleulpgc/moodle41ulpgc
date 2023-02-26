@@ -153,7 +153,8 @@ $string['failuresubject'] = 'Fallos en envío de Notificaciones de actividades p
 $string['messageprovider:supervision_warning'] = 'Recordatorios de Supervisión de actividades pendientes';
 
 $string['settingsmailing'] = 'Mailing settings';
-$string['settingsfromunits'] = 'Synch from ULPGC units settings';
+$string['syncfromunits'] = 'Supervisors from ULPGC units';
+$string['settingsfromunits'] = 'Settings';
 $string['sinculpgcnotinstalled'] = 'local_sinculpgc not installed. Parameters below will not work';
 $string['supervisorrole'] = 'Role for superviser';
 $string['supervisorrole_help'] = 'The role assigned to supervisor users in the supervised categories/courses';

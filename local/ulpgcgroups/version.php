@@ -12,11 +12,9 @@
 ///  Called by moodle_needs_upgrading() and /admin/index.php
 /////////////////////////////////////////////////////////////////////////////////
 
-$plugin->version  = 2019102500;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version  = 2023022400;  // The current module version (Date: YYYYMMDDXX)
 $plugin->requires = 2015111602;  // Requires this Moodle version (Moodle 2.7)
-$plugin->cron     = 0;           // Period for cron to check this module (secs)
-
+//$plugin->cron     = 0;           // Period for cron to check this module (secs)
 $plugin->component = 'local_ulpgcgroups';
 $plugin->maturity  = MATURITY_STABLE;
-
-$plugin->release = '1.2';             // User-friendly version number
+$plugin->release = '1.3';             // User-friendly version number

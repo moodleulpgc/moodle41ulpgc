@@ -50,6 +50,9 @@ class format_weeks extends core_courseformat\base {
     }
 
     public function uses_indentation(): bool {
+        if(!empty($this->activityindentationenabled) && $this->course->activityindentation) { // ecastro ULPGC
+            return true;
+        } 
         return false;
     }
 

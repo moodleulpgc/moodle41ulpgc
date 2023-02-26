@@ -273,3 +273,8 @@ sino que se presentará como no leído en el interfaz aunque se haya enviado ant
 $string['blockalert'] = 'Alertas en Panel derecho';
 $string['explainblockalert'] = 'Si se activa, cuando alguno de los bloques del panel derecho contenga mensajes importantes que deben ser vistos,  
 el panel derecho se configura abierto desde el inicio. ';
+$string['activityindentation'] = 'Sangría de Actividades/Recursos';
+$string['activityindentation_help'] = 'Si se activa, será posible indentar horizontalmente Actividades/Recursos en la página del curso';
+$string['activityindentationenabled'] = 'Indentación de actividades';
+$string['explainactivityindentationenabled'] = 'Si se activa, los nombres de actividades en la págiba de curso mostrarán indentación, 
+y el menú de edición de cada módulo de actividad mostrará flechas de indentación.';

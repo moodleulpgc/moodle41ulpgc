@@ -15,26 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Task definition for enrol_groupsync.
- * @author    Enrique Castro <@ULPGC>
- * @copyright Enrique Castro
- * @package   enrol_groupsync
+ * Coursecompleted enrolment plugin event handler definition.
+ *
+ * @package   simplecertificate
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
-        'classname' => '\enrol_groupsync\task\sync_enrolments',
-        'blocking' => 0,
-        'minute' => '35',
-        'hour' => '*',
-        'day' => '*',
-        'month' => '*',
-        'dayofweek' => '*',
-        'disabled' => 0
-    ),
-
+$observers = array(
+	array(
+		'eventname' => '\core\event\course_completed',
+        'callback' => '\mod_simplecertificate\observer::sendemails'
+    )
 );
-

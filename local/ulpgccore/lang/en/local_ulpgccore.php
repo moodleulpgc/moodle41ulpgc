@@ -321,3 +321,8 @@ $string['checkcrontrask'] = 'Check cron is running task';
 $string['blockalert'] = 'Right panel open on alert';
 $string['explainblockalert'] = 'When enabled, if some right panel blocks has content that must be seen, 
 the right panel is set open at beginning';
+$string['activityindentation'] = 'Indent Activiies/Resources';
+$string['activityindentation_help'] = 'If enabled, activities or resources in the course page may be indented horizontally.';
+$string['activityindentationenabled'] = 'Enable activity indentation';
+$string['explainactivityindentationenabled'] = 'If enabled, then activity cards in course page may be indentated, 
+and edit menu will show indent tools.';

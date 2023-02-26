@@ -28,12 +28,20 @@ if ($hassiteconfig) {
     $temp->add(new \admin_setting_configcolourpicker('local_ulpgcgroups/colorrestricted', 
                             get_string('colorrestricted','local_ulpgcgroups'), 
                             get_string('explaincolorrestricted','local_ulpgcgroups'), '#800000', null));
-    
+
+    if($enrol_groupsync = get_config('enrol_groupsync')) {
+        $temp->add(new \admin_setting_configcheckbox('local_ulpgcgroups/enrolgroupsyncenabled', 
+                                get_string('enrolgroupsyncenabled','local_ulpgcgroups'), 
+                                get_string('explainenrolgroupsyncenabled','local_ulpgcgroups'), 0));    
+    } else {
+        $temp->add(new \admin_setting_description('local_ulpgcgroups/enrolgroupsyncenabled', 
+                                get_string('enrolgroupsyncenabled','local_ulpgcgroups'), 
+                                get_string('explainenrolgroupsyncno','local_ulpgcgroups')));            
+    }
     
     $temp->add(new \admin_setting_configcheckbox('local_ulpgcgroups/enablefpgroupsfromcohort', 
                             get_string('enablefpgroupsfromcohort','local_ulpgcgroups'), 
                             get_string('explainenablefpgroupsfromcohort','local_ulpgcgroups'), 0));    
-
                             
     $systemcontext = context_system::instance();                        
     if($cohorts = $DB->get_records_menu('cohort', array('contextid'=>$systemcontext->id), 'name', 'id,name')) {

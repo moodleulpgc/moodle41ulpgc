@@ -31,10 +31,6 @@ $ADMIN->add('localplugins', new admin_category('managesupervisionwarnings', new 
     $pluginmanager = core_plugin_manager::instance();
     $plugins = $pluginmanager->get_plugins_of_type('supervisionwarning');
 
-    $temp = new admin_settingpage('supervisionwarnings', new lang_string('warnings', 'local_supervision'));
-    $temp->add(new \local_supervision\setting_warnings());
-    $ADMIN->add('managesupervisionwarnings', $temp);
-    
     $settings = new admin_settingpage('local_supervision_settings', get_string('supervisionsettings','local_supervision')); 
 
     $settings->add(new admin_setting_configcheckbox('local_supervision/enablestats', 
@@ -108,6 +104,9 @@ $ADMIN->add('localplugins', new admin_category('managesupervisionwarnings', new 
                     get_string('pendingmail', 'local_supervision'),
                     get_string('pendingmail_help', 'local_supervision'), '', PARAM_NOTAGS));
 
+    $ADMIN->add('managesupervisionwarnings', $settings);    
+    
+    $settings = new admin_settingpage('local_supervision_syncunits', get_string('syncfromunits','local_supervision'));     
     // Units supervisers section.
     $sinculpgc = get_component_version('local_sinculpgc');  
 
@@ -146,16 +145,21 @@ $ADMIN->add('localplugins', new admin_category('managesupervisionwarnings', new 
                     
     $ADMIN->add('managesupervisionwarnings', $settings);
 
+    $url = new moodle_url('/local/supervision/supervisors.php', array());
+    $ADMIN->add('managesupervisionwarnings', new admin_externalpage('local_supervision_supervisors', 
+                    get_string('supervisors', 'local_supervision'),  $url,'local/supervision:manage'));    
+    
+    $url = new moodle_url('/local/supervision/holidays.php', array());
+    $ADMIN->add('managesupervisionwarnings', new admin_externalpage('local_supervision_holidays', 
+                    get_string('editholidays', 'local_supervision'),  $url,'local/supervision:manage'));
+    
+    $temp = new admin_settingpage('supervisionwarnings', new lang_string('warnings', 'local_supervision'));
+    $temp->add(new \local_supervision\setting_warnings());
+    $ADMIN->add('managesupervisionwarnings', $temp);
+    
     foreach ($plugins as $plugin) {
         /** @var \local_supervision\plugininfo\managejob $plugin */
         $plugin->load_settings($ADMIN, 'managesupervisionwarnings', $hassiteconfig);
     }
-
-    $url = new moodle_url('/local/supervision/holidays.php', array());
-    $ADMIN->add('managesupervisionwarnings', new admin_externalpage('local_supervision_holidays', 
-                    get_string('editholidays', 'local_supervision'),  $url,'local/supervision:manage'));
-    $url = new moodle_url('/local/supervision/supervisors.php', array());
-    $ADMIN->add('managesupervisionwarnings', new admin_externalpage('local_supervision_supervisors', 
-                    get_string('supervisors', 'local_supervision'),  $url,'local/supervision:manage'));
 
 }

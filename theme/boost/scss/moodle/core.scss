@@ -1137,11 +1137,20 @@ tr.flagged-tag a {
         .mod-indent-#{$i} {
             width: $width;
         }
+        /* ecastro ULPGC  enforce  activityindentationenabled */
+        /* Also creates a series of .activity-indent-# rules based on same criteria. */
+        .activity-indent-#{$i} {
+            margin-left: $width;
+        }        
     }
 
     .mod-indent-huge {
         width: (16 * $mod-indent-size);
     }
+    /* ecastro ULPGC */
+    .activity-indent-huge { 
+        margin-left: (16 * $mod-indent-size);
+    }    
 }
 
 /* Audio player size in 'block' mode (can only change width, height is hardcoded in JS) */
@@ -3032,12 +3041,11 @@ blockquote {
     border-left: 5px solid $gray-400;
 }
 
-/** Prevent long strings exceeding page width */
+/* Prevent long strings exceeding page width */
 .page-header-headings,
 .coursename,
 .categoryname,
-.breadcrumb-item,
-.dropdown-item {
+.breadcrumb-item {
 
     &:not(.text-truncate) {
         word-break: normal;

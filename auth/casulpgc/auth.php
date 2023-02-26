@@ -26,7 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once ($CFG->libdir . '/authlib.php');
-require_once ($CFG->dirroot.'/auth/cas/CAS/vendor/apereo/phpcas/source/CAS.php');
+require_once($CFG->dirroot.'/auth/ldap/auth.php');
+require_once($CFG->dirroot.'/auth/cas/CAS/vendor/autoload.php');
+require_once($CFG->dirroot.'/auth/cas/CAS/vendor/apereo/phpcas/source/CAS.php');
 // Conexión a base de datos externa
 require_once ($CFG->dirroot . '/local/sinculpgc/locallib.php');
 
@@ -520,7 +522,7 @@ class auth_plugin_casulpgc extends auth_plugin_base
                         if (is_null($newuser->city)) {
                             $newuser->city = $CFG->defaultcity;
                         }
-                        
+
                         $newuser->timemodified = time();
                         $newuser->confirmed = 1;
                         /* Si no está abierto el acceso a los alumnos, se le deniega el acceso */

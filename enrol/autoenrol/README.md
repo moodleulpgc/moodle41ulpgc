@@ -33,6 +33,11 @@ like [Restriction by language](https://moodle.org/plugins/availability_language)
 3. Visit the "Site Administration > Plugins > Enrolments" page.
 4. Click the eye symbol next to "Auto Enrol" to enable the plugin. 
 
+## How to use AutoEnrol
+
+Check Moodle documentation:
+https://docs.moodle.org/en/Enrolment_methods#Managing_enrolment_methods.
+
 ## Maintainer
 
 The module is being maintained by Roberto Pinna with Angelo Calò (testing).

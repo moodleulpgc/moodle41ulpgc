@@ -17,7 +17,7 @@ git submodule add https://github.com/catalyst/moodle-local_sitenotice.git       
 #git submodule add https://github.com/moodleuulm/moodle-local_staticpage.git         local/staticpage
 git submodule add https://github.com/MorrisR2/moodle_local_unusedquestions.git     local/unusedquestions
 git submodule add https://github.com/vfremaux/moodle-local_vflibs.git                      local/vflibs
-cd local/vflibs && git checkout MOODLE_38_WORKING && cd ../../
+cd local/vflibs && git checkout MOODLE_39_STABLE && cd ../../
 git submodule add https://github.com/valentineus/moodle-webhooks.git                     local/webhooks
 cd local/webhooks && git checkout v3.0.0-stable && cd ../../
 
@@ -30,7 +30,7 @@ git submodule add https://github.com/Microsoft/moodle-auth_oidc.git             
 git submodule add https://github.com/Microsoft/moodle-block_microsoft.git           blocks/microsoft
 git submodule add https://github.com/PoetOS/moodle-filter_oembed.git                filter/oembed
 #branch MOODLE_38_STABLE
-cd filter/oembed && git checkout MOODLE_38_STABLE && cd ../../
+cd filter/oembed && git checkout MOODLE_311_STABLE && cd ../../
 #git submodule add https://github.com/ndunand/moodle-filter_html5avtomp4.git         filter/html5avtomp4
 
 git submodule add https://github.com/Microsoft/moodle-repository_office365.git      repository/office365
@@ -62,7 +62,7 @@ git submodule add https://github.com/projectestac/moodle-mod_geogebra.git       
 git submodule add https://github.com/rogerbaba/moodle-mod_groupselect.git               mod/groupselect
 git submodule add https://github.com/gbateson/moodle-mod_hotpot.git                     mod/hotpot
 git submodule add https://github.com/drachels/moodle-mod_hotquestion.git                mod/hotquestion
-cd mod/hotquestion && git checkout MOODLE_402_STABLE && cd ../../
+#cd mod/hotquestion && git checkout MOODLE_402_STABLE && cd ../../
 #git submodule add https://github.com/h5p/h5p-moodle-plugin.git                          mod/hvp
 git submodule add https://github.com/netspotau/moodle-mod_lightboxgallery.git           mod/lightboxgallery
 git submodule add https://github.com/Edunao/moodle-mod_masks.git                        mod/masks
@@ -79,8 +79,8 @@ cd mod/scheduler && git checkout MOODLE_37_STABLE && cd ../../
 
 git submodule add https://github.com/yedidiaklein/moodle-mod_securepdf.git              mod/securepdf
 git submodule add https://github.com/bozoh/moodle-mod_simplecertificate.git             mod/simplecertificate
-#Branch MOODLE_35
-cd mod/simplecertificate && git checkout MOODLE_35 && cd ../../
+#Branch release/MOODLE_38_STABLE
+cd mod/simplecertificate && git checkout release/MOODLE_38_STABLE && cd ../../
 
 git submodule add https://github.com/frankkoch/moodle-mod_studentquiz.git               mod/studentquiz
 git submodule add https://github.com/mudrd8mz/moodle-mod_subcourse.git                  mod/subcourse
@@ -169,7 +169,7 @@ git submodule add https://github.com/agrowe/moodle-tool_rebuildcoursecache.git  
 git submodule add https://github.com/moodleuulm/moodle-tool_redis.git                   admin/tool/redis
 git submodule add https://github.com/piersharding/moodle-tool_uploadcoursecategory.git  admin/tool/uploadcoursecategory
 git submodule add https://github.com/grabs/moodle-tools_userdebug.git                   admin/tool/userdebug
-cd admin/tool/userdebug && git checkout MOODLE_39_STABLE && cd ../../../
+cd admin/tool/userdebug && git checkout MOODLE_401_STABLE && cd ../../../
 
 #Authentication methods 
 git submodule add https://github.com/catalyst/moodle-auth_basic.git auth/basic
@@ -196,7 +196,7 @@ git submodule add https://github.com/moodleuulm/moodle-block_cohortspecifichtml.
 #Demostudent from ZIP, repo is a complete moodle install
 #git submodule add https://github.com/ualberta-eclass/moodle-block_demostudent.git       blocks/demostudent
 git submodule add https://github.com/Arantor/moodle-block_multiblock.git                blocks/multiblock
-git submodule add https://bitbucket.org/covuni/moodle-block_news_slider.git             blocks/news_slider
+#git submodule add https://bitbucket.org/covuni/moodle-block_news_slider.git             blocks/news_slider
 git submodule add https://github.com/LafColITS/moodle-block_remote_courses.git          blocks/remote_courses
 git submodule add https://github.com/cwarwicker/moodle-block_quick_user.git             blocks/quick_user
 git submodule add https://github.com/andil-elearning/moodle-block_section.git           blocks/section

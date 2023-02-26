@@ -51,6 +51,10 @@ class format_topics extends core_courseformat\base {
     }
 
     public function uses_indentation(): bool {
+        if(!empty($this->activityindentationenabled) && $this->course->activityindentation) { // ecastro ULPGC
+            return true;
+        } 
+        
         return false;
     }
 
@@ -290,6 +294,9 @@ class format_topics extends core_courseformat\base {
             ];
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
         }
+        
+        
+        
         return $courseformatoptions;
     }
 

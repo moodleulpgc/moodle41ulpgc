@@ -79,13 +79,12 @@ class renderer extends plugin_renderer_base {
              ['class' => 'addsession', 'primary' => true]);
 
             // ecastro ULPGC
-            
-            
-            
+            /*
             $url = clone $fcontrols->att->url_sessions();
             $url->param('action', mod_attendance_sessions_page_params::ACTION_AUTO);
             $button = new \single_button($url, get_string('autosession', 'attendance'), 'post',['class' => 'autosession', 'primary' => true]);
             $context->autosession = $this->render_password_button($button);
+            */
             // ecastro ULPGC
         }
         
@@ -1401,24 +1400,34 @@ class renderer extends plugin_renderer_base {
 
             if (!empty($sess->statusid)) {
                 $updatelink = '';
-                // ecastro ULPGC 
-                $seat = '';
+                $status = $userdata->statuses[$sess->statusid];
+                $row->cells[] = $status->description;
                 if($userdata->filtercontrols->att->seating) {
+                // ecastro ULPGC 
+                    $seat = '';
                     $seatinfo->row = '';
                     $seatinfo->col = '';
                     if($sess->seat) {
                         list($seatinfo->row, $seatinfo->col) = explode('_', $sess->seat);
                         $seat = get_string('seatlabel', 'attendance', $seatinfo);
-                    }
                 }
                 // ecastro ULPGC
 
-                $status = $userdata->statuses[$sess->statusid];
+                    $update = '';
+                    list($canmark, $reason) = attendance_can_student_mark($sess, false);
+                    if(attendance_check_allow_update($sess->id) && $canmark) {
+                        // URL to the page that lets the student modify their attendance.
+                        $url = new moodle_url('/mod/attendance/attendance.php',
+                                array('sessid' => $sess->id, 'sesskey' => sesskey()));
+                        $update = html_writer::link($url, get_string('updateplace', 'attendance'));
+                    }
+                    $row->cells[] = $seat.' '.$update;
+                }  else {              
                 list($canmark, $reason) = attendance_can_student_mark($sess, false);
                 if (attendance_check_allow_update($sess->id) && $canmark) {
                     $url = new moodle_url('/mod/attendance/attendance.php',
                                 array('sessid' => $sess->id, 'sesskey' => sesskey()));
-                    $updatelink = $seat."<br>".html_writer::link($url, get_string('updateattendance', 'attendance')); // ecastro
+                    $updatelink = "<br>".html_writer::link($url, get_string('updateattendance', 'attendance'));
                 }
                 $row->cells[] = $status->description.$updatelink;
                 $row->cells[] = format_float($status->grade, 1, true, true) . ' / ' .
