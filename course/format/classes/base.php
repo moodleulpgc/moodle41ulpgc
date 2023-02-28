@@ -103,6 +103,7 @@ abstract class base {
         $this->format = $format;
         $this->courseid = $courseid;
         
+        $this->activityindentationenabled = 0;
         if(get_config('local_ulpgccore', 'activityindentationenabled')) { // ecastro ULPGC
             $this->activityindentationenabled = 1;
         }
@@ -843,9 +844,13 @@ abstract class base {
      */
     public function course_default_options(&$options, $foreditform = false) {
             if($this->activityindentationenabled) { // ecastro ULPGC
+                $default = 0;
+                if(isset($this->course->activityindentation)) {
+                    $default = $this->course->activityindentation;
+                }
                 if(!isset($options['activityindentation'])) { 
                     $options['activityindentation'] = [
-                        'default' => $this->course->activityindentation,
+                        'default' => $default,
                         'type' => PARAM_INT,
                     ];
                    
