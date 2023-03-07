@@ -79,7 +79,7 @@ $secondarynavigation = false;
 $overflow = '';
 if ($PAGE->has_secondary_navigation()) {
     $secondary = $PAGE->secondarynav;
-
+    
     if ($secondary->get_children_key_list()) {
         $tablistnav = $PAGE->has_tablist_secondary_navigation();
         $moremenu = new \core\navigation\output\more_menu($PAGE->secondarynav, 'nav-tabs', true, $tablistnav);
@@ -96,6 +96,7 @@ if ($PAGE->has_secondary_navigation()) {
 $primary = new core\navigation\output\primary($PAGE);
 $renderer = $PAGE->get_renderer('core');
 $primarymenu = $primary->export_for_template($renderer);
+
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions() && !$PAGE->has_secondary_navigation();
 // If the settings menu will be included in the header then don't add it here.
 $regionmainsettingsmenu = $buildregionmainsettings ? $OUTPUT->region_main_settings_menu() : false;
@@ -128,6 +129,19 @@ $templatecontext = [
     'addcontentblockbutton' => $addcontentblockbutton,
     'contentblocks' => $contentblocks
 ];
+
+// ecastro ULPGC
+    require_once($CFG->dirroot . '/theme/moove/locallib.php');
+    $templatecontext['incoursesettings'] = true;
+    // Add the returned value from theme_boost_campus_get_incourse_settings to the template context.
+    $templatecontext['node'] = theme_moove_get_incourse_settings();
+    // Add the returned value from theme_boost_campus_get_incourse_activity_settings to the template context.
+    $templatecontext['activitynode'] = theme_moove_get_incourse_activity_settings();
+
+        if ($PAGE->pagelayout != 'mypublic' && $PAGE->bodyid != 'page-contentbank') {
+            $templatecontext['settingsmenu'] = $renderer->context_header_settings_menu();
+        }    
+// ecastro ULPGC
 
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
 
