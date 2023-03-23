@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020120402;
+$plugin->version   = 2020120403;
 $plugin->requires  = 2020061500;
 $plugin->cron      = 0;
 $plugin->component = 'quiz_attemptstate';

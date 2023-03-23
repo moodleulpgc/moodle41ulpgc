@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PRESET>
+  <blockname>makeexam</blockname>
+  <parentcontextid>1</parentcontextid>
+  <showinsubcontexts>1</showinsubcontexts>
+  <requiredbytheme>0</requiredbytheme>
+  <pagetypepattern>mod-quiz-review</pagetypepattern>
+  <subpagepattern></subpagepattern>
+  <defaultregion>side-pre</defaultregion>
+  <defaultweight>2</defaultweight>
+  <configdata>Tzo4OiJzdGRDbGFzcyI6MDp7fQ==</configdata>
+  <timecreated>1598437895</timecreated>
+  <timemodified>1598437936</timemodified>
+</PRESET>

@@ -38,6 +38,28 @@ use theme_moove\output\core_course\activity_navigation;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class core_renderer extends \theme_boost\output\core_renderer {
+
+
+    /**
+     * User image rendering with checking for hidepicture setting
+     *
+     * @param user_picture $userpicture
+     * @return string
+     * @auth ecastro @ULPGC
+     */
+    protected function render_user_picture(\user_picture $userpicture) {
+        $user = $userpicture->user;
+        // only check permissions when viewable picture
+        if($user->picture && !$user->imagealt && $hidepicture = get_config('local_ulpgccore', 'hidepicture')) {
+            if(!$canview = has_capability('moodle/course:viewhiddenuserfields', $this->page->context)) {
+                $userpicture->user->picture = 0;
+            }
+        }
+
+        return parent::render_user_picture($userpicture);
+    }
+
+
     /**
      * The standard tags (meta tags, links to stylesheets and JavaScript, etc.)
      * that should be included in the <head> tag. Designed to be called in theme

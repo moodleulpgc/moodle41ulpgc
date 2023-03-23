@@ -130,6 +130,9 @@ git submodule set-branch -b moodle41 --
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_o365channels.git report/o365channels
 git submodule set-branch -b moodle41 -- report/o365channels
 
+git submodule add git@bitbucket.org:moodleulpgc/moodle-profilefield_callsummons.git user/profile/field/callsummons
+
+
 #NOT developed by ULPGC, but used as ULPGC, no other repo
 #git submodule add git@bitbucket.org:moodleulpgc/moodle-gradingform_mcq.git     grade/grading/form/mcq
 git submodule add git@bitbucket.org:moodleulpgc/moodle-atto_pastespecial.git   lib/editor/atto/plugins/pastespecial

@@ -235,7 +235,6 @@ class manager {
         $result = $DB->insert_record('task_adhoc', $record);
 
         \tool_adhoc\manager::queue_adhoc_task($result); // ecastro ULPGC to enforce tool_adhoc
-
         return $result;
     }
 

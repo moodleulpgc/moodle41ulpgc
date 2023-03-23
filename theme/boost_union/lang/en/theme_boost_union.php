@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // General.
 $string['pluginname'] = 'Boost Union';
-$string['choosereadme'] = 'Theme Boost Union is an enhanced child theme of Boost provided by Moodle an Hochschulen e.V.';
+$string['choosereadme'] = '<p>Theme Boost Union is an enhanced child theme of Boost which is intended, on the one hand, to make Boost simply more configurable and, on the other hand, to provide helpful additional features for the daily Moodle operation of admins, teachers and students.</p><p>Boost Union is maintained by<br />Moodle an Hochschulen e.V.,</p><p>in cooperation with<br />lern.link GmbH</p><p>together with<br />bdecent GmbH</p>';
 $string['configtitle'] = 'Boost Union';
 
 // Settings: Look page.
@@ -110,6 +110,15 @@ $string['activityiconcolorcontentsetting_desc'] = 'The activity icon color for "
 // ... ... Setting: Activity icon color for 'Interface'.
 $string['activityiconcolorinterfacesetting'] = 'Activity icon color for "Interface"';
 $string['activityiconcolorinterfacesetting_desc'] = 'The activity icon color for "Interface"';
+// ... Section: Navbar.
+$string['navbarheading'] = 'Navbar';
+// ... ... Setting: Navbar color.
+$string['navbarcolorsetting'] = 'Navbar color';
+$string['navbarcolorsetting_desc'] = 'With this setting, you can change the navbar color from the default light navbar to a dark one or a colored one.';
+$string['navbarcolorsetting_light'] = 'Light navbar with dark font color (unchanged as presented by Moodle core)';
+$string['navbarcolorsetting_dark'] = 'Dark navbar with light font color';
+$string['navbarcolorsetting_primarydark'] = 'Primary color navbar with light font color';
+$string['navbarcolorsetting_primarylight'] = 'Primary color navbar with dark font color';
 
 // Settings: Login page tab.
 $string['loginpagetab'] = 'Login page';

@@ -59,11 +59,6 @@ This setting is already available in the Moodle core theme Boost. For more infor
 
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
 
-#### Background image
-
-This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
-Please note: This will not override the setting "theme_boost_campus | loginbackgroundimage" which means that the pictures uploaded to the login page background will be displayed anyway.
-
 #### Tab "SCSS"
 
 In this tab there are the following settings:
@@ -222,7 +217,7 @@ With this setting, you can override Moodle's H5P content bank width without manu
 
 #### Tab "Mobile app"
 
-##### Mobile appearance 
+##### Mobile appearance
 
 ###### Additional CSS for Mobile app
 
@@ -435,6 +430,12 @@ Maintainers
 The plugin is maintained by\
 Moodle an Hochschulen e.V.
 
+in cooperation with\
+lern.link GmbH
+
+together with\
+bdecent GmbH
+
 
 Copyright
 ---------
@@ -459,15 +460,17 @@ This theme is a collaboration result of multiple organisations.
 Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
 
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
+* FernUniversität in Hagen, Daniel Poggenpohl: Code, Ideating
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
 * lern.link GmbH, Beata Waloszczyk: Code
 * Lower Saxony (Federal state of Germany): Funding
-* moodleSCHULE e.V., Ralf Krause: German translation and curation
-* Ruhr University Bochum, Melanie Treitinger: Code
+* moodleSCHULE e.V., Ralf Krause: German translation and curation, Ideating
+* Ruhr University Bochum, Melanie Treitinger: Code, Ideating
+* RWTH Aachen, Amrita Deb Dutta: Code
 * RWTH Aachen, Josha Bartsch: Code
 * University of Graz, André Menrath: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
-* Zurich University of Applied Sciences (ZHAW): Funding
+* Zurich University of Applied Sciences (ZHAW): Funding, Ideating
 
 Additionally, we thank all other contributors who contributed ideas, feedback and code snippets within the Github issues and pull requests as well as all contributors who contributed additional translations in AMOS, the Moodle translation tool.

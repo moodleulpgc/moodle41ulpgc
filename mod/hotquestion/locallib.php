@@ -115,8 +115,8 @@ class mod_hotquestion {
         $votes = new StdClass();
         $context = context_module::instance($this->cm->id);
         $question = $DB->get_record('hotquestion_questions', array('id' => $question));
-        if ($question && $this->can_vote_on($question)) {
 
+        if ($question && $this->can_vote_on($question)) {
             // Trigger and log a vote event.
             if ($CFG->version > 2014051200) { // If newer than Moodle 2.7+ use new event logging.
                 $params = array(

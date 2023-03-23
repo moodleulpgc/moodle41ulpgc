@@ -44,17 +44,17 @@ $string['explainadvancedgrades'] = 'Si se activa, se podrán en uso agregaciones
 $string['gradebooklocking'] = 'Bloquear libro de calificaciones';
 $string['explaingradebooklocking'] = 'Si se activa, If enabled, se podrán en uso determinados bloqueos en la edición de categorías y agregaciones de calificaciones.';
 $string['gradebooklockingdepth'] = 'Profundidad del bloqueo de categorías';
-$string['explainlockingdepth'] = 'Las categorías de calificación hasta esta prefundidad serán bloqueadas y no se podrá modificar su nombre, idnumber y agregación, 
+$string['explainlockingdepth'] = 'Las categorías de calificación hasta esta prefundidad serán bloqueadas y no se podrá modificar su nombre, idnumber y agregación,
 excepto con usuarios con permiso de Gestión del sitio. ';
 $string['gradebooknocal'] = 'Categoría para No Calificados';
-$string['explaingradebooknocal'] = 'Si no está vacío, se intrepreta como el idnumber de una Categoría de calificación. 
-Será la cateoría que se use de forma predeterminada paar colocar los ítems que NO se asocicen explíctamente con una categoría. 
+$string['explaingradebooknocal'] = 'Si no está vacío, se intrepreta como el idnumber de una Categoría de calificación.
+Será la cateoría que se use de forma predeterminada paar colocar los ítems que NO se asocicen explíctamente con una categoría.
 Esto es, los "no categorizados" se colocarán en esta categoría identificada por este idnumber.';
 $string['locknameword'] = 'Palabra para bloqueo de Categoría';
-$string['explainlocknameword'] = 'Si esta palabra está presente en el campo Info de una Categoría de calificacion, 
+$string['explainlocknameword'] = 'Si esta palabra está presente en el campo Info de una Categoría de calificacion,
 no se podrá modificar su nombre e idnumber salvo con permiso para editar las categorías de calificación. ';
 $string['lockaggword'] = 'Palabra para bloqueo de Agregación';
-$string['explainlockaggword'] = 'Si esta palabra está presente en el campo Info de una Categoría de calificacion, 
+$string['explainlockaggword'] = 'Si esta palabra está presente en el campo Info de una Categoría de calificacion,
 no se podrá modificar el cálculo de Agregación salvo con permiso para editar las categorías de calificación. ';
 
 $string['annuality'] = 'Anualidad';
@@ -164,16 +164,16 @@ $string['exportuserselector'] = 'Indicar usuarios a exportar';
 $string['exportdataselector'] = 'Indicar datos a exportar para cada usuario';
 $string['exportusergroupmember'] = 'Miembro';
 $string['exportusersingroup'] = 'Miembros del grupo';
-$string['exportusersingroup_help'] = 'Si se especifica, solo los usuariso que sean miembros de este grupo en particular se incluirán en la exportación. 
+$string['exportusersingroup_help'] = 'Si se especifica, solo los usuariso que sean miembros de este grupo en particular se incluirán en la exportación.
 If specified then only users that are members of this particular group will be exported.
 
- * Cualquiera: Todos los usuarios, ya sean miembros de un grupo  o no 
- * Miembro: Usuarios que sean miembros de algún grupo, no se exportan usuarios que no pertenecen a al menos un grupo. 
+ * Cualquiera: Todos los usuarios, ya sean miembros de un grupo  o no
+ * Miembro: Usuarios que sean miembros de algún grupo, no se exportan usuarios que no pertenecen a al menos un grupo.
  * Ninguno: solo se exportan usuarios que NO son miembros de ningún grupo.
 ';
 $string['exportgroupsgrouping'] = 'Miembros del agrupamiento';
-$string['exportgroupsgrouping_help'] = 'Si se indica, sólo se incluirán usuarios que sean miembros 
-de alguno de los grupos del agrupamiento especificado. 
+$string['exportgroupsgrouping_help'] = 'Si se indica, sólo se incluirán usuarios que sean miembros
+de alguno de los grupos del agrupamiento especificado.
 
  * Ninguno: Solo se exportan usuarios que son miembros de grupos que NO pertenecen a ningún agrupamiento.
  * Cualquiera: Sin limitación de usuarios por aprupamiento, indiferente.
@@ -188,7 +188,7 @@ $string['exportonlygrouping'] = 'Grupos del agrupamiento';
 $string['exportonlygrouping_help'] = 'Si se indica, sólo se incluirán los grupos del agrupamiento especificado.';
 $string['groupingsameabove'] = 'Indicado arriba';
 $string['exportusersdetails'] = 'Campos adicionales';
-$string['exportusersdetails_help'] = 'Información adicional de cada usuario a incluir en la exportación. 
+$string['exportusersdetails_help'] = 'Información adicional de cada usuario a incluir en la exportación.
 
 El nombre, apellidos y DNI de cada usuario siempre son exportados. Adicionalmente se pueden marcar estos campos para ser incluidos como extra.';
 $string['exportsort'] = 'Ordenar según';
@@ -197,7 +197,7 @@ $string['exportfileselector'] = 'Indicar nombre y formato de fichero';
 $string['exportformatselector'] = 'Formato de exportación';
 $string['exportdownload'] = 'Descargar';
 $string['exportfilename'] = 'Nombre del archivo (sin ext.)';
-$string['exportfilename_help'] = 'Nombre del archivo que contendrá los datos exportados. 
+$string['exportfilename_help'] = 'Nombre del archivo que contendrá los datos exportados.
 
 La extensión será determinada por el formato de exportación.';
 $string['errorheaderssent'] = 'Errores en salida, el archivo no puede generarse.';
@@ -236,7 +236,7 @@ Máster Universitario en,M.U.
 Grado en, G.
 Universidad de las Palmas de Gran Canaria,ULPGC
 Universidad,U.
- Por , por 
+ Por , por
 ';
 
 $string['actv_communication'] = 'Comunicación';
@@ -262,19 +262,29 @@ $string['explainalertroles'] = 'El mensaje se mostrará para los usuarios que te
 $string['alerttype'] = 'Tipo de alerta';
 $string['explainalerttype'] = 'Una de las clases de alerta de estandar de Bootstrap.';
 $string['alertdismiss'] = 'Botón de cancelación';
-$string['explainalertdismiss'] = 'Si se activa, se muestra un botón para cancelar permanentemente la visualización de la alerta para ese usuario. 
+$string['explainalertdismiss'] = 'Si se activa, se muestra un botón para cancelar permanentemente la visualización de la alerta para ese usuario.
 Se crea una preferencia de usuario para llevar un registro.';
 $string['alertmessage'] = 'Mensaje global';
 $string['danger'] = 'Aviso';
 $string['dismissalert'] = 'Confirmar visualización';
 $string['mailednotviewed'] = 'Foros: correo NO leído';
-$string['explainmailednotviewed'] = 'Si se activa, entonces NO se considerará un mensaje en foro como leído cuando se envía por e-mail (como hace Moodle), 
+$string['explainmailednotviewed'] = 'Si se activa, entonces NO se considerará un mensaje en foro como leído cuando se envía por e-mail (como hace Moodle),
 sino que se presentará como no leído en el interfaz aunque se haya enviado antes por e-mail, hasta que sea visto en el interfaz.';
 $string['blockalert'] = 'Alertas en Panel derecho';
-$string['explainblockalert'] = 'Si se activa, cuando alguno de los bloques del panel derecho contenga mensajes importantes que deben ser vistos,  
+$string['explainblockalert'] = 'Si se activa, cuando alguno de los bloques del panel derecho contenga mensajes importantes que deben ser vistos,
 el panel derecho se configura abierto desde el inicio. ';
 $string['activityindentation'] = 'Sangría de Actividades/Recursos';
 $string['activityindentation_help'] = 'Si se activa, será posible indentar horizontalmente Actividades/Recursos en la página del curso';
 $string['activityindentationenabled'] = 'Indentación de actividades';
-$string['explainactivityindentationenabled'] = 'Si se activa, los nombres de actividades en la págiba de curso mostrarán indentación, 
+$string['explainactivityindentationenabled'] = 'Si se activa, los nombres de actividades en la págiba de curso mostrarán indentación,
 y el menú de edición de cada módulo de actividad mostrará flechas de indentación.';
+$string['profilefieldpresets'] = 'Custom profile fields';
+$string['profilefieldpresets_desc'] = 'Custom profile fields';
+$string['hidepicture'] = 'Ocultar fotos de usarios';
+$string['hidepicture_desc'] = 'Si se activa, las fotos de usarios estarán ocultas por defecto para todo usuario sin el permiso "viewhiddnefields".
+Salvo que el propio usuario permita el acceso escribiendo un texto en la propiedad de texto alternativo de su imagen de perfil.';
+$string['hidepicwarning'] = 'Descripción de la imagen y control de la visibilidad de la imagen de perfil.';
+$string['hidepicwarning_help'] = 'Su foto de perfil será visible solo por los Profesores de sus asignaturas (o Administrativos con acceso a cada asignatura).
+Otros estudiantes NO podrán ver su foto de perfil a no ser que usted de permiso expresamente. <br />
+Para ello basta escribir un texto (cualquiera) en el campo "Descripción de la imagen".
+Si este campo queda vacío solo los profesores podrán ver la imagen. ';

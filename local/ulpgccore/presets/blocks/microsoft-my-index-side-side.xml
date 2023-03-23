@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PRESET>
+  <blockname>microsoft</blockname>
+  <parentcontextid>1</parentcontextid>
+  <showinsubcontexts>1</showinsubcontexts>
+  <requiredbytheme>0</requiredbytheme>
+  <pagetypepattern>my-index</pagetypepattern>
+  <subpagepattern></subpagepattern>
+  <defaultregion>side-side</defaultregion>
+  <defaultweight>-5</defaultweight>
+  <configdata>Tzo4OiJzdGRDbGFzcyI6MDp7fQ==</configdata>
+  <timecreated>1599303013</timecreated>
+  <timemodified>1599303076</timemodified>
+</PRESET>

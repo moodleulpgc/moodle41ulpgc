@@ -14,6 +14,179 @@
     width: auto;
 }
 
+/*---------------------------------------
+ * Setting: Navbar color
+ --------------------------------------*/
+
+/* Moodle core already presents the light navbar with dark font color (.navbar-light.bg-white) perfectly.
+   There is nothing to change here. */
+
+/* Tweak the dark navbar with light font color
+   and the primary color navbar with light font color. */
+.navbar.navbar-dark.bg-dark,
+.navbar.navbar-dark.bg-primary {
+    /* Remove the white border at the bottom of the navbar as it looks odd with a dark navbar. */
+    border-bottom: none;
+
+    /* Change the color of the site name in the navbar to light grey and to white when active. */
+    .navbar-brand {
+        color: #c8c8c8;
+    }
+    .navbar-brand:hover {
+        color: $white;
+    }
+
+    /* Change the color of the navigation items in the navbar to light grey, to white when active
+       and to black when hovered (as Moodle core will then show a white background).
+       This has to use !important as Moodle core already uses !important for some of its hover states. */
+    .nav-link {
+        color: #c8c8c8;
+    }
+    .nav-link.active {
+        color: $white;
+    }
+    .nav-link:hover,
+    .nav-link:focus {
+        color: $black !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Change the background color and colors of open custom menu parent navigation items in the navbar
+       as they are built differently from single navigation items. */
+    .nav-item.dropdown.show .nav-link.dropdown-toggle {
+        background-color: #f8f9fa;
+        color: $black;
+    }
+
+    /* Change the color of the icons in the navbar as well as the toggle icon in the usermenu
+       to a light grey and to white when hovered.
+       This has to use !important as Moodle core already uses !important for the icon colors. */
+    .nav-link .icon,
+    .nav-link a .icon,
+    .usermenu .dropdown-toggle {
+        color: #c8c8c8 !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .nav-link:hover .icon,
+    .nav-link:hover a .icon,
+    .usermenu .dropdown-toggle:hover {
+        color: $white !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Revert color of the close icon in the search panel in the navbar as this icon is still dark on white
+       within the input form. */
+    #searchform-navbar .btn-close .icon {
+        color: #6a737b !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Change the color of the edit switch label in the navbar to light grey and to white when hovered.
+       This has to use !important as Moodle core would change the color to text-primary as soon as editing is on. */
+    .editmode-switch-form,
+    .editmode-switch-form label {
+        color: #c8c8c8 !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .editmode-switch-form label:hover {
+        color: $white !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Adapt the color of the edit switch widget to fit onto the dark background. */
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: $white;
+        border-color: #c8c8c8;
+    }
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        background-color: #8f959e;
+    }
+
+    /* Change the color of the login link in the navbar to a light grey and to white when hovered. */
+    .login,
+    .login a {
+        color: #c8c8c8;
+    }
+    .login a:hover {
+        color: $white;
+    }
+}
+
+/* Tweak the dark navbar with light font color a little bit more. */
+.navbar.navbar-dark.bg-dark {
+    /* Change the background color of the custom child menu and user menu navigation items in the navbar
+       to dark grey when hovered and focused (especially during keyboard navigation) */
+    .nav-item.dropdown.show,
+    #user-action-menu.show {
+        a.dropdown-item {
+            background-color: inherit;
+        }
+        a.dropdown-item:hover,
+        a.dropdown-item:focus {
+            background-color: #343a40;
+        }
+    }
+
+    /* Change the background color of the search panel in the navbar. */
+    #searchform-navbar {
+        background-color: #343a40;
+    }
+}
+
+/* Tweak the primary color navbar with light font color a little bit more. */
+.navbar.navbar-dark.bg-primary {
+    /* Change the background color of the custom child menu and user menu navigation items in the navbar
+       to dark grey when hovered and focused (especially during keyboard navigation) */
+    .nav-item.dropdown.show,
+    #user-action-menu.show {
+        a.dropdown-item {
+            background-color: inherit;
+        }
+        a.dropdown-item:hover,
+        a.dropdown-item:focus {
+            background-color: $primary;
+        }
+    }
+
+    /* Change the background color of the search panel in the navbar. */
+    #searchform-navbar {
+        background-color: $primary;
+    }
+}
+
+/* Tweak the primary color navbar with dark font color. */
+.navbar.navbar-light.bg-primary {
+    /* Change the color of the active nav items's bottom border to white as this would be presented in the
+       primary color as well otherwise. */
+    .nav-link.active {
+        border-bottom-color: $white;
+    }
+
+    /* Change the background color and colors of open custom menu parent navigation items in the navbar
+   as they are built differently from single navigation items. */
+    .nav-item.dropdown.show .nav-link.dropdown-toggle {
+        background-color: #f8f9fa;
+        color: $black;
+    }
+
+    /* Change the color of the edit switch label in the navbar to dark grey.
+       This has to use !important as Moodle core wants to use the color text-primary as soon as editing is on. */
+    .editmode-switch-form,
+    .editmode-switch-form label {
+        color: rgba($black, .6) !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .editmode-switch-form label:hover {
+        color: rgba($black, .9) !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Adapt the color of the edit switch widget to fit onto the dark background. */
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: $white;
+        border-color: #c8c8c8;
+    }
+    .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+        background-color: #8f959e;
+    }
+
+    /* Change the background color of the search panel in the navbar. */
+    #searchform-navbar {
+        background-color: $primary;
+    }
+}
 
 /*=======================================
  * Settings: Look -> Login page
@@ -289,6 +462,7 @@ body.pagelayout-login:not(.loginbackgroundimage) #footnote {
     margin-bottom: 0;
 }
 
+
 /*=======================================
  * Settings: Content -> Advertisement tiles.
  ======================================*/
@@ -307,6 +481,22 @@ body.pagelayout-login:not(.loginbackgroundimage) #footnote {
     /* d-flex align-items-stretch align-self-stretch classes in mustache template require to set width to inherit
        (Otherwise width is flexible dependent on content). */
     width: inherit;
+}
+
+/* Improve the advertisement tile card if a background image is used. */
+.themeboostunionadvtilebg {
+    /* Remove the 1px border which is added around the card by default and which looks strange
+       with a background image. */
+    border: none;
+
+    /* Add a more solid background color so that the title remains readable. */
+    .card-header {
+        background-color: rgba(255, 255, 255, .8);
+    }
+    /* Remove the border-top from the footer. */
+    .card-footer {
+        border-top: none;
+    }
 }
 
 
