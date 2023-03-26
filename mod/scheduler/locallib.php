@@ -51,8 +51,6 @@ function scheduler_delete_calendar_events($slot) {
 }
 
 
-
-
 /**
  * Prints a summary of a user in a nice little box.
  *

@@ -15,33 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details.
+ * Version information
  *
+
  * @package     mod_tracker
  * @category    mod
- * @author      Clifford Tham till 1.8
- * @author      Valery Fremaux (valery.fremaux@gmeil.com)
- * @copyright   2009 onwards Valery Fremaux (valery.fremaux@gmeil.com)
+ * @author      Valery Fremaux (valery.fremaux@gmail.com)
+ * @copyright   2008 onwards Valery Fremaux (valery.fremaux@gmail.com)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2020120500;  // The current module version (Date: YYYYMMDDXX).
+$plugin->version  = 2020120502;  // The current module version (Date: YYYYMMDDXX).
 $plugin->requires = 2020060900;
-$plugin->component = 'mod_tracker';   // Full name of the plugin (used for diagnostics).
+$plugin->component = 'mod_tracker';   // Full name of the plugin (used for diagnostics)
+//$plugin->cron     = 300;           // Period for cron to check this module (secs) ecastro ULPGC legacy cron deprecated
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.9.0 (Build 2020120500)';
-$plugin->dependencies = array('local_vflibs' => 2016081100);
+$plugin->release = '3.0.0 (Build 2015111100)';
 
 // Non Moodle attributes.
-$plugin->codeincrement = '3.9.0008';
-$plugin->privacy = 'dualrelease';
-$plugin->prolocations = array(
-    'classes/trackercategorytype/autourl',
-    'classes/trackercategorytype/constant',
-    'classes/trackercategorytype/constant',
-    'classes/trackercategorytype/checkboxhoriz',
-    'classes/trackercategorytype/radiohoriz',
-    'classes/trackercategorytype/captcha',
-);
+$plugin->codeincrement = '3.0.0000';

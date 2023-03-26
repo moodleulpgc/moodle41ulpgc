@@ -830,7 +830,8 @@ class quiz_makeexam_report extends quiz_default_report {
 
             foreach($exam->attempts as $attempt) {
                 $celln = $attempt->attempt;
-                $user = $DB->get_record('user', array('id'=>$attempt->userid), get_all_user_name_fields(true));
+                $user = $DB->get_record('user', array('id'=>$attempt->userid),
+                                                        implode(',', \core_user\fields::get_name_fields()));
                 $url = new moodle_url('/user/view.php', array('id'=>$attempt->userid, 'course'=>$this->course->id));
                 $cellgeneratedby = html_writer::link($url, fullname($user));
                 $cellgeneratedby .= '<br />'. userdate($attempt->timemodified, get_string('strftimerecent'));

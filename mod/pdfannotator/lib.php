@@ -630,7 +630,8 @@ function pdfannotator_get_recent_mod_activity(&$activities, &$index, $timestart,
     } else {
         $groupselect = "";
     }
-    $allnames = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     if (!$posts = $DB->get_records_sql("SELECT p.*,c.id, c.userid AS userid, c.visibility, c.content, c.timecreated, c.annotationid, c.isquestion,
                                               $allnames, u.email, u.picture, u.imagealt, u.email, a.page
                                          FROM {pdfannotator} p

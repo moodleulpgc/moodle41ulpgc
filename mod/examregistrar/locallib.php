@@ -1289,8 +1289,9 @@ function examregistrar_get_session_venue_users($session, $bookedsite, $room = 0)
     }
 
     // get data for usertable
-    $names = get_all_user_name_fields(true, 'u');
-    $sql = "SELECT  b.id AS bid,  b.userid, b.examid, c.shortname, c.fullname, 
+    $userfieldsapi = \core_user\fields::for_name();
+    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+    $sql = "SELECT  b.id AS bid,  b.userid, b.examid, c.shortname, c.fullname,
                     ss.id as sid, ss.roomid, ss.seat, ss.showing, ss.taken, ss.certified, ss.status, 
                     u.username, u.idnumber, $names,
                     (SELECT COUNT(b2.examid)  FROM {examregistrar_bookings} b2
@@ -1566,7 +1567,8 @@ function examregistrar_booking_seating_qc($sessionid, $bookedsite = 0, $sort='')
     }
     $order .= ' e.programme ASC, c.shortname  ASC ';
 
-    $names = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $sql = "SELECT b.id, b.examid, b.userid, b.bookedsite, e.examsession, e.programme, e.callnum, c.shortname, c.fullname,
                 u.idnumber, $names
             FROM {examregistrar_bookings} b
@@ -2475,7 +2477,8 @@ function examregistrar_verify_voucher($cmid, $vouchernum, $crccode, $canmanage) 
 function examregistrar_get_teachers($courseid) {
     $teachers = array();
     $coursecontext = context_course::instance($courseid);
-    $fields = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     if($users = get_enrolled_users($coursecontext, 'moodle/course:manageactivities', 0, 'u.id, u.idnumber, u.picture, '.$fields, ' u.lastname ASC ')){
         foreach($users as $user) {
             $teachers[$user->id] = fullname($user) ;
@@ -2557,7 +2560,9 @@ function examregistrar_get_potential_staffers($examregistrar, $roomid, $newrole=
 
     $config = examregistrar_get_instance_config($examregistrar->id, 'staffcats, excludecourses');
 
-    $fields = 'u.id, '.get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+    $fields = 'u.id, '.$fields;
     $users = get_users_by_capability($context, 'mod/examregistrar:beroomstaff', $fields, 'lastname ASC');
     $categories = null;
     $categories =  !is_array($config->staffcats) ? explode(',', $config->staffcats) : $config->staffcats;
@@ -2618,7 +2623,8 @@ function examregistrar_get_room_staffers($roomid, $sessionid='', $role='', $visi
     if($ids) {
         $staffers = $DB->get_fieldset_select('examregistrar_staffers', 'userid', $select, $params);
     } else {
-        $fields = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT s.*, es.name AS rolename, es.idnumber AS roleidnumber, $fields, u.username, u.idnumber, u.picture, u.email, u.phone1, u.phone2, u.city
                 FROM {examregistrar_staffers} s
                 JOIN {examregistrar_elements} es ON s.role = es.id

@@ -398,7 +398,8 @@ function examregistrar_examallocations_printpdf($examregistrar, $allocations, $p
         $pdf->replaces['teacher'] = '';
 
         $coursecontext = context_course::instance($exam->courseid);
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         if($users = get_enrolled_users($coursecontext, 'moodle/course:manageactivities', 0, 'u.id, u.idnumber, u.picture, '.$names, ' u.lastname ASC ')){
             $list = array();
             foreach($users as $user) {
@@ -551,7 +552,8 @@ function examregistrar_examallocations_binderpdf($examregistrar, $allocations, $
         $pdf->replaces['teacher'] = '';
 
         $coursecontext = context_course::instance($exam->courseid);
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         if($users = get_enrolled_users($coursecontext, 'moodle/course:manageactivities', 0, 'u.id, u.idnumber, u.picture, '.$names, ' u.lastname ASC ')){
             $list = array();
             foreach($users as $user) {
@@ -660,7 +662,8 @@ function examregistrar_userallocations_printpdf($examregistrar, $params, $render
     $pdf->setPrintFooter(true);
     $pdf->SetFont('freeserif', '', 12);
 
-    $names = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $sql = "SELECT  b.id AS bid, ss.roomid, ss.additional, u.id, u.username, u.idnumber, $names,
                     el.name AS venuename, el.idnumber AS venueidnumber,
                     el2.name AS roomname, el2.idnumber AS roomidnumber, COUNT(b.id) AS numadditionals
@@ -736,28 +739,6 @@ function examregistrar_venueallocations_printpdf($examregistrar, $params, $rende
     $pdf->Ln(10);
     $pdf->Ln(10);
 
-    /*
-    // get data for usertable
-    $names = get_all_user_name_fields(true, 'u');
-    $sql = "SELECT  b.id AS bid,  b.userid, b.examid, c.shortname, c.fullname, ss.roomid, u.username, u.idnumber, $names,
-                    (SELECT COUNT(b2.examid)  FROM {examregistrar_bookings} b2
-                                              JOIN {examregistrar_exams} e2 ON b2.examid = e2.id
-                                                WHERE b2.userid = b.userid AND b2.bookedsite = b.bookedsite AND b2.booked = 1
-                                                AND  e2.examsession = e.examsession
-                                                GROUP BY b2.userid ) AS numexams
-            FROM {examregistrar_bookings} b
-            JOIN {examregistrar_exams} e ON b.examid = e.id AND  e.examsession = :session
-            JOIN {user} u ON b.userid = u.id
-            JOIN {course} c ON c.id = e.courseid
-            LEFT JOIN {examregistrar_session_seats} ss ON  b.userid = ss.userid AND b.examid = ss.examid AND b.bookedsite = ss.bookedsite
-            WHERE b.bookedsite = :bookedsite AND b.booked = 1
-            GROUP BY b.userid, b.examid
-            ORDER BY u.lastname ASC, u.firstname ASC, u.idnumber ASC, c.shortname ASC ";
-
-    $sqlparams = array('session'=>$params['session'], 'bookedsite'=>$params['bookedsite']);
-    if($users = $DB->get_records_sql($sql, $sqlparams)) {
-    */
-    
     if($users = examregistrar_get_session_venue_users($params['session'], $params['bookedsite'])) {
     
         $width = 100;

@@ -70,13 +70,14 @@ if ($hassiteconfig) {
     $temp->add(new admin_setting_configtext('local_ulpgccore/referencecourse',
                                                 get_string('referencecourse', 'local_ulpgccore'),
                                                 get_string('explainreferencecourse', 'local_ulpgccore'), 'PAEP01'));
-
+/*
     $presets = get_directory_list($CFG->dirroot.'/local/ulpgccore/presets/coursetemplates/', '', false);
+    print_object($presets);
     $presets = array_combine ($presets, $presets);
     $temp->add(new \admin_setting_configselect('local_ulpgccore/maintemplate',
                                                 get_string('maintemplate', 'local_ulpgccore'),
                                                 get_string('explainmaintemplate', 'local_ulpgccore'), '', $presets));
-
+*/
     $temp->add(new \admin_setting_configtext('local_ulpgccore/manuales',
                                                 get_string('repomanuals','local_ulpgccore'),
                                                 get_string('explainrepomanuals','local_ulpgccore'), '/repository/manuales'));

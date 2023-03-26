@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+
 /**
  * Loads preset file form filesystem and return info array.
  *
@@ -103,19 +104,39 @@ function local_ulpgccore_get_reference_course($create = true) {
         $reference = $DB->get_field('course', 'id', array('shortname'=>$idnumber));
         if(!$reference && $create) {
             // template/reference course doesn't exist, create one
-
+            $course = \stdClass();
+            $course->shortname = $idnumber;
+            if(!$categoryid = $DB->get_field('course_categories', 'id', ['name' => 'Plantillas'])) {
+                $categoryid = \core_course_category::get_default()->id;
+            }
+            $course->category = $categoryid;
+            $course = create_course($course);
+            $reference = $course->id;
         }
     }
 
     return $reference;
 }
 
+function local_ulpgccore_install_reference_course($create = true) {
+    global $DB;
+    if($bkfile = get_config('local_ulpgccore', 'maintemplate')) {
+
+    }
+
+}
+
 function local_ulpgccore_block_url($block) {
+    global $USER;
+
     $pagetype = trim($block->pagetypepattern, ' -*');
     $params = ['bui_editid' => $block->id, 'edit' => 1];
     if(strpos($block->pagetypepattern, 'course-view') !== false) {
         $params['id'] = local_ulpgccore_get_reference_course(false);
         $params['sesskey'] = sesskey();
+        unset($params['edit']);
+        $params['notifyeditingon'] = 1;
+        $USER->editing = 1;
     } elseif(strpos($block->pagetypepattern, 'mod-quiz-review') !== false) {
         $params['cmid'] = 1;
     }

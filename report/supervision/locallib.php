@@ -234,7 +234,8 @@ function report_supervision_print_selector_form($course, $selscope='category', $
         $checkedroles = explode(',', $config->checkedroles);
         list($inrolesql, $roleparams) = $DB->get_in_or_equal($checkedroles, SQL_PARAMS_NAMED, 'role' );
         list($incoursesql, $courseparams) = $DB->get_in_or_equal(array_keys($courses), SQL_PARAMS_NAMED, 'course' );
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT ra.userid, ra.roleid, u.id, u.email, $names
                     FROM {role_assignments} ra
                     JOIN {context} ctx ON ra.contextid = ctx.id AND ctx.contextlevel = :contextlevel
@@ -561,7 +562,8 @@ function report_supervision_print_warnings($course, $scope, $itemid,  $userid, $
     $now = time();
 
 
-    $names = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $select = "SELECT sw.*, (IF(sw.timefixed = 0, :timenow, ABS(sw.timefixed)) - sw.timecreated) AS delay, c.category, c.shortname, c.fullname, u.email, $names ";
     list($sql, $params) = report_supervision_lookup_warnings($course, $context, $scope, $itemid,  $userid, $fromdate, $todate, $warningtype, $display);
 
@@ -619,7 +621,7 @@ function report_supervision_print_warnings($course, $scope, $itemid,  $userid, $
     $warnings = $DB->get_records_sql($select.$sql.$sort, $params, $page, $perpage);
 
     $stredit   = get_string('edit');
-    $names = get_all_user_name_fields(true);
+    $names = implode(',', \core_user\fields::get_name_fields());
     if($warnings) {
         echo $OUTPUT->heading(get_string('displaywarnings', 'report_supervision', $totalcount));
         foreach($warnings as $warning) {

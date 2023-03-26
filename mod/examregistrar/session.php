@@ -115,7 +115,8 @@ if($action == 'assignseats_venues') {
         $cinfo = new stdClass();
         list($sname, $sidnumber) = examregistrar_get_namecodefromid($session, 'examsessions', 'examsession');
         $cinfo->session = $sidnumber;
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $from = get_string('mailfrom',  'examregistrar');
         $delivered = array();
         foreach($pending as $file) {

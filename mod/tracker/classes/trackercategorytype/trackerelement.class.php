@@ -14,60 +14,41 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * @package     mod_tracker
- * @category    mod
- * @author      Clifford Tham, Valery Fremaux > 1.8
+ * @package mod_tracker
+ * @category mod
+ * @author Clifford Tham, Valery Fremaux > 1.8
+ * @date 02/12/2007
  */
 
 /**
  * A generic class for collecting all that is common to all elements
  */
-namespace mod_tracker;
-
-use context_module;
-use moodle_exception;
-
-defined('MOODLE_INTERNAL') || die();
 
 abstract class trackerelement {
+    var $id;
+    var $course;
+    var $usedid;
+    var $name;
+    var $description;
+    var $format;
+    var $type;
+    var $sortorder;
+    var $maxorder;
+    var $value;
+    var $options;
+    var $tracker;
+    var $active;
+    var $private;
+    var $canbemodifiedby;
+    var $context;
 
-    protected $id;
-    protected $course;
-    protected $usedid;
-    protected $name;
-    protected $description;
-    protected $format;
-    protected $type;
-    protected $sortorder;
-    protected $maxorder;
-    protected $value;
-    protected $options;
-    protected $tracker;
-    protected $active;
-    protected $private;
-    protected $mandatory;
-    protected $canbemodifiedby;
-    protected $context;
-    protected $paramint1;
-    protected $paramint2;
-    protected $paramchar1;
-    protected $paramchar2;
-
-    /**
-     * Loads all data about a traker element.
-     * If the element is a used element, will pull as master id the tracker element record and adds the used attributes to it.
-     * @param objectref $tracker
-     * @param int $elementid if $used is true, points to the tracker_elementused table. If false, points directly to the tracker_element table.
-     * @param bool $used
-     * @return an object that represents a pure tracker_element or a tracker_usedelement as an element with additional attributes and a
-     * usedid additional id.
-     */
-    public function __construct(&$tracker, $elementid = null, $used = false) {
+    function __construct(&$tracker, $elementid = null, $used = false) {
         global $DB;
 
         $this->id = $elementid;
-        $cm = get_coursemodule_from_instance('tracker', $tracker->id);
 
         if ($elementid && $used) {
             $elmusedrec = $DB->get_record('tracker_elementused', array('id' => $elementid));
@@ -87,72 +68,53 @@ abstract class trackerelement {
             $this->description = $elmrec->description;
             $this->course = $elmrec->course;
             $this->type = $elmrec->type;
+            // ecastro ULPGC
             $this->paramint1 = $elmrec->paramint1;
             $this->paramint2 = $elmrec->paramint2;
             $this->paramchar1 = $elmrec->paramchar1;
             $this->paramchar2 = $elmrec->paramchar2;
+            
+            
         }
 
-        $this->context = context_module::instance($cm->id);
         $this->options = null;
         $this->value = null;
         $this->tracker = $tracker;
     }
 
     /**
-     * Magic Get function for php object attribute read control.
-     */
-    public function __get($key) {
-        $method = 'magic_get_'.$key;
-        if (method_exists($this, $method)) {
-            return $this->$method();
-        }
-        if (!isset($this->$key)) {
-            throw new moodle_exception('No such field '.$key.' in tracker element');
-        }
-        return $this->$key;
-    }
-
-    /**
-     * Magic Set function for php object change control.
-     */
-    public function __set($key, $value) {
-        $method = 'magic_set_'.$key;
-        if (method_exists($this, $method)) {
-            $this->$method($value);
-        }
-        if (!isset($this->$key)) {
-            throw new moodle_exception('No such field '.$key.' in tracker element');
-        }
-        $this->$key = $value;
-    }
-
-    /**
      * If true, element is like a select or a radio box array
      * and has suboptions to define
      */
-    public function type_has_options() {
+    function type_has_options() {
         return false;
     }
 
     /**
-     * Tells if options are defined for this instance
+     * Tells if options are defined for thsi instance
      */
-    public function has_options() {
+    function hasoptions() {
         return $this->options !== null;
     }
 
-    /**
+    /** 
      * Get an option value
      */
-    public function get_option($optionid) {
+    function getoption($optionid) {
         return $this->options[$optionid];
+    }
+
+    /** 
+     * Sets the option list
+     */
+    function setoptions($options) {
+        $this->options = $options;
     }
 
     /**
      * If true, this element can be told to be mandatory.
      */
-    public function has_mandatory_option() {
+    function has_mandatory_option() {
         return true;
     }
 
@@ -161,36 +123,41 @@ abstract class trackerelement {
      * A private element can be edited by the ticket operators,
      * but is not seen by ticket owners.
      */
-    public function has_private_option() {
+    function has_private_option() {
         return true;
+    }
+
+    function setcontext(&$context) {
+        $this->context = $context;
     }
 
     /**
      * in case we have options (such as checkboxes or radio lists, get options from db.
      * this is backcalled by specific type constructors after core construction.
      */
-    public function set_options_from_db() {
+    function setoptionsfromdb() {
         global $DB;
 
-        if (isset($this->id)) {
-            $this->options = $DB->get_records_select('tracker_elementitem', " elementid = ? AND active = 1 ORDER BY sortorder", array($this->id));
-            if ($this->options) {
-                foreach ($this->options as $option) {
+		if (isset($this->id)){
+			$this->options = $DB->get_records_select('tracker_elementitem', " elementid = ? AND active = 1 ORDER BY sortorder", array($this->id));
+			if ($this->options){
+                foreach($this->options as $option){
                     $this->maxorder = max($option->sortorder, $this->maxorder);
                 }
             } else {
                 $this->maxorder = 0;
             }
         } else {
-            print_error('errorinvalidelementID', 'tracker');
+            print_error ('errorinvalidelementID', 'tracker');
         }
     }
 
     /**
-     * Gets the current value for this element instance in an issue.
+     * Gets the current value for this element instance
+     * in an issue
      */
-    public function get_value($issueid) {
-        global $DB;
+    function getvalue($issueid) {
+        global $CFG, $DB;
 
         if (!$issueid) {
             return '';
@@ -209,83 +176,110 @@ abstract class trackerelement {
         return($this->value);
     }
 
-    public function view_search() {
-        $this->edit();
+	function getname(){
+		return $this->name;
+	}
+
+	function optionlistview($cm){
+	    global $CFG, $COURSE, $OUTPUT, $PAGE;
+
+        $strname = tracker_getstring('name');
+        $strdescription = tracker_getstring('description');
+        $strsortorder = tracker_getstring('sortorder', 'tracker');
+        $straction = tracker_getstring('action');
+        $strautoresponse = tracker_getstring('autoresponse', 'tracker'); // ecastro ULPGC
+        $table = new html_table();
+        $table->width = "90%";
+        $table->size = array('10%', '15%', '50%', '10%', '15%');
+        $table->head = array('', "<b>$strname</b>","<b>$strdescription</b>","<b>$strautoresponse</b>", "<b>$straction</b>");
+        if (!empty($this->options)) {
+            foreach ($this->options as $option) {
+                $params = array('id' => $cm->id, 'view' => 'admin', 'what' => 'editelementoption', 'optionid' => $option->id, 'elementid' => $option->elementid);
+                $editoptionurl = new moodle_url('/mod/tracker/view.php', $params);
+                $actions  = '<a href="'.$editoptionurl.'" title="'.tracker_getstring('edit').'">'.$OUTPUT->pix_icon('t/edit', tracker_getstring('edit')).'</a>&nbsp;';
+
+                $img = ($option->sortorder > 1) ? 'up' : 'up_shadow';
+                $params = array('id' => $cm->id, 'view' => 'admin', 'what' => 'moveelementoptionup', 'optionid' => $option->id, 'elementid' => $option->elementid);
+                $moveurl = new moodle_url('/mod/tracker/view.php', $params);
+                $actions .= '<a href="'.$moveurl.'" title="'.tracker_getstring('up').'">'.$OUTPUT->pix_icon($img, tracker_getstring('up'), 'mod_tracker').'</a>&nbsp;';
+
+                $img = ($option->sortorder < $this->maxorder) ? 'down' : 'down_shadow' ;
+                $params = array('id' => $cm->id, 'view' => 'admin', 'what' => 'moveelementoptiondown', 'optionid' => $option->id, 'elementid' => $option->elementid);
+                $moveurl = new moodle_url('/mod/tracker/view.php', $params);
+
+                $actions .= '<a href="'.$moveurl.'" title="'.tracker_getstring('down').'">'.$OUTPUT->pix_icon($img, tracker_getstring('down'), 'mod_tracker').'</a>&nbsp;';
+
+                $params = array('id' => $cm->id, 'view' => 'admin', 'what' => 'deleteelementoption', 'optionid' => $option->id, 'elementid' => $option->elementid);
+                $deleteurl = new moodle_url('/mod/tracker/view.php', $params);
+                $confirmaction = new \confirm_action(get_string('confirmoptiondelete', 'tracker', $option->name));
+                $icon = new pix_icon('t/delete', get_string('delete'), 'core', array());
+                $actions .=  '&nbsp; '.$OUTPUT->action_icon($deleteurl, $icon, $confirmaction);
+
+                $autoresponse = empty($option->autoresponse) ? tracker_getstring('no') : tracker_getstring('yes');
+                $table->data[] = array('<b> '.tracker_getstring('option', 'tracker').' '.$option->sortorder.':</b>',$option->name, format_string($option->description, true, $COURSE->id), $autoresponse, $actions);
+            }
+        }
+        $PAGE->requires->strings_for_js(array('confirmoptiondelete'), 'tracker');    
+        return html_writer::table($table);
     }
 
-    public function view_query() {
-        $this->view(true);
-    }
+	function viewsearch(){
+	    $this->edit(0, true); // ecastro ULPGC
+	}
+
+	function viewquery(){
+	    $this->view(true);
+	}
 
     /**
      * given a tracker and an element form key in a static context,
      * build a suitable trackerelement object that represents it.
      */
-    public static function find_instance(&$tracker, $elementkey) {
+    static function find_instance(&$tracker, $elementkey) {
         global $DB;
 
-        $elmname = preg_replace('/^element/', '', $elementkey);
+		$elmname = preg_replace('/^element/', '', $elementkey);
 
-        $sql = "
-            SELECT
-                e.*,
-                eu.id as usedid
-            FROM
-                {tracker_element} e,
-                {tracker_elementused} eu
-            WHERE
-                e.id = eu.elementid AND
-                eu.trackerid = ? AND
-                e.name = ?
-        ";
+		$sql = "
+			SELECT
+				e.*,
+				eu.id as usedid
+			FROM
+				{tracker_element} e,
+				{tracker_elementused} eu
+			WHERE
+				e.id = eu.elementid AND
+				eu.trackerid = ? AND
+				e.name = ?
+		";
 
-        if ($element = $DB->get_record_sql($sql, array($tracker->id, $elmname))) {
+		if ($element = $DB->get_record_sql($sql, array($tracker->id, $elmname))){
 
-            $eltypeconstuctor = $element->type.'element';
-            $instance = new $eltypeconstuctor($tracker, $element->id);
-            return $element;
-        }
+			$eltypeconstuctor = $element->type.'element';
+			$instance = new $eltypeconstuctor($tracker, $element->id);
+			return $element;
+		}
 
-        return null;
-    }
+		return null;
+	}
 
     /**
-     * Get the element view when the ticket is being edited. The default version
-     * assumes a simple text field as input.
+     * Get the element view when the ticket is being edited
      */
-    public function edit($issueid = 0) {
-        $this->get_value($issueid);
-        $str = '';
-        $attrs = array('type' => 'hidden', 'name' => 'element'.$this->name, 'value' => format_string($this->value));
-        $str .= html_writer::empty_tag('input', $attrs);
-        $attrs = array('type' => 'text',
-                       'name' => 'element'.$this->name.'_disabled',
-                       'value' => format_string($this->value),
-                       'disabled' => 'disabled', 'size' => 120);
-        $str .= html_writer::empty_tag('input', $attrs);
-        return $str;
-    }
-
-    public function set_data(&$defaults, $issueid = 0) {
-        $elementname = "element{$this->name}";
-        if ($issueid) {
-            $defaults->$elementname = $this->get_value($issueid);
-        } else {
-            $defaults->$elementname = '';
-        }
-    }
+    abstract function edit($issueid = 0);
 
     /**
+
      * Get the element view when the ticket is being displayed
      */
-    abstract public function view($issueid = 0);
+    abstract function view($issueid = 0);
 
     /**
      * Provides the form element when building a new element instance
      */
-    abstract public function add_form_element(&$mform);
+    abstract function add_form_element(&$mform);
 
-    abstract public function form_process(&$data);
+	abstract function formprocess(&$data);
 
     /**
      * given a tracker and an id of a used element in a static context,
@@ -293,7 +287,7 @@ abstract class trackerelement {
      * what we need to knwo is the type of the element to call the adequate
      * constructor.
      */
-    static public function find_instance_by_usedid(&$tracker, $usedid) {
+    static function find_instance_by_usedid(&$tracker, $usedid) {
         global $DB, $CFG;
 
         $sql = "
@@ -310,31 +304,300 @@ abstract class trackerelement {
 
         if ($element = $DB->get_record_sql($sql, array($usedid))) {
 
-            $eltypeconstructor = '\\mod_tracker\\'.$element->type.'element';
+            $eltypeconstructor = $element->type.'element';
             include_once($CFG->dirroot.'/mod/tracker/classes/trackercategorytype/'.$element->type.'/'.$element->type.'.class.php');
-            $instance = new $eltypeconstructor($tracker, $usedid, true);
-            return $instance;
-        }
+			$instance = new $eltypeconstructor($tracker, $usedid, true);
+			return $instance;
+		}
 
-        return null;
+		return null;
+	}
+
+	/**
+	* given a tracker and an id of a used element in a static context,
+	* build a suitable trackerelement object that represents it.
+	* what we need to knwo is the type of the element to call the adequate
+	* constructor.
+	*/
+	static function find_instance_by_id(&$tracker, $id){
+		global $DB, $CFG;
+
+		if ($element = $DB->get_record('tracker_element', array('id' => $id), 'id, type', 'id')){
+			$eltypeconstructor = $element->type.'element';
+            include_once($CFG->dirroot.'/mod/tracker/classes/trackercategorytype/'.$element->type.'/'.$element->type.'.class.php');
+			$instance = new $eltypeconstructor($tracker, $id, false);
+			return $instance;
+		}
+
+		return null;
+	}
+
+    /**
+    * ULPGC ecastro to use autoresponses
+    *
+    */
+    function get_autoresponse($issueid){
+        global $CFG;
+
+        $this->value = $this->getvalue($issueid);
+        if (is_array($this->options) && $this->value) {
+            $values = explode(',', $this->value);
+        
+            $results = array();
+            foreach($values as $value) {
+                if(!isset($this->options[$value])) {
+                    // not int values means is not an autoresponse field
+                    continue;
+                }
+                $option = $this->options[$value];
+                if($option->autoresponse) {
+                    $result = new stdClass;
+                    $result->name = $option->description;
+                    $result->response = $option->autoresponse;
+                    $results[] = $result;
+                }
+            }
+            if($results) {
+                return($results);
+            }
+            
+        }
+        
+        return false;
     }
 
     /**
-     * given a tracker and an id of a used element in a static context,
-     * build a suitable trackerelement object that represents it.
-     * what we need to knwo is the type of the element to call the adequate
-     * constructor.
-     */
-    static public function find_instance_by_id(&$tracker, $id) {
-        global $DB, $CFG;
+    * ULPGC ecastro to use autofill fields
+    *
+    */
+    function autofill_options(){
+        global $CFG, $DB;
+        
+        $this->setoptionsfromdb();
+        $currentmap = array();
+        foreach($this->options as $oid => $option) {
+            $currentmap[$oid] = $option->name;
+        }
+        
+        // get updated items, get only new items, not existing ones
+        $newoptions = array();
+        //list($insql, $params) = $DB->get_in_or_equal($currentmap, SQL_PARAMS_NAMED, 'op', false);
+        $userfieldsapi = \core_user\fields::for_name();
+        $allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+        $ufields = 'u.id, u.idnumber, u.firstname, u.lastname, '.$allnames;
+        $sortorder = 'u.lastname ASC, u.firstname ASC';
+        $params = array();
+        $records = array();
+        $users = array();
+        
+        if($this->paramchar1 == 'courses') {
+            $sql = "SELECT c.shortname, CONCAT(c.shortname, '-', c.fullname) 
+                    FROM {course} c
+                    JOIN {course_categories} cc ON c.category = cc.id 
+                    WHERE c.category <> 0  ";
+            if($this->paramchar2) {
+                $sql .= 'AND cc.idnumber = :idnumber ';
+                $params['idnumber'] = $this->paramchar2;
+            }
+            $sql .= ' ORDER BY c.shortname ASC, c.fullname ASC ';    
+            $records = $DB->get_records_sql_menu($sql, $params);
+            
+        } elseif($this->paramchar1 == 'categories') {
+            $sql = "SELECT c.idnumber, c.name 
+                    FROM {course_categories} c
+                    JOIN {course_categories} cc ON c.parent = cc.id 
+                    WHERE c.id > 0 ";
+            if($this->paramchar2) {
+                $sql .= ' AND cc.idnumber = :idnumber ';
+                $params['idnumber'] = $this->paramchar2;
+            } else {
+                $sql .= ' AND c.parent = 0 ';            
 
-        if ($element = $DB->get_record('tracker_element', array('id' => $id), 'id, type', 'id')) {
-            $eltypeconstructor = '\\mod_tracker\\'.$element->type.'element';
-            include_once($CFG->dirroot.'/mod/tracker/classes/trackercategorytype/'.$element->type.'/'.$element->type.'.class.php');
-            $instance = new $eltypeconstructor($tracker, $id, false);
-            return $instance;
+            }
+            $sql .= ' ORDER BY c.name ASC';
+            $records = $DB->get_records_sql_menu($sql, $params);
+        
+        } elseif($this->paramchar1 == 'users_role') {
+            if($this->paramchar2) {
+                $roleid = $DB->get_field('role', 'id', array('shortname'=>$this->paramchar2));
+            }
+            if($roleid) {
+                $users = get_role_users($roleid, $this->context, false, $ufields, $sortorder, false);
+            } else {
+                $users = get_enrolled_users($this->context, '', null, $ufields, $sortorder);
+            }
+        
+        } elseif($this->paramchar1 == 'users_group') {
+            $groupid = 0;
+            if($this->paramchar2) {
+                $groupid = $DB->get_field('groups', 'id', array('courseid'=>$this->course, 'idnumber'=>$this->paramchar2));
+            }
+            if(!$groupid) {
+                $groupid = 0;
+            } 
+            $users = get_enrolled_users($this->context, '', $groupid, $ufields, $sortorder);
+        
+        } elseif($this->paramchar1 == 'users_grouping') {
+            $groupingid = 0;
+            if($this->paramchar2) {
+                $groupingid = $DB->get_field('groupings', 'id', array('courseid'=>$this->course, 'idnumber'=>$this->paramchar2));
+            }
+            if(!$groupingid) {
+                $groupingid = 0;
+            } 
+            $users = groups_get_grouping_members($groupingid, $ufields, $sortorder); 
+        
+        }
+        
+        if($users && !$records) {
+            foreach($users as $user) {
+                $records[$user->idnumber] = fullname($user, false, 'lastname');
+            }
+            unset($users);
+        }
+        
+        if($records) {
+            foreach($records as $name => $desc) {
+                $key = array_search($name, $currentmap);
+                if($key === false) {
+                    $newoptions[$name] = $desc;
+                } else {
+                    unset($currentmap[$key]);
+                }
+            }
+        } 
+        
+        $deleting = $currentmap;
+        unset($records);
+
+        // check if options used and delete if not used, multiple options use x,y,z in DB  
+        $usedoptions = $DB->get_records_menu('tracker_issueattribute', array('trackerid' => $this->tracker->id , 'elementid'=> $this->id), '', 'id, elementitemid');
+        $usedoptions = array_unique(explode(',',implode(',', $usedoptions)));
+        list($insql, $params) = $DB->get_in_or_equal($usedoptions, SQL_PARAMS_NAMED, 'op');
+        $select = "elementid = :eid AND id $insql";
+        $params['eid'] = $this->id;
+        $usedoptions = $DB->get_records_select_menu('tracker_elementitem', $select, $params, '', 'id,name');
+        $delete = array();
+        foreach($deleting as $eid => $name) {
+            $key = array_search($name, $usedoptions);
+            if($key === false) {
+                // OK, option is not used in any issue, can be deleted
+                $delete[] = $eid;
+            }
+        }
+        unset($usedoptions);
+        unset($deleting);
+        if($DB->delete_records_list('tracker_elementitem', 'id', $delete)) {
+            $this->options = array_diff_key($this->options, array_flip($delete));
+        }
+        unset($delete);
+        
+        // Now insert new options
+        $countoptions = count($this->options);
+        $option = new StdClass;
+    	$option->autoresponse = '';
+        $option->elementid = $this->id;
+        $option->sortorder = $countoptions;
+
+        foreach($newoptions as $name => $desc) {
+            if($name && $desc) {
+                $option->name = $name;
+                $option->description = $desc;
+                $option->sortorder += 1;
+                $oid = $DB->insert_record('tracker_elementitem', $option);
+                $this->options[$oid] = clone($option);
+                $this->options[$oid]->id = $oid;
+            }
+        }
+        
+        // reorder options
+        $currentmap = array();
+        foreach($this->options as $oid => $option) {
+            $currentmap[$oid] = $option->description;
+        }
+        $first = reset($this->options);
+        if(isset($first->sortorder)) {
+            $sortorder = 1;
+            core_collator::asort($currentmap);
+            foreach($currentmap as $oid => $name) {
+                $option = $this->options[$oid];
+                if($option->sortorder != $sortorder) {
+                    $option->sortorder = $sortorder;
+                    if($DB->set_field('tracker_elementitem', 'sortorder', $sortorder, array('id'=>$oid, 'elementid'=>$this->id))) {
+                        $this->options[$oid] = $option;
+                    }
+                }
+                $sortorder +=1;
+            }
         }
 
-        return null;
+        return $this->options;
+    }
+    
+    /**
+    * ULPGC ecastro to use autofill fields
+    *
+    */
+    function add_autowatches($issueid = false) {
+        global $CFG, $DB;
+        
+        // check is applicable
+        if(!$this->paramint2 || (substr($this->paramchar1, 0, 5) != 'users'))  {
+            return;
+        }
+
+        $sql = "SELECT i.*, ia.elementitemid, ia.timemodified AS itemmodified
+                FROM {tracker_issue} i 
+                JOIN {tracker_issueattribute} ia ON ia.trackerid = i.trackerid AND i.id = ia.issueid
+                WHERE i.trackerid = :tid AND ia.elementid = :eid ";
+        $params = array('tid'=>$this->tracker->id, 'eid'=>$this->id);
+        if($issueid) {
+            $sql .= ' AND i.id = :iid ';
+            $params['iid'] = $issueid;
+        }
+        
+        if($issues = $DB->get_records_sql($sql, $params)) {
+            $this->setoptionsfromdb();
+            $record = new stdClass();
+            $record->timeassigned = time();
+            foreach($issues as $issue) {
+                if($this->paramint2 == 1) {
+                    // this is user as cced
+                    $options = explode(',', $issue->elementitemid);
+                    list($insql, $params) = $DB->get_in_or_equal($options, SQL_PARAMS_NAMED, 'op');
+                    $sql = "SELECT u.id
+                            FROM {tracker_elementitem} ei 
+                            JOIN {user} u ON ei.name = u.idnumber
+                            WHERE ei.id $insql AND ei.elementid = :eid AND NOT EXISTS (SELECT 1 FROM {tracker_issuecc} ic 
+                                                                                        WHERE ic.trackerid = :tid AND 
+                                                                                                ic.issueid = :iid AND  ic.userid = u.id ) ";
+                    $params['eid'] = $this->id;
+                    $params['iid'] = $issue->id;
+                    $params['tid'] = $this->tracker->id;
+                    
+                    if($users = $DB->get_records_sql($sql, $params)) {
+                        foreach($users as $user) {
+                            tracker_register_cc($this->tracker, $issue, $user->id);
+                        }
+                    }
+                }
+                if($this->paramint2 == 2 && (!$issue->assignedto || ($issue->timeassigned <= $issue->itemmodified))) {
+                    //this is user as assignedto 
+                    $sql = "SELECT u.id, u.idnumber
+                                FROM {tracker_elementitem} ei 
+                                JOIN {user} u ON ei.name = u.idnumber
+                                WHERE ei.id = :eiid AND ei.elementid = :eid AND u.id <> :uid ";
+                    $params = array('eid' => $this->id, 'eiid' => $issue->elementitemid, 'uid' => $issue->assignedto);
+                    if($users = $DB->get_records_sql($sql, $params)) {
+                        $user = reset($users);
+                        if($user->id) {
+                            $record->id = $issue->id;
+                            $record->assignedto = $user->id;
+                            $DB->update_record('tracker_issue', $record);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

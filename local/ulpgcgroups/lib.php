@@ -708,7 +708,8 @@ function local_ulpgcgroups_do_exportgroups($groups, $fromform, $columns) {
     
     list($inrolesql, $inparams) = $DB->get_in_or_equal($fromform->exportuserroles, SQL_PARAMS_NAMED, 'r');
     $params = array_merge($params, $inparams);
-    $names = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $sql = "SELECT  DISTINCT(uer.userid), u.$userfields, $names $rolesfields  
             FROM {user_enrolments} uer 
             JOIN {enrol} er ON uer.enrolid = er.id  AND er.status = 0 AND er.courseid = :courseid1 

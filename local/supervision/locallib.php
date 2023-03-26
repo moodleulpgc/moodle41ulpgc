@@ -331,8 +331,9 @@
         
         $warnings = supervision_load_plugins(null, true);
 
-        $names1 = get_all_user_name_fields(true, 'u');
-        $names2 = get_all_user_name_fields(true, 'st', null, 'st');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names1 = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+        $names2 = $userfieldsapi->get_sql('st', false, 'st', '', false)->selects;
         $sql = "SELECT sw.*, c.fullname, c.shortname, c.category,
                         u.idnumber, u.email, u.emailstop, u.mailformat, u.maildisplay, $names1,
                         st.idnumber, st.email, st.emailstop, st.mailformat, st.maildisplay, $names2
@@ -364,8 +365,9 @@
             $sent = array();
             $success = array();
             $failure = array();
-            
-            $names = get_all_user_name_fields(true, '');
+
+            $userfieldsapi = \core_user\fields::for_name();
+            $names = $userfieldsapi->get_sql('', false, '', '', false)->selects;
             foreach ($rs as $stat) {
                 if(!$stat->userid) {
                     // TODO debug measure, eliminate

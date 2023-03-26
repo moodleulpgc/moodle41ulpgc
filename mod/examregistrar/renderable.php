@@ -679,7 +679,8 @@ class examregistrar_roomexam extends examregistrar_exam implements renderable {
 
         $users = array();
 
-        $fields = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT u.id, u.username, u.idnumber, u.picture, $fields, ss.id AS allocid, 0 AS additional
                 FROM {examregistrar_session_seats} ss
                 JOIN {user} u ON ss.userid = u.id
@@ -715,7 +716,8 @@ class examregistrar_roomexam extends examregistrar_exam implements renderable {
         $this->seated = count($users);
 
         if(!$onlyadditionals) {
-            $fields = get_all_user_name_fields(true, 'u');
+            $userfieldsapi = \core_user\fields::for_name();
+            $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
             $sql = "SELECT  b.*, b.id AS bid, u.id, u.username, u.idnumber, $fields
                     FROM {examregistrar_bookings} b
                     JOIN {user} u ON b.userid = u.id
@@ -852,7 +854,8 @@ class examregistrar_allocatedexam extends examregistrar_exam implements renderab
             $where = ' AND b.bookedsite = :venue ';
             $params['venue'] = $venue;
         }
-        $fields = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT  b.id AS bid, ss.*, ss.id AS sid, b.userid, b.bookedsite, u.id, u.username, u.idnumber, $fields
                 FROM {examregistrar_bookings} b
                 JOIN {examregistrar_exams} e ON b.examid = e.id AND  e.examsession = :session
@@ -876,7 +879,8 @@ class examregistrar_allocatedexam extends examregistrar_exam implements renderab
             $where = ' AND b.bookedsite = :venue ';
             $params['venue'] = $venue;
         }
-        $fields = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT  b.id AS bid, ss.roomid, ss.additional, u.id, u.username, u.idnumber, $fields,
                         el.name AS venuename, el.idnumber AS venueidnumber,
                         el2.name AS roomname, el2.idnumber AS roomidnumber
@@ -1092,7 +1096,8 @@ class examregistrar_exams_course extends examregistrar_exams_base implements ren
     public function get_exam_bookings($examid, $sort = '') {
         global $DB;
         $bookings = array();
-        $allnames = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         if(!$sort) {
             $sort = ' u.lastname ASC ';
         } else {

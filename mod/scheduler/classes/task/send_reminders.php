@@ -63,7 +63,7 @@ class send_reminders extends \core\task\scheduled_task {
         $noreplyuser = \core_user::get_noreply_user(); // ecastro ULPGC
         $noreplyuser->firstname = get_string('noreplyname', 'scheduler'); 
         
-        if(1 or $slots) { 
+        if($slots) { 
             require_once($CFG->dirroot.'/mod/scheduler/mailtemplatelib.php');
 
             foreach ($slots as $slot) {
@@ -95,25 +95,30 @@ class send_reminders extends \core\task\scheduled_task {
 
                 // ecastro ULPGC 
                 // send reminder to teacher
-                $student = '';
-                $vars = \scheduler_messenger::get_scheduler_variables($scheduler, $slot, $teacher, $student, $course, $teacher);
-                if(isset($appointment->groupid) && $appointment->groupid > 0) {
-                    $vars['ATTENDANT']     = get_string('groupname', 'scheduler', groups_get_group_name($appointment->groupid));
-                    $vars['ATTENDANT_URL'] = $CFG->wwwroot.'/user/view.php?id='.$course->id.'&group='.$groupid;
-                } elseif(($slot->exclusivity != 1) &&  ($appointments > 0)) {
-                    $vars['ATTENDANT']     = get_string('multiplestudents', 'scheduler', $appointments);
-                    $vars['ATTENDANT_URL'] =  $CFG->wwwroot.'/mod/scheduler/view.php?id='.$scheduler->get_cmid().
-                                                        '&appointmentid='.$appointment->id.'&course='.$course->id.'&what=viewstudent&subpage=otherstudents';
-                } 
-                $msg += \scheduler_messenger::send_message_from_template('mod_scheduler', 'reminder', 1, $noreplyuser, $teacher, $course, 'reminder', $vars);
+                // only if some students have appointed
+                if($appointments > 0) { // ecastro ULPGC send only if something appointed
+                    $student = '';
+                    $vars = \scheduler_messenger::get_scheduler_variables($scheduler, $slot, $teacher, $student, $course, $teacher);
+                    if(isset($appointment->groupid) && $appointment->groupid > 0) {
+                        $vars['ATTENDANT']     = get_string('groupname', 'scheduler', groups_get_group_name($appointment->groupid));
+                        $vars['ATTENDANT_URL'] = $CFG->wwwroot.'/user/view.php?id='.$course->id.'&group='.$groupid;
+                    } elseif(($slot->exclusivity != 1) &&  ($appointments > 0)) {
+                        $vars['ATTENDANT']     = get_string('multiplestudents', 'scheduler', $appointments);
+                        $vars['ATTENDANT_URL'] =  $CFG->wwwroot.'/mod/scheduler/view.php?id='.$scheduler->get_cmid().
+                                                            '&appointmentid='.$appointment->id.'&course='.$course->id.'&what=viewstudent&subpage=otherstudents';
+                    } 
+                    $msg += \scheduler_messenger::send_message_from_template('mod_scheduler', 'reminder', 1, $noreplyuser, $teacher, $course, 'reminder', $vars);
 
-                if($msg) { 
-                    $slot->emaildate = -$date;  // ecastro ULPGC store date sent 
-                    $DB->update_record('scheduler_slots', $slot);
+                    if($msg) { 
+                        $slot->emaildate = -$date;  // ecastro ULPGC store date sent 
+                        $DB->update_record('scheduler_slots', $slot);
+                    }
                 }
                 // ecastro ULPGC
             }
         }
         //cron_setup_user();
     }
+
 }
+

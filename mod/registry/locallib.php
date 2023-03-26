@@ -421,7 +421,8 @@ function registry_update_tracker_issue($registry, $regsubmission, $status) {
     $coursecontext = context_course::instance($regsubmission->regcourse);
 
     // add other teachers as cc in tracker issue
-    $fields = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     if($users = get_role_users($roles, $coursecontext, false, 'ra.id AS raid, u.id AS userid, u.idnumber, u.firstname, u.lastname, '.$fields, 'u.lastname, u.firstname', false, '', '', '', ' u.id <> '.$regsubmission->userid)) {
         $tracker = $DB->get_record('tracker', array('id'=>$issue->trackerid, 'course'=>$registry->course));
         $done = array();
@@ -664,7 +665,8 @@ function registry_view_user_registerings($cm, $course, $registry, $userid, $revi
     $trackerurl = new moodle_url('/mod/tracker/view.php', array('id'=>$tcm->id, 'view'=>'view', 'screen'=>'viewanissue'));
     $userurl = new moodle_url('/user/view.php', array('course'=>$registry->course));
 
-    $fields = get_all_user_name_fields(true);
+    $userfieldsapi = \core_user\fields::for_name();
+    $fields = $userfieldsapi->get_sql('', false, '', '', false)->selects;
     foreach($registers as $cid=>$register) {
         /// build the table data
         $hasmods = false;
