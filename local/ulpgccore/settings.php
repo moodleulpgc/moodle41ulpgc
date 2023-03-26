@@ -179,7 +179,11 @@ if ($hassiteconfig) {
     $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/enabledadvchooser', 
                                                 get_string('enableadvchooser','local_ulpgccore'),
                                                 get_string('explainenableadvchooser','local_ulpgccore'), 0));
-    
+
+    $temp->add(new \admin_setting_configcheckbox('local_ulpgccore/sortadvchooser',
+                                                get_string('sortadvchooser','local_ulpgccore'),
+                                                get_string('explainsortadvchooser','local_ulpgccore'), 0));
+
     // used in 
     foreach(array('communication', 'adminwork', 'collaboration', 'assessment', 'structured', 'games', 'other') as $type) {
         $temp->add(new admin_setting_configtextarea('local_ulpgccore/actv_'.$type,

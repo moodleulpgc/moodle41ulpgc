@@ -207,7 +207,7 @@ class content_item_service {
      * @param array $contentitems The content items array.
      * @return array The array of exported content items.
      */
-    private function export_content_items(\stdClass $user, $contentitems) {
+    private function export_content_items(\stdClass $user, $contentitems, $sort = true) { // ecastro ULPGC short
         global $PAGE;
 
         // Export the objects to get the formatted objects for transfer/display.
@@ -224,7 +224,9 @@ class content_item_service {
         $exported = $ciexporter->export($PAGE->get_renderer('core'));
         
         // Sort by title for return.
-        \core_collator::asort_objects_by_property($exported->content_items, 'title');
+        if($sort) { // ecastro ULPGC
+            \core_collator::asort_objects_by_property($exported->content_items, 'title');
+        }
         return array_values($exported->content_items);
     }
 
@@ -282,8 +284,43 @@ class content_item_service {
                 return $item;
             }, $availablecontentitems);
         }
-        
-        return $this->export_content_items($user, $availablecontentitems); // ecastro ULPGC
+
+        // ecastro ULPGC
+        $alphanum = true;
+        if($ulpgc = get_config('local_ulpgccore')) {
+            if($ulpgc->enabledadvchooser && $ulpgc->sortadvchooser) {
+                $groups = array('actv_communication', 'actv_adminwork', 'actv_collaboration', 'actv_assessment',
+                                'actv_structured', 'actv_games', 'actv_other',
+                                'res_files','res_text','res_structured',
+                );
+                $groups = array_flip($groups);
+                //$names = array();
+                foreach($groups as $type => $val) {
+                    $group = explode("\n", $ulpgc->{$type});
+                    $groups[$type] = array_filter(array_map('trim', $group));
+                }
+
+                $cimap = [];
+                foreach($availablecontentitems as $key => $contentitem) {
+                    $cimap[$key] = $contentitem->get_name();
+                }
+
+                $sortedcontentitems = [];
+                foreach($groups as $group) {
+                    foreach($group as $modname) {
+                        $id = array_search($modname, $cimap);
+                        if($id !== false) {
+                            $sortedcontentitems[] = $availablecontentitems[$id];
+                            unset($availablecontentitems[$id]);
+                        }
+                    }
+                }
+                $availablecontentitems = array_merge($sortedcontentitems, $availablecontentitems);
+                $alphanum = false;
+            }
+        }
+
+        return $this->export_content_items($user, $availablecontentitems, $alphanum); // ecastro ULPGC
         
         // ecastro ULPGC removed
         

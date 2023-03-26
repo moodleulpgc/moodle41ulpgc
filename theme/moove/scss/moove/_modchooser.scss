@@ -1,0 +1,39 @@
+/* ULPGC header
+ ========================================================================= */
+
+/* mods chooser styles
+ ========================================================================= */
+
+@media (min-width: 992px) {
+  .modal-lg,
+  .modal-xl {
+    max-width: 860px; } }
+
+@media (min-width: 1048px) {
+  .modal-lg,
+  .modal-xl {
+    max-width: 980px; } }
+
+@include media-breakpoint-up(sm) {
+    .modchoosercontainer .optionscontainer .option,
+    .modchoosercontainer .searchresultitemscontainer .option {
+        // Three items per line.
+        flex-basis: calc(25.0% - 0.5rem);
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .modchoosercontainer .optionscontainer .option,
+    .modchoosercontainer .searchresultitemscontainer .option {
+        // Eight items per line.
+        flex-basis: calc(12.5% - 0.5rem);
+    }
+}
+
+/* Estilos 2020 .modchoosercontainer .optionscontainer .option .optionactions .optionaction, */
+.modchoosercontainer .optionscontainer .option .optionactions .optionaction {
+    color: inherit;
+}
+.modchoosercontainer .optionscontainer .option .optionactions .optionaction.text-muted {
+    color: #004dae !important;
+}

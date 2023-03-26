@@ -274,7 +274,11 @@ Peritia Et Doctrina,PeD
 Peritia et Doctrina,PeD
 ';
 $string['enableadvchooser'] = 'Enable advanced chooser';
-$string['explainenableadvchooser'] = 'If enabled, the javascript mod chooser will sho modules grouped and ordered in categories ';
+$string['explainenableadvchooser'] = 'If enabled,
+the javascript mod chooser will show modules grouped in categories ';
+$string['sortadvchooser'] = 'Sort items in Chooser';
+$string['explainsortadvchooser'] = 'If active,
+the javascript mod chooser will show modules sorted in the same order as listed here within each category. ';
 $string['actv_communication'] = 'Communication';
 $string['actv_collaboration'] = 'Collaboration';
 $string['actv_adminwork'] = 'Management';
