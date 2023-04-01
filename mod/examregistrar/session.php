@@ -49,8 +49,7 @@ $baseurl = new moodle_url('/mod/examregistrar/view.php', array('id' => $cm->id, 
 $tab = 'session';
 
 if(!$session = optional_param('session', 0, PARAM_INT)) {
-
-$now = time();
+    $now = time();
     $session = examregistrar_next_sessionid($examregistrar, $now);
 }
 $baseurl->param('session', $session);

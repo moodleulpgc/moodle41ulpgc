@@ -20,6 +20,7 @@ git submodule add https://github.com/vfremaux/moodle-local_vflibs.git           
 cd local/vflibs && git checkout MOODLE_39_STABLE && cd ../../
 git submodule add https://github.com/valentineus/moodle-webhooks.git                     local/webhooks
 cd local/webhooks && git checkout v3.0.0-stable && cd ../../
+git submodule add git clone git@bitbucket.org:moodleulpgc/moodle-local_attendancewebhook.git   local/attendancewebhook
 
 
 

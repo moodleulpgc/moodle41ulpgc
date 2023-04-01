@@ -33,7 +33,6 @@ $ADMIN->add('modules', new admin_category('managejobsettings', new lang_string('
 
 $plugins = core_plugin_manager::instance()->get_plugins_of_type('managejob');
 
-
 foreach ($plugins as $plugin) {
     if($plugin->is_enabled()) {
         $ADMIN->add('tool_batchmanage', new admin_externalpage('managejob_'.$plugin->name, $plugin->displayname,  

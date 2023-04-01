@@ -422,4 +422,55 @@ if ($ADMIN->fulltree) {
     $page->add($setting);
 
     $settings->add($page);
+
+    /*
+    * --------------------
+    * ULPGC 1 settings tab
+    * --------------------
+    */
+    $page = new admin_settingpage('theme_moove_ulpgc1', get_string('ulpgc1settings', 'theme_moove'));
+
+    // icons for primary navbar
+    $name = 'theme_moove/iconhome';
+    $title = get_string('iconhome', 'theme_moove');
+    $description = get_string('iconhomedesc', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, 'fa-home');
+    $page->add($setting);
+
+    $name = 'theme_moove/iconmyhome';
+    $title = get_string('iconmyhome', 'theme_moove');
+    $description = get_string('iconmyhomedesc', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, 'fa-dashboard');
+    $page->add($setting);
+
+    $name = 'theme_moove/iconmycourses';
+    $title = get_string('iconmycourses', 'theme_moove');
+    $description = get_string('iconmycoursesdesc', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, 'fa-cubes');
+    $page->add($setting);
+
+    $name = 'theme_moove/iconsiteadminnode';
+    $title = get_string('iconsiteadminnode', 'theme_moove');
+    $description = get_string('iconsiteadminnodedesc', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, 'fa-cogs');
+    $page->add($setting);
+
+    $settings->add($page);
+
+    /*
+    * --------------------
+    * ULPGC 2 settings tab
+    * --------------------
+    */
+    $page = new admin_settingpage('theme_moove_ulpgc2', get_string('ulpgc1settings', 'theme_moove'));
+
+    // Telegram url setting.
+    $name = 'theme_moove/telegram2';
+    $title = get_string('telegram', 'theme_moove');
+    $description = get_string('telegramdesc', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, '');
+    $page->add($setting);
+
+    $settings->add($page);
+
 }

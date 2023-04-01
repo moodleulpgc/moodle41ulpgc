@@ -49,10 +49,20 @@ function theme_moove_get_main_scss_content($theme) {
 
     // Moove scss.
     $moovevariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/moove/_variables.scss');
+
+    // ensure add ULPGC variables after standard ones but before regular css
+    $ulpgcvariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc/_variables.scss');
+    $moovevariables = $moovevariables . "\n" . $ulpgcvariables;
+
     $moove = file_get_contents($CFG->dirroot . '/theme/moove/scss/default.scss');
+    $security = file_get_contents($CFG->dirroot . '/theme/moove/scss/moove/_security.scss');
 
     // Combine them together.
-    $allscss = $moovevariables . "\n" . $scss . "\n" . $moove;
+    $allscss = $moovevariables . "\n" . $scss . "\n" . $moove . "\n" . $security;
+
+    // now load specific ULPGC scss
+    $ulpgc = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc.scss');
+    $allscss = $allscss . "\n" . $ulpgc;
 
     return $allscss;
 }

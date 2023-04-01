@@ -118,8 +118,6 @@ class examregistrar_exam implements renderable {
     public $assignplugincm;
     /** @var int $status the defined status in examfiles table */
     public $status;
-
-    
     
     /** @var bool $visible   */
     public $visible = true;
@@ -137,9 +135,11 @@ class examregistrar_exam implements renderable {
                 $this->$param = $exam->$param;
             }
         }
+        
         if($this->courseid && empty($this->shortname)) {
             $this->shortname = $DB->get_field('course', 'shortname', ['id' => $this->courseid]);
         }
+        
         $this->examfile = false;
 
     }
@@ -638,6 +638,7 @@ class examregistrar_exam implements renderable {
         
         return $this->printmode;
     }
+    
     public function get_exam_instructions() {
         if(!$this->examfile && !$this->allowedtools) {
             $this->set_valid_file();

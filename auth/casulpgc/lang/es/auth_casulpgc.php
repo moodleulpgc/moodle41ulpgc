@@ -33,7 +33,7 @@ $string['auth_casulpgc_caserror_key'] = 'CAS no configurado';
 $string['auth_casulpgc_caserror'] = 'Algunos parámetros importantes para la conexión con CAS están ausentes.  
 Este método de autenticación casulpgc NO funcionará. ';
 $string['auth_casulpgc_nonexistent_return_url_key'] = 'URL de retorno para no exstentes';
-$string['auth_casulpgc_nonexistent_return_url'] = 'Una RUR para redirigir a usuarios que si son autenticados en CAS pero que NO existen en esta plataforma. <br />
+$string['auth_casulpgc_nonexistent_return_url'] = 'Una URL para redirigir a usuarios que si son autenticados en CAS pero que NO existen en esta plataforma. <br />
 Es una url (sin el prefijo the https://) para redirigir a usuarios ULPGC. Si se deja vacía se usará el sitio web de la ULPGC.';
 $string['nonexistentmsg'] = 'Un usuario con este nombre no está dado de alta en esta plataforma. Por favor, contacte con el Servicio de Soporte del Campus virtual (email campusvirtual@ulpgc.es).'; 
 $string['noaccessreturn'] = 'Volver a ULPGC';

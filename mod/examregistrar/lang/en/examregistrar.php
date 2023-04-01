@@ -336,9 +336,9 @@ This option identifies the academic Exam period to use. Choose from a menu of va
 $string['periodtypeitem'] = 'Period type';
 $string['periodtypeitem_help'] = '
 This option identifies the academic Exam period to use. Choose from a menu of values set by Admins.';
+$string['examdeliveryplugins'] = 'Delivery method plugins';
 $string['examdelivery'] = 'Give mode';
 $string['examdeliverymode'] = 'Give mode {$a}';
-
 $string['examsessionitem'] = 'Session';
 $string['examsessionitem_help'] = '
 This option identifies the academic Exam session (day, hour) to use. Choose from a menu of values set by Admins.';
@@ -703,7 +703,6 @@ $string['pageseparator'] = '    ==========================================   PAG
 $string['newexam'] = '                              NEW EXAM ';
 $string['newroom'] = '                              NEW ROOM ';
 
-
 $string['roomsinsession'] = '{$a} Rooms assigned to session';
 $string['examsinsession'] = '{$a} Exams assigned to session';
 
@@ -722,6 +721,7 @@ $string['taking'] = "Booked";
 
 $string['qualitycontrol'] = 'Quality control';
 $string['printingbuttons'] = "Printing buttons";
+$string['manageexamdeliveryplugins'] = "Manage Exam delivery methods";
 $string['managesessionrooms'] = 'Session Rooms';
 $string['managesessionexams'] = 'Session Exams';
 $string['managesessionresponses'] = 'Session Response files';

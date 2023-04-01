@@ -526,9 +526,10 @@ function examregistrar_get_instance_config($examregid, $fields = false, $prefix 
         }
     }    
    
-   if(empty($config)) {
-    $config = '';
-   }
+    if(empty($config)) {
+        $config = '';
+    }
+
     return $config;
 }
 

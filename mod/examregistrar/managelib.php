@@ -124,6 +124,21 @@ function examregistrar_get_editable_item($edit, $itemtable, $itemid) {
             }
             examregistrar_exam_add_deliverymodes($element);
         }
+        // take care of text editor fields: two fields as array in mform
+        $editor = '';
+        if($itemtable == 'examregistrar_locations') {
+            $editor = 'address';
+        }
+        if($itemtable == 'examregistrar_printing') {
+            $editor = 'content';
+        }
+        if($editor) {
+            $t = $element->{$editor};
+            $f = $element->{$editor.'format'};
+            $element->{$editor} = [];
+            $element->{$editor}['text'] = $t;
+            $element->{$editor}['format'] = $f;
+        }
     }
     return $element;
 }
@@ -133,14 +148,8 @@ function examregistrar_process_addupdate_editable_item($edit, $itemtable, $prima
                                                         $formdata, $element, $eventdata) {
     global $DB; 
 
-    //print_object("editparam $edit");
-    
-    //print_object($formdata);
-    
     $data = examregistrar_extract_edititem_formdata($edit, $formdata);
 
-    //print_object($data);
-    
     unset($eventdata['other']['name']);
     if($element) { // this means itemid > 0 and record exists, over-write & update
         $data->id = $element->id;

@@ -469,6 +469,7 @@ function examregistrar_examallocations_printpdf($examregistrar, $allocations, $p
                 $pdf->writeHTML($instructions, false, false, true, false, '');
             }
             $pdf->Ln(4);
+
             $margins = $pdf->getMargins();
             $y = $pdf->getY();
             $colwidth = ($pdf->getPageWidth() - $margins['right'] - $margins['left']) * $width/100;

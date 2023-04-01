@@ -130,7 +130,6 @@ if($tab != 'view') {
     $programme   = optional_param('programme', '', PARAM_ALPHANUMEXT);
     $courseid   = optional_param('course', 0, PARAM_INT);
     $userid   = optional_param('user', $USER->id, PARAM_INT);
-
     $action = optional_param('action', '',  PARAM_ALPHANUMEXT);
     $examfid = optional_param('exam', '',  PARAM_INT);
 

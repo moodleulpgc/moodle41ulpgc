@@ -459,7 +459,6 @@ function examregistrar_booking_clean_newbookings($exam, $booking, $newid, $useri
             }
         }
     }
-
 }
 
 

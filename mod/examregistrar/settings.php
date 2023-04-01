@@ -23,6 +23,22 @@
 
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot."/question/engine/bank.php");
+//require_once($CFG->dirroot."/mod/examregistrar/classes.php");
+
+/*
+// First get a list of examdelivery plugins with there own settings pages. If there none,
+// we use a simpler overall menu structure.
+$deliveries = core_component::get_plugin_list_with_file('examdelivery', 'settings.php', false);
+$deliveriesbyname = array();
+foreach ($deliveries as $delivery => $deliverydir) {
+    $strdeliveryname = get_string('pluginname', 'examdelivery_' . $delivery);
+    $deliveriesbyname[$strdeliveryname] = $delivery;
+}
+core_collator::ksort($deliveriesbyname);
+*/
+$ADMIN->add('modsettings', new admin_category('examregistrarfolder', new lang_string('pluginname', 'mod_examregistrar'), $module->is_enabled() === false));
+
+$settings = new admin_settingpage($section, get_string('examregistrarsettings', 'examregistrar'), 'moodle/site:config', $module->is_enabled() === false);
 
 
 if ($ADMIN->fulltree) {
@@ -119,3 +135,22 @@ if ($ADMIN->fulltree) {
                         
 }
 
+$ADMIN->add('examregistrarfolder', $settings);
+// Tell core we already added the settings structure.
+$settings = null;
+/*
+$ADMIN->add('examregistrarfolder', new admin_category('examdeliveryplugins',
+    new lang_string('examdeliveryplugins', 'examregistrar'), !$module->is_enabled()));
+$ADMIN->add('examdeliveryplugins', new admin_externalpage('manageexamdeliveryplugins', get_string('manageexamdeliveryplugins', 'examregistrar'),
+                                                            new moodle_url('/mod/examregistrar/manageplugins.php', array('subtype'=>'examdelivery'))));
+*/
+    $temp = new admin_settingpage('examdeliveryplugins', new lang_string('examdeliveryplugins', 'examregistrar'));
+    $temp->add(new mod_examregistrar\setting_examdeliveries());
+
+    $ADMIN->add('examregistrarfolder', $temp);
+
+
+foreach (core_plugin_manager::instance()->get_plugins_of_type('examdelivery') as $plugin) {
+    /** @var \mod_examregistrar\plugininfo\examdelivery $plugin */
+    $plugin->load_settings($ADMIN, 'examdeliveryplugins', $hassiteconfig);
+}

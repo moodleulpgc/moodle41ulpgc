@@ -26,17 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/auth/cas/auth.php');
-// Conexión a base de datos externa
-//require_once ($CFG->dirroot . '/local/sinculpgc/locallib.php');
-
 
 /*
  * Proceso los comandos single sign-out enviados por CAS.
  * Busca en los archivos de sesión en disco el que coincide con el ticket
  * recibido desde CAS.
  */
-function casSingleSignOut($ticket2logout)
-{
+function casSingleSignOut($ticket2logout) {
     global $CFG;
 
     // File session
@@ -61,8 +57,7 @@ function casSingleSignOut($ticket2logout)
 /**
  * CAS authentication plugin.
  */
-class auth_plugin_casulpgc extends auth_plugin_cas
-{
+class auth_plugin_casulpgc extends auth_plugin_cas {
 
     /**
      * Constructor.
@@ -101,16 +96,12 @@ class auth_plugin_casulpgc extends auth_plugin_cas
         global $frm;
         global $user;
         global $CFG;
-        global $PHPCLIENT;
-
-        $courseid = optional_param('courseid', 0, PARAM_INT);
 
         // Return if CAS enabled and settings not specified yet
         if (empty($this->config->hostname)) {
             return;
         }
 
-        
         // If the multi-authentication setting is used, check for the param before connecting to CAS.
         if ($this->config->multiauth) {
             // If there is an authentication error, stay on the default authentication page.
@@ -123,24 +114,9 @@ class auth_plugin_casulpgc extends auth_plugin_cas
             }
         }
 
-
-/*
-        print_object($frm);
-        print_object($PHPCLIENT);
-        print_object(" --- frm  before hook");
-
-*/
         parent::loginpage_hook();
 
         $casinit = phpCAS::isInitialized();
-/*
-        print_object($frm);
-        print_object($PHPCLIENT);
-        $casinit = phpCAS::isInitialized();
-        print_object(" --- cas isInitialized   $casinit");
-        print_object(" --- frm  AFTER hook");
-
-*/
 
         if($this->config->lockauth) {
             if($casinit) {                
@@ -159,18 +135,6 @@ class auth_plugin_casulpgc extends auth_plugin_cas
                 }
             }
         }
-/*
-        print_object($frm);
-        print_object($PHPCLIENT);
-        $casinit = phpCAS::isInitialized();
-        print_object(" --- cas isInitialized   $casinit");
-        print_object(" --- frm  AFTER hook");
-
-        $localconfig = get_config('auth_casulpgc');
-        print_object("Multiple {$this->config->multiauth}");
-        print_object($localconfig);
-        print_object("  ------ auth casulpgc config  -----------------------");
-*/
     }
 
 
@@ -225,7 +189,6 @@ class auth_plugin_casulpgc extends auth_plugin_cas
     }
 
 
-
     /**
      * Connect to the CAS (clientcas connection or proxycas connection)
      */
@@ -265,30 +228,9 @@ class auth_plugin_casulpgc extends auth_plugin_cas
     function sync_users($do_updates=true) {
         // this function relocated to local/sinculpgc/cli/sincusuarios.php
         // preserved here for documentation purposes
+        mtrace("... function relocated to local/sinculpgc/cli/sincusuarios.php ");
     }
 
-
-    /**
-     * Hook for logout page
-     */
-/* todelete ????
-    function logoutpage_hook() {
-        global $USER, $redirect;
-
-        // Only do this if the user is actually logged in via CAS
-        if (($USER->auth === $this->authtype) || ($USER->auth === 'manual')) {
-            // Check if there is an alternative logout return url defined
-            if (isset($this->config->logout_return_url) && !empty($this->config->logout_return_url)) {
-                // Set redirect to alternative return url
-                $redirect = $this->config->logout_return_url;
-            }
-            if (!empty($this->config->logoutcas)) {
-                $this->connectCAS();
-                $redirect = phpCAS::getServerLogoutURL() . '?service=' . urlencode($this->config->logout_return_url);
-            }
-        }
-    }
-*/
 
     /**
      * Return a list of identity providers to display on the login page.
@@ -307,7 +249,6 @@ class auth_plugin_casulpgc extends auth_plugin_cas
             $idp_list[0]['name'] = get_string('pluginname', 'auth_casulpgc');
         }
         
-        print_object($idp_list);
         return $idp_list;
     }
 }
