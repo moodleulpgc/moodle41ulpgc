@@ -126,6 +126,8 @@ $templatecontext = [
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
 
 // ecastro ULPGC
+    $templatecontext = theme_moove_navbar_settings($templatecontext);
+    /*
     require_once($CFG->dirroot . '/theme/moove/locallib.php');
     $templatecontext['incoursesettings'] = true;
     // Add the returned value from theme_boost_campus_get_incourse_settings to the template context.
@@ -137,6 +139,7 @@ $templatecontext = array_merge($templatecontext, $themesettings->footer());
         if ($PAGE->pagelayout != 'mypublic' && $PAGE->bodyid != 'page-contentbank') {
             $templatecontext['settingsmenu'] = $renderer->context_header_settings_menu();
         }
+        */
 // ecastro ULPGC
 
 

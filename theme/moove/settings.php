@@ -428,30 +428,37 @@ if ($ADMIN->fulltree) {
     * ULPGC 1 settings tab
     * --------------------
     */
-    $page = new admin_settingpage('theme_moove_ulpgc1', get_string('ulpgc1settings', 'theme_moove'));
+    $page = new admin_settingpage('theme_moove_ulpgc1', get_string('ulpgcsitesettings', 'theme_moove'));
+
+    // Settings title for grouping course settings related aspects together. We don't need a description here.
+    $name = 'theme_moove/sitesettingsheading';
+    $title = get_string('sitesettingsheading', 'theme_moove', null, true);
+    $setting = new admin_setting_heading($name, $title, null);
+    $page->add($setting);
+
 
     // icons for primary navbar
     $name = 'theme_moove/iconhome';
     $title = get_string('iconhome', 'theme_moove');
-    $description = get_string('iconhomedesc', 'theme_moove');
+    $description = get_string('iconhome_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-home');
     $page->add($setting);
 
     $name = 'theme_moove/iconmyhome';
     $title = get_string('iconmyhome', 'theme_moove');
-    $description = get_string('iconmyhomedesc', 'theme_moove');
+    $description = get_string('iconmyhome_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-dashboard');
     $page->add($setting);
 
     $name = 'theme_moove/iconmycourses';
     $title = get_string('iconmycourses', 'theme_moove');
-    $description = get_string('iconmycoursesdesc', 'theme_moove');
+    $description = get_string('iconmycourses_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-cubes');
     $page->add($setting);
 
     $name = 'theme_moove/iconsiteadminnode';
     $title = get_string('iconsiteadminnode', 'theme_moove');
-    $description = get_string('iconsiteadminnodedesc', 'theme_moove');
+    $description = get_string('iconsiteadminnode_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-cogs');
     $page->add($setting);
 
@@ -462,10 +469,84 @@ if ($ADMIN->fulltree) {
     * ULPGC 2 settings tab
     * --------------------
     */
-    $page = new admin_settingpage('theme_moove_ulpgc2', get_string('ulpgc1settings', 'theme_moove'));
+    $page = new admin_settingpage('theme_moove_ulpgc2', get_string('ulpgccoursesettings', 'theme_moove'));
+
+    // Settings title for grouping course settings related aspects together. We don't need a description here.
+    $name = 'theme_moove/coursesettingsheading';
+    $title = get_string('coursesettingsheading', 'theme_moove', null, true);
+    $setting = new admin_setting_heading($name, $title, null);
+    $page->add($setting);
+
+
+
+    // Setting to display the course settings page as a panel within the course.
+    $name = 'theme_moove/showsettingsincourse';
+    $title = get_string('showsettingsincourse', 'theme_moove', null, true);
+    $description = get_string('showsettingsincourse_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcheckbox($name, $title, $description, 'no', 'yes', 'no'); // Overriding default values
+    // yes = 1 and no = 0 because of the use of empty() in theme_moove_get_pre_scss() (lib.php).
+    // Default 0 value would not write the variable to scss that could cause the scss to crash if used in that file.
+    // See MDL-58376.
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
+    // Setting to display the course settings page as a panel within the course.
+    $name = 'theme_moove/showmenuitemicons';
+    $title = get_string('showmenuitemicons', 'theme_moove', null, true);
+    $description = get_string('showmenuitemicons_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcheckbox($name, $title, $description, 'no', 'yes', 'no'); // Overriding default values
+    $page->add($setting);
+
+    $name = 'theme_moove/coursesettingsicon';
+    $title = get_string('coursesettingsicon', 'theme_moove');
+    $description = get_string('coursesettingsicon', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, 'fa-cog');
+    $page->add($setting);
+
+    $name = 'theme_moove/activitysettingsicon';
+    $title = get_string('activitysettingsicon', 'theme_moove');
+    $description = get_string('activitysettingsicon', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, 'fa-wrench');
+    $page->add($setting);
+
+
+
+    // Setting to display the switch role to link as a separate tab within the in-course settings panel.
+    $name = 'theme_moove/switchtoroleposition';
+    $title = get_string('switchtorolepositionsetting', 'theme_moove', null, true);
+    $description = get_string('switchtorolepositionsetting_desc', 'theme_moove', null, true);
+    $switchtorolesetting = [
+     // Don't use string lazy loading (= false) because the string will be directly used and would produce a PHP warning otherwise.
+    'no' => get_string('switchtorolesettingjustmenu', 'theme_moove', null, false),
+    'yes' => get_string('switchtorolesettingjustcourse', 'theme_moove', null, true),
+    'both' => get_string('switchtorolesettingboth', 'theme_moove', null, true)
+    ];
+    $setting = new admin_setting_configselect($name, $title, $description, $switchtorolesetting['no'],
+        $switchtorolesetting);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+    $settings->hide_if('theme_moove/switchtoroleposition',
+            'theme_moove/showsettingsincourse', 'notchecked');
+
 
     // Telegram url setting.
     $name = 'theme_moove/telegram2';
+    $title = get_string('telegram', 'theme_moove');
+    $description = get_string('telegramdesc', 'theme_moove');
+    $setting = new admin_setting_configtext($name, $title, $description, '');
+    $page->add($setting);
+
+    $settings->add($page);
+
+    /*
+    * --------------------
+    * ULPGC 3 settings tab
+    * --------------------
+    */
+    $page = new admin_settingpage('theme_moove_ulpgc3', get_string('ulpgcothersettings', 'theme_moove'));
+
+    // Telegram url setting.
+    $name = 'theme_moove/telegram3';
     $title = get_string('telegram', 'theme_moove');
     $description = get_string('telegramdesc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, '');

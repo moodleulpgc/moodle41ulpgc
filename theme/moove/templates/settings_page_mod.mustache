@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template theme_boost_campus/settings_link_page
+    @template theme_moove/settings_link_page
 
     Displays the admin tree as a list of grouped links.
 
@@ -43,78 +43,39 @@
     * Changed the grid definitions for improved displaying.
     * Removed check for !is_short_branch to display all children of the course settings within an own tab.
 }}
-
-
-
-
-
-<div id="boost-campus-course-settings" class="card">
+<div id="moove-inactivity-settings" class="card">
     <div class="mx-2 pt-2">
-	
-
         <ul class="nav nav-tabs" role="tablist">
         <!-- First the top most node and immediate children -->
             <li class="nav-item">
-                <a class="nav-link active" href="#course-settings-{{node.key}}" data-toggle="tab" role="tab" aria-selected="true">{{node.text}}</a>
+                <a class="nav-link active" href="#activity-settings-{{activitynode.key}}" data-toggle="tab" role="tab" aria-selected="true">{{node.text}}</a>
             </li>
         <!-- Now the first level children with sub nodes -->
-        {{#node.children}}
+        {{#activitynode.children}}
             {{#children.count}}
                 {{#display}}
                     <li class="nav-item">
-                        <a class="nav-link" href="#course-settings-{{key}}" data-toggle="tab" role="tab" aria-selected="false" tabindex="-1">{{text}}</a>
+                        <a class="nav-link" href="#activity-settings-{{key}}" data-toggle="tab" role="tab" aria-selected="false" tabindex="-1">{{text}}</a>
                     </li>
                 {{/display}}
             {{/children.count}}
-        {{/node.children}}
+        {{/activitynode.children}}
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="course-settings-{{node.key}}" role="tabpanel">
+            <div class="tab-pane active" id="activity-settings-{{activitynode.key}}" role="tabpanel">
                 <div class="card">
                     <div class="card-body pb-0">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                {{#action}}<h4><a href="{{action}}">{{text}}</a></h4>{{/action}}
-                                {{^action}}<h4>{{text}}</h4>{{/action}}
-                            </div>
-                            <div class="col-sm-8">
-                                <ul class="list-unstyled">
-                                    {{#node.children}}
-                                        {{^children.count}}
-                                            {{#display}}
-                                                <li>ICON   <a href="{{{action}}}">{{text}}</a></li>
-                                            {{/display}}
-                                        {{/children.count}}
-                                    {{/node.children}}
-                                </ul>
-                            </div>
-                        </div>
+                        {{> theme_moove/settings_link_children}}
                     </div>
                 </div>
             </div>
-            {{#node.children}}
+            {{#activitynode.children}}
                 {{#children.count}}
-                    <div class="tab-pane" id="course-settings-{{key}}" role="tabpanel">
+                    <div class="tab-pane" id="activity-settings-{{key}}" role="tabpanel">
                         <div class="card">
                             <div class="card-body pb-0">
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        {{#action}}<h4>op: <a href="{{action}}">{{text}}</a></h4>{{/action}}
-                                        {{^action}}<h4>opp2: {{text}}</h4>{{/action}}
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <ul class="list-unstyled">
-                                            {{#children}}
-                                                {{#display}}
-                                                    {{^children.count}}
-                                                        <li>ICON <a href="{{{action}}}">{{text}}</a></li>
-                                                    {{/children.count}}
-                                                {{/display}}
-                                            {{/children}}
-                                        </ul>
-                                    </div>
-                                </div>
+                                {{> theme_moove/settings_link_children}}
                                 {{#children}}
                                     {{#display}}
                                         {{#children.count}}
@@ -127,7 +88,7 @@
                                                 <div class="col-sm-8">
                                                     <ul class="list-unstyled">
                                                         {{#children}}
-                                                            {{> core/settings_link_page_single }}
+                                                            {{> theme_moove/settings_link_page_single }}
                                                         {{/children}}
                                                     </ul>
                                                 </div>
@@ -139,30 +100,7 @@
                         </div>
                     </div>
                 {{/children.count}}
-            {{/node.children}}
+            {{/activitynode.children}}
         </div>
-		
-		
-		
-		<!--
-		<ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" href="#course-settings-{{activitynode.key}}" data-toggle="tab" role="tab" aria-selected="true">{{activitynode.text}}</a>
-            </li>
-
-        {{#activitynode.children}}
-            {{#children.count}}
-                {{#display}}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#course-settings-{{key}}" data-toggle="tab" role="tab" aria-selected="false" tabindex="-1">{{text}}</a>
-                    </li>
-                {{/display}}
-            {{/children.count}}
-        {{/activitynode.children}}
-        </ul>
-		-->
-		FIN
-		
-		
     </div>
 </div>

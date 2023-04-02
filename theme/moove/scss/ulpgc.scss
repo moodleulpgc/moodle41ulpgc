@@ -51,7 +51,84 @@
   display: inline-block;
 }
 .ulpgcds-icon-user::before, .icon-user::before {
-  font-family: "Font Awesome 5 Free" !important;
+  font-family: "FontAwesome" !important;
   font-weight: 400;
   content: "\f007";
+}
+
+.activity-instance.d-flex {
+  min-width: 25%;
+}
+
+.activity-basis .afterlink.d-flex {
+  max-width: 10.0rem;
+}
+
+.activity-item.hiddenactivity span.badge-warning:before,
+.hidden span.badge-warning:before {
+        font-family: 'FontAwesome';
+        color: white;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        margin-right: 0.2rem;
+  content: "\f070";
+}
+
+.section_availability.course-description-item,
+.activity-restrictions.course-description-item {
+    text-align: right;
+}
+
+.section_availability.course-description-item:after,
+.activity-restrictions.course-description-item:before {
+        font-family: 'FontAwesome';
+        color: darkred;
+        font-size: large;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        content: "\f023";
+}
+
+
+
+.section_availability .availabilityinfo.isrestricted.isfullinfo,
+.activity-restrictions .availabilityinfo.isrestricted.isfullinfo {
+  //display: none;
+}
+
+.activity-basis .course-description-item .description-inner {
+  font-size: 80%;
+  background-color: #f8f9fa;
+  padding: 0 1.0rem;
+  border-radius: 0.5rem;
+}
+
+.description .course-description-item:last-child {
+  padding: 0.5rem 1.0rem;
+}
+
+.description .course-description-item:first-child {
+  margin-top: 0.4rem;
+}
+
+.activity-basis .activity-dates.course-description-item .description-inner {
+    margin-left: 1.0rem;
+}
+
+.automatic-completion-conditions .badge {
+   padding: 0 1.0rem;
+}
+
+span.unread {
+  padding: 0 0.5rem;
+}
+
+.activity-item:not(.activityinline) {
+  padding: 0.25rem 1.0rem;
+}
+
+.breadcrumb .breadcrumb-item a.type20 {
+  color: orange; //to change afterwards XXX
+  font-weight: bolder;
+  font-size: larger;
 }

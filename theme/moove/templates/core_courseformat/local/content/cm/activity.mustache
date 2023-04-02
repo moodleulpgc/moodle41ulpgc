@@ -57,6 +57,13 @@
     }
 }}
 {{#moveicon}} {{{moveicon}}} {{/moveicon}}
+
+
+{{#hasname}}
+    {{$ core_courseformat/local/content/cm/badges }}
+        {{> core_courseformat/local/content/cm/badges }}
+    {{/ core_courseformat/local/content/cm/badges }}
+{{/hasname}}
 <div class="MooveYYY activity-basis d-flex align-items-center">
     <div class="MooveYYY1 d-flex flex-column flex-md-row w-100 align-self-start">
         {{^hasname}}
@@ -69,14 +76,39 @@
                 {{> core_courseformat/local/content/cm/cmname }}
             {{/ core_courseformat/local/content/cm/cmname }}
         {{/cmname}}
-        {{#afterlink}}
-            <div class="afterlink d-flex align-items-center ml-3">
-                {{{afterlink}}}
-            </div>
-        {{/afterlink}}
-
+        {{^hasdates}}
+        {{^activitydates}}
+            {{#afterlink}}
+                <div class="afterlink d-flex align-items-center ml-3">
+                    {{{afterlink}}}
+                </div>
+            {{/afterlink}}
+        {{/activitydates}}
+        {{/hasdates}}
         {{#activityinfo}}
+            {{#hasdates}}
+                <div data-region="activity-dates" class="activity-dates small course-description-item">
+                    <div class="description-inner">
+                        {{#activitydates}}
+                            {{$core_course/activity_date}}
+                                {{>core_course/activity_date}}
+                            {{/core_course/activity_date}}
+                        {{/activitydates}}
+                    </div>
+                </div>
+            {{/hasdates}}
             <div class="activity-info mt-1 mt-md-0">
+
+            {{#modavailability}}
+            {{#hasmodavailability}}
+                <div data-region="activity-restrictions" class="activity-restrictions course-description-item">
+                    {{$ core_courseformat/local/content/cm/availability }}
+                        {{> core_courseformat/local/content/cm/availability }}
+                    {{/ core_courseformat/local/content/cm/availability }}
+                </div>
+            {{/hasmodavailability}}
+            {{/modavailability}}
+
                 {{$ core_courseformat/local/content/cm/activity_info}}
                     {{> core_courseformat/local/content/cm/activity_info}}
                 {{/ core_courseformat/local/content/cm/activity_info}}
@@ -92,26 +124,7 @@
         </div>
     {{/controlmenu}}
 </div>
-{{#hasname}}
-    {{$ core_courseformat/local/content/cm/badges }}
-        {{> core_courseformat/local/content/cm/badges }}
-    {{/ core_courseformat/local/content/cm/badges }}
-{{/hasname}}
-
 <div class="description MooveYYY3">
-    {{#activityinfo}}
-        {{#hasdates}}
-        <div data-region="activity-dates" class="activity-dates small course-description-item">
-            <div class="description-inner">
-                {{#activitydates}}
-                    {{$core_course/activity_date}}
-                        {{>core_course/activity_date}}
-                    {{/core_course/activity_date}}
-                {{/activitydates}}
-            </div>
-        </div>
-        {{/hasdates}}
-    {{/activityinfo}}
     {{#altcontent}}
         <div class="activity-altcontent {{#hasname}}course-description-item small{{/hasname}}{{^hasname}}contentwithoutlink{{/hasname}} d-flex">
             <div class="flex-fill description-inner">
@@ -119,9 +132,4 @@
             </div>
         </div>
     {{/altcontent}}
-    {{#modavailability}}
-        {{$ core_courseformat/local/content/cm/availability }}
-            {{> core_courseformat/local/content/cm/availability }}
-        {{/ core_courseformat/local/content/cm/availability }}
-    {{/modavailability}}
 </div>

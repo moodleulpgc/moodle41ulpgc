@@ -29,7 +29,7 @@
  *
  * @return navigation_node.
  */
-function theme_moove_get_incourse_settings() {
+function theme_moove_get_incourse_settings2() {
     global $COURSE, $PAGE;
     // Initialize the node with false to prevent problems on pages that do not have a courseadmin node.
     $node = false;
@@ -89,7 +89,7 @@ function theme_moove_get_incourse_settings() {
  *
  * @return navigation_node.
  */
-function theme_moove_get_incourse_activity_settings() {
+function theme_moove_get_incourse_activity_settings2() {
     global $PAGE;
     $context = $PAGE->context;
     $node = false;

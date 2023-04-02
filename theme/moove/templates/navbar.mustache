@@ -80,42 +80,7 @@
     <ul class="navbar-nav d-none d-md-flex my-1 px-1">
         <!-- page_heading_menu -->
         {{{ output.page_heading_menu }}}
-		
-		{{!
-				<nav class="moremenu navigation observed" id="yui_3_17_2_1_1676363511064_27" style="margin-top: 15px; ">
-                    <ul id="moremenu-63eb46be2cc3a-navbar-nav" role="menubar" class="nav more-nav navbar-nav">
-                                <li data-key="home" class="nav-item" role="none" data-forceintomoremenu="false">
-                                            <a role="menuitem" class="nav-link  " href="?redirect=0" tabindex="-1">
-                                                <i class="icon fa fa-home fa-fw " style=" color: #000;" title="Panel curso" role="img" aria-label="Panel curso"></i>
-                                            </a>
-                                </li>
-								
-								 <li data-key="home" class="nav-item" role="none" data-forceintomoremenu="false">
-                                            <a role="menuitem" class="nav-link  " href="?redirect=0" tabindex="-1">
-                                                <i class="icon fa fa-gear fa-fw " style=" color: #000;" title="Panel curso" role="img" aria-label="Panel curso"></i>
-                                            </a>
-                                </li>
-								
-								<li data-key="home" class="nav-item" role="none" data-forceintomoremenu="false">
-                                            <a role="menuitem" class="nav-link  " href="?redirect=0" tabindex="-1">
-                                                <i class="icon fa fa-flag fa-fw " style=" color: #000;" title="Panel curso" role="img" aria-label="Panel curso"></i>
-                                            </a>
-                                </li>
-								
-								<!--
-								<li data-key="home" class="nav-item" role="none" data-forceintomoremenu="false" style="background-color: #5AB3DF;">
-                                            <a role="menuitem" class="nav-link  " style="color: #FFF;" href="?redirect=0" tabindex="-1">
-                                                <i class="icon fa fa-user fa-fw " style=" color: #FFF;" title="Panel curso" role="img" aria-label="Panel curso"></i> MI ULPGC
-                                            </a>
-                                </li>
-								-->
-								
-								
-                    </ul>
-                </nav>
-			}}
     </ul>
-
     <div id="usernavigation" class="navbar-nav ml-auto">
         <div class="navbarcallbacks">
             {{{ output.get_navbar_callbacks_data }}}
@@ -134,93 +99,47 @@
                 {{> core/user_menu }}
             {{/usermenu}}
         </div>
-        {{!
-		<li data-key="home" class="nav-item" role="none" data-forceintomoremenu="false" style="background-color: #5AB3DF;">
-					<a role="menuitem" class="nav-link  " style="color: #FFF;" href="https://www2.ulpgc.es/index.php?pagina=miulpgc&ver=miulpgc&login=mlpgc" tabindex="-1">
-						<i class="icon fa fa-user fa-fw " style=" color: #FFF;" title="Panel curso" role="img" aria-label="Panel curso"></i> MI ULPGC
-					</a>
-		</li>
-
-
-		}}
 		<div data-key="miulpgc" class="miulpgc" role="none" >
 				<a href="https://www2.ulpgc.es/index.php?pagina=miulpgc&amp;ver=miulpgc&amp;login=mlpgc" class="ulpgcds-btn ulpgcds-btn--small ulpgcds-btn--primary"><span class="ulpgcds-btn__icon ulpgcds-icon-user" aria-hidden="true"></span>MiULPGC</a>
 		</div>
-
         {{{ output.edit_switch }}}
     </div>
 </nav>
 
 {{#secondarymoremenu}}
     <div class="secondary-navigation d-print-none moove">
-        <div class="moove-container-fluid">
+        <div class="moove-container-fluid d-flex">
             {{> core/moremenu}}
-			
-			
-			<!--
-			{{! ecastro ULPGC from boot_campus ??  maybe only the icon as toggle ??? }}
-			{{#settingsmenu}}
-			<div class="context-header-settings-menu">settings menu
-				{{{settingsmenu}}}
+            {{#incoursesettings}}
+                <nav class="context-header-settings-menu incoursesettings navigation">
+                    <a href="#" tabindex="0" class=" dropdown-toggle icon-no-margin" id="dropdown-2" aria-label="{{incoursesettings}}" data-toggle="dropdown" role="button" aria-expanded="true" aria-controls="moove-incourse-settings">
+                    <i class="icon fa {{coursesettingsicon}} fa-fw " title="{{incoursesettings}}" aria-label="{{incoursesettings}}"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right menu align-tr-br" id="action-menu-2-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-2" role="menu" data-align="tr-br">
+                        {{#incoursesettings}}
+                            {{#node}}
+                                {{> theme_moove/settings_page_course}}
+                            {{/node}}
+                        {{/incoursesettings}}
+                    </div>
+                </nav>
+            {{/incoursesettings}}
+            {{#inactivitysettings}}
+                <nav class="context-header-settings-menu nav-link inactivitysettings navigation">
+                    <a href="#" tabindex="0" class="dropdown-toggle icon-no-margin" id="dropdown-3" aria-label="{{inactivitysettings}}" data-toggle="dropdown" role="button" aria-expanded="true" aria-controls="moove-inactivity-settings">
+                    <i class="icon fa {{activitysettingsicon}} fa-fw " title="{{inactivitysettings}}" aria-label="{{inactivitysettings}}"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right menu align-tr-br" id="action-menu-3-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-3" role="menu" data-align="tr-br">
+                        {{#inactivitysettings}}
+                            {{#node}}
+                                {{> theme_moove/settings_page_mod}}
+                            {{/node}}
+                        {{/inactivitysettings}}
+                    </div>
+                </nav>
+            {{/inactivitysettings}}
+
         </div>
-			{{/settingsmenu}}
-			{{! ecastro ULPGC from boot_campus}}
-			-->
-		
-
-			
-			
-			<div class="nav-link nav more-nav nav-tabs " style="margin-top: -50px; margin-left:90%;" ><a href="#"  class="dropdown-toggle nav-link "  id="moremenu-dropdown-63e1e97f0a402" role="menuitem" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" tabindex="-1"> <i class="icon fa fa-gear fa-fw " style=" color: #fff;" title="Panel curso" role="img" aria-label="Panel curso"></i> </a>
-			
-					<ul class="dropdown-menu dropdown-menu-left " data-region="moredropdown" aria-labelledby="moremenu-dropdown-63e1e97f0a402" role="menu" style="will-change: transform; position: absolute; transform: translate3d(0px, 59px, 0px); top: 0px; left: 0px; min-width: 50% !important; " x-placement="bottom-start" >
-					<li data-key="questionbank" class="nav-item" role="none" data-forceintomoremenu="true">
-                                <a role="menuitem" class="dropdown-item" href="#" tabindex="-1">
-
-                                </a>
-								
-
-								<div class="container">
-								  <div class="row">
-									<div class="col-sm">
-									  
-									  
-										{{#incoursesettings}}
-											{{#node}}
-												{{> theme_moove/settings_link_page }}
-											{{/node}}
-										{{/incoursesettings}}
-		
-									<!--
-									  <b>Bloque navegacion panel 1</b><br><br><a target=_blank href=/campusvirtual/moodle41ulpgc2/admin/search.php>Administracion del sitio</a><br><a target=_blank href=/campusvirtual/moodle41ulpgc2/my/courses.php>Mis cursos</a><br>Elemento configurable<br>Elemento configurable<br><br>
-									 -->
-									</div>
-									
-									<!--
-									<div class="col-sm">
-									   {{bloquenavegacion2}}
-									  <b>Bloque navegacion panel 2</b><br><br>Elemento configurable<br>Elemento configurable<br>Elemento configurable<br>Elemento configurable<br><br>
-									</div>
-									<div class="col-sm">
-									  {{bloquenavegacion3}}
-									  <b>Bloque navegacion panel 3</b><br><br>Elemento configurable<br>Elemento configurable<br>Elemento configurable<br>Elemento configurable<br><br>
-									</div>
-									-->
-								  </div>
-								</div>
-								
-								
-								
-                    </li></ul>
-			</div>
-			
-			
-			
-			
-        </div>
-		
-		
-		
-		
     </div>
 {{/secondarymoremenu}}
 
