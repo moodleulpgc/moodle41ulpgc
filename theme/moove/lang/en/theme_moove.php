@@ -202,3 +202,63 @@ $string['switchtorolepositionsetting_desc'] = 'Name of a Fontawesome icon to use
 $string['switchtorolesettingjustmenu'] = 'User Menu';
 $string['switchtorolesettingjustcourse'] = 'Course panel';
 $string['switchtorolesettingboth'] = 'Both';
+
+// form theme boost_union
+
+// Settings: Navigation tab.
+$string['navigationtab'] = 'Navigation';
+// ... Section: Primary navigation.
+$string['primarynavigationheading'] = 'Primary navigation';
+// ... ... Settings: Hide nodes in primary navigation.
+$string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
+$string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.';
+// ... Section: Navigation.
+$string['navigationheading'] = 'Navigation';
+// ... ... Setting: Back to top button.
+$string['backtotop'] = 'Back to top';
+$string['backtotopbuttonsetting'] = 'Back to top button';
+$string['backtotopbuttonsetting_desc'] = 'With this setting a back to top button will appear in the bottom right corner of the page as soon as the user scrolls down the page. A button like this existed already on Boost in Moodle Core until Moodle 3.11, but was removed in 4.0. With Boost Union, you can bring it back.';
+// ... ... Setting: Scroll-spy
+$string['scrollspy'] = 'Scroll-spy';
+$string['scrollspysetting'] = 'Scroll-spy';
+$string['scrollspysetting_desc'] = 'With this setting, upon toggling edit mode on and off, the scroll position at where the user was when performing the toggle is preserved.';
+// ... ... Setting: Activity navigation
+$string['activitynavigation'] = 'Activity navigation';
+$string['activitynavigationsetting'] = 'Activity navigation elements';
+$string['activitynavigationsetting_desc'] = 'With this setting the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource become displayed. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0. With Boost Union, you can bring them back.';
+
+// Settings: Courses tab.
+$string['coursestab'] = 'Courses';
+// ... Section: Course related hints.
+$string['courserelatedhintsheading'] = 'Course related hints';
+// ... ... Setting: Show hint for switched role setting.
+$string['showswitchedroleincoursesetting'] = 'Show hint for switched role';
+$string['showswitchedroleincoursesetting_desc'] = 'With this setting a hint will appear in the course header if the user has switched the role in the course. By default, this information is only displayed right near the user\'s avatar in the user menu. By enabling this option, you can show this information - together with a link to switch back - within the course page as well.';
+$string['switchedroleto'] = 'You are viewing this course currently with the role: <strong>{$a->role}</strong>';
+// ... ... Setting: Show hint for hidden course.
+$string['showhintcoursehiddensetting'] = 'Show hint in hidden courses';
+$string['showhintcoursehiddensetting_desc'] = 'With this setting a hint will appear in the course header as long as the visibility of the course is hidden. This helps to identify the visibility state of a course at a glance without the need for looking at the course settings.';
+$string['showhintcoursehiddengeneral'] = 'This course is currently <strong>hidden</strong>. Only enrolled teachers can access this course when hidden.';
+$string['showhintcoursehiddensettingslink'] = 'You can change the visibility in the <a href="{$a->url}">course settings</a>.';
+// ... ... Setting: Show hint for guest access.
+$string['showhintcoursguestaccesssetting'] = 'Show hint for guest access';
+$string['showhintcourseguestaccesssetting_desc'] = 'With this setting a hint will appear in the course header when a user is accessing it with the guest access feature. If the course provides an active self enrolment, a link to that page is also presented to the user.';
+$string['showhintcourseguestaccessgeneral'] = 'You are currently viewing this course as <strong>{$a->role}</strong>.';
+$string['showhintcourseguestaccesslink'] = 'To have full access to the course, you can <a href="{$a->url}">self enrol into this course</a>.';
+// ... ... Setting: Show hint for unrestricted self enrolment.
+$string['showhintcourseselfenrolsetting'] = 'Show hint for self enrolment without enrolment key';
+$string['showhintcourseselfenrolsetting_desc'] = 'With this setting a hint will appear in the course header if the course is visible and an enrolment without enrolment key is currently possible.';
+$string['showhintcourseselfenrolstartcurrently'] = 'This course is currently visible to everyone and <strong>self enrolment without an enrolment key</strong> is possible.';
+$string['showhintcourseselfenrolstartfuture'] = 'This course is currently visible to everyone and <strong>self enrolment without an enrolment key</strong> is planned to become possible.';
+$string['showhintcourseselfenrolunlimited'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment indefinitely.';
+$string['showhintcourseselfenroluntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment until {$a->until}.';
+$string['showhintcourseselfenrolfrom'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment from {$a->from} on.';
+$string['showhintcourseselfenrolsince'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment currently.';
+$string['showhintcourseselfenrolfromuntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment from {$a->from} until {$a->until}.';
+$string['showhintcourseselfenrolsinceuntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment until {$a->until}.';
+$string['showhintcourseselfenrolinstancecallforaction'] = 'If you don\'t want any Moodle user to have access to this course freely, please restrict the self enrolment settings.';
+$string['javascriptheading'] = 'JavaScript';
+// ... ... Setting: JavaScript disabled hint.
+$string['javascriptdisabledhint'] = 'JavaScript disabled hint';
+$string['javascriptdisabledhint_desc'] = 'With this setting, a hint will appear at the top of the Moodle page if JavaScript is not enabled. This is particularly helpful as several Moodle features do not work without JavaScript.';
+$string['javascriptdisabledhinttext'] = 'JavaScript is disabled in your browser.<br />Many features of Moodle will be not usable or will appear to be broken.<br />Please enable JavaScript for the full Moodle experience.';

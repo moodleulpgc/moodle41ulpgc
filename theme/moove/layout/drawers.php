@@ -126,4 +126,8 @@ $templatecontext = [
 
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
 
+// ecastro ULPGC
+    $templatecontext = theme_moove_navbar_settings($templatecontext);
+    $templatecontext = array_merge($templatecontext, theme_moove_union_settings());
+
 echo $OUTPUT->render_from_template('theme_moove/drawers', $templatecontext);

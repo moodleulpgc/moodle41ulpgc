@@ -48,7 +48,7 @@
         <ul class="nav nav-tabs" role="tablist">
         <!-- First the top most node and immediate children -->
             <li class="nav-item">
-                <a class="nav-link active" href="#activity-settings-{{activitynode.key}}" data-toggle="tab" role="tab" aria-selected="true">{{node.text}}</a>
+                <a class="nav-link active" href="#activity-settings-{{key}}" data-toggle="tab" role="tab" aria-selected="true">{{text}}</a>
             </li>
         <!-- Now the first level children with sub nodes -->
         {{#activitynode.children}}
@@ -63,7 +63,7 @@
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="activity-settings-{{activitynode.key}}" role="tabpanel">
+            <div class="tab-pane active" id="activity-settings-{{key}}" role="tabpanel">
                 <div class="card">
                     <div class="card-body pb-0">
                         {{> theme_moove/settings_link_children}}

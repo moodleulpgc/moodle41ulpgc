@@ -127,6 +127,7 @@ $templatecontext = array_merge($templatecontext, $themesettings->footer());
 
 // ecastro ULPGC
     $templatecontext = theme_moove_navbar_settings($templatecontext);
+    $templatecontext = array_merge($templatecontext, theme_moove_union_settings());
     /*
     require_once($CFG->dirroot . '/theme/moove/locallib.php');
     $templatecontext['incoursesettings'] = true;

@@ -29,6 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 // we are looking at the admin settings pages.
 if ($ADMIN->fulltree) {
 
+    require_once($CFG->dirroot . '/theme/moove/lib.php');
+    // Due to MDL-58376, we will use binary select settings instead of checkbox settings throughout this theme.
+    $yesnooption = array(THEME_MOOVE_SETTING_SELECT_YES => get_string('yes'),
+                    THEME_MOOVE_SETTING_SELECT_NO => get_string('no'));
+
+
     // Boost provides a nice setting page which splits settings onto separate tabs. We want to use it here.
     $settings = new theme_boost_admin_settingspage_tabs('themesettingmoove', get_string('configtitle', 'theme_moove'));
 
@@ -430,6 +436,61 @@ if ($ADMIN->fulltree) {
     */
     $page = new admin_settingpage('theme_moove_ulpgc1', get_string('ulpgcsitesettings', 'theme_moove'));
 
+
+        // Create primary navigation heading.
+        $name = 'theme_moove/primarynavigationheading';
+        $title = get_string('primarynavigationheading', 'theme_moove', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $page->add($setting);
+
+        // Prepare hide nodes options.
+        $hidenodesoptions = array(
+                THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_HOME => get_string('home'),
+                THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_MYHOME => get_string('myhome'),
+                THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_MYCOURSES => get_string('mycourses'),
+                THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_SITEADMIN => get_string('administrationsite')
+        );
+
+        // Setting: Hide nodes in primary navigation.
+        $name = 'theme_moove/hidenodesprimarynavigation';
+        $title = get_string('hidenodesprimarynavigationsetting', 'theme_moove', null, true);
+        $description = get_string('hidenodesprimarynavigationsetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configmulticheckbox($name, $title, $description, array(), $hidenodesoptions);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $page->add($setting);
+
+        // Create navigation heading.
+        $name = 'theme_moove/navigationheading';
+        $title = get_string('navigationheading', 'theme_moove', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $page->add($setting);
+
+        // Setting: back to top button.
+        $name = 'theme_moove/backtotopbutton';
+        $title = get_string('backtotopbuttonsetting', 'theme_moove', null, true);
+        $description = get_string('backtotopbuttonsetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $page->add($setting);
+
+        // Setting: scroll-spy.
+        $name = 'theme_moove/scrollspy';
+        $title = get_string('scrollspysetting', 'theme_moove', null, true);
+        $description = get_string('scrollspysetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $page->add($setting);
+
+        // Setting: Activity navigation.
+        $name = 'theme_moove/activitynavigation';
+        $title = get_string('activitynavigationsetting', 'theme_moove', null, true);
+        $description = get_string('activitynavigationsetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $page->add($setting);
+
+
+
     // Settings title for grouping course settings related aspects together. We don't need a description here.
     $name = 'theme_moove/sitesettingsheading';
     $title = get_string('sitesettingsheading', 'theme_moove', null, true);
@@ -461,6 +522,22 @@ if ($ADMIN->fulltree) {
     $description = get_string('iconsiteadminnode_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-cogs');
     $page->add($setting);
+
+
+
+        // Create JavaScript heading.
+        $name = 'theme_moove/javascriptheading';
+        $title = get_string('javascriptheading', 'theme_moove', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $page->add($setting);
+
+        // Setting: JavaScript disabled hint.
+        $name = 'theme_moove/javascriptdisabledhint';
+        $title = get_string('javascriptdisabledhint', 'theme_moove', null, true);
+        $description = get_string('javascriptdisabledhint_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+        $page->add($setting);
+
 
     $settings->add($page);
 
@@ -499,13 +576,13 @@ if ($ADMIN->fulltree) {
 
     $name = 'theme_moove/coursesettingsicon';
     $title = get_string('coursesettingsicon', 'theme_moove');
-    $description = get_string('coursesettingsicon', 'theme_moove');
+    $description = get_string('coursesettingsicon_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-cog');
     $page->add($setting);
 
     $name = 'theme_moove/activitysettingsicon';
     $title = get_string('activitysettingsicon', 'theme_moove');
-    $description = get_string('activitysettingsicon', 'theme_moove');
+    $description = get_string('activitysettingsicon_desc', 'theme_moove');
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-wrench');
     $page->add($setting);
 
@@ -528,6 +605,41 @@ if ($ADMIN->fulltree) {
     $settings->hide_if('theme_moove/switchtoroleposition',
             'theme_moove/showsettingsincourse', 'notchecked');
 
+    // Create course related hints heading.
+    $name = 'theme_moove/courserelatedhintsheading';
+    $title = get_string('courserelatedhintsheading', 'theme_moove', null, true);
+    $setting = new admin_setting_heading($name, $title, null);
+    $page->add($setting);
+
+
+    // Setting: Show hint for switched role.
+    $name = 'theme_moove/showswitchedroleincourse';
+    $title = get_string('showswitchedroleincoursesetting', 'theme_moove', null, true);
+    $description = get_string('showswitchedroleincoursesetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
+    // Setting: Show hint in hidden courses.
+    $name = 'theme_moove/showhintcoursehidden';
+    $title = get_string('showhintcoursehiddensetting', 'theme_moove', null, true);
+    $description = get_string('showhintcoursehiddensetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+    $page->add($setting);
+
+    // Setting: Show hint guest for access.
+    $name = 'theme_moove/showhintcourseguestaccess';
+    $title = get_string('showhintcoursguestaccesssetting', 'theme_moove', null, true);
+    $description = get_string('showhintcourseguestaccesssetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+    $page->add($setting);
+
+    // Setting: Show hint for self enrolment without enrolment key.
+    $name = 'theme_moove/showhintcourseselfenrol';
+    $title = get_string('showhintcourseselfenrolsetting', 'theme_moove', null, true);
+    $description = get_string('showhintcourseselfenrolsetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+    $page->add($setting);
 
     // Telegram url setting.
     $name = 'theme_moove/telegram2';

@@ -132,3 +132,20 @@ span.unread {
   font-weight: bolder;
   font-size: larger;
 }
+
+#page-footer .btn-footer-popover.help {
+  bottom: 3.5rem;
+}
+
+
+/*---------------------------------------
+ * Setting: Course related hints.
+ --------------------------------------*/
+
+.course-hint-hidden,
+.course-hint-guestaccess,
+.course-hint-selfenrol,
+.course-hint-switchedrole {
+    margin-left: 15px;
+    margin-right: 15px;
+}
