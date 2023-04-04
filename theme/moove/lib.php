@@ -116,7 +116,11 @@ function theme_moove_get_pre_scss($theme) {
         // Config key => [variableName, ...].
         'brandcolor' => ['brand-primary'],
         'secondarymenucolor' => 'secondary-menu-color',
-        'fontsite' => 'font-family-sans-serif'
+        'fontsite' => 'font-family-sans-serif',
+        'showsettingsincourse' => ['showsettingsincourse'],
+        'incoursesettingsswitchtoroleposition' => ['incoursesettingsswitchtoroleposition'],
+        'blockicon' => ['blockicon'],
+        'blockwidthdashboard' => ['blockwidthdashboard'],
     ];
 
     // Prepend variables first.
@@ -138,6 +142,12 @@ function theme_moove_get_pre_scss($theme) {
     if (!empty($theme->settings->scsspre)) {
         $scss .= $theme->settings->scsspre;
     }
+
+
+    if (isset($theme->settings->blockwidthdashboard)) {
+        $scss .= '$blocks-width-dashboard: ' . $theme->settings->blockwidthdashboard . "px;\n";
+    }
+
 
     return $scss;
 }
@@ -364,30 +374,18 @@ function theme_moove_union_settings(): array {
     foreach ($staticpages as $staticpage) {
         // If the page is enabled.
         if ($config->{'enable'.$staticpage} == THEME_MOOVE_SETTING_SELECT_YES) {
-            // If the admin wants to show a link in the footnote or in both locations.
-            if ($config->{$staticpage.'linkposition'} == THEME_MOOVE_SETTING_STATICPAGELINKPOSITION_FOOTNOTE ||
-                    $config->{$staticpage.'linkposition'} == THEME_MOOVE_SETTING_STATICPAGELINKPOSITION_BOTH) {
-                // If the footnote is empty and not configured to be shown yet.
-                if (isset($templatecontext['showfootnote']) == false || $templatecontext['showfootnote'] == false) {
-                    // Add marker to show the footnote to templatecontext.
-                    $templatecontext['showfootnote'] = true;
-                }
-
-                // Add marker to show the page link in the footnote to templatecontext.
-                $templatecontext[$staticpage.'linkpositionfootnote'] = true;
-            }
-
-            // If the admin wants to show a link in the footer or in both locations.
-            if ($config->{$staticpage.'linkposition'} == THEME_MOOVE_SETTING_STATICPAGELINKPOSITION_FOOTER ||
-                    $config->{$staticpage.'linkposition'} == THEME_MOOVE_SETTING_STATICPAGELINKPOSITION_BOTH) {
-                // Add marker to show the page link in the footer to templatecontext.
-                $templatecontext[$staticpage.'linkpositionfooter'] = true;
-            }
-
+            // Here the link is shown ONLY in footer popover.  // ecastro ULPGC
+            $templatecontext[$staticpage.'linkpositionfooter'] = true;
             // Add the page link and page title to the templatecontext.
             $templatecontext[$staticpage.'link'] = theme_moove_get_staticpage_link($staticpage);
             $templatecontext[$staticpage.'pagetitle'] = theme_moove_get_staticpage_pagetitle($staticpage);
         }
+    }
+
+    // footer
+    $templatecontext['ulpgcfooter'] = $config->ulpgcfooter;
+    foreach(array(1,2,3) as $i) {
+        $templatecontext['footerblock'.$i] = $config->{"footerblock$i"};
     }
 
     // JS section

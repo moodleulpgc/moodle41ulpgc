@@ -357,6 +357,32 @@ if ($ADMIN->fulltree) {
     */
     $page = new admin_settingpage('theme_moove_footer', get_string('footersettings', 'theme_moove'));
 
+    // Setting to display the course settings page as a panel within the course.
+    $name = 'theme_moove/ulpgcfooter';
+    $title = get_string('showulpgcfooter', 'theme_moove');
+    $description = get_string('showulpgcfooter_desc', 'theme_moove');
+    $setting = new admin_setting_configcheckbox($name, $title, $description,
+                                                    THEME_MOOVE_SETTING_SELECT_NO,
+                                                    THEME_MOOVE_SETTING_SELECT_YES,
+                                                    THEME_MOOVE_SETTING_SELECT_NO); // Overriding default values
+
+    $page->add($setting);
+
+    foreach(array(1,2,3) as $i) {
+        $page->add(new admin_setting_confightmleditor('theme_moove/footerblock'.$i,
+                            get_string('footerblock'.$i, 'theme_moove'),
+                            get_string('footerblock_desc', 'theme_moove'),
+                            null,
+                            PARAM_RAW));
+    }
+
+    // moove standard elements
+    $name = 'theme_moove/footerheading';
+    $title = get_string('footerheading', 'theme_moove');
+    $description = get_string('footernotused_desc', 'theme_moove');
+    $setting = new admin_setting_heading($name, $title, $description);
+    $page->add($setting);
+
     // Website.
     $name = 'theme_moove/website';
     $title = get_string('website', 'theme_moove');
@@ -523,20 +549,47 @@ if ($ADMIN->fulltree) {
     $setting = new admin_setting_configtext($name, $title, $description, 'fa-cogs');
     $page->add($setting);
 
+    // Settings title for grouping course settings related aspects together. We don't need a description here.
+    $name = 'theme_moove/blocksheading';
+    $title = get_string('blocksheading', 'theme_moove');
+    $setting = new admin_setting_heading($name, $title, null);
+    $page->add($setting);
+
+    // Setting for displaying a standard Font Awesome icon in front of the block title.
+    $name = 'theme_moove/blockicon';
+    $title = get_string('blockiconsetting', 'theme_moove');
+    $description = get_string('blockiconsetting_desc', 'theme_moove');
+    $setting = new admin_setting_configcheckbox($name, $title, $description,
+                                                    THEME_MOOVE_SETTING_SELECT_NO,
+                                                    THEME_MOOVE_SETTING_SELECT_YES,
+                                                    THEME_MOOVE_SETTING_SELECT_NO);
+    // Overriding default values
+        // yes = 1 and no = 0 because of the use of empty() in theme_moove_get_pre_scss() (lib.php). Default 0 value would
+        // not write the variable to scss that could cause the scss to crash if used in that file. See MDL-58376.
+        $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
+    // Setting for the width of the block column on the Dashboard.
+    $name = 'theme_moove/blockwidthdashboard';
+    $title = get_string('blockwidthdashboardsetting', 'theme_moove');
+    $description = get_string('blockwidthdashboardsetting_desc', 'theme_moove');
+    $setting = new admin_setting_configtext_with_maxlength($name, $title, $description, 360, PARAM_INT, null, 3);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
 
 
-        // Create JavaScript heading.
-        $name = 'theme_moove/javascriptheading';
-        $title = get_string('javascriptheading', 'theme_moove', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
-        $page->add($setting);
+    // Create JavaScript heading.
+    $name = 'theme_moove/javascriptheading';
+    $title = get_string('javascriptheading', 'theme_moove', null, true);
+    $setting = new admin_setting_heading($name, $title, null);
+    $page->add($setting);
 
-        // Setting: JavaScript disabled hint.
-        $name = 'theme_moove/javascriptdisabledhint';
-        $title = get_string('javascriptdisabledhint', 'theme_moove', null, true);
-        $description = get_string('javascriptdisabledhint_desc', 'theme_moove', null, true);
-        $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
-        $page->add($setting);
+    // Setting: JavaScript disabled hint.
+    $name = 'theme_moove/javascriptdisabledhint';
+    $title = get_string('javascriptdisabledhint', 'theme_moove', null, true);
+    $description = get_string('javascriptdisabledhint_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO, $yesnooption);
+    $page->add($setting);
 
 
     $settings->add($page);
@@ -560,7 +613,11 @@ if ($ADMIN->fulltree) {
     $name = 'theme_moove/showsettingsincourse';
     $title = get_string('showsettingsincourse', 'theme_moove', null, true);
     $description = get_string('showsettingsincourse_desc', 'theme_moove', null, true);
-    $setting = new admin_setting_configcheckbox($name, $title, $description, 'no', 'yes', 'no'); // Overriding default values
+    $setting = new admin_setting_configcheckbox($name, $title, $description,
+                                                    THEME_MOOVE_SETTING_SELECT_NO,
+                                                    THEME_MOOVE_SETTING_SELECT_YES,
+                                                    THEME_MOOVE_SETTING_SELECT_NO);
+    // Overriding default values
     // yes = 1 and no = 0 because of the use of empty() in theme_moove_get_pre_scss() (lib.php).
     // Default 0 value would not write the variable to scss that could cause the scss to crash if used in that file.
     // See MDL-58376.
@@ -571,7 +628,11 @@ if ($ADMIN->fulltree) {
     $name = 'theme_moove/showmenuitemicons';
     $title = get_string('showmenuitemicons', 'theme_moove', null, true);
     $description = get_string('showmenuitemicons_desc', 'theme_moove', null, true);
-    $setting = new admin_setting_configcheckbox($name, $title, $description, 'no', 'yes', 'no'); // Overriding default values
+    $setting = new admin_setting_configcheckbox($name, $title, $description,
+                                                    THEME_MOOVE_SETTING_SELECT_NO,
+                                                    THEME_MOOVE_SETTING_SELECT_YES,
+                                                    THEME_MOOVE_SETTING_SELECT_NO);
+    // Overriding default values
     $page->add($setting);
 
     $name = 'theme_moove/coursesettingsicon';
@@ -656,6 +717,50 @@ if ($ADMIN->fulltree) {
     * --------------------
     */
     $page = new admin_settingpage('theme_moove_ulpgc3', get_string('ulpgcothersettings', 'theme_moove'));
+
+    // The static pages to be supported.
+    $staticpages = array('imprint', 'contact', 'help', 'maintenance');
+
+    // Iterate over the pages.
+    foreach ($staticpages as $staticpage) {
+
+        // Create page heading.
+        $name = 'theme_moove/'.$staticpage.'heading';
+        $title = get_string($staticpage.'heading', 'theme_moove', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $page->add($setting);
+
+        // Setting: Enable page.
+        $name = 'theme_moove/enable'.$staticpage;
+        $title = get_string('enable'.$staticpage.'setting', 'theme_moove', null, true);
+        $description = '';
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_MOOVE_SETTING_SELECT_NO,
+                $yesnooption);
+        $page->add($setting);
+
+        // Setting: Page title.
+        $name = 'theme_moove/'.$staticpage.'pagetitle';
+        $title = get_string($staticpage.'pagetitlesetting', 'theme_moove', null, true);
+        $description = get_string($staticpage.'pagetitlesetting_desc', 'theme_moove', null, true);
+        $default = get_string($staticpage.'pagetitledefault', 'theme_moove', null, true);
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $page->add($setting);
+        $page->hide_if('theme_moove/'.$staticpage.'pagetitle', 'theme_moove/enable'.$staticpage, 'neq',
+                THEME_MOOVE_SETTING_SELECT_YES);
+
+        // Setting: Page content.
+        $name = 'theme_moove/'.$staticpage.'content';
+        $title = get_string($staticpage.'contentsetting', 'theme_moove', null, true);
+        $description = get_string($staticpage.'contentsetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_confightmleditor($name, $title, $description, '');
+        $page->add($setting);
+        $page->hide_if('theme_moove/'.$staticpage.'content', 'theme_moove/enable'.$staticpage, 'neq',
+                THEME_MOOVE_SETTING_SELECT_YES);
+
+        // postion is forced to footer popover, NOT footnote. //ecastro ULPGC
+    }
+
+
 
     // Telegram url setting.
     $name = 'theme_moove/telegram3';

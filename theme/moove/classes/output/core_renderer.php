@@ -257,11 +257,23 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 'class' => 'btn contactsitesupport btn-outline-info'
             ];
         }
+        // ecastro ULPGC
+        unset($attributes['class']);
 
         $attributes += $customattribs;
 
         return \html_writer::tag('a', $content, $attributes);
     }
+
+    /**
+    * Returns the services and support link for the help pop-up.
+    *
+    * @return string
+    */
+    public function services_support_link(): string {
+        return '';
+    }
+
 
     /**
      * Returns the moodle_url for the favicon.

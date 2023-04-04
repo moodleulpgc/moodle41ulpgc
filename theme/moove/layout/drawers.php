@@ -106,6 +106,11 @@ $templatecontext = [
     'output' => $OUTPUT,
     'sidepreblocks' => $blockshtml,
     'hasblocks' => $hasblocks,
+    // additional block regions // ecasto ULPGC
+    'topblocks' => $OUTPUT->blocks('toprow'),
+    'lateralsideblocks' => $OUTPUT->blocks('lateral-side'),
+    'bottomblocks' => $OUTPUT->blocks('bottomrow'),
+    // additional block regions // ecasto ULPGC
     'bodyattributes' => $bodyattributes,
     'courseindexopen' => $courseindexopen,
     'blockdraweropen' => $blockdraweropen,
@@ -123,6 +128,8 @@ $templatecontext = [
     'addblockbutton' => $addblockbutton,
     'enablecourseindex' => $themesettings->enablecourseindex
 ];
+
+$templatecontext['haslateralblocks'] = (strpos($templatecontext['lateralsideblocks'], 'data-block=') !== false); // ecastro ULPGC
 
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
 

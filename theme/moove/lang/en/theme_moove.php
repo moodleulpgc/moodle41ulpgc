@@ -176,6 +176,17 @@ $string['privacy:thememoovesettings_fonttype'] = 'The current preference for the
 $string['privacy:thememoovesettings_enableaccessibilitytoolbar'] = 'The current preference for enable accessibility toolbar is to show it.';
 
 // ecastro ULPGC
+// Addition blocks regions
+$string['region-content'] = 'Content';
+$string['region-toprow'] = 'Top row';
+$string['region-lateral-side'] = 'Lateral side';
+$string['region-bottomrow'] = 'Bottom row';
+$string['blocksheading'] = 'Blocks';
+$string['blockiconsetting'] = 'Block icon';
+$string['blockiconsetting_desc'] = 'With this setting you can add a default Font Awesome icon in front of the block title.  If checked, we additionally provide individual icon replacements for many Moodle core blocks and also some widely used blocks. You also can change the icons easily for each block individually in your raw SCSS via the change of the Font Awesome content. For all available icons please visit http://fontawesome.io/icons/ and use the Unicode value of the icon to replace the default one.';
+$string['blockwidthdashboardsetting'] = 'Block lateral column width on Dashboard';
+$string['blockwidthdashboardsetting_desc'] = 'With this setting you can change the width (in pixels) of the block lateral column on the Dashboard. <br />
+The default width from Moodle 3.6 on is 360px, until Moodle 3.5 the width was 250px.';
 $string['ulpgccoursesettings'] = 'ULPGC course';
 $string['ulpgcsitesettings'] = 'ULPGC site';
 $string['ulpgcothersettings'] = 'ULPGC other';
@@ -262,3 +273,55 @@ $string['javascriptheading'] = 'JavaScript';
 $string['javascriptdisabledhint'] = 'JavaScript disabled hint';
 $string['javascriptdisabledhint_desc'] = 'With this setting, a hint will appear at the top of the Moodle page if JavaScript is not enabled. This is particularly helpful as several Moodle features do not work without JavaScript.';
 $string['javascriptdisabledhinttext'] = 'JavaScript is disabled in your browser.<br />Many features of Moodle will be not usable or will appear to be broken.<br />Please enable JavaScript for the full Moodle experience.';
+
+// Settings: Static pages tab.
+$string['staticpagestab'] = 'Static pages';
+// ... Section: Imprint.
+$string['imprintheading'] = 'Imprint';
+// ... ... Setting: Enable imprint.
+$string['enableimprintsetting'] = 'Enable imprint';
+$string['imprintdisabled'] = 'The imprint page is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Imprint content.
+$string['imprintcontentsetting'] = 'Imprint content';
+$string['imprintcontentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on the imprint page.';
+// ... ... Setting: Imprint page title.
+$string['imprintpagetitledefault'] = 'Imprint';
+$string['imprintpagetitlesetting'] = 'Imprint page title';
+$string['imprintpagetitlesetting_desc'] = 'In this setting, you can define the title of the imprint page. This text will be used as link text to the imprint page as well if you configure \'Imprint link position\' accordingly.';
+// ... Section: Contact page.
+$string['contactheading'] = 'Contact';
+// ... ... Setting: Enable contact page.
+$string['enablecontactsetting'] = 'Enable contact page';
+$string['contactdisabled'] = 'The contact page is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Contact page content.
+$string['contactcontentsetting'] = 'Contact page content';
+$string['contactcontentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on a contact page (which is not the same as the built-in Moodle \'Contact site support\' page).';
+// ... ... Setting: Contact page title.
+$string['contactpagetitledefault'] = 'Contact';
+$string['contactpagetitlesetting'] = 'Contact page title';
+$string['contactpagetitlesetting_desc'] = 'In this setting, you can define the title of the contact page. This text will be used as link text to the contact page as well if you configure \'Contact page link position\' accordingly.';
+// ... Section: Help page.
+$string['helpheading'] = 'Help';
+// ... ... Setting: Enable help page.
+$string['enablehelpsetting'] = 'Enable help page';
+$string['helpdisabled'] = 'The help page is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Help page content.
+$string['helpcontentsetting'] = 'Help page content';
+$string['helpcontentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on a help page.';
+// ... ... Setting: Help page title.
+$string['helppagetitledefault'] = 'Help';
+$string['helppagetitlesetting'] = 'Help page title';
+$string['helppagetitlesetting_desc'] = 'In this setting, you can define the title of the help page. This text will be used as link text to the help page as well if you configure \'Help page link position\' accordingly.';
+// ... Section: Maintenance page.
+$string['maintenanceheading'] = 'Maintenance';
+// ... ... Setting: Enable maintenance page.
+$string['enablemaintenancesetting'] = 'Enable maintenance information page';
+$string['maintenancedisabled'] = 'The maintenance information page is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Maintenance page content.
+$string['maintenancecontentsetting'] = 'Maintenance information page content';
+$string['maintenancecontentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on a maintenance information page (which is not the same as the built-in Moodle maintenance mode page).';
+// ... ... Setting: Maintenance page title.
+$string['maintenancepagetitledefault'] = 'Maintenance';
+$string['maintenancepagetitlesetting'] = 'Maintenance information page title';
+$string['maintenancepagetitlesetting_desc'] = 'In this setting, you can define the title of the maintenance information page. This text will be used as link text to the maintenance information page as well if you configure \'Maintenance information page link position\' accordingly.';
+
