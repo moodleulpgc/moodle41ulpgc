@@ -384,3 +384,5 @@ $string['explainreferencecourse'] = 'The shortname of a course to use as templat
 $string['maintemplate'] = 'Main template';
 $string['explainmaintemplate'] = 'An MBZ file containing a complete course to use as default template.
 If configured and installed, the shortname of this course will be used as referencce course.';
+$string['archivereuse'] = 'Archive/Reuse';
+$string['rolepermissions'] = 'Permissions';

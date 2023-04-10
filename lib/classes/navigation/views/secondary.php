@@ -114,10 +114,10 @@ class secondary extends view {
                 'modedit' => 1,
                 "mod_{$this->page->activityname}_useroverrides" => 3, // Overrides are module specific.
                 "mod_{$this->page->activityname}_groupoverrides" => 4,
-                'roleassign' => 7.2,
+                'roleassign' => 5, //7.2, // ecastro ULPGC
                 'filtermanage' => 6,
                 'roleoverride' => 7,
-                'rolecheck' => 7.1,
+                'rolecheck' => 15, //7.1, // ecastro ULPGC
                 'logreport' => 8,
                 'backup' => 9,
                 'restore' => 10,

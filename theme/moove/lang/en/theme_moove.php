@@ -200,6 +200,8 @@ $string['iconmycourses'] = 'My courses icon';
 $string['iconmycourses_desc'] = 'Name of a Fontawesome icon to use.';
 $string['iconsiteadminnode'] = 'Site admin icon';
 $string['iconsiteadminnode_desc'] = 'Name of a Fontawesome icon to use.';
+$string['actionsmenucourse'] = 'Actions panel for course';
+$string['actionsmenuactivity'] = 'Action panel for module';
 $string['showsettingsincourse'] = 'Settings as dropdown menu';
 $string['showsettingsincourse_desc'] = 'If enabled, a settings panel as a dropdown menu will be presented for course & activity settings.';
 $string['showmenuitemicons'] = 'Menu icons';
@@ -324,4 +326,14 @@ $string['maintenancecontentsetting_desc'] = 'In this setting, you can add rich t
 $string['maintenancepagetitledefault'] = 'Maintenance';
 $string['maintenancepagetitlesetting'] = 'Maintenance information page title';
 $string['maintenancepagetitlesetting_desc'] = 'In this setting, you can define the title of the maintenance information page. This text will be used as link text to the maintenance information page as well if you configure \'Maintenance information page link position\' accordingly.';
-
+// ULPGC footer
+$string['copyrightnote'] = '© Universidad de Las Palmas de Gran Canaria · ULPGC';
+$string['footerheading'] = 'Moove Footer settings';
+$string['footernotused_desc'] = 'Moove settings NOT used when the ULPGC footer blocks (above) are enabled. <br />
+All these settings are disabled, invisible, not used in moodle pages when ULPGC showulpgcfooter is enabled.';
+$string['showulpgcfooter'] = 'Show ULPGC footer';
+$string['showulpgcfooter_desc'] = 'If enabled, then footer will show the below blocks and copyright note, not the settings in theme moove.';
+$string['footerblock1'] = 'Footer block 1';
+$string['footerblock2'] = 'Footer block 2';
+$string['footerblock3'] = 'Footer block 3';
+$string['footerblock_desc'] = 'An structured text, with h3 and p tags to list items.';

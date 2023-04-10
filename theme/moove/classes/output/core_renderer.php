@@ -299,6 +299,25 @@ class core_renderer extends \theme_boost\output\core_renderer {
     }
 
     /**
+     * Renders the context header for the page.
+     *
+     * @auth Enrique Castro ULPGC to add course shortname.
+     *       relies on boost context_header() and context name
+     * @param array $headerinfo Heading information.
+     * @param int $headinglevel What 'h' level to make the heading.
+     * @return string A rendered context header.
+     */
+    public function context_header($headerinfo = null, $headinglevel = 1): string {
+        $context = $this->page->context;
+        if($context->contextlevel == CONTEXT_COURSE) {
+            $headerinfo['heading'] = $context->get_context_name(false);
+        }
+
+        return parent::context_header($headerinfo, $headinglevel);
+    }
+
+
+    /**
      * Renders the header bar.
      *
      * @param \context_header $contextheader Header bar object.

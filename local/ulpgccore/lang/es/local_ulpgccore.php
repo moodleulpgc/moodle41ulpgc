@@ -288,3 +288,5 @@ $string['hidepicwarning_help'] = 'Su foto de perfil será visible solo por los P
 Otros estudiantes NO podrán ver su foto de perfil a no ser que usted de permiso expresamente. <br />
 Para ello basta escribir un texto (cualquiera) en el campo "Descripción de la imagen".
 Si este campo queda vacío solo los profesores podrán ver la imagen. ';
+$string['archivereuse'] = 'Archivo/Reuso';
+$string['rolepermissions'] = 'Permisos';

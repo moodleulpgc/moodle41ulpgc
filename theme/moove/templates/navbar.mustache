@@ -99,9 +99,11 @@
                 {{> core/user_menu }}
             {{/usermenu}}
         </div>
+        {{^notloggedin}} {{! Do not show if NOT logged in. // ecastro ULPGC }}
 		<div data-key="miulpgc" class="miulpgc" role="none" >
 				<a href="https://www2.ulpgc.es/index.php?pagina=miulpgc&amp;ver=miulpgc&amp;login=mlpgc" class="ulpgcds-btn ulpgcds-btn--small ulpgcds-btn--primary"><span class="ulpgcds-btn__icon ulpgcds-icon-user" aria-hidden="true"></span>MiULPGC</a>
 		</div>
+		{{/notloggedin}}
         {{{ output.edit_switch }}}
     </div>
 </nav>
@@ -133,12 +135,12 @@
                         {{#inactivitysettings}}
                             {{#activitynode}}
                                 {{> theme_moove/settings_page_mod}}
+                                {{!> theme_boost_campus/activity_settings_incourse }}
                             {{/activitynode}}
                         {{/inactivitysettings}}
                     </div>
                 </nav>
             {{/inactivitysettings}}
-
         </div>
     </div>
 {{/secondarymoremenu}}

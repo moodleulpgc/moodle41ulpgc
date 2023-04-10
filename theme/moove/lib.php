@@ -56,6 +56,8 @@ function theme_moove_get_main_scss_content($theme) {
         $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/default.scss');
     } else if ($filename == 'plain.scss') {
         $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/plain.scss');
+    } else if ($filename == 'ulpgc.scss') {
+        $scss .= file_get_contents($CFG->dirroot . '/theme/moove/scss/preset/defaultulpgc.scss');
     } else if ($filename && ($presetfile = $fs->get_file($context->id, 'theme_moove', 'preset', 0, '/', $filename))) {
         $scss .= $presetfile->get_content();
     } else {
@@ -233,7 +235,16 @@ function theme_moove_get_incourse_settings() {
             $node = $PAGE->settingsnav->find('courseadmin', navigation_node::TYPE_COURSE);
             // Check if $node is not empty for other pages like for example the langauge customization page.
 
+            $siblibgs = $node->get_siblings();
+            foreach($siblibgs as $n) {
+                //print_object($n->get_children_key_list());
+                //print_object(' SIB node coursesettings');
+            }
+
             //print_object($node->get_children_key_list());
+
+            //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($node));
+            //print_object(" MOOVE local_ulpgccore_boostnav_get_all_childrenkeys");
 			//echo "<script>alert('ok0');</script>";
 			//print_object($node);
             return $node;
@@ -293,6 +304,39 @@ function theme_moove_get_incourse_activity_settings() {
             $node = $PAGE->settingsnav->find('modulesettings', navigation_node::TYPE_SETTING);
 
 			//print_object($node->get_children_key_list());
+            //print_object(' MOOVE node modulesettings');
+
+            //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($node));
+            //print_object(" MOOVE local_ulpgccore_boostnav_get_all_childrenkeys");
+
+            $siblibgs = $node->get_siblings();
+            foreach($siblibgs as $n) {
+                //print_object($n->get_children_key_list());
+                //print_object(' SIBLIBFS node modulesettings');
+            }
+/*
+            //$url = new moodle_url('/mod/assign/overrides.php', ['cmid' => $PAGE->cm->id, 'mode' => 'user']);
+            $newnode = navigation_node::create(get_string('reuse', 'moove'),
+                        null, navigation_node::TYPE_CATEGORY, null, 'mod_bkrestore');
+            $bnode  = $node->add_node($newnode, 'www');
+            if($n = $PAGE->settingsnav->find('backup', navigation_node::TYPE_SETTING)) {
+                //$n->set_parent($bnode);
+                $bnode->add_node(clone $n);
+                $n->remove();
+                print_object("moved");
+            }
+            if($n = $PAGE->settingsnav->find('restore', navigation_node::TYPE_SETTING)) {
+                //$n->set_parent($bnode);
+                $bnode->add_node(clone $n);
+
+                $n->remove();
+                print_object("moved");
+            }
+*/
+            //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($node));
+            //print_object(" MOOVE local_ulpgccore_boostnav_get_all_childrenkeys");
+
+
         } else if ($context->contextlevel == CONTEXT_COURSECAT) {
             // For course category context, show category settings menu, if we're on the course category page.
             if ($PAGE->pagetype === 'course-index-category') {

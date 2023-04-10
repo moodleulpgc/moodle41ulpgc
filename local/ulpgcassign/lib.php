@@ -41,20 +41,42 @@ function local_ulpgcassign_extend_settings_navigation(settings_navigation $nav, 
     if(strpos($PAGE->pagetype, 'mod-assign') !== false) {
         
         if ($settingsnode = $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {
+            //print_object("lib ulpgcquiz");
             //print_object($settingsnode->get_children_key_list());
+            //print_object("lib ulpgcquiz");
+
+
+            //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($settingsnode));
+            //print_object("local_ulpgccore_boostnav_get_all_childrenkeys");
+
+
             // ensure a new overrides node NOT moved by module navigation/views
             if ($node = $settingsnode->find('mod_assign_useroverrides', navigation_node::TYPE_SETTING)) {
-                //if (has_any_capability(['mod/quiz:manageoverrides', 'mod/quiz:viewoverrides'], $settings->get_page()->cm->context)) {
+                if (has_capability('mod/quiz:manageoverrides', $PAGE->cm->context)) {
+                    $node->remove();
                     $url = new moodle_url('/mod/assign/overrides.php', ['cmid' => $PAGE->cm->id, 'mode' => 'user']);
                     $newnode = navigation_node::create(get_string('overrides', 'assign'),
-                                $url, navigation_node::TYPE_SETTING, null, 'overrides');
-                    $settingsoverride = $settingsnode->add_node($newnode, 'mod_assign_useroverrides');
-                    $node->remove();
-                //}
-            }                
-        }    
+                                clone $url, navigation_node::TYPE_SETTING, null, 'mod_assign_overrides');
+                    $settingsnode->add_node($newnode, 'roleassign');
+                    $icon = new pix_icon('i/user', '');
+                    $newnode = navigation_node::create(get_string('useroverrides', 'assign'),
+                                clone $url, navigation_node::TYPE_SETTING, null, 'mod_assign_useroverrides', $icon);
+                    $newnode->set_force_into_more_menu(true);
+                    $settingsnode->add_node($newnode, 'roleassign');
+                    $icon = new pix_icon('i/group', '');
+                    $url->param('mode','group');
+                    $newnode = navigation_node::create(get_string('groupoverrides', 'assign'),
+                                $url, navigation_node::TYPE_SETTING, null, 'mod_assign_groupoverrides', $icon);
+                    $settingsnode->add_node($newnode, 'roleassign');
+                    $newnode->set_force_into_more_menu(true);
+
+
+                }
+            }
+            //print_object($settingsnode->get_children_key_list());
+            //print_object("lib ulpgcquiz 222");
+        }
     }
-    
 }
 
 /**

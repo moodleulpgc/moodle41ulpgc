@@ -88,6 +88,27 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
      height: 36px;
 }
 
+.navigation.inactivitysettings,
+.navigation.incoursesettings {
+  border-bottom: inherit;
+  background-color: inherit;
+  margin: 6px 0;
+  padding: 0 0.5rem;
+}
+
+.navigation.inactivitysettings a.dropdown-toggle,
+.navigation.incoursesettings a.dropdown-toggle {
+  color: #fff;
+}
+
+.navigation.inactivitysettings a.dropdown-toggle:after,
+.navigation.incoursesettings a.dropdown-toggle:after {
+  display: none;
+}
+
+
+
+
 /* Change the block column width on the Dashboard if setting 'blockcolumnwidthdashboard' is different from setting 'blockcolumnwidth'. */
 @if variable-exists(blockwidthdashboard) {
     @if $blocks-width-dashboard {
@@ -212,24 +233,34 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   content: "\f070";
 }
 
-.section_availability.course-description-item,
-.activity-restrictions.course-description-item {
-    text-align: right;
-}
 
-.section_availability.course-description-item:after,
+.section_availability.withrestrictions:before,
 .activity-restrictions.course-description-item:before {
         font-family: 'FontAwesome';
         color: darkred;
-        font-size: large;
+        font-size: x-large;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         content: "\f023";
+        margin-left: 0.5rem;
 }
 
 .section_availability .availabilityinfo.isrestricted.isfullinfo,
 .activity-restrictions .availabilityinfo.isrestricted.isfullinfo {
-  //display: none;
+  display: none;
+  text-align: left;
+}
+
+
+.activity-item .moove .activity-info {
+  align-self: center;
+  flex-direction: row-reverse;
+}
+
+.section_availability.withrestrictions,
+.activity-restrictions.course-description-item,
+.activity-item .activity-info .activity-information {
+  text-align: right;
 }
 
 .activity-basis .course-description-item .description-inner {
@@ -283,6 +314,53 @@ span.unread {
 .section .activity {
   padding: 0.15rem 0;
 }
+
+
+/*---------------------------------------
+ * rules: Course formats related.
+ --------------------------------------*/
+
+.format-onetopic .hastopictabs .nav-tabs .nav-link.active {
+    background-color: #edf9ed;
+    font-weight: bold;
+}
+
+/* Toggle icon size */
+.format-topcoll #toggle-all .content .sectionbody h4 span.tc-small,
+.format-topcoll .course-content ul.ctopics li.section .content .toggle span.tc-small {
+    background-size: 12px 12px;
+}
+
+.format-topcoll #toggle-all .content .sectionbody h4 span.tc-medium,
+.format-topcoll .course-content ul.ctopics li.section .content .toggle span.tc-medium {
+    background-size: 18px 18px;
+}
+
+.format-topcoll #toggle-all .content .sectionbody h4 span.tc-large,
+.format-topcoll .course-content ul.ctopics li.section .content .toggle span.tc-large {
+    background-size: 24px 24px;
+}
+
+.format-topcoll .course-content ul.ctopics li.section.main .side,
+.format-topcoll .course-content ul.ctopics li.tcsection .side,
+.format-topcoll.editing .course-content ul.ctopics li.section.main .side,
+.format-topcoll .editing .course-content ul.ctopics li.tcsection .side {
+    width: 32px;
+    text-align: right;
+    padding: 6px 0 0 0;
+}
+
+.format-topcoll .course-content ul.ctopics li.section .right {
+     margin-top: 0.3rem;
+}
+
+
+.format-topcoll .section_availability:not(:empty)::before {
+    //margin-top: -2.7rem;
+    //margin-left: -2.7rem;
+}
+
+
 
 /*---------------------------------------
  * Setting: Course related hints.
@@ -373,4 +451,15 @@ span.unread {
     }
 }
 
+/*---------------------------------------
+ * Activity modules: Forum.
+ --------------------------------------*/
 
+#page-mod-forum-view table .limit-width {
+  min-width: 200px;
+  max-width: 40%;
+}
+
+#page-mod-forum-view .discussion-list .text-truncate {
+  white-space: pre-wrap;
+}

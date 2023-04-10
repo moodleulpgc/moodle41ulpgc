@@ -78,6 +78,7 @@ if ($ADMIN->fulltree) {
     // These are the built in presets.
     $choices['default.scss'] = 'default.scss';
     $choices['plain.scss'] = 'plain.scss';
+    $choices['ulpgc.scss'] = 'defaultulpgc.scss';
 
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $setting->set_updatedcallback('theme_reset_all_caches');
