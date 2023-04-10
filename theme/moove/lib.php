@@ -235,11 +235,13 @@ function theme_moove_get_incourse_settings() {
             $node = $PAGE->settingsnav->find('courseadmin', navigation_node::TYPE_COURSE);
             // Check if $node is not empty for other pages like for example the langauge customization page.
 
+            /*
             $siblibgs = $node->get_siblings();
             foreach($siblibgs as $n) {
-                //print_object($n->get_children_key_list());
-                //print_object(' SIB node coursesettings');
+                print_object($n->get_children_key_list());
+                print_object(' SIB node coursesettings');
             }
+            */
 
             //print_object($node->get_children_key_list());
 
