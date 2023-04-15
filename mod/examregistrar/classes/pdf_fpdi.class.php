@@ -153,6 +153,7 @@ class examregistrar_pdf extends FPDI {
             $this->set_logo_path($path);            
         }    
     }    
+    
     /**
      * Adds a blank separator page to the PDF. The page may contain some text indicating items being separated
      *
@@ -545,8 +546,6 @@ class examregistrar_pdf extends FPDI {
                     $examname = $exam->get_exam_name(true, true, true, false);
                     $examname = $renderer->heading($examname, 3); //$exam->programme.' - '.$exam->shortname.' - '.$exam->fullname, 3);
 
-
-
                     $pdf->writeHTML($examname, false, false, true, false, '');
                     if($config->pdfwithteachers) {
                         $teachers = $exam->get_formatted_teachers();
@@ -558,6 +557,7 @@ class examregistrar_pdf extends FPDI {
                         $pdf->writeHTML($instructions, false, false, true, false, '');
                     }
                     $pdf->Ln(4);
+                    
                     $margins = $pdf->getMargins();
                     $y = $pdf->getY();
                     $colwidth = ($pdf->getPageWidth() - $margins['right'] - $margins['left']) * $width/100;

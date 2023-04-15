@@ -399,7 +399,6 @@ if($upload) {
             } else if(confirm_sesskey()){
                 /// confirmed, proceed with deletion
                 /// TODO check dependencies /// TODO check dependencies /// TODO check dependencies
-
                 if($edit == 'exams') {
                     list($items, $taken) = examregistrar_delete_exams_dependencies([$delete->id]);
                     if(in_array($delete->id, $taken)) {

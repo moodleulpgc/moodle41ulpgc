@@ -22,6 +22,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_pluginskel;
+
 use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 use tool_pluginskel\local\util\manager;
@@ -35,11 +37,12 @@ require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/pluginskel/vendor/autolo
 /**
  * Activity module test class.
  *
+ * @covers      \tool_pluginskel\local\util\manager::prepare_mod_files
  * @package     tool_pluginskel
  * @copyright   2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginskel_mod_testcase extends advanced_testcase {
+class mod_test extends \advanced_testcase {
 
     /** @var string[] The test recipe. */
     protected static $recipe = array(
@@ -195,7 +198,7 @@ class tool_pluginskel_mod_testcase extends advanced_testcase {
         $this->assertStringContainsString($description, $libfile);
 
         $moodleinternal = "defined('MOODLE_INTERNAL') || die()";
-        $this->assertStringContainsString($moodleinternal, $libfile);
+        $this->assertStringNotContainsString($moodleinternal, $libfile);
 
         $addinstance = 'function demo_add_instance($moduleinstance, $mform = null)';
         $this->assertStringContainsString($addinstance, $libfile);
@@ -478,7 +481,7 @@ class tool_pluginskel_mod_testcase extends advanced_testcase {
         $this->assertMatchesRegularExpression('/\* @category\s+backup/', $settingslibfile);
 
         $moodleinternal = "defined('MOODLE_INTERNAL') || die();";
-        $this->assertStringContainsString($moodleinternal, $settingslibfile);
+        $this->assertStringNotContainsString($moodleinternal, $settingslibfile);
 
         $filename = 'backup/moodle2/backup_'.$modname.'_activity_task.class.php';
         $taskfile = $files[$filename];
@@ -513,7 +516,7 @@ class tool_pluginskel_mod_testcase extends advanced_testcase {
         $this->assertMatchesRegularExpression('/\* @category\s+backup/', $stepslibfile);
 
         $moodleinternal = "defined('MOODLE_INTERNAL') || die();";
-        $this->assertStringContainsString($moodleinternal, $stepslibfile);
+        $this->assertStringNotContainsString($moodleinternal, $stepslibfile);
 
         $classdefinition = 'class backup_'.$modname.'_activity_structure_step extends backup_activity_structure_step';
         $this->assertStringContainsString($classdefinition, $stepslibfile);
@@ -588,7 +591,7 @@ class tool_pluginskel_mod_testcase extends advanced_testcase {
         $this->assertMatchesRegularExpression('/\* @category\s+backup/', $stepslibfile);
 
         $moodleinternal = "defined('MOODLE_INTERNAL') || die();";
-        $this->assertStringContainsString($moodleinternal, $stepslibfile);
+        $this->assertStringNotContainsString($moodleinternal, $stepslibfile);
 
         $classdefinition = 'class restore_'.$modname.'_activity_structure_step extends restore_activity_structure_step';
         $this->assertStringContainsString($classdefinition, $stepslibfile);

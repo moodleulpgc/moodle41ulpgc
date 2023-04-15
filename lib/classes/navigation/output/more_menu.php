@@ -72,6 +72,7 @@ class more_menu implements renderable, templatable {
             // For each of these nodes we would like to display a dropdown menu and in order to achieve that
             // (as required by the template) we need to set the node's property 'moremenuid' to a new unique value and
             // 'haschildren' to true.
+            
             foreach ($this->content->children as &$item) {
                 if ($item->showchildreninsubmenu && isset($this->content->children) &&
                         count($this->content->children) > 0) {
@@ -79,13 +80,13 @@ class more_menu implements renderable, templatable {
                     $item->haschildren = true;
                 }
             }
-
             $data['nodecollection'] = $this->content;
+            
         } else {
             $data['nodearray'] = (array) $this->content;
         }
         $data['moremenuid'] = uniqid();
-
+        
         return $data;
     }
 

@@ -84,6 +84,7 @@ if($session) {
 if($bookedsite = optional_param('venue', '', PARAM_INT)) {
     $baseurl->param('venue', $bookedsite);
 }
+
 $actionurl = new moodle_url('/mod/examregistrar/manage/action.php', array('id' => $cm->id, 'edit'=>$edit, 'action'=>$action));
 
 /// Set the page header
@@ -290,9 +291,6 @@ if($action == 'sessionrooms' || $action == 'roomstaffers') {
                         $event = \mod_examregistrar\event\manage_created::created($eventdata, 'examregistrar_exams');
                         $event->trigger();
                     }
-                    
-                    
-                    
                 } else {
                     $exam = $exam = $DB->get_record('examregistrar_exams', array('id' => $extraexamid));
                 }

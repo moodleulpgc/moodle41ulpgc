@@ -172,6 +172,7 @@ class controlmenu implements named_templatable, renderable {
         } else {
             $indent = $mod->indent;
         }
+        
         return course_get_cm_edit_actions($mod, $indent, $sectionreturn);
     }
 }

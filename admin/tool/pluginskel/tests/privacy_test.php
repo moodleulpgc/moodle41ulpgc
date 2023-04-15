@@ -23,6 +23,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_pluginskel;
+
 use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 use tool_pluginskel\local\util\manager;
@@ -35,10 +37,11 @@ require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/pluginskel/vendor/autoload.php
 /**
  * Test case for generating the classes/privacy/provider.php file.
  *
+ * @covers    \tool_pluginskel\local\util\manager::prepare_privacy_files
  * @copyright 2018 David Mudrák <david@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginskel_privacy_testcase extends advanced_testcase {
+class privacy_test extends \advanced_testcase {
 
     /**
      * Returns a new instance of the manager utility class suitable for testing.

@@ -142,6 +142,7 @@ class boostnavbar implements \renderable {
 
         // Make sure that the last item is not a link. Not sure if this is always a good idea.
         $this->remove_last_item_action();
+        
     }
 
     /**
