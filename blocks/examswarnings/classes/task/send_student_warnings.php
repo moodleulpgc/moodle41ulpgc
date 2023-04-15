@@ -89,8 +89,8 @@ class send_student_warnings extends base {
                                                                     WHERE b2.booked = 1 AND b2.userid = u.id AND e2.period = e.period AND e2.courseid = e.courseid )";
                     }
 
-                    $names = get_all_user_name_fields(true, 'u');
-                    
+                    $userfieldsapi = \core_user\fields::for_name();
+                    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
                     
                     $sql = "SELECT DISTINCT ra.id as rid, c.id AS courseid, c.shortname, c.fullname, u.id, u.email, u.mailformat, u.username, u.idnumber, u.maildisplay, $names
                             FROM {user} u

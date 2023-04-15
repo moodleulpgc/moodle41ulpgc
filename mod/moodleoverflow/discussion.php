@@ -27,9 +27,9 @@ require_once('../../config.php');
 require_once($CFG->dirroot . '/mod/moodleoverflow/locallib.php');
 
 // Declare optional parameters.
-$d         = required_param('d', PARAM_INT); // The ID of the discussion.
-$sesskey   = optional_param('sesskey', null, PARAM_TEXT);
-$ratingid  = optional_param('r', 0, PARAM_INT);
+$d = required_param('d', PARAM_INT); // The ID of the discussion.
+$sesskey = optional_param('sesskey', null, PARAM_TEXT);
+$ratingid = optional_param('r', 0, PARAM_INT);
 $ratedpost = optional_param('rp', 0, PARAM_INT);
 
 // Set the URL that should be used to return to this page.
@@ -54,9 +54,6 @@ if (!$course = $DB->get_record('course', array('id' => $discussion->course))) {
 if (!$cm = get_coursemodule_from_instance('moodleoverflow', $moodleoverflow->id, $course->id)) {
     throw new moodle_exception('invalidcoursemodule');
 }
-
-$PAGE->requires->js_call_amd('mod_moodleoverflow/functions',
-    'clickevent', array($d, $USER->id));
 
 // Set the modulecontext.
 $modulecontext = context_module::instance($cm->id);
@@ -88,10 +85,10 @@ if ($ratingid) {
 
 // Trigger the discussion viewed event.
 $params = array(
-    'context'  => $modulecontext,
+    'context' => $modulecontext,
     'objectid' => $discussion->id,
 );
-$event  = \mod_moodleoverflow\event\discussion_viewed::create($params);
+$event = \mod_moodleoverflow\event\discussion_viewed::create($params);
 $event->trigger();
 
 // Unset where the user is coming from.
@@ -122,14 +119,16 @@ if ($discussion->userid === '0') {
     $discussion->name = get_string('privacy:anonym_discussion_name', 'mod_moodleoverflow');
 }
 
-$node          = $forumnode->add(format_string($discussion->name),
+$node = $forumnode->add(format_string($discussion->name),
     new moodle_url('/mod/moodleoverflow/discussion.php', array('d' => $discussion->id)));
 $node->display = false;
-if ($node AND ($post->id != $discussion->firstpost)) {
+if ($node && ($post->id != $discussion->firstpost)) {
     $node->add(format_string($post->subject), $PAGE->url);
 }
 
 $PAGE->requires->js_call_amd('mod_moodleoverflow/reviewing', 'init');
+
+$PAGE->requires->js_call_amd('mod_moodleoverflow/rating', 'init', [$USER->id]);
 
 // Initiate the page.
 $PAGE->set_title($course->shortname . ': ' . format_string($discussion->name));
@@ -143,7 +142,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($discussion->name), 1, 'discussionname');
 
 // Guests and users can not subscribe to a discussion.
-if ((!is_guest($modulecontext, $USER) AND isloggedin() AND $canviewdiscussion)) {
+if ((!is_guest($modulecontext, $USER) && isloggedin() && $canviewdiscussion)) {
     echo '';
 }
 
@@ -159,10 +158,10 @@ if (!$canreply) {
 
 echo "<br>";
 
-echo '<div id="moodleoverflow-posts">';
+echo '<div id="moodleoverflow-posts"><div id="moodleoverflow-root">';
 
 moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discussion, $post, $canreply);
 
-echo '</div>';
+echo '</div></div>';
 
 echo $OUTPUT->footer();

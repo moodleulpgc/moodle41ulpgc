@@ -51,7 +51,7 @@ function report_datacheck_fieldoption_user($fieldoption, $parsing) {
     $record->content = '';
     $record->ccontent = '';
     
-    $names = array('username', 'idnumber') + get_all_user_name_fields(false, '');
+    $names = array('username', 'idnumber') + \core_user\fields::get_name_fields();
     
     $config = get_config('report_datacheck');
     
@@ -219,7 +219,8 @@ function report_datacheck_compliance_list($data, $fromform) {
     list($checkedcontentwhere, $inparams) = report_datacheck_datafield_sql('checkedfield', '', $fromform);
     $params = array_merge($params, $inparams);
 
-    $usernames = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $usernames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     
     if($fromform->checkby == REPORT_DATACHECK_CHECKBY_USER) {
         //check by user, get users
@@ -362,7 +363,7 @@ function report_datacheck_email_to_users($course, $data, $fromform) {
     $url = new moodle_url('/mod/data/view.php', array('d'=>$data->id));
     //$messagecontrol = $messagehtml.'<br />'.html_writer::link($url, get_string('inrecord', 'report_datacheck', format_string($data->name))); 
     
-    $names = get_all_user_name_fields(false, '');
+    $names = \core_user\fields::get_name_fields();
     $sent = array();
     $errors = 0;
     
@@ -485,7 +486,8 @@ function report_datacheck_files_records_sql($data, $fromform) {
             
         } else {
             $sortgrouping = 'u.lastname ASC, u.firstname ASC, ';
-            $groupingfields =  ', u.username, '.get_all_user_name_fields(true, 'u');
+            $userfieldsapi = \core_user\fields::for_name();
+            $groupingfields =  ', u.username, ' . $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         }
     }
 

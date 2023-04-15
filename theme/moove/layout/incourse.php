@@ -89,7 +89,8 @@ if ($PAGE->has_secondary_navigation()) {
     }
 }
 
-$primary = new core\navigation\output\primary($PAGE);
+//$primary = new core\navigation\output\primary($PAGE);
+$primary = new theme_moove\output\core\navigation\output\primarynav($PAGE);
 $renderer = $PAGE->get_renderer('core');
 $primarymenu = $primary->export_for_template($renderer);
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions() && !$PAGE->has_secondary_navigation();
@@ -123,5 +124,25 @@ $templatecontext = [
 ];
 
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
+
+// ecastro ULPGC
+    $templatecontext = theme_moove_navbar_settings($templatecontext);
+    $templatecontext = array_merge($templatecontext, theme_moove_union_settings());
+    /*
+    require_once($CFG->dirroot . '/theme/moove/locallib.php');
+    $templatecontext['incoursesettings'] = true;
+    // Add the returned value from theme_boost_campus_get_incourse_settings to the template context.
+    $templatecontext['node'] = theme_moove_get_incourse_settings();
+    // Add the returned value from theme_boost_campus_get_incourse_activity_settings to the template context.
+    $templatecontext['activitysettings'] = true;
+    $templatecontext['activitynode'] = theme_moove_get_incourse_activity_settings();
+
+        if ($PAGE->pagelayout != 'mypublic' && $PAGE->bodyid != 'page-contentbank') {
+            $templatecontext['settingsmenu'] = $renderer->context_header_settings_menu();
+        }
+        */
+// ecastro ULPGC
+
+
 
 echo $OUTPUT->render_from_template('theme_moove/incourse', $templatecontext);

@@ -30,6 +30,7 @@
  * * Include Jvascript disabled hint
  * * Include advertisement tiles
  * * Include info banners
+ * * Include additional block regions
  *
  * @package   theme_boost_union
  * @copyright 2022 Luca Bösch, BFH Bern University of Applied Sciences luca.boesch@bfh.ch
@@ -59,14 +60,38 @@ user_preference_allow_ajax_update('drawer-open-block', PARAM_BOOL);
 
 if (isloggedin()) {
     $courseindexopen = (get_user_preferences('drawer-open-index', true) == true);
-    $blockdraweropen = (get_user_preferences('drawer-open-block') == true);
+
+    if (isguestuser()) {
+        $sitehomerighthandblockdrawerserverconfig = get_config('theme_boost_union', 'showsitehomerighthandblockdraweronguestlogin');
+    } else {
+        $sitehomerighthandblockdrawerserverconfig = get_config('theme_boost_union', 'showsitehomerighthandblockdraweronfirstlogin');
+    }
+
+    $isadminsettingyes = ($sitehomerighthandblockdrawerserverconfig == THEME_BOOST_UNION_SETTING_SELECT_YES);
+    $blockdraweropen = (get_user_preferences('drawer-open-block', $isadminsettingyes)) == true;
 } else {
     $courseindexopen = false;
     $blockdraweropen = false;
+
+    if (get_config('theme_boost_union', 'showsitehomerighthandblockdraweronvisit') == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        $blockdraweropen = true;
+    }
 }
 
 if (defined('BEHAT_SITE_RUNNING')) {
-    $blockdraweropen = true;
+    try {
+        if (
+            get_config('theme_boost_union', 'showsitehomerighthandblockdraweronvisit') === false &&
+            get_config('theme_boost_union', 'showsitehomerighthandblockdraweronguestlogin') === false &&
+            get_config('theme_boost_union', 'showsitehomerighthandblockdraweronfirstlogin') === false
+        ) {
+            $blockdraweropen = true;
+        }
+    } catch (Exception $e) {
+        echo $e->getMessage();
+
+        $blockdraweropen = true;
+    }
 }
 
 $extraclasses = ['uses-drawers'];
@@ -134,6 +159,9 @@ $templatecontext = [
 // Include the template content for the course related hints.
 require_once(__DIR__ . '/includes/courserelatedhints.php');
 
+// Include the template content for the block regions.
+require_once(__DIR__ . '/includes/blockregions.php');
+
 // Include the content for the back to top button.
 require_once(__DIR__ . '/includes/backtotopbutton.php');
 
@@ -151,6 +179,9 @@ require_once(__DIR__ . '/includes/javascriptdisabledhint.php');
 
 // Include the template content for the info banners.
 require_once(__DIR__ . '/includes/infobanners.php');
+
+// Include the template content for the navbar styling.
+require_once(__DIR__ . '/includes/navbar.php');
 
 // Include the template content for the advertisement tiles, but only if we are on the frontpage.
 if ($PAGE->pagelayout == 'frontpage') {

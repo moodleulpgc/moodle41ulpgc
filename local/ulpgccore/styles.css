@@ -1,5 +1,11 @@
 /* ULPGC additional classes
 -------------------------*/
+
+.path-admin-local-ulpgccore .installpresets {
+  padding-top: 0 !important;
+  padding-bottom: 3.0rem !important;
+}
+
 /*
 .availabilityinfo {
     -webkit-border-radius: 6px;
@@ -137,6 +143,24 @@
 
 /* mod_dialogue styles
  ========================================================================= */
+
+
+.path-admin-local-ulpgccore table.rolecap tr.rolecap th {
+  text-align: left;
+  font-weight: normal;
+  max-width: 20.0rem;
+}
+
+.path-admin-local-ulpgccore table.rolecap th.rolename {
+  padding: 0 1.0rem;
+  
+}
+
+
+.path-admin-local-ulpgccore table.rolecap td.permission {
+  text-align: center;
+}
+
 
 .availability-dialogue ul button {
     float: left;

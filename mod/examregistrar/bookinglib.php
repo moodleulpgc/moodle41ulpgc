@@ -459,7 +459,6 @@ function examregistrar_booking_clean_newbookings($exam, $booking, $newid, $useri
             }
         }
     }
-
 }
 
 
@@ -539,7 +538,8 @@ function examregistrar_booking_clean_newbookings($exam, $booking, $newid, $useri
 
         // only active enrolled users or everybody on the frontpage
         list($esql, $params) = get_enrolled_sql($this->context, 'mod/examregistrar:book', $this->currentgroup, true);
-        $fields = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT u.id, u.username, u.idnumber, u.email, $fields
                 FROM {user} u
                 JOIN ($esql) je ON je.id = u.id

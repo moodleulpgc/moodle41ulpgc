@@ -603,7 +603,8 @@ function examboard_get_board_members($boardid,  $deputy = null,  $names = false 
     }
     
     if($names) {
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT m.userid AS uid, m.id AS mid, m.*, u.id, u.idnumber, u.picture, u.imagealt, u.email, u.mailformat, $names
                 FROM {examboard_member} m 
                 JOIN {user} u ON m.userid = u.id

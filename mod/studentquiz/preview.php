@@ -62,8 +62,7 @@ $PAGE->set_url($actionurl);
 utils::require_access_to_a_relevant_group($module, $context, get_string('studentquiz:preview', 'studentquiz'));
 try {
     $studentquiz = mod_studentquiz_load_studentquiz($module->id, $context->id);
-    $studentquizquestion = new \mod_studentquiz\local\studentquiz_question($studentquizquestionid,
-            null, $studentquiz, $module, $context);
+    $studentquizquestion = new studentquiz_question($studentquizquestionid, null, $studentquiz, $module, $context);
 } catch (moodle_exception $e) {
     throw new moodle_exception("invalidconfirmdata', 'error");
 }
@@ -102,6 +101,7 @@ if ($question) {
 
         // Process submitted data.
         if (data_submitted()) {
+            require_sesskey();
             $qa = $quba->get_question_attempt($slot);
             $sequencecheck = $qa->get_submitted_var($qa->get_control_field_name('sequencecheck'), PARAM_INT);
             if ($sequencecheck == $qa->get_sequence_check_count()) {
@@ -154,6 +154,7 @@ if ($question) {
     echo html_writer::start_tag('form', ['method' => 'post', 'action' => $actionurl,
         'enctype' => 'multipart/form-data', 'id' => 'responseform']);
     echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'cmid', 'value' => $cmid, 'class' => 'cmid_field']);
+    echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 
     echo $quba->render_question($slot, $options, 'i');
 

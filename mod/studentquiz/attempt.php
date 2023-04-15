@@ -94,7 +94,7 @@ $hasprevious = $slot > $questionusage->get_first_question_number();
 $canfinish = $questionusage->can_question_finish_during_attempt($slot);
 
 if (data_submitted()) {
-
+    require_sesskey();
     // Once data has been submitted, process actions to save the current question answer state. If the question can be
     // finished during the attempt (immediatefeedback), then do so. If it can't (adaptive), finish the question once
     // navigated further in the quiz. After the actions have been processed, proceed the requested navigation.
@@ -227,6 +227,7 @@ $html .= html_writer::start_tag('form', array('method' => 'post', 'action' => $a
     'enctype' => 'multipart/form-data', 'id' => 'responseform'));
 
 $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'cmid', 'value' => $cmid, 'class' => 'cmid_field'));
+$html .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
 
 // Output the question.
 $html .= $questionusage->render_question($slot, $options, (string)$slot);
@@ -236,7 +237,7 @@ $statechangehtml = $output->render_state_choice($studentquizquestion);
 $navigationhtml = $output->render_navigation_bar($hasprevious, $hasnext, $isanswered);
 
 // Change state will always first thing below navigation.
-$orders  = [
+$orders = [
     $navigationhtml,
     $statechangehtml
 ];

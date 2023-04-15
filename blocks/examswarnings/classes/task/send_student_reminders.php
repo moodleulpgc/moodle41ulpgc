@@ -58,7 +58,8 @@ class send_student_reminders extends base {
             if($config->enablewarnings && $sendingday) {
                 mtrace("...doing students reminders & warnings.");
                 mtrace("...config->examconfirmdays ". $config->examconfirmdays);
-                $names = get_all_user_name_fields(true, 'u');
+                $userfieldsapi = \core_user\fields::for_name();
+                $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
                 
                 $sql = "SELECT b.id AS bid, b.userid, b.booked, b.bookedsite, e.courseid, c.fullname, c.shortname, 
                                 u.id, u.username, u.email, u.mailformat, u.idnumber, u.maildisplay, $names

@@ -366,11 +366,13 @@ class quiz_attemptstate_report extends quiz_attempts_report {
     protected function get_selected_attempts($quiz, $statecondition, 
             \core\dml\sql_join $groupstudentsjoins = null, $attemptids = array()) {
         global $DB;
-    
+
+        $userfieldsapi = \core_user\fields::for_name();
+        $allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT quiza.*, 
                     (SELECT COUNT(qan.id) FROM {quiz_attempts} qan 
                     WHERE qan.quiz = quiza.quiz AND qan.userid = quiza.userid) as numattempts, 
-                        " . get_all_user_name_fields(true, 'u') . "
+                        " . $allnames . "
                   FROM {quiz_attempts} quiza
                   JOIN {user} u ON u.id = quiza.userid";
         $where = "quiz = :qid AND preview = 0 AND $statecondition";

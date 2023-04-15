@@ -37,7 +37,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2008091900, 'tracker');
     }
 
-    if ($oldversion < 2008092400) {
+    if ($result && $oldversion < 2008092400) {
 
         // Setup XML-RPC services for tracker.
         tracker_install();
@@ -46,7 +46,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2008092400, 'tracker');
     }
 
-    if ($oldversion < 2008092602) {
+    if ($result && $oldversion < 2008092602) {
 
         // Define field supportmode to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -60,7 +60,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2008092602, 'tracker');
     }
 
-    if ($oldversion < 2009042500) {
+    if ($result && $oldversion < 2009042500) {
 
         // Define field supportmode to be added to tracker.
         $table = new xmldb_table('tracker_issue');
@@ -74,7 +74,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2009042500, 'tracker');
     }
 
-    if ($oldversion < 2009042503) {
+    if ($result && $oldversion < 2009042503) {
 
         // Reassign all priorities.
         require_once($CFG->dirroot.'/mod/tracker/locallib.php');
@@ -110,7 +110,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
     }
 
     // Fix field size for parent encoding in remote cascade. (long wwwroots).
-    if ($oldversion < 2009090800) {
+    if ($result && $oldversion < 2009090800) {
 
         // Changing precision of field parent on table tracker to (80).
         $table = new xmldb_table('tracker');
@@ -124,7 +124,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2009090800, 'tracker');
     }
 
-    if ($oldversion < 2010061000) {
+    if ($result && $oldversion < 2010061000) {
 
         // Define field defaultassignee to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -138,7 +138,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2010061000, 'tracker');
     }
 
-    if ($oldversion < 2011070400) {
+    if ($result && $oldversion < 2011070400) {
 
         // Define field subtrackers to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -166,7 +166,81 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         $dbman->rename_field($table, $formatfield, 'introformat', false);
     }
 
-    if ($oldversion < 2013092200) {
+	// Moodle 2.x
+    if ($oldversion < 2012080901) {
+
+    /// Add field format on table tracker_element
+        $table = new xmldb_table('tracker_element');
+        $field = new xmldb_field('required', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+    /// Add field format on table tracker_elementitem
+        $table = new xmldb_table('tracker_elementitem');
+        $field = new xmldb_field('autoresponse', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+    /// Add field format on table tracker_issue
+        $table = new xmldb_table('tracker_issue');
+        $field = new xmldb_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('userlastseen', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $index = new xmldb_index('tracker', XMLDB_INDEX_NOTUNIQUE, array('trackerid'));
+        // Conditionally launch add index rolecontext
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('reportedby', XMLDB_INDEX_NOTUNIQUE, array('reportedby'));
+        // Conditionally launch add index rolecontext
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+    /// tracker savepoint reached
+        upgrade_mod_savepoint(true, 2012080901, 'tracker');
+    }
+
+
+    // re-configure ULPGC customizations
+    $ulpgc = get_config('local_ulpgccore');
+    if ($result && $ulpgc && $oldversion < 2013080305) {
+
+    /// Rename fields on table tracker_issue
+        $table = new xmldb_table('tracker_issue');
+
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        if ($dbman->field_exists($table, $field)){
+            $dbman->rename_field($table, $field, 'resolvermodified', false);
+        }
+    }
+    if ($result && $oldversion < 2013092200) {
 
         // Define field subtrackers to be added to tracker.
         $table = new xmldb_table('tracker_issue');
@@ -179,7 +253,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2013092200, 'tracker');
     }
 
-    if ($oldversion < 2013092300) {
+    if ($result && $oldversion < 2013092300) {
 
         // Define field subtrackers to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -191,7 +265,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2013092300, 'tracker');
     }
 
-    if ($oldversion < 2013092400) {
+    if ($result && $oldversion < 2013092400) {
 
         // Define field subtrackers to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -203,7 +277,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2013092400, 'tracker');
     }
 
-    if ($oldversion < 2014010100) {
+    if ($result && $oldversion < 2014010100) {
 
         // Define field strictworkflow to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -222,7 +296,32 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2014010100, 'tracker');
     }
 
-    if ($oldversion < 2015072300) {
+    if ($result && $oldversion < 2014101701) {
+        // Define table tracker_translation to be created.
+        $table = new xmldb_table('tracker_translation');
+
+        // Adding fields to table tracker_translation.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('trackerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('issueword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('assignedtoword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('summaryword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('descriptionword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('statuswords', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
+
+        // Adding keys to table forum_digests.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('trackerid', XMLDB_KEY_FOREIGN, array('trackerid'), 'tracker', array('id'));
+
+        // Conditionally launch create table for forum_digests.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2014101701, 'tracker');
+    }
+
+    if ($result && $oldversion < 2015072300) {
 
         // Define field uplink to be added to tracker.
         $table = new xmldb_table('tracker_issue');
@@ -241,7 +340,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2015072300, 'tracker');
     }
 
-    if ($oldversion < 2015080400) {
+    if ($result && $oldversion < 2015080400) {
 
         // Define field uplink to be added to tracker.
         $table = new xmldb_table('tracker');
@@ -254,7 +353,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2015080400, 'tracker');
     }
 
-    if ($oldversion < 2015080500) {
+    if ($result && $oldversion < 2015080500) {
 
         // Define field uplink to be added to tracker.
         $table = new xmldb_table('tracker_elementused');
@@ -272,7 +371,7 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2015080500, 'tracker');
     }
 
-    if ($oldversion < 2015080600) {
+    if ($result && $oldversion < 2015080600) {
 
         // Define field uplink to be added to tracker.
         $table = new xmldb_table('tracker_element');
@@ -299,6 +398,132 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         // Tracker savepoint reached.
         upgrade_mod_savepoint(true, 2015080600, 'tracker');
     }
+    
+    if ($result && $oldversion < 2015091301) {
+        // Define table tracker_translation to be created.
+        $table = new xmldb_table('tracker_translation');
+
+        // Adding fields to table tracker_translation.
+        $field = new xmldb_field('forcedlang', XMLDB_TYPE_CHAR, 30, null, XMLDB_NOTNULL, null, 'en', 'statuswords');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    
+        $langs = array('actv', 'admin', 'exam', 'tfg', 'tutor'); 
+        foreach($langs as $lang) {
+            $dir = '/lang/es_'.$lang;
+            $filename = 'tracker.php';
+            $source = $CFG->dirroot.'/mod/tracker'.$dir.'/'.$filename;
+            $langconfig = $source = $CFG->dirroot.'/mod/tracker'.$dir.'/langconfig.php';
+           
+            
+            $dir = $CFG->dataroot.$dir;
+            make_writable_directory($dir);
+            if(file_exists($source)) {
+                copy($source, $dir.'/'.$filename);
+                if(file_exists($langconfig)) {
+                    copy($langconfig, $dir.'/langconfig.php');
+                }
+                $dir .= '_local';
+                make_writable_directory($dir);
+                copy($source, $dir.'/'.$filename);
+            }
+        }
+    
+        // Tracker savepoint reached.
+        upgrade_mod_savepoint(true, 2015091301, 'tracker');
+    
+    }
+
+    if ($result && $oldversion < 2015111100) {
+        // Tracker savepoint reached.
+        upgrade_mod_savepoint(true, 2015111100, 'tracker');
+    }
+
+    if ($result && $oldversion < 2015111110) {
+    $table = new xmldb_table('tracker_elementused');
+        $field = new xmldb_field('private', XMLDB_TYPE_INTEGER, 1, null, null, null, 0);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+    
+        $langs = array('info'); 
+        foreach($langs as $lang) {
+            $dir = '/lang/es_'.$lang;
+            $filename = 'tracker.php';
+            $source = $CFG->dirroot.'/mod/tracker'.$dir.'/'.$filename;
+            $langconfig = $source = $CFG->dirroot.'/mod/tracker'.$dir.'/langconfig.php';
+           
+            
+            $dir = $CFG->dataroot.$dir;
+            make_writable_directory($dir);
+            if(file_exists($source)) {
+                copy($source, $dir.'/'.$filename);
+                if(file_exists($langconfig)) {
+                    copy($langconfig, $dir.'/langconfig.php');
+                }
+                $dir .= '_local';
+                make_writable_directory($dir);
+                copy($source, $dir.'/'.$filename);
+            }
+        }
+    
+    
+        // Tracker savepoint reached.
+        upgrade_mod_savepoint(true, 2015111110, 'tracker');
+    }
+ 
+ 
+    if ($result && $oldversion < 2015111112) {
+        
+        $chunks = array();
+        $sql = "SELECT te.id, te.course
+                FROM {tracker_element} te 
+                LEFT JOIN {tracker_elementused} tu ON te.id = tu.elementid 
+                
+                WHERE tu.id IS NULL AND EXISTS(SELECT 1 FROM {tracker_element} t2
+                                                    WHERE t2.id <> te.id AND 
+                                                    (t2.course = te.course AND t2.name = te.name AND t2.type = te.type
+                                                    ))  
+                ";
+        if($elements = $DB->get_records_sql_menu($sql, array())) { 
+            $chunks = array_chunk(array_keys($elements), 250); 
+        }
+        
+        foreach($chunks as $chunk) {
+            if ($DB->delete_records_list('tracker_element', 'id', $chunk)) {
+                $DB->delete_records_list('tracker_elementitem', 'elementid', $chunk);
+            }
+        }
+ 
+        // Tracker savepoint reached.
+        upgrade_mod_savepoint(true, 2015111112, 'tracker');
+    }
+
+    if ($result && $oldversion < 2015111113) {    
+    
+        // Define field parent to be added to tracker.
+        $table = new xmldb_table('tracker');
+        $field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        // Launch add field parent.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }    
+        
+        $field = new xmldb_field('allowsubmissionsfromdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $field = new xmldb_field('statenonrepeat', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        
+        // Tracker savepoint reached.
+        upgrade_mod_savepoint(true, 2015111113, 'tracker');
+    }
 
     if ($oldversion < 2020120500) {
         // Define field uplink to be added to tracker.
@@ -316,6 +541,105 @@ function xmldb_tracker_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2020120500, 'tracker');
     }
 
-    return true;
+    if ($oldversion < 2020120502) {
+
+        //Re-apply ULPGC changes, if needed
+
+        // Define field parent to be added to tracker.
+        $table = new xmldb_table('tracker');
+        // Define field parent to be added to tracker.
+        $table = new xmldb_table('tracker');
+        $field = new xmldb_field('duedate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        // Launch add field parent.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('allowsubmissionsfromdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('statenonrepeat', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+    /// Add field format on table tracker_elementitem
+        $table = new xmldb_table('tracker_elementitem');
+        $field = new xmldb_field('autoresponse', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('tracker_elementused');
+        $field = new xmldb_field('private', XMLDB_TYPE_INTEGER, 1, null, null, null, 0);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+    /// Add field format on table tracker_issue
+        $table = new xmldb_table('tracker_issue');
+        $field = new xmldb_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'uplink');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('resolvermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'uplink');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('userlastseen', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'uplink');
+
+    /// Conditionally launch add field  format
+        if (!$dbman->field_exists($table,$field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $index = new xmldb_index('tracker', XMLDB_INDEX_NOTUNIQUE, array('trackerid'));
+        // Conditionally launch add index rolecontext
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        $index = new xmldb_index('reportedbyuser', XMLDB_INDEX_NOTUNIQUE, array('reportedby'));
+        // Conditionally launch add index rolecontext
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define table tracker_translation to be created.
+        $table = new xmldb_table('tracker_translation');
+
+        // Adding fields to table tracker_translation.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('trackerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('issueword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('assignedtoword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('summaryword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('descriptionword', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('statuswords', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
+
+        // Adding keys to table forum_digests.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('trackerid', XMLDB_KEY_FOREIGN, array('trackerid'), 'tracker', array('id'));
+
+        // Conditionally launch create table for forum_digests.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Tracker savepoint reached.
+        upgrade_mod_savepoint(true, 2020120502, 'tracker');
+    }
+
+    return $result;
 }
 

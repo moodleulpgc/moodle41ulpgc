@@ -288,6 +288,21 @@ class qtype_essayautograde_edit_form extends qtype_essay_edit_form {
         $mform->addHelpButton($name, $name, $plugin);
 
         /////////////////////////////////////////////////
+        // Insert allowsimilarity after responsesample.
+        /////////////////////////////////////////////////
+
+        $name = 'allowsimilarity';
+        $label = get_string($name, $plugin);
+        $options = $this->get_allowsimilarity_options($plugin);
+        $i = $mform->_elementIndex['responsesample'];
+        $mform->insertElementBefore($mform->createElement(
+            'select', $name, $label, $options
+        ), array_search($i + 1, $mform->_elementIndex));
+        $mform->addHelpButton($name, $name, $plugin);
+        $mform->setType($name, PARAM_INT);
+        $mform->setDefault($name, $this->get_my_default_value($name, 10));
+
+        /////////////////////////////////////////////////
         // Add feedback fields (= Combined feedback).
         // and interactive settings (= Multiple tries).
         // Move combined feedback after general feedback.
@@ -527,6 +542,21 @@ class qtype_essayautograde_edit_form extends qtype_essay_edit_form {
     }
 
     /**
+     * Get array of similarity threshold percentages
+     *
+     * @param string $plugin name
+     * @return array(value => percent)
+     */
+    protected function get_allowsimilarity_options($plugin) {
+        $options = array();
+        $options[0] = get_string('no');
+        for ($i=5; $i<=100; $i+=5) {
+            $options[$i] = get_string('allowsimilaritypercent', $plugin, $i);
+        }
+        return $options;
+    }
+
+    /**
      * Get array of show/hide options
      *
      * @param string $plugin name
@@ -755,7 +785,6 @@ class qtype_essayautograde_edit_form extends qtype_essay_edit_form {
      */
     protected function add_repeat_elements($mform, $type, $elements, $options, $name) {
         $types = $type.'s';
-        $TYPE = strtoupper($type);
         $plugin = 'qtype_essayautograde'; // $this->plugin_name();
 
         // cache element names
@@ -764,7 +793,7 @@ class qtype_essayautograde_edit_form extends qtype_essay_edit_form {
         $addtypescount = $addtypes.'count';
         $addtypesgroup = $addtypes.'group';
 
-        $repeats = $this->plugin_constant('ANSWER_TYPE_'.$TYPE); // type
+        $repeats = $this->plugin_constant('ANSWER_TYPE_'.strtoupper($type));
         $repeats = $this->get_answer_repeats($this->question, $repeats);
 
         $count = optional_param($addtypescount, self::NUM_ITEMS_ADD, PARAM_INT);

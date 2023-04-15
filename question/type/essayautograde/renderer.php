@@ -62,6 +62,10 @@ class qtype_essayautograde_renderer extends qtype_with_combined_feedback_rendere
         }
 
         $renderer = $question->get_format_renderer($this->page);
+        if (method_exists($renderer, 'set_displayoptions')) {
+            $renderer->set_displayoptions($options); // Moodle 4.x and later
+        }
+
         $linecount = $question->responsefieldlines;
 
         if ($readonly) {
@@ -175,6 +179,13 @@ class qtype_essayautograde_renderer extends qtype_with_combined_feedback_rendere
                             'data-maxitems' => $maxitems);
             $result .= html_writer::tag('div', $itemcount, $params);
         }
+
+        if ($qa->get_state() == question_state::$gradedwrong) {
+            if ($error = $question->get_validation_error($step->get_qt_data())) {
+                $result .= html_writer::tag('div', $error, array('class' => 'validationerror'));
+            }
+        }
+
         $result .= html_writer::tag('div', $files, array('class' => 'attachments'));
         $result .= html_writer::end_tag('div'); // div.ablock
 
@@ -921,7 +932,7 @@ class qtype_essayautograde_renderer extends qtype_with_combined_feedback_rendere
             if (count($phrases)) {
                 $output .= html_writer::alist($phrases, array('class' => 'targetphrases'));
             }
- 
+
             if ($question->errorcmid && ($cm = get_coursemodule_from_id('', $question->errorcmid))) {
                 $url = new moodle_url("/mod/{$cm->modname}/view.php?id={$cm->id}");
                 $a = (object)array(

@@ -1,97 +1,46 @@
 <?php
-// This file is part of the learningtimecheck plugin for Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package mod_tracker
- * @category mod
- * @author Valery Fremaux
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * Global configuration settings for the tracker module.
+ *
+ * @package    mod
+ * @subpackage tracker
+ * @copyright  2012 Enrique Castro ULPGC
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/tracker/lib.php');
 
-/*
- * Global settings for the tracker module
- */
 
 if ($ADMIN->fulltree) {
 
-    $options = array('open' => get_string('open', 'mod_tracker'),
-                     'closed' => get_string('closed', 'mod_tracker'));
+    require_once($CFG->dirroot.'/mod/tracker/lib.php');
 
-    $key = 'mod_tracker/initialviewccs';
-    $label = get_string('configinitialviewccs', 'mod_tracker');
-    $desc = get_string('configinitialviewccs_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 'open', $options));
+    $settings->add(new admin_setting_configtext('tracker/resolvingdays', get_string('resolvingdays', 'tracker'),
+                       get_string('configresolvingdays', 'tracker'), 5, PARAM_INT));
 
-    $key = 'mod_tracker/initialviewcomments';
-    $label = get_string('configinitialviewcomments', 'mod_tracker');
-    $desc = get_string('configinitialviewcomments_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 'open', $options));
+    $settings->add(new admin_setting_configtext('tracker/closingdays', get_string('closingdays', 'tracker'),
+                       get_string('configclosingdays', 'tracker'), 3, PARAM_INT));
 
-    $key = 'mod_tracker/initialviewhistory';
-    $label = get_string('configinitialviewhistory', 'mod_tracker');
-    $desc = get_string('configinitialviewhistory_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 'open', $options));
+    $settings->add(new admin_setting_configtext('tracker/reportmaxfiles', get_string('reportmaxfiles', 'tracker'),
+                       get_string('configreportmaxfiles', 'tracker'), 3, PARAM_INT));
 
-    $key = 'mod_tracker/initialviewdeps';
-    $label = get_string('configinitialviewdeps', 'mod_tracker');
-    $desc = get_string('configinitialviewdeps_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 'open', $options));
-
-    $settings->add(new admin_setting_heading('formadminhdr', get_string('formelementsadministration', 'tracker'), ''));
-
-    $yesnoopts = array('0' => get_string('no'), '1' => get_string('yes'));
-
-    $key = 'mod_tracker/initiallyactive';
-    $label = get_string('configinitiallyactive', 'mod_tracker');
-    $desc = get_string('configinitiallyactive_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 1, $yesnoopts));
-
-    $key = 'mod_tracker/initiallymandatory';
-    $label = get_string('configinitiallymandatory', 'mod_tracker');
-    $desc = get_string('configinitiallymandatory_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $yesnoopts));
-
-    $key = 'mod_tracker/initiallyprivate';
-    $label = get_string('configinitiallyprivate', 'mod_tracker');
-    $desc = get_string('configinitiallyprivate_desc', 'mod_tracker');
-    $settings->add(new admin_setting_configselect($key, $label, $desc, 0, $yesnoopts));
+    $settings->add(new admin_setting_configtext('tracker/developmaxfiles', get_string('developmaxfiles', 'tracker'),
+                       get_string('configdevelopmaxfiles', 'tracker'), 5, PARAM_INT));
 
 
-    if (tracker_supports_feature('emulate/community') == 'pro') {
-        include_once($CFG->dirroot.'/mod/tracker/pro/prolib.php');
-        $promanager = mod_tracker\pro_manager::instance();
-        $promanager->add_settings($ADMIN, $settings);
-    } else {
-        $label = get_string('plugindist', 'mod_tracker');
-        $desc = get_string('plugindist_desc', 'mod_tracker');
-        $settings->add(new admin_setting_heading('plugindisthdr', $label, $desc));
-    }
+    $STATUSKEYS = array(POSTED => get_string('posted', 'tracker'),
+                        OPEN => get_string('open', 'tracker'),
+                        RESOLVING => get_string('resolving', 'tracker'),
+                        WAITING => get_string('waiting', 'tracker'),
+                        TESTING => get_string('testing', 'tracker'),
+                        RESOLVED => get_string('resolved', 'tracker'),
+                        ABANDONNED => get_string('abandonned', 'tracker'),
+                        TRANSFERED => get_string('transfered', 'tracker'),
+                        PUBLISHED => get_string('published', 'tracker'),
+                        VALIDATED => get_string('validated', 'tracker'),
+                        );
 
-    $settings->add(new admin_setting_heading('usersettingshdr', get_string('userdefaultpreferences', 'tracker'), ''));
-
-    $states = array('open', 'resolving', 'waiting', 'testing', 'published', 'resolved', 'abandonned', 'oncomment');
-
-    foreach ($states as $st) {
-        $key = 'mod_tracker/user'.$st.'default';
-        $label = get_string('configuser'.$st.'default', 'mod_tracker');
-        $desc = get_string('configuserdefault_desc', 'mod_tracker');
-        $settings->add(new admin_setting_configcheckbox($key, $label, $desc, 1));
-    }
-
+    $settings->add(new admin_setting_configmultiselect('tracker/openstatus', get_string('openstatus', 'tracker'),
+                                                    get_string('openstatus_desc', 'tracker'), array(POSTED, OPEN, RESOLVING, WAITING, TESTING), $STATUSKEYS));
+                       
 }

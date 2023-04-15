@@ -50,3 +50,4 @@ report/o365channels
 report/supervision
 report/syncgroups
 report/trackertools
+user/profile/field/callsummons

@@ -192,6 +192,30 @@ $string['saveandnext'] = 'Save and add next';
 $string['choice_added_notification'] = 'Choice saved.';
 
 // </editor-fold>
+// <editor-fold defaultstate="collapsed" desc="Form to upload choices via CSV (administrator)">
+$string['upload_choices'] = 'Upload choices via CSV';
+$string['upload_choices_required_fields'] = 'Required Fields';
+$string['upload_choices_fields_desc'] = 'CSV files uploaded through this form are expected to be UTF-8 encoded, and include the following choice fields:<br/><pre>{$a}</pre>
+The file is required to contain a header line. Multiple groups should be separated by a semicolon. The "active" column should contain 1 or 0 to make the choice enabled or disabled.<br/>
+Example file content:
+<pre>
+title,explanation,maxsize,active,groups
+First Choice,This is the description of the first choice,15,1,Group A;Group B;Group C
+Second Choice,This is the description of the second choice,12,0,Group A;Group D
+</pre>';
+$string['csvempty'] = 'CSV file is empty.';
+$string['csvupload'] = 'Upload CSV';
+$string['csvupload_further_problems'] = '{$a} further problems found but not displayed.';
+$string['csvupload_explanation'] = 'Bulk upload choices via a CSV file';
+$string['csvupload_missing_fields'] = 'Columns missing from CSV import: {$a}';
+$string['csvupload_missing_groups'] = 'Line {$a->row}: group(s) not available in course: [{$a->invalidgroups}]';
+$string['csvupload_live_problems'] = 'Problems found in CSV import: {$a}';
+$string['csvupload_live_success'] = 'CSV import successful. {$a->importcount} choices imported.';
+$string['csvupload_test_problems'] = 'Problems found in CSV import test: {$a}';
+$string['csvupload_test_success'] = 'CSV import test successful. {$a->importcount} choices can be imported.';
+$string['csvupload_test_upload'] = 'Test upload';
+$string['csvupload_test_upload_help'] = 'When checked: test the uploaded CSV file for data problems, but do not commit to the database.';
+// </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Form to edit the instance(administrator)">
 $string['choice_active'] = 'Choice is active';
@@ -201,6 +225,11 @@ $string['choice_maxsize'] = 'Max. number of participants';
 $string['choice_maxsize_display'] = 'Maximum number of students';
 $string['choice_title'] = 'Title';
 $string['choice_title_help'] = 'Title of the choice. *Attention* all active choices will be displayed while ordered by title.';
+$string['choice_usegroups'] = 'Restrict visibility by groups';
+$string['choice_usegroups_help'] = '* If selected, this choice will only be visible to the members of the specified groups.
+* Disabling the restriction means that this choice will be available to anyone.
+* Enabling the restriction without specifying a single group means that this choice will be *not* available for anyone.';
+$string['choice_groupselect'] = 'Groups';
 $string['edit_choice'] = 'Edit choice';
 $string['rating_endtime'] = 'Rating ends at';
 $string['rating_begintime'] = 'Rating begins at';
@@ -232,6 +261,7 @@ $string['choice_table_title'] = 'Title';
 $string['choice_table_explanation'] = 'Description';
 $string['choice_table_maxsize'] = 'Max. Size';
 $string['choice_table_active'] = 'Active';
+$string['choice_table_usegroups'] = 'Groups';
 $string['choice_table_tools'] = 'Edit';
 // </editor-fold>
 

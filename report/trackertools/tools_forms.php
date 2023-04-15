@@ -686,7 +686,7 @@ class report_trackertools_checked_form extends report_trackertools_form {
     function add_user_name($issue, $courseid, $prefix) {
     
         $user = core_user::get_noreply_user();
-        $fields = array('id', 'idnumber') + get_all_user_name_fields();
+        $fields = array('id', 'idnumber') + \core_user\fields::get_name_fields();
         foreach($fields as $field) {
             $user->{$field} = $issue->{$prefix.$field};
         
@@ -1080,7 +1080,8 @@ class report_trackertools_assigntask_form extends report_trackertools_form {
         
         $queries = $DB->get_records('tracker_query', array('trackerid' => $trackerid));
         
-        $allnames = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT tt.*, $allnames 
                 FROM {report_trackertools_devq} tt 
                 JOIN {user} u ON tt.userid = u.id 
@@ -1175,7 +1176,8 @@ class report_trackertools_deletetask_form extends report_trackertools_form {
         if($taskid = optional_param('d', 0, PARAM_INT)) {
             $queries = $DB->get_records('tracker_query', array('trackerid' => $tracker->id));
             
-            $allnames = get_all_user_name_fields(true, 'u');
+            $userfieldsapi = \core_user\fields::for_name();
+            $allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
             $sql = "SELECT tt.*, $allnames 
                     FROM {report_trackertools_devq} tt 
                     JOIN {user} u ON tt.userid = u.id 

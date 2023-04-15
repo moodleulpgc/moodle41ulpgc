@@ -373,7 +373,11 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
 
         $mform->addElement('text', 'imagealt', get_string('imagealt'), 'maxlength="100" size="30"');
         $mform->setType('imagealt', PARAM_TEXT);
-
+        // ecastro ULPGC to allow image opt-in
+        if (get_config('local_ulpgccore', 'hidepicture')) {
+            $mform->addHelpButton('imagealt', 'hidepicwarning', 'local_ulpgccore');
+            $mform->addElement('static', 'optinimage', '', get_string('hidepicwarning_help', 'local_ulpgccore'));
+        }
     }
 
     // Display user name fields that are not currenlty enabled here if there are any.

@@ -1,8 +1,8 @@
 #!/bin/bash
 #Local plugins
 git submodule add https://github.com/catalyst/moodle-local_csp.git                             local/csp
-git submodule add https://github.com/moodleuulm/moodle-local_boostnavigation.git   local/boostnavigation
-git submodule add https://github.com/elearning-univie/moodle-local_contactlist.git      local/contactlist
+#git submodule add https://github.com/moodleuulm/moodle-local_boostnavigation.git   local/boostnavigation
+#git submodule add https://github.com/elearning-univie/moodle-local_contactlist.git      local/contactlist
 git submodule add https://github.com/kiklop74/moodle-local_dompdf.git                      local/dompdf
 git submodule add https://github.com/ecampbell/moodle-local_glossary_wordimport     local/glossary_wordimport
 #git submodule add https://github.com/PoetOS/moodle-local_metadata.git               local/metadata
@@ -16,10 +16,11 @@ git submodule add https://github.com/MorrisR2/moodle_local_searchquestions.git  
 git submodule add https://github.com/catalyst/moodle-local_sitenotice.git                   local/sitenotice
 #git submodule add https://github.com/moodleuulm/moodle-local_staticpage.git         local/staticpage
 git submodule add https://github.com/MorrisR2/moodle_local_unusedquestions.git     local/unusedquestions
-git submodule add https://github.com/vfremaux/moodle-local_vflibs.git                      local/vflibs
-cd local/vflibs && git checkout MOODLE_39_STABLE && cd ../../
+#git submodule add https://github.com/vfremaux/moodle-local_vflibs.git                      local/vflibs
+#cd local/vflibs && git checkout MOODLE_39_STABLE && cd ../../
 git submodule add https://github.com/valentineus/moodle-webhooks.git                     local/webhooks
 cd local/webhooks && git checkout v3.0.0-stable && cd ../../
+git submodule add git@bitbucket.org:moodleulpgc/moodle-local_attendancewebhook.git   local/attendancewebhook
 
 
 
@@ -324,6 +325,9 @@ git submodule add https://github.com/jpahullo/moodle-repository_searchable.git  
 
 #Web Services
 git submodule add https://github.com/moodlehq/moodle-webservice_xmlrpc.git      webservice/xmlrpc
+#pumukit
+git submodule add https://github.com/teltek/moodle-atto_pumukitmedia.git            lib/editor/atto/plugins/pumukitmedia
+git submodule add https://github.com/teltek/moodle-filter_pumukitmedia.git          filter/pumukitmedia
 
 #Themes
 #git submodule add https://gitlab.com/jezhops/moodle-theme_adaptable.git             theme/adaptable

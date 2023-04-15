@@ -470,6 +470,21 @@ function xmldb_local_ulpgccore_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019102500, 'local', 'ulpgccore');
     }
 
-    
+    if ($oldversion < 2023032501) {
+        $v = get_config('enrol_groupsync', 'version');
+        if($v == 2019111203) {
+            set_config('version', 2019111200, 'enrol_groupsync');
+            //upgrade_plugin_savepoint(true, 2019111200, 'enrol', 'groupsync');
+        }
+        $v = get_config('block_section', 'version');
+        if($v == 2019112901) {
+            set_config('version', 2019111200, 'block_section');
+            //upgrade_plugin_savepoint(true, 2019112900, 'enrol', 'groupsync');
+        }
+
+
+        upgrade_plugin_savepoint(true, 2023032501, 'local', 'ulpgccore');
+    }
+
     return true;
 }

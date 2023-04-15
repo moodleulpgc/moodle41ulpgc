@@ -12,8 +12,8 @@
 ///  Called by moodle_needs_upgrading() and /admin/index.php
 /////////////////////////////////////////////////////////////////////////////////
 
-$plugin->version  = 2020071005;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version  = 2023032501;  // The current module version (Date: YYYYMMDDXX)
 $plugin->requires = 2015111602;  // Requires this Moodle version
 $plugin->component = 'local_ulpgccore';
 $plugin->maturity  = MATURITY_STABLE; 
-$plugin->release = '1.8'; // User-friendly version number
+$plugin->release = '2.0'; // User-friendly version number

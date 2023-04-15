@@ -1,0 +1,17 @@
+/* auth_casulpgc styles */
+
+#page-admin-setting-authsettingcasulpgc .form-description  .alert {
+    padding: 0.02rem 1.25rem;
+}
+
+
+.casulpgc.nonexisting .continuebutton {
+  text-align: center;
+    margin: auto;  
+}
+
+.casulpgc.nonexisting .continuebutton .btn-secondary {
+  color: #fff;
+  background-color: #0f47ad;
+  border-color: #0f47ad;
+}

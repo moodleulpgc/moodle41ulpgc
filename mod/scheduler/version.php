@@ -32,4 +32,4 @@ $plugin->component = 'mod_scheduler'; // Full name of the plugin (used for diagn
 $plugin->version   = 2022120200;      // The current module version (Date: YYYYMMDDXX).
 $plugin->release   = '4.x dev';       // Human-friendly version name.
 $plugin->requires  = 2022041900;      // Requires Moodle 4.0.
-$plugin->maturity  = MATURITY_ALPHA;  // Development release - not for production use.
+$plugin->maturity  = MATURITY_STABLE;  // ecastro ULPGC verified Development release - not for production use.

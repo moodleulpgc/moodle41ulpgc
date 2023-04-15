@@ -72,6 +72,10 @@ class examdelivery extends base {
         $ADMIN->add($parentnodename, $settings);
     }
 
+    public static function get_manage_url() {
+        return new \moodle_url('/admin/settings.php', array('section' => 'examdeliveryplugins'));
+    }
+
     /**
      * Get the settings section name.
      *

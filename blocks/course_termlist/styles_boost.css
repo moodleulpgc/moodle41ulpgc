@@ -17,6 +17,11 @@
 
 .path-my .block_course_termlist .coursebox {
     /*margin: 0; */
+    display: block;
+}
+
+.path-my .block_course_termlist .ctl-course:hover {
+    background-color: #f2f3f7;
 }
 
 #ctl-filterlist {

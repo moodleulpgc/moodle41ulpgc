@@ -14,22 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @package tracker
  * @author Clifford Tham
  * @review Valery Fremaux / 1.8
+ * @date 17/12/2007
  *
- * A class implementing a filepicker element
+ * A class implementing a textfield element
  */
-namespace mod_tracker;
-
-use StdClass;
-use html_writer;
-use file_picker;
-
-defined('MOODLE_INTERNAL') || die();
-
 require_once($CFG->dirroot.'/mod/tracker/classes/trackercategorytype/trackerelement.class.php');
+require_once($CFG->libdir.'/uploadlib.php');
 
 class fileelement extends trackerelement {
 
@@ -41,17 +37,19 @@ class fileelement extends trackerelement {
         parent::__construct($tracker, $id, $used);
         $this->filemanageroptions = array('subdirs' => 0,
                                           'maxfiles' => 1,
+                                          'context' => $this->context,
                                           'maxbytes' => $COURSE->maxbytes,
                                           'accepted_types' => array('*'));
     }
 
-    /*
-     * No care of real value of element.
-     * There is some file stored into the file area or not.
-     */
+    // No care of real value of element.
+    // There is some file stored into the file area or not.
     public function view($issueid = 0) {
-        global $CFG, $DB;
+        global $CFG, $COURSE, $DB;
 
+        $elmname = 'element'.$this->name;
+
+        $issue = $DB->get_record('tracker_issue', array('id' => "$issueid"));
         $attribute = $DB->get_record('tracker_issueattribute', array('issueid' => $issueid, 'elementid' => $this->id));
 
         if ($attribute) {
@@ -61,33 +59,64 @@ class fileelement extends trackerelement {
 
             if (empty($imagefiles)) {
                 $html = html_writer::start_tag('span', array('class' => 'tracker-file-item-notice'));
-                $html .= get_string('nofileloaded', 'tracker');
+                $html .= tracker_getstring('nofileloaded', 'tracker');
                 $html .= html_writer::end_tag('span');
                 return $html;
             }
 
-            $imagefile = array_pop($imagefiles);
-            $filename = $imagefile->get_filename();
-            $filearea = $imagefile->get_filearea();
-            $itemid = $imagefile->get_itemid();
+            $links = array();
+            $images = array();
+            foreach($imagefiles as $imagefile) { // ecastro ULPGC
+                //$imagefile = array_pop($imagefiles);
+                $filename = $imagefile->get_filename();
+                if(strpos($filename, '.') === 0) {
+                    continue;
+                }
+                $filearea = $imagefile->get_filearea();
+                $itemid = $imagefile->get_itemid();
 
-            $fileurl = $CFG->wwwroot."/pluginfile.php/{$this->context->id}/mod_tracker/{$filearea}/{$itemid}/{$filename}";
+                $fileurl = $CFG->wwwroot."/pluginfile.php/{$this->context->id}/mod_tracker/{$filearea}/{$itemid}/{$filename}";
 
-            if (preg_match("/\.(jpg|gif|png|jpeg)$/i", $filename)) {
-                return "<img style=\"max-width:600px\" src=\"{$fileurl}\" class=\"tracker_image_attachment\" />";
-            } else {
-                return html_writer::link($fileurl, $filename);
+                if (preg_match("/\.(jpg|gif|png|jpeg)$/i", $filename)) {
+                    $images[] =  "<img style=\"max-width:600px\" src=\"{$fileurl}\" class=\"tracker_image_attachment\" />";
+                } else {
+                    $links[] = html_writer::link($fileurl, $filename);
+                }
             }
+            return implode('<br />', $links+$images);
+
         } else {
             $html = html_writer::start_tag('span', array('class' => 'tracker-file-item-notice'));
-            $html .= get_string('nofileloaded', 'tracker');
+            $html .= tracker_getstring('nofileloaded', 'tracker');
             $html .= html_writer::end_tag('span');
             return $html;
         }
     }
 
+
+    function setcontext(&$context){
+        parent::setcontext($context);
+        $this->set_filemanageroptions();
+    }
+
+
+    function set_filemanageroptions() { //ecastro ULPGC
+        global $COURSE;
+
+        if($this->context) {
+            $maxfiles = 1;
+            $config = get_config('tracker');
+            if($config->developmaxfiles && has_any_capability(array('mod/tracker:develop','mod/tracker:resolve'),  $this->context)) { // ecastro ULPGC
+                $maxfiles = $config->developmaxfiles;
+            } elseif($config->reportmaxfiles && has_capability('mod/tracker:report',  $this->context)) {
+                $maxfiles = $config->reportmaxfiles;
+            }
+            $this->filemanageroptions = array('subdirs' => 0, 'context' => $this->context, 'maxfiles' => $maxfiles, 'maxbytes' => $COURSE->maxbytes, 'accepted_types' => array('*'));
+        }
+    }
+
     public function edit($issueid = 0) {
-        global $OUTPUT, $DB, $PAGE;
+        global $COURSE, $OUTPUT, $DB, $PAGE;
 
         if ($attribute = $DB->get_record('tracker_issueattribute', array('elementid' => $this->id, 'issueid' => $issueid))) {
             $itemid = $attribute->id;
@@ -96,12 +125,19 @@ class fileelement extends trackerelement {
         }
 
         $draftitemid = 0; // Drafitemid will be filled when preparing new area.
+        /*
         file_prepare_draft_area($draftitemid, $this->context->id, 'mod_tracker', 'issueattribute',
+                                $itemid, $this->filemanageroptions);*/
+        // On purpose, intended empty, avoid fill with old items when updating
+        file_prepare_draft_area($draftitemid, $this->context->id, 'mod_tracker', 'xx',
                                 $itemid, $this->filemanageroptions);
 
+                                
+                                
         $options = new StdClass();
         $options->accepted_types = $this->filemanageroptions['accepted_types'];
         $options->itemid = $draftitemid;
+        $options->context =  $this->context;
         $options->maxbytes = $this->filemanageroptions['maxbytes'];
         $options->maxfiles = $this->filemanageroptions['maxfiles'];
         $options->elementname = 'element'.$this->name;
@@ -126,7 +162,7 @@ class fileelement extends trackerelement {
             'itemid' => $draftitemid,
             'subdirs' => 0,
             'maxbytes' => $this->filemanageroptions['maxbytes'],
-            'maxfiles' => 1,
+            'maxfiles' => $this->filemanageroptions['maxfiles'],
             'ctx_id' => $this->context->id,
             'course' => $PAGE->course->id,
             'sesskey' => sesskey(),
@@ -134,47 +170,39 @@ class fileelement extends trackerelement {
 
         // Non js file picker.
         $html .= '<noscript>';
-        $html .= '<div>';
-        $html .= '<object type="text/html" data="'.$nonjsfilepicker.'" class="tracker-filepicker"></object></div>';
+        $html .= "<div><object type='text/html' data='$nonjsfilepicker' height='160' width='600' style='border:1px solid #000'></object></div>";
         $html .= '</noscript>';
 
         echo $html;
     }
 
     public function add_form_element(&$mform) {
+        global $COURSE;
 
-        $mform->addElement('filepicker', 'element'.$this->name, format_string($this->description), null, $this->options);
+        $mform->addElement('header', "head{$this->name}", format_string($this->description));
+        $mform->setExpanded("head{$this->name}");
+        $mform->addElement('filemanager', 'element'.$this->name, $this->description, null, $this->filemanageroptions); // ecastro ULPGC
         if (!empty($this->mandatory)) {
             $mform->addRule('element'.$this->name, null, 'required', null, 'client');
         }
     }
 
-    public function set_data(&$defaults, $issueid = 0) {
-        global $COURSE, $DB;
-
-        if ($issueid) {
-            if ($attribute = $DB->get_record('tracker_issueattribute', array('issueid' => $issueid, 'elementid' => $this->id))) {
-                $itemid = $attribute->id;
-            } else {
-                $itemid = 0;
-            }
-        } else {
-            $itemid = 0;
-        }
+    public function set_data($defaults) {
+        global $COURSE;
 
         $elmname = 'element'.$this->name;
         $draftitemid = file_get_submitted_draft_itemid($elmname);
-
+        $maxbytes = $COURSE->maxbytes;
         file_prepare_draft_area($draftitemid, $this->context->id, 'mod_tracker', 'issueattribute',
-                                $itemid, $this->filemanageroptions);
+                                $this->id, $this->filemanageroptions);
         $defaults->$elmname = $draftitemid;
     }
 
     /**
      * used for post processing form values, or attached files management
      */
-    public function form_process(&$data) {
-        global $DB;
+    function formprocess(&$data) {
+        global $COURSE, $USER, $DB;
 
         $params = array('elementid' => $this->id, 'trackerid' => $data->trackerid, 'issueid' => $data->issueid);
         if (!$attribute = $DB->get_record('tracker_issueattribute', $params)) {
@@ -198,10 +226,20 @@ class fileelement extends trackerelement {
 
         $elmname = 'element'.$this->name;
         $data->$elmname = optional_param($elmname, 0, PARAM_INT);
-
+        
         if ($data->$elmname) {
-            file_save_draft_area_files($data->$elmname, $this->context->id, 'mod_tracker', 'issueattribute',
-                                       0 + $attribute->id, $this->filemanageroptions);
+            $fs = get_file_storage();
+            $draftfiles = file_get_all_files_in_draftarea($data->$elmname);
+            if($draftfiles) {
+                $files = $fs->get_area_files($this->context->id, 'mod_tracker', 'issueattribute', 0 + $attribute->id);
+                if(count($files) > 1) {
+                    $fs->delete_area_files($this->context->id, 'mod_tracker', 'issueattribute', 0 + $attribute->id);
+                    //print_object("deleted files for area attribute {$data->$elmname}");
+                }
+            
+                file_save_draft_area_files($data->$elmname, $this->context->id, 'mod_tracker', 'issueattribute',
+                                        0 + $attribute->id, $this->filemanageroptions);
+            }
         }
     }
 }

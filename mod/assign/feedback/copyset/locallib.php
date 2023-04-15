@@ -291,7 +291,8 @@ class assign_feedback_copyset extends assign_feedback_plugin {
             $fromform->groups = array($fromform->groups);
         }
         $users = array();
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         foreach($fromform->groups as $groupid) {
             $gusers = get_enrolled_users($context, 'mod/assign:submit', $groupid, 'u.id, u.username, u.idnumber, '.$names, 'lastname ASC');
             $users = $users + $gusers;

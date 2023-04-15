@@ -49,8 +49,11 @@ function xmldb_auth_casulpgc_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2013091700, 'auth', 'cas');
     }
 
-    // Moodle v2.6.0 release upgrade line.
-    // Put any upgrade step following this.
+
+    if ($oldversion < 2023022800) {
+        
+        upgrade_plugin_savepoint(true, 2023022800, 'auth', 'casulpgc');
+    }
 
     return true;
 }

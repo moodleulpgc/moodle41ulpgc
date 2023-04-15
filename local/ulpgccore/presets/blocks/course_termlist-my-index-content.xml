@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PRESET>
+  <blockname>course_termlist</blockname>
+  <parentcontextid>1</parentcontextid>
+  <showinsubcontexts>1</showinsubcontexts>
+  <requiredbytheme>0</requiredbytheme>
+  <pagetypepattern>my-index</pagetypepattern>
+  <subpagepattern></subpagepattern>
+  <defaultregion>content</defaultregion>
+  <defaultweight>-10</defaultweight>
+  <configdata>Tzo4OiJzdGRDbGFzcyI6MDp7fQ==</configdata>
+  <timecreated>1589026680</timecreated>
+  <timemodified>1679312762</timemodified>
+</PRESET>

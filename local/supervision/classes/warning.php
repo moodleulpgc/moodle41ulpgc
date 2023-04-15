@@ -288,7 +288,8 @@ abstract class warning {
             $course = local_ulpgccore_get_course_details($course);
         }
 
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $warninglike = $DB->sql_like('sp.warnings', ':warningtype');
         $warningtype = ($this->warningtype) ? '%'.$this->warningtype.'%' : '';
         $params = array('warningtype'=>$warningtype);

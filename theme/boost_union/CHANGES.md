@@ -4,6 +4,37 @@ moodle-theme_boost_union
 Changes
 -------
 
+### Unreleased
+
+* 2023-04-12 - Feature: Allow right-side blocks drawer of site home to be extended by default #169.
+
+### v4.1-r6
+
+* 2023-03-22 - Feature: Allow admin to provide several additional block regions, solves #30.
+               Please note: This is a comparably large addition. If you encounter any issues with this feature, please report it on <https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues>.
+* 2023-03-20 - Improvement: Don't force child themes to reimplement various color settings (e.g. 'brandcolor'), solves #260.
+* 2023-03-17 - Improvement: Reduce code duplication when child theming by checking theme ancestry in theme_boost_union_before_standard_html_head, solves #245.
+
+### v4.1-r5
+
+* 2023-03-19 - Bugfix: Fully support multilang strings in advertisement tiles, solves #258.
+* 2023-03-17 - Improvement: Don't force child themes to reimplement settings 'loginformposition' and 'loginformtransparency', solves #247.
+* 2023-03-15 - Bugfix: $THEME->editor_scss referenced a non-existing sheet. Setting it also ignored Boost's sheets. This solves #242.
+* 2023-03-18 - Bugfix: Fix wrong rgba color definition for advertisement tile backgrounds, solves #244.
+
+### v4.1-r4
+
+* 2023-03-06 - Bugfix: Align the search bar with the dark navbar look, solves #234.
+* 2023-03-06 - Bugfix: Fix hover background color on dark navbars, solves #236.
+* 2023-03-06 - Bugfix: Fix edit switch color on dark navbars, solves #235.
+
+### v4.1-r3
+
+* 2023-03-05 - Release: Add lern.link GmbH and bdecent GmbH to the list of maintainers in README.md.
+* 2023-03-05 - Bugfix: Improve card header and footer of advertisement tiles with background images, solves #232.
+* 2023-03-01 - Tests: Updated Moodle Plugin CI to use PHP 8.1 and Postgres 13 from Moodle 4.1 on.
+* 2023-02-12 - Feature: Allow admin to change the navbar color, solves #39, helps to resolve #110.
+
 ### v4.1-r2
 
 * 2023-02-12 - Feature: Enable admins to upload css code for mod_h5p and mod_hvp, solves #166 #207.
@@ -93,7 +124,7 @@ Changes
 ### v4.0-r2
 
 * 2022-09-27 - Improvement: Align the fallback CSS file with theme_boost.
-* 2022-09-27 - Improvement: Align the theme's config.php even more with theme_boost. 
+* 2022-09-27 - Improvement: Align the theme's config.php even more with theme_boost.
 * 2022-09-26 - Bugfix: Adopt config.php, solves #67 #82.
 * 2022-09-07 - Feature: Scrollspy, solves #19
 
@@ -114,7 +145,7 @@ Changes
 * 2022-07-05 - Adopt changes in Boost core for MDL-74634
 * 2022-06-21 - Add course related hints feature, solves #5
 * 2022-04-30 - Added footnote functionality, helps to resolve #6.
-* 2022-06-20 - Allow full Behat runs with Boost Campus suite, fixes #14.
+* 2022-06-20 - Allow full Behat runs with Boost Union suite, fixes #14.
 * 2022-06-20 - Prepare settings.php page, solves #2.
 * 2022-06-20 - Fill README.md, helps to resolve #3.
 * 2022-04-29 - Adopt all changes which have happened in Boost core for the Moodle 4.0 release

@@ -272,7 +272,8 @@ class form extends \moodleform {
         // ownership  
         if(has_capability('moodle/question:editall', $context)) { 
             $coursecontext = ($this->_customdata['context'])->get_course_context();
-            $names = get_all_user_name_fields(true, 'u');
+            $userfieldsapi = \core_user\fields::for_name();
+            $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
             $ownerslist = get_enrolled_users($coursecontext, 'moodle/question:editmine', 
                                             0, 'u.id, '.$names, 'u.lastname ASC, u.firstname ASC');
             foreach($ownerslist as $uid => $owner) {

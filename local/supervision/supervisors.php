@@ -67,7 +67,8 @@
             $confirmurl = new moodle_url($baseurl, array('del' => $delete->id, 'confirm' => 1));
             $data = new StdClass;
             $data->name = supervision_format_instancename($delete);
-            $fields = get_all_user_name_fields(true, '');
+            $userfieldsapi = \core_user\fields::for_name();
+            $fields = $userfieldsapi->get_sql('', false, '', '', false)->selects;
             $user = $DB->get_record('user', array('id'=>$delete->userid), 'id, username, idnumber, email,'.$fields);
             $data->user = fullname($user);
             $message = get_string('deletepermission_confirm', 'local_supervision', $data);
@@ -197,7 +198,8 @@
 
 
     $params = array();
-    $fields = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $select = "SELECT sp.*, u.username, u.idnumber, u.email, $fields, ";
     $from = " FROM {supervision_permissions} sp
                 JOIN {user} u ON sp.userid = u.id ";

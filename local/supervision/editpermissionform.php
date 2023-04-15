@@ -63,7 +63,8 @@ class supervision_editpermission_form extends moodleform {
         $roles[] = $config->checkerrole;
         list($usql, $params) = $DB->get_in_or_equal($roles);
 
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT ra.id, ra.userid, u.email, ra.roleid, $names
                 FROM {role_assignments} ra
                 JOIN  {user} u ON ra.userid = u.id

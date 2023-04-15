@@ -179,8 +179,9 @@ class examination {
     
     public function load_board_members($search = '') {
         global $DB;
-        
-        $names = get_all_user_name_fields(true, 'u');
+
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $params = array('boardid' => $this->boardid, 'examid' => $this->id);
         list($params, $search) = $this->search_term($params, $search, 'm.');
         
@@ -197,8 +198,9 @@ class examination {
     
     public function load_examinees($search='') {
         global $DB;
-        
-        $names = get_all_user_name_fields(true, 'u');
+
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $params = array('examid' => $this->id);
         list($params, $search) = $this->search_term($params, $search);        
         
@@ -219,8 +221,9 @@ class examination {
         if($sortorder) {
             $sortorder = $sortorder.', ';
         }
-        
-        $names = get_all_user_name_fields(true, 'u');
+
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         
         $grades = '';
         if($this->grademode == EXAMBOARD_GRADING_AVG) {
@@ -265,8 +268,9 @@ class examination {
     
     public function load_tutors($search='') {
         global $DB;
-        
-        $names = get_all_user_name_fields(true, 'u');
+
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $params = array('examid' => $this->id);
         list($params, $search) = $this->search_term($params, $search);      
         
