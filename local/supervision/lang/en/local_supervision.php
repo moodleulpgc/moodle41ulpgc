@@ -167,3 +167,4 @@ $string['syncsecretary'] = 'Synch. Secretary';
 $string['syncsecretary_help'] = 'If checked, in addition to unit\'s Director, the unit Secretary will be added as supervisor. ';
 $string['use_ulpgccore_categories'] = 'Use ULPGC core categories';
 $string['use_ulpgccore_categories_help'] = 'When checked, the matching of course categories and Units will use the table local_ulpgccore_categories instead of data in course_categories.idnumber. ';
+$string['supervisionwarningplugins'] = 'Supervision warnings plugins';

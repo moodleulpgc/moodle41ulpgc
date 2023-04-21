@@ -24,6 +24,7 @@
 namespace mod_examregistrar\plugininfo;
 
 use core\plugininfo\base;
+use moodle_url, part_of_admin_tree, admin_settingpage, core_plugin_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,12 +38,107 @@ defined('MOODLE_INTERNAL') || die();
 class examdelivery extends base {
 
     /**
-     * Do not allow users to uninstall these plugins as it could cause customcerts to break.
+     * Finds all enabled plugins, the result may include missing plugins.
+     * @return array|null of enabled plugins $pluginname=>$version, null means unknown
+     */
+    public static function get_enabled_plugins() {
+        $plugins = core_plugin_manager::instance()->get_installed_plugins('examdelivery');
+        if (!$plugins) {
+            return [];
+        }
+
+        foreach($plugins as $plugin => $version) {
+            $enabled = get_config('examdelivery_'.$plugin, 'enabled');
+            if(empty($enabled)) {
+                unset($plugins[$plugin]);
+            }
+        }
+
+        return $plugins;
+    }
+
+
+
+    /**
+     * Finds all enabled plugins, the result may include missing plugins.
+     * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
+     */
+    public static function get_sorted_plugins() {
+        $plugins = core_plugin_manager::instance()->get_installed_plugins('examdelivery');
+        if (!$plugins) {
+            return [];
+        }
+
+        $sorted = [];
+        $sortedplugins = [];
+        foreach($plugins as $plugin => $version) {
+            $key = get_config('examdelivery_'.$plugin, 'sortorder');
+            if(isset($key) && ($key != '') && !isset($sorted[$key])) {
+                $sorted[$key] = $plugin;
+            } else {
+                $sorted[] = $plugin;
+            }
+        }
+        ksort($sorted);
+
+
+        foreach($sorted as $key => $plugin) {
+            set_config('sortorder', $key, 'examdelivery_'.$plugin);
+            $sortedplugins[$plugin] = $plugins[$plugin];
+        }
+
+        return $sortedplugins;
+    }
+
+
+    public static function enable_plugin(string $pluginname, int $enabled): bool {
+        $haschanged = false;
+
+
+        $plugin = 'examdelivery_' . $pluginname;
+
+        print_object("name   $pluginname   param: $plugin  ");
+        $oldvalue = get_config($plugin, 'enabled');
+        $disabled = !$enabled;
+
+        print_object("old: $oldvalue    en: $enabled    dis: $disabled  "  );
+        // Only set value if there is no config setting or if the value is different from the previous one.
+        if ($oldvalue == false && $enabled) {
+            /*
+            if (get_config('moodlecourse', 'format') === $pluginname) {
+                // The default course format can't be disabled.
+                throw new \moodle_exception('cannotdisableformat', 'error');
+            }
+            */
+            set_config('enabled', $enabled, $plugin);
+
+            print_object(" 'enabled', $enabled, $plugin ");
+            $haschanged = true;
+        } else if ($oldvalue != false && $disabled) {
+            unset_config('enabled', $plugin);
+            $haschanged = true;
+            print_object(" 'DISABLED', $disabled, $plugin ");
+        }
+
+        if ($haschanged) {
+            add_to_config_log('enabled', $oldvalue, $disabled, $plugin);
+            \core_plugin_manager::reset_caches();
+        }
+
+        return $haschanged;
+    }
+
+
+    /**
+     * Do not allow users to uninstall if used in future exams.
      *
      * @return bool
      */
     public function is_uninstall_allowed() {
-        return false;
+        if(0) {
+            return false; /// TODO XXXX XXXX
+        }
+        return true;
     }
 
     /**
@@ -52,7 +148,7 @@ class examdelivery extends base {
      * @param string $parentnodename
      * @param bool $hassiteconfig whether the current user has moodle/site:config capability
      */
-    public function load_settings(\part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
+    public function load_settings(part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
         global $CFG, $USER, $DB, $OUTPUT, $PAGE; // In case settings.php wants to refer to them.
         $ADMIN = $adminroot; // May be used in settings.php.
         $plugininfo = $this; // Also can be used inside settings.php.
@@ -66,14 +162,14 @@ class examdelivery extends base {
         }
 
         $section = $this->get_settings_section_name();
-        $settings = new \admin_settingpage($section, $this->displayname, 'moodle/site:config', false);
+        $settings = new admin_settingpage($section, $this->displayname, 'moodle/site:config', false);
 
         include($this->full_path('settings.php'));
         $ADMIN->add($parentnodename, $settings);
     }
 
     public static function get_manage_url() {
-        return new \moodle_url('/admin/settings.php', array('section' => 'examdeliveryplugins'));
+        return new moodle_url('/admin/settings.php', array('section' => 'manageexamdeliveryplugins'));
     }
 
     /**

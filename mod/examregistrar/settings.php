@@ -138,17 +138,13 @@ if ($ADMIN->fulltree) {
 $ADMIN->add('examregistrarfolder', $settings);
 // Tell core we already added the settings structure.
 $settings = null;
-/*
+
 $ADMIN->add('examregistrarfolder', new admin_category('examdeliveryplugins',
-    new lang_string('examdeliveryplugins', 'examregistrar'), !$module->is_enabled()));
-$ADMIN->add('examdeliveryplugins', new admin_externalpage('manageexamdeliveryplugins', get_string('manageexamdeliveryplugins', 'examregistrar'),
-                                                            new moodle_url('/mod/examregistrar/manageplugins.php', array('subtype'=>'examdelivery'))));
-*/
-    $temp = new admin_settingpage('examdeliveryplugins', new lang_string('examdeliveryplugins', 'examregistrar'));
+    new lang_string('examdeliveryplugins', 'examregistrar')));
+
+    $temp = new admin_settingpage('manageexamdeliveryplugins', new lang_string('manageexamdeliveryplugins', 'examregistrar'));
     $temp->add(new mod_examregistrar\setting_examdeliveries());
-
-    $ADMIN->add('examregistrarfolder', $temp);
-
+    $ADMIN->add('examdeliveryplugins', $temp);
 
 foreach (core_plugin_manager::instance()->get_plugins_of_type('examdelivery') as $plugin) {
     /** @var \mod_examregistrar\plugininfo\examdelivery $plugin */

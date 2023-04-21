@@ -118,36 +118,11 @@ class setting_examdeliveries extends \admin_setting {
         $strversion = get_string('version');
 
         $pluginmanager = core_plugin_manager::instance();
-        $available = core_plugin_manager::instance()->get_installed_plugins('examdelivery'); //\core_component::get_plugin_list_with_class('examdelivery', 'batchmanage\examdelivery');
-        print_object($available);
-        print_object("  --- available  --- ");
+        $available = plugininfo\examdelivery::get_sorted_plugins();
+        $sortorder = array_flip(array_keys($available));
+        $enabled = plugininfo\examdelivery::get_enabled_plugins();
 
-        $enabled = get_config('examregistrar', 'enabled_examdeliverys');
-        if (!$enabled) {
-            $enabled = array();
-        } else {
-            $enabled = array_flip(explode(',', $enabled));
-        }
-
-        print_object($enabled);
-        print_object("  --- enabled  --- ");
-
-        $allexamdeliverys = array();
-        foreach ($enabled as $key => $delivery) {
-            $allexamdeliverys[$key] = true;
-            $enabled[$key] = true;
-        }
-        foreach ($available as $key => $delivery) {
-            $allexamdeliverys[$key] = true;
-            $available[$key] = true;
-        }
-
-        print_object($allexamdeliverys);
-        print_object("  --- allexamdeliverys  --- ");
-
-
-        $return = $OUTPUT->heading(get_string('actexamdeliverieshdr', 'examregistrar'), 3, 'main', true);
-        $return .= $OUTPUT->box_start('generalbox examdeliveriesgui');
+        $return = $OUTPUT->box_start('generalbox examdeliveriesgui');
 
         $table = new html_table();
         $table->head = array(get_string('name'), $strversion, $strenable,
@@ -159,13 +134,16 @@ class setting_examdeliveries extends \admin_setting {
         $table->data = array();
 
         // Iterate through examdelivery plugins and add to the display table.
-        $updowncount = 1;
-        $deliverycount = count($enabled);
-        $url = new moodle_url('/admin/tool/batchmanage/jobs.php', array('sesskey' => sesskey()));
+        $updowncount = 0;
+        $deliverycount = count($available) - 1;
+        $last = end($sortorder);
+        $first = reset($sortorder);
+
+        $url = new moodle_url('/mod/examregistrar/managesubplugins.php', array('sesskey' => sesskey()));
         $printed = array();
-        foreach ($allexamdeliverys as $delivery => $unused) {
+        foreach ($available as $delivery => $version) {
             $plugininfo = $pluginmanager->get_plugin_info('examdelivery_'.$delivery);
-            $version = get_config('examdelivery_'.$delivery, 'version');
+            //$version = get_config('examdelivery_'.$delivery, 'version');
             if ($version === false) {
                 $version = '';
             }
@@ -178,14 +156,14 @@ class setting_examdeliveries extends \admin_setting {
 
             // Hide/show links.
             if (isset($enabled[$delivery])) {
-                $aurl = new moodle_url($url, array('action' => 'disable', 'examdelivery' => $delivery));
+                $aurl = new moodle_url($url, array('action' => 'disable', 'plugin' => $delivery));
                 $hideshow = "<a href=\"$aurl\">";
                 $hideshow .= $OUTPUT->pix_icon('t/hide', $strdisable, 'moodle', array('class'=>'iconsmall'));
                 $isenabled = true;
                 $displayname = "<span>$name</span>";
             } else {
                 if (isset($available[$delivery])) {
-                    $aurl = new moodle_url($url, array('action' => 'enable', 'examdelivery' => $delivery));
+                    $aurl = new moodle_url($url, array('action' => 'enable', 'plugin' => $delivery));
                     $hideshow = html_writer::link($aurl, $OUTPUT->pix_icon('t/show', $strenable, 'moodle', array('class'=>'iconsmall')));
                     $isenabled = false;
                     $displayname = "<span class=\"dimmed_text\">$name</span>";
@@ -195,7 +173,7 @@ class setting_examdeliveries extends \admin_setting {
                     $displayname = '<span class="notifyproblem">' . $name . '</span>';
                 }
             }
-            if ($PAGE->theme->resolve_image_location('icon', $delivery, false)) {
+            if ($PAGE->theme->resolve_image_location('monologo', $delivery, false)) {
                 $icon = $OUTPUT->pix_icon('icon', '', $delivery, array('class' => 'icon pluginicon'));
             } else {
                 $icon = $OUTPUT->pix_icon('spacer', '', 'moodle', array('class' => 'icon pluginicon noicon'));
@@ -203,20 +181,17 @@ class setting_examdeliveries extends \admin_setting {
 
             // Up/down link (only if examdelivery is enabled).
             $updown = '';
-            if ($isenabled) {
-                if ($updowncount > 1) {
-                    $aurl = new moodle_url($url, array('action' => 'up', 'examdelivery' => $delivery));
-                    $updown .= html_writer::link($aurl, $OUTPUT->pix_icon('t/up', $strup, 'moodle', array('class'=>'iconsmall')).' &nbsp; ');
-                } else {
-                    $updown .= $OUTPUT->pix_icon('spacer', '', 'moodle', array('class'=>'iconsmall'));
-                }
-                if ($updowncount < $deliverycount) {
-                    $aurl = new moodle_url($url, array('action' => 'down', 'examdelivery' => $delivery));
-                    $updown .= html_writer::link($aurl, $OUTPUT->pix_icon('t/down', $strup, 'moodle', array('class'=>'iconsmall')).' &nbsp; ');
-                } else {
-                    $updown .= $OUTPUT->pix_icon('spacer', '', 'moodle', array('class'=>'iconsmall'));
-                }
-                ++$updowncount;
+            if ($sortorder[$delivery] > $first) {
+                $aurl = new moodle_url($url, array('action' => 'up', 'plugin' => $delivery));
+                $updown .= html_writer::link($aurl, $OUTPUT->pix_icon('t/up', $strup, 'moodle', array('class'=>'iconsmall')).' &nbsp; ');
+            } else {
+                $updown .= $OUTPUT->pix_icon('spacer', '', 'moodle', array('class'=>'iconsmall'));
+            }
+            if ($sortorder[$delivery] < $last) {
+                $aurl = new moodle_url($url, array('action' => 'down', 'plugin' => $delivery));
+                $updown .= html_writer::link($aurl, $OUTPUT->pix_icon('t/down', $strup, 'moodle', array('class'=>'iconsmall')).' &nbsp; ');
+            } else {
+                $updown .= $OUTPUT->pix_icon('spacer', '', 'moodle', array('class'=>'iconsmall'));
             }
 
             // Add settings link.
@@ -243,7 +218,6 @@ class setting_examdeliveries extends \admin_setting {
         }
 
         $return .= html_writer::table($table);
-        $return .= get_string('configexamdeliveryplugins', 'examregistrar') . '<br />' . get_string('tablenosave', 'admin');
         $return .= $OUTPUT->box_end();
         return highlight($query, $return);
     }

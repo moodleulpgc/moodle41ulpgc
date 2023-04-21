@@ -76,7 +76,7 @@ $apiconfigured = (\local_o365\utils::is_configured() === true);
                  
 $teamschannels = null;
 if($graphclient = utils::get_graphclient() AND $apiconfigured) {
-    $teamschannels = new \local_o365teams\coursegroups\teamschannels($graphclient, $DB, (bool)$CFG->debugdisplay);                 
+    $teamschannels = new \local_o365teams\coursegroups\teamschannels($graphclient, (bool)$CFG->debugdisplay);
 }
 
 // Sanitation, team
