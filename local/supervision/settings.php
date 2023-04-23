@@ -152,14 +152,19 @@ $ADMIN->add('localplugins', new admin_category('managesupervisionwarnings', new 
     $url = new moodle_url('/local/supervision/holidays.php', array());
     $ADMIN->add('managesupervisionwarnings', new admin_externalpage('local_supervision_holidays', 
                     get_string('editholidays', 'local_supervision'),  $url,'local/supervision:manage'));
-    
-    $temp = new admin_settingpage('supervisionwarnings', new lang_string('warnings', 'local_supervision'));
+
+
+    $ADMIN->add('managesupervisionwarnings', new admin_category('supervisionwarningplugins',
+                    new lang_string('supervisionwarningplugins', 'local_supervision')));
+
+    $temp = new admin_settingpage('supervisionmanagewarningplugins', new lang_string('warnings', 'local_supervision'));
     $temp->add(new \local_supervision\setting_warnings());
-    $ADMIN->add('managesupervisionwarnings', $temp);
+    $ADMIN->add('supervisionwarningplugins', $temp);
     
     foreach ($plugins as $plugin) {
         /** @var \local_supervision\plugininfo\managejob $plugin */
-        $plugin->load_settings($ADMIN, 'managesupervisionwarnings', $hassiteconfig);
+        $plugin->load_settings($ADMIN, 'supervisionwarningplugins', $hassiteconfig);
     }
+
 
 }

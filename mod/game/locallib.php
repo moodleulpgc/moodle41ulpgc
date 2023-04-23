@@ -83,11 +83,15 @@ function game_upper( $str, $lang='') {
 
     $str = game_strtoupper( $str);
 
-    switch ($lang) {
+    switch ( substr( $lang, 0, 2)) {
         case 'el':
             $from = 'ΆΈΉΊΌΎΏ';
             $to = 'ΑΕΗΙΟΥΩ';
             break;
+        //case 'pt':
+        //    $from = 'ÁÊÉÍÓÔ';
+        //    $to = 'AEEIOO';
+        //    break;
         default:
             return $str;
     }
