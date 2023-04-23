@@ -78,6 +78,13 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
             $key = null;
         }
         $settingsnode->add_node($node, $key);
+
+        // re-name some items fotr Participants
+        $settingsnode->title(get_string('participants'));
+        $settingsnode->text = get_string('participants');
+        if($n = $nav->find('review', navigation_node::TYPE_SETTING)) {
+            $n->text = get_string('participants', 'local_ulpgccore');
+        }        
    } 
    
     // modifications in module pages
@@ -1269,7 +1276,7 @@ function local_ulpgccore_render_navbar_output(\renderer_base $renderer) {
         $items = \message_popup\api::get_popup_notifications($USER->id);
         $caneditownmessageprofile = has_capability('moodle/user:editownmessageprofile', context_system::instance());
         $preferencesurl = $caneditownmessageprofile ? new moodle_url('/message/notificationpreferences.php') : null;
-        
+
         $context = [
             'userid' => $USER->id,
             'unreadcount' => $unreadcount,

@@ -225,6 +225,10 @@ $string['primarynavigationheading'] = 'Primary navigation';
 // ... ... Settings: Hide nodes in primary navigation.
 $string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
 $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.';
+$string['mycoursesremotessetting'] = 'My remote courses';
+$string['mycoursesremotessetting_desc'] = 'If specified a value, then those remote courses retrieved by an existing instance of Remote course blocks will be added to My courses list. 
+This option allows to select which instance of Remote courses to use, or none at all (no remote course list adedd to My courses list). ';
+
 // ... Section: Navigation.
 $string['navigationheading'] = 'Navigation';
 // ... ... Setting: Back to top button.
