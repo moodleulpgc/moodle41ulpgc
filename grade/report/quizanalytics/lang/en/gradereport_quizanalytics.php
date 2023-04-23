@@ -95,7 +95,5 @@ $string['zeroattempt'] = 'Please attempt at least one question.';
 $string['hardestcategories'] = 'Hardest Categories';
 $string['hardestcategoriespercentage'] = 'Hardness in percentage (%)';
 $string['numberofattempts'] = 'Number of Attempts';
-$string['cutOffscore'] = 'Cut Off Score';
-$string['score'] = 'Score';
 $string['questionnumber'] = 'Question Number';
 $string['questionreview'] = "(Click to Review Question & Last Attempt)";
