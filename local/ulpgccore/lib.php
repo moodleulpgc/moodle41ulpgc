@@ -1291,3 +1291,41 @@ function local_ulpgccore_render_navbar_output(\renderer_base $renderer) {
     
     return $output; 
 }
+
+/**
+ * Add Config related service qc checks
+ *
+ * @return array of check objects
+ */
+function local_ulpgccore_config_checks() : array {
+    return [
+        new \local_ulpgccore\check\blockpresets(),
+    ];
+}
+
+/**
+ * Add Courses related service qc checks
+ *
+ * @return array of check objects
+ */
+function local_ulpgccore_courses_checks() : array {
+    return [
+        //new \local_ulpgccore\check\maintemplate(),
+        new \local_ulpgccore\check\referencecourse(),
+    ];
+}
+
+/**
+ * Add Users related service qc checks
+ *
+ * @return array of check objects
+ */
+function local_ulpgccore_users_checks() : array {
+    return [
+        new \local_ulpgccore\check\customroles(),
+        new \local_ulpgccore\check\presetprofilefields(),
+    ];
+}
+
+
+
