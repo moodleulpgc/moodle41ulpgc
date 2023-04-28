@@ -311,12 +311,13 @@ function theme_moove_get_incourse_activity_settings() {
             //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($node));
             //print_object(" MOOVE local_ulpgccore_boostnav_get_all_childrenkeys");
 
-            $siblibgs = $node->get_siblings();
-            foreach($siblibgs as $n) {
+            /*
+            $siblings = $node->get_siblings();
+            foreach($siblings as $n) {
                 //print_object($n->get_children_key_list());
                 //print_object(' SIBLIBFS node modulesettings');
             }
-/*
+
             //$url = new moodle_url('/mod/assign/overrides.php', ['cmid' => $PAGE->cm->id, 'mode' => 'user']);
             $newnode = navigation_node::create(get_string('reuse', 'moove'),
                         null, navigation_node::TYPE_CATEGORY, null, 'mod_bkrestore');

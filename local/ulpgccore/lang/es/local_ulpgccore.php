@@ -290,3 +290,4 @@ Para ello basta escribir un texto (cualquiera) en el campo "Descripción de la i
 Si este campo queda vacío solo los profesores podrán ver la imagen. ';
 $string['archivereuse'] = 'Archivo/Reuso';
 $string['rolepermissions'] = 'Permisos';
+$string['participants'] = 'Lista de Participantes matriculados';

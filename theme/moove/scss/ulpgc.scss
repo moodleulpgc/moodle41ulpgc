@@ -209,8 +209,15 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     border-left: 1px solid;
 }
 
-#page-footer .btn-footer-popover.help {
-  bottom: 3.5rem;
+
+#page-footer {
+    .btn-footer-popover {
+        bottom: 4.5rem;
+    }
+    
+    .btn-footer-popover.help {
+        bottom: 7.5rem;
+    }   
 }
 
 /*---------------------------------------

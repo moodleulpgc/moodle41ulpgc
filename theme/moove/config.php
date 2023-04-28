@@ -184,3 +184,4 @@ $THEME->usescourseindex = true;
 $THEME->activityheaderconfig = [
     'notitle' => true
 ];
+$THEME->removedprimarynavitems = explode(',', get_config('theme_moove', 'hidenodesprimarynavigation'));

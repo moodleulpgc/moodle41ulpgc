@@ -486,12 +486,27 @@ if ($ADMIN->fulltree) {
         $setting->set_updatedcallback('theme_reset_all_caches');
         $page->add($setting);
 
+        // Setting: add remote courses in my courses.
+        $blocksmenu = [0 => get_string('none')];
+        if($blocks = $DB->get_records('block_instances', ['blockname' => 'remote_courses', 'parentcontextid' =>1])) { 
+            foreach($blocks as $bid => $instance) {
+                $block = block_instance('remote_courses', $instance);
+                $blocksmenu[$bid] = $block->title;
+            }
+        }
+    
+        $name = 'theme_moove/remotemycourses';
+        $title = get_string('mycoursesremotessetting', 'theme_moove', null, true);
+        $description = get_string('mycoursesremotessetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, 0, $blocksmenu);
+        $page->add($setting);
+
         // Create navigation heading.
         $name = 'theme_moove/navigationheading';
         $title = get_string('navigationheading', 'theme_moove', null, true);
         $setting = new admin_setting_heading($name, $title, null);
         $page->add($setting);
-
+    
         // Setting: back to top button.
         $name = 'theme_moove/backtotopbutton';
         $title = get_string('backtotopbuttonsetting', 'theme_moove', null, true);

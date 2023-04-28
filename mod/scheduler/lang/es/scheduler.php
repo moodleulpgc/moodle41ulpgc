@@ -18,10 +18,9 @@ $string['allononepage'] = 'Todas en una página';
 $string['allowgroup'] = 'Franja individual - cambiar a colectiva';
 $string['allslotsincloseddays'] = 'Todas las franjas propuestas coincidían con días no hábiles';
 $string['allteachersgrading'] = 'Calificar citas de otros profesores';
-$string['appointedslots'] = 'Franjas reservadas';
 $string['appointfor'] = 'Reservar para';
 $string['appointsolo'] = 'mi, individualmente';
-$string['appointedslots'] = 'Reuniones concertadas';
+
 $string['appointformygroup'] = 'Citar para mi grupo';
 $string['appointingstudent'] = 'Añadiendo un estudiante en la franja';
 $string['appointingstudentinnew'] = 'Añadiendo un estudiante en una nueva franja';
@@ -84,6 +83,14 @@ $string['configcronwday'] = 'Las franjas programables se añaden semanalmente, e
 $string['configexecuteatcron'] = 'El momento del día en el que se procederá a la adidición de de franjas programables';
 $string['configminperiod'] = 'Si se activa, el cron de las franjas programables tartará de añadir franjas hasta sumar este tiempo total (minutos por semana)';
 $string['confirmdelete'] = 'El borrado será definitivo, sin marcha atrás. ¿Desea continuar?';
+$string['confirmdelete-all'] = 'Esto eliminará <b>todas</b> las franjas en esta Reunión. Esta acción no puede deshacerse. ¿Desea continuar de todos modos?';
+$string['confirmdelete-mine'] = 'Esto eliminará todas sus franjas en esta Reunión. Esta acción no puede deshacerse. ¿Desea continuar de todos modos?';
+$string['confirmdelete-myunused'] = 'Esto eliminará todas sus franjas no utilizadas en esta Reunión. Esta acción no puede deshacerse. ¿Desea continuar de todos modos?';
+$string['confirmdelete-one'] = '¿Eliminar esta franja?';
+$string['confirmdelete-selected'] = 'Esto eliminará las franjas seleccionados. Esta acción no puede deshacerse. ¿Desea continuar de todos modos?';
+$string['confirmdelete-unused'] = 'Esto eliminará todas las franjas no utilizados  en esta Reunión. Esta acción no puede deshacerse. ¿Desea continuar de todos modos?';
+$string['conflictingslots'] = 'La franja en {$a} no se puede crear debido a que hay franjas que en conflicto:';
+$string['confirmrevoke'] = '¿Anular todas las citas en esta franja?';
 $string['conflictingslots'] = 'Franjas en conflicto';
 $string['conflictingslotsdel'] = '{$a} franjas borradas para crear la nueva';
 $string['cronwday'] = 'Día de la semana';
@@ -112,6 +119,8 @@ $string['deleteondays'] = 'Borrar franjas en ';
 $string['deleteselection'] = 'Borrar las franjas seleccionadas';
 $string['deletetheseslots'] = 'Borrar estas franjas';
 $string['deleteunusedslots'] = 'Borrar las no usadas';
+$string['deleteonsave'] = 'Borrar esta cita (al guardar estos cambios)';
+$string['deletedconflictingslots'] = 'Se han borrado las franjas en conflicto en Reunión {$a}:'; 
 $string['delsession'] = 'Borrar franjas';
 $string['department'] = 'Departamento';
 $string['disengage'] = 'Anular mis citas';
@@ -154,9 +163,6 @@ Controla el modo en el que estudiantes individuales y grupos predefinidos de est
 Bien para concertar reuniones individuales o para concertar reuniones con el grupo en su conjunto, o ambas formas a elegir.
 
 Obviamente, esta opción interacciona con el modo de grupo de este módulo. ';
-$string['forceno'] = 'Individuales y Grupos';
-$string['forceonlygroups'] = 'Sólo citas de grupos';
-$string['forceonlysingle'] = 'Sólo citas individuales';
 $string['forcewhenoverlap'] = 'Forzar si hay solapamiento';
 $string['forcewhenoverlap_help'] = '
 Esta opción permite obligar a la creación de franjas cuando la sesión especificada solapa con otras franjas ya existentes. No obstante, se añadirán sólo las franjas posibles sin conflictos.
@@ -261,7 +267,6 @@ $string['noschedulers'] = 'No hay reuniones';
 $string['noslots'] = 'No hay franjas de citas disponibles. Por favor, avise a su profesor para que añada más franjas horarias.';
 $string['noslotsavailable'] = 'No hay franjas disponibles por ahora, o todas la franjas ofertadas estan ya completas.';
 $string['noslotsopennow'] = 'No hay niguna franja disponible ahora mismo.';
-$string['noslotsteacher'] = 'No existen franjas de este tipo';
 $string['nostudents'] = 'No hay estudiantes citados';
 $string['nostudenttobook'] = 'No hay estudiantes para citar';
 $string['note'] = 'Calificación';
@@ -273,7 +278,6 @@ $string['notifications'] = 'Notificaciones por e-mail';
 $string['notifications_help']='
 Cuando esta opción está habilitada los profesores y estudiantes recibirán notificaciones por e-mail en el momento en que se conciertan o se anulan reuniones.';
 $string['notselected'] = 'Aún no ha realizado ninguna elección';
-$string['notusedslots'] = 'Franjas no reservadas';
 $string['now'] = 'Ahora';
 $string['occurrences'] = 'Nº de Reuniones';
 $string['on'] = 'en';
@@ -466,8 +470,6 @@ por el {$a->staffrole} <b><a href="{$a->attendant_url}">{$a->attendant}</a></b><
 en la actividad "<i>{$a->module}</i>" de la asignatura <b>{$a->course_short} : <a href="{$a->course_url}">{$a->course}</a>.';
 
 // ecastro ULPGC
-$string['attendednondeletable'] = 'Algunas franjas({$a}) no se ha borrado ya que constan como una reunión ya mantenida.';
-$string['cancelonly'] = 'Solo al cancelar'; // ecastro ULPGC
 $string['automatic'] = 'Programadas';
 $string['automaticslots_help'] = '
 Plantilla semanal de franjas predefinidas.
@@ -480,53 +482,31 @@ Hay dos modos en los que opera la adición de Franjas Programables:
 <li><strong>Modo "Aplicando mínimo semanal"</strong>: En este caso, se establece un periodo mínimo de tiempo que debe estar dedicado a reuniones cada semana. Este mínimo se establece por el administrador para el conjunto del sistema. El módulo emitirá una advertencia si las Franjas Programables especificadas no llegan a cubir ese tiempo mínimo. Por otra parte, a la hora de la generación semanal de franjas usando la plantilla de Franjas programables, el sistema calculará el tiempo ya ofertado (mediante franjas añadidas manualmente) para reuniones en la semana en cuestión y sólo añadirá las franjas necesarias para cubrir el mínimo establecido, no más.</li>
 </ul>
 ';
-
+$string['appointedslots'] = 'Reuniones concertadas';
+$string['attendednondeletable'] = 'Algunas franjas({$a}) no se ha borrado ya que constan como una reunión ya mantenida.';
+$string['cancelonly'] = 'Solo al cancelar'; // ecastro ULPGC
+$string['forceno'] = 'Individuales y Grupos';
+$string['forceonlygroups'] = 'Sólo citas de grupos';
+$string['forceonlysingle'] = 'Sólo citas individuales';
+$string['notusedslots'] = 'Franjas no reservadas';
+$string['pagesize'] = 'Franjas por página'; 
+$string['sharedfrom'] = 'Compartida de otra Reunión';
+$string['sharedslot'] = 'Franja compartida'; // ecastro ULPGC
 $string['sharedslot_help'] = '
 <strong>Franja pública</strong> compartida entre varias reuniones y asignaturas.
 Esta franja aparecerá en todos los demás módulos Reunión de cualesquiera otras asignaturas donde el anfitrión también pueda atender reuniones.';
-$string['noslotsteacher'] = 'There are no slots of this type';
-$string['etutor'] = 'Uso de videoconferencia e-tutor';
-$string['etutor_help'] = "
-Se pueden especificar las preferencias de canal para atender a los estudiantes:
-
-* Sólo reuniones presenciales, cara a cara
-* Sólo videoconferencias a través de e-Tutor ISL
-* Ambas, pero preferible presencial como predefinido, si el estudiante no cambia explícitamente a e-Tutor cuando reserva.
-* Ambas, pero preferible e-Tutor como predefinido, si el estudiante no cambia explícitamente a presencial cuando reserva.
-";
-$string['videoconference'] = 'Franja sólo disponible para videoconferencia e-Tutor';
-$string['videoconferenceoption'] = 'Franja disponible videoconferencia e-Tutor si se marca la casilla';
-$string['etutor_student'] = 'Puede reservar las franjas marcadas con el icono e-Tutor {$a} para conexión por videoconferencia.
-La conexión por videoconferencia e-tutor se realizará desde <strong>el botón e-Tutor del panel e-Tutor</strong> de la página principal del curso, no desde esta página<br />
-Si el icono es grande, sólo se puede contactar mediante videoconferencia. Si el icono es pequeño y se indica un lugar, puede escoger entre reunión presencial o remota marcando la casilla de e-Tutor en la columna \"Ubicación\" <br />
-Para cambiar el modo de una reunión (presencial/e-Tutor) hay que desmarcar la reunión y volver a concertarla con el nuevo modo.';
-$string['etutor_face'] = 'No, sólo reuniones presenciales';
-$string['etutor_face+'] = 'Opcional, preferido presencial';
-$string['etutor_video'] = 'Si, sólo videoconferencia';
-$string['etutor_video+'] = 'Opcional, preferido videoconferencia';
+$string['sharedslotsenabled'] = 'Habilitar Franjas compartidas'; // ecastro ULPGC
+$string['sharedslotsenabled_desc'] = 'Permite compatir franjas creadas en una instancia de Reunión. 
+"Compartir" significa que las franjas creadas en una instancia se mostrarán también disponibles en otras instancias (si configuradas para aceptarlas). 
+Una vez que se ha reservado una franja ésta deja de ser pública o compartida y se convierte en una franja normal perteneciente a la instancia en la que se hizo la reserva. '; // ecastro ULPGC
 $string['sharedto'] = 'Publicada en otras Reuniones';
-$string['sharedfrom'] = 'Compartida de otra Reunión';
-$string['appointmentnoteshelp'] = 'La nota que escriba será mostrada al profesor con su reserva de hora. <br />
-Si cambia de hora deberá volver a escribir la nota, si es aplicable.';
-$string['addautomaticsession'] = 'Añadir franjas programadas semanales';
-$string['deletemyautomatics'] = 'Borrar mis franjas';
-
-$string['completionappointmentsgroup'] = 'Requerir reuniones';
-$string['completionappointments'] = 'El estudiante debe reservar citas ';
-$string['completionattendedgroup'] = 'Requerir asistencia';
-$string['completionattended'] = 'El estudiante debe haber asistido a reuniones';
-$string['markall'] = 'Edit grades/notes for all students'; // ecastro ULPGC
-$string['seenall'] = 'Marcar todos como Vistos';
-$string['groupbookings'] = 'Tipos de reservas de cita';
-$string['groupbookings_help'] = 'Los estudiantes pueden reservar por si mismos, como individuos (citas individuales) 
-o en nombre de un grupo (citas de grupo), y todos los miembrso del grupo aparacerán citados en esa franja. 
-
-Para ello es preciso que el modo del grupo (del módulo esté ajustado convenientemente.';
 $string['usesharedslots'] = 'Utilizar franjas compartidas';
 $string['usesharedslots_help'] = 'Si se activa, entonces en esta instancia de reunión se mostrarán las franjas "compartidas" publicadas
 en otras instancias de Reunión, de esta u otras asignaturas. 
 
 Igualmente, las franjas creads aquí podrán ser publicadas para ser visualizadas en otras reuniones. ';
+$string['markall'] = 'Edit grades/notes for all students'; // ecastro ULPGC
+$string['seenall'] = 'Marcar todos como Vistos';
 $string['cancelbookingconfirm'] = 'Ha solicitado cancelar una cita el {$a} <br /> 
 ¿Desea proceder con esta cancelación?';
 $string['asmemberof'] = 'Como miembro del Grupo {$a}'; // ecastro ULPGC

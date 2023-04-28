@@ -133,8 +133,17 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
         global $CFG, $OUTPUT;
 
         $courses = enrol_get_my_courses();
+        
+        $block = $this->get_remote_block();
+        $remotecourseurl = '';
+        $remotes = [];
+        if(!empty($block)) {
+            $remotecourseurl = $block->config->remotesite.'/course/view.php?id=';
+            $remotes = $this->get_remote_courses_list();
+        }
+        
         // Early return if a courses list does not exists.
-        if (empty($courses)) {
+        if (empty($courses) && empty($remotes)) {
             return [];
         }
 
@@ -158,11 +167,29 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
                         "href=\"$CFG->wwwroot/course/view.php?id=$course->id\">".$icon.format_string(get_course_display_name_for_list($course)). "</a>";
                         */
         }
-        $menuitems = implode("\n", $menuitems);
+        
+        if(!empty($menuitems)) {
+            $menuitems[] = '-###';            
+            $menuitems[] = '-'.get_string('mycourses').'|'.$CFG->wwwroot.'/my/courses.php';
+        }
+        
+        // if there are regular courses & remote courses, add separator 
+        if(!empty($menuitems) && !empty($remotes)) {
+            $menuitems[] = '-###';            
+        }
 
+        foreach ($remotes as $course) {
+            $menuitems[] = '-'.$icon.format_string(get_course_display_name_for_list($course)) . 
+                            '|'.$remotecourseurl.$course->id;
+        }
+        
+        $menuitems = implode("\n", $menuitems);
 
         $currentlang = current_language();
         $custommenunodes = custom_menu::convert_text_to_menu_nodes($menuitems, $currentlang);
+        //print_object($menuitems);
+        //print_object($custommenunodes[0]);
+
         $nodes = [];
         foreach ($custommenunodes as $node) {
             $nodes[] = $node->export_for_template($output);
@@ -187,4 +214,25 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
         $primary = new \core\navigation\output\primary($this->page);
         return $primary->get_user_menu($output);
     }
+    
+    /**
+     * Returns ans instantiated remote courses block
+     *
+     * @return block class object
+     */
+    protected function get_remote_block() {
+        global $CFG;
+        
+        $block = false;
+        $myremote = get_config('theme_moove', 'remotemycourses'); 
+        if($myremote) {
+            $block = block_instance_by_id($myremote);
+            if(!empty($block)) {
+                return $block;
+            }
+        }
+        
+        return false;
+    }
+    
 }

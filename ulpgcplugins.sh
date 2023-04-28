@@ -20,6 +20,7 @@ git submodule add git@bitbucket.org:moodleulpgc/moodle-tool_backuprestore.git   
 git submodule set-branch -b moodle41 -- admin/tool/backuprestore
 git submodule add git@bitbucket.org:moodleulpgc/moodle-tool_batchmanage.git     admin/tool/batchmanage
 git submodule set-branch -b moodle41 -- admin/tool/batchmanage
+git submodule add git@bitbucket.org:moodleulpgc/moodle-tool_ulpgcqc.git         admin/tool/ulpgcqc
 
 #auth plugins
 git submodule add git@bitbucket.org:moodleulpgc/moodle-auth_casulpgc.git        auth/casulpgc
