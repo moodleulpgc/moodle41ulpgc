@@ -31,6 +31,7 @@
     border-bottom-width: 0;
     border-right-width: 0;
     margin-bottom: 2em;
+    height: 100%;
 }
 
 /**
@@ -40,10 +41,42 @@
     border: 1px solid #ccc;
     border-top-width: 0;
     border-left-width: 0;
-    padding: 4px 5px;
-    vertical-align: middle;
-    text-align: right;
+    padding: 0.5rem 1rem;
+    vertical-align: top;
+    height: 100%;
+}
+
+.path-grade-report-grader .overriddengrade {
+    color: #495057;
+    border: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+.path-grade-report-grader .gradepass {
+    color: #357a32;
+}
+
+.path-grade-report-grader .gradefail {
+    color: #ca3120;
+}
+
+.path-grade-report-grader .grade_icons,
+.path-grade-report-grader .category_grade_icons {
     white-space: nowrap;
+    margin-top: 0.5rem;
+}
+
+.path-grade-report-grader .grade_type_value .grade_icons {
+    margin-left: auto;
+}
+
+.path-grade-report-grader .grade_icons .icon {
+    margin-right: 1rem;
+}
+
+.path-grade-report-grader .grade_icons .icon:last-child {
+    margin-right: 0;
 }
 
 /**
@@ -65,17 +98,40 @@
 .path-grade-report-grader .gradeparent .user.cell {
     font-size: 14px;
     font-weight: normal;
+}
+
+.path-grade-report-grader .gradeparent .heading .header,
+.path-grade-report-grader .gradeparent .heading .userfield {
+    white-space: nowrap;
+}
+
+.path-grade-report-grader .heading .gradeitemheader {
+    text-indent: -1.5rem;
+    padding-left: 1.5rem;
+    padding-top: 6px;
+}
+
+.path-grade-report-grader .dropdown-item {
     text-align: left;
+}
+
+.path-grade-report-grader .heading .gradeitemheader .itemicon {
+    text-align: right;
 }
 
 /**
  * The user cells.
  */
 .path-grade-report-grader .gradeparent .user.cell {
+    white-space: nowrap;
+}
+
+.path-grade-report-grader .gradeparent .highlightable.cell {
     min-width: 200px;
-    width: 200px;
-    white-space: normal;
-    vertical-align: top;
+}
+
+.path-grade-report-grader .gradeparent .highlightable.cell.collapsed {
+    min-width: unset;
 }
 
 .path-grade-report-grader .gradeparent .user.cell .userpicture {
@@ -88,7 +144,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 200px;
-    vertical-align: bottom;
+    vertical-align: middle;
 }
 
 /**
@@ -103,8 +159,10 @@
  * The footer's header.
  */
 .path-grade-report-grader .gradeparent .range .header,
-.path-grade-report-grader .gradeparent .avg .header {
+.path-grade-report-grader .gradeparent .avg .header,
+.path-grade-report-grader .gradeparent .groupavg .header {
     font-weight: bold;
+    text-align: right;
 }
 
 /**
@@ -133,7 +191,16 @@
 }
 
 .path-grade-report-grader .gradeparent .sorticon {
-    margin-left: 3px;
+    margin-left: 5px;
+    vertical-align: middle;
+    margin-right: 1px;
+}
+
+.path-grade-report-grader .gradeparent td.grade_type_value,
+.path-grade-report-grader .gradeparent td.grade_type_value input,
+.path-grade-report-grader .gradeparent td.grade_type_value div {
+    text-align: right;
+    margin-left: auto;
 }
 
 .path-grade-report-grader .gradeparent .gradevalue {
@@ -145,6 +212,10 @@
     background-color: #efd9a4;
 }
 
+.path-grade-report-grader .header,
+.path-grade-report-grader td.userfield div {
+    padding-top: 6px;
+}
 .path-grade-report-grader .gradeparent tr:nth-child(n) td.ajaxoverridden:nth-child(n) {
     /* Made very specific to override the default stripped style of the table. */
     background-color: #ffe3a0;
@@ -163,11 +234,12 @@
 
 /**
  * Editing fields.
+ * MDL-74286 - width 100% pushes action menu out of cell.
  */
 .path-grade-report-grader .gradeparent select {
     text-overflow: ellipsis;
     min-width: 8rem;
-    width: 100%;
+    /* width: 100%;  */
 }
 
 .path-grade-report-grader .gradeparent .text {
@@ -200,4 +272,64 @@
     font-size: 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+
+.path-grade-report-grader .action-menu {
+    display: inline-block;
+    margin-right: -0.5rem;
+    padding-left: 0.5rem;
+}
+
+.path-grade-report-grader .heading .action-menu {
+    padding-left: 0;
+}
+
+.path-grade-report-grader .dropdown-menu {
+    width: max-content;
+}
+
+.path-grade-report-grader .initialsdropdown {
+    width: 460px;
+}
+
+.path-grade-report-grader .initialsdropdown::after {
+    content: '';
+}
+
+.path-grade-report-grader .usersearchwidget::after {
+    content: '';
+}
+
+.path-grade-report-grader .usersearchwidget {
+    pointer-events: none;
+}
+.path-grade-report-grader .usersearchwidget input {
+    pointer-events: initial;
+    z-index: 1;
+}
+.path-grade-report-grader .usersearchwidget button,
+.path-grade-report-grader .usersearchwidget a {
+    pointer-events: initial;
+}
+.path-grade-report-grader .usersearchdropdown {
+    /*Extra height to allow non result items.*/
+    max-height: 400px;
+    width: 300px;
+    pointer-events: all;
+    padding: 0;
+}
+.path-grade-report-grader .usersearchdropdown .unsearchablecontentcontainer {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+}
+.path-grade-report-grader .usersearchdropdown .footer {
+    border-top: 1px solid #dee2e6;
+    font-size: 90%;
+}
+
+.collapsecolumndropdown.show {
+    width: 275px;
+    max-height: 300px;
 }

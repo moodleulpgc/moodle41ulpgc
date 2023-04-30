@@ -1712,7 +1712,7 @@ class format_topcoll extends core_courseformat\base {
         return true;
     }
 
-    private function get_context() {
+    private function get_context2() { // ecastro ULPGC confñict with base final
         global $SITE;
 
         if ($SITE->id == $this->courseid) {

@@ -37,3 +37,12 @@
 .modchoosercontainer .optionscontainer .option .optionactions .optionaction.text-muted {
     color: #004dae !important;
 }
+
+.section-modchooser {
+    clear: both;
+    /*margin-top: map-get($spacers, 1); */
+    /* ecastro ULPGC */
+    width: auto !important;
+    margin: map-get($spacers, 1) auto;
+    padding: 0.5rem 1.0rem !important;    
+}

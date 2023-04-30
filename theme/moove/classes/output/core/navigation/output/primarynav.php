@@ -139,7 +139,7 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
         $remotes = [];
         if(!empty($block)) {
             $remotecourseurl = $block->config->remotesite.'/course/view.php?id=';
-            $remotes = $this->get_remote_courses_list();
+            $remotes = $block->get_remote_courses_list();
         }
         
         // Early return if a courses list does not exists.

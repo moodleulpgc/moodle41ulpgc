@@ -24678,6 +24678,26 @@ p.arrow_button {
 .path-grade-edit-tree .setup-grades.generaltable .levelodd {
   background-color: rgba(0, 0, 0, 0.03);
 }
+
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name div a.toggle-category {
+  height: 24px;
+  width: 24px;
+  font-size: 12px;
+  line-height: 24px;
+  margin-right: 3px;
+}
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name div a.toggle-category[aria-expanded=true] .expanded, .path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name div a.toggle-category[aria-expanded=false] .collapsed {
+  display: none;
+}
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name div a.toggle-category i {
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+  color: #1d2125;
+  margin: 0;
+}
+
+
 /**
  * Grader report.
  */

@@ -181,9 +181,14 @@ class block_remote_courses extends block_base {
             }
             // Retrieve data.
             $curl = new curl;
-            $courses = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
+            $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
                     
         }
+
+        if(is_array($resp)) {
+            $courses = $resp;
+        }
+
         return $courses;
     }
     

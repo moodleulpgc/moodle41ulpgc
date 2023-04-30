@@ -209,8 +209,15 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     border-left: 1px solid;
 }
 
-#page-footer .btn-footer-popover.help {
-  bottom: 3.5rem;
+
+#page-footer {
+    .btn-footer-popover {
+        bottom: 4.5rem;
+    }
+    
+    .btn-footer-popover.help {
+        bottom: 7.5rem;
+    }   
 }
 
 /*---------------------------------------
@@ -233,7 +240,6 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
         margin-right: 0.2rem;
   content: "\f070";
 }
-
 
 .section_availability.withrestrictions:before,
 .activity-restrictions.course-description-item:before {
@@ -374,6 +380,16 @@ span.unread {
     margin-left: 15px;
     margin-right: 15px;
 }
+
+
+/*---------------------------------------
+ * Gradebook
+ --------------------------------------*/
+.path-grade-report-grader .gradeparent .cell {
+  padding: 0.20rem 0.25rem;
+  vertical-align: middle;
+}
+
 
 /*---------------------------------------
  * Blocks: icons.
