@@ -18,15 +18,16 @@
  * Theme LearnR - Version file
  *
  * @package    theme_learnr
- * @copyright  2022 Dearborn Public Schools, Chris Kenniburg
+ * @copyright  2022 Alexander Bias, lern.link GmbH <alexander.bias@lernlink.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'theme_learnr';
-$plugin->version = 2022052400;
-$plugin->release = 'v1.7';
-$plugin->requires = 2022040100;
+$plugin->version = 2022080922;
+$plugin->release = 'v4.2.r6';
+$plugin->requires = 2022112803;
+$plugin->supported = [401, 401];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array('theme_boost' => 20220401);
+$plugin->dependencies = array('theme_boost' => 2022112800);
