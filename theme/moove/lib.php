@@ -228,7 +228,7 @@ function theme_moove_get_incourse_settings() {
     $node = false;
 
     // If setting showsettingsincourse is enabled.
-    if (1 || get_config('theme_moove', 'showsettingsincourse') == 'yes') { // TODO CHANGE when setting available
+    if (get_config('theme_moove', 'showsettingsincourse') == 'yes') { // TODO CHANGE when setting available
         // Only search for the courseadmin node if we are within a course or a module context.
         if ($PAGE->context->contextlevel == CONTEXT_COURSE || $PAGE->context->contextlevel == CONTEXT_MODULE) {
             // Get the courseadmin node for the current page.
@@ -250,6 +250,7 @@ function theme_moove_get_incourse_settings() {
 			//echo "<script>alert('ok0');</script>";
 			//print_object($node);
             return $node;
+
             if (!empty($node)) {
                 // If the setting 'incoursesettingsswitchtoroleposition' is set either set to the option 'yes'
                 // or to the option 'both', then add these to the $node.

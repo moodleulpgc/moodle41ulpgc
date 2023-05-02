@@ -57,7 +57,8 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
     
     // modifications in course pages
     if ($PAGE->course && $PAGE->course->id != 1) {
-        if($coursenode =  $nav->find('courseadmin', navigation_node::TYPE_COURSE)) {    
+        $coursenode =  $nav->find('courseadmin', navigation_node::TYPE_COURSE);
+        if(!empty($coursenode) && has_any_capability(['moodle/course:manageactivities', 'moodle/grade:edit'], $context)) {
             //print_object($coursenode->get_children_key_list());
             //$url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
             //$coursenode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'courselog', new pix_icon('i/report', ''));
@@ -111,13 +112,18 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
             $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
             $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
 
+
+            if(has_any_capability(['moodle/role:assign', 'moodle/grade:edit'], $context)) {
             $links = ['roleoverride', 'roleassign', 'rolecheck'];
             $name = get_string('rolepermissions', 'local_ulpgccore');
             local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
 
+            }
+            if(has_any_capability(['moodle/backup:backupcourse', 'moodle/grade:edit'], $context)) {
             $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
             $name = get_string('archivereuse', 'local_ulpgccore');
             local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
+            }
 
 /*
             $siblibgs = $modnode->get_siblings();

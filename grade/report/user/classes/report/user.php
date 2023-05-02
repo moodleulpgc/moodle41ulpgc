@@ -680,7 +680,7 @@ class user extends grade_report {
                         $gradeitemdata['graderaw'] = $gradeval;
                         /// START DETAILED SCALE GRADES // ecastro ULPGC
                         if (get_config('local_ulpgccore', 'scaledisplaymode')) { // ecastro ULPGC apply detailed scales
-                            $detailedscales = local_ulpgccore_format_gradevalue($gradeval, $grade_grade->grade_item, $this->user->id);
+                            $detailedscales = local_ulpgccore_format_gradevalue($gradeval, $gradegrade->grade_item, $this->user->id);
                             $data['grade']['content'] .= $detailedscales;
                         }
                         // ecastro ULPGC

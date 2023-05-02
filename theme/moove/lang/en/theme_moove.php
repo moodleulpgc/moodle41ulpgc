@@ -341,3 +341,4 @@ $string['footerblock1'] = 'Footer block 1';
 $string['footerblock2'] = 'Footer block 2';
 $string['footerblock3'] = 'Footer block 3';
 $string['footerblock_desc'] = 'An structured text, with h3 and p tags to list items.';
+$string['addresourceoractivityhere'] = 'Add activity or resource here';

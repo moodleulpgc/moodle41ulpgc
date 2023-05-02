@@ -84,6 +84,14 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     top: 48px;
     height: 36px;
 }
+
+.secondary-navigation.moove.empty {
+    top: 48px;
+    height: 6px;
+}
+
+
+
 .secondary-navigation > .moove-container-fluid,  .secondary-navigation .moremenu,  .moremenu .nav-link{
      height: 36px;
 }
@@ -298,7 +306,7 @@ span.unread {
 }
 
 .activity-item:not(.activityinline) {
-  padding: 0.25rem 1.0rem;
+  padding: 0.3rem 1.5rem;
 }
 
 .breadcrumb .breadcrumb-item a.type20 {
@@ -320,6 +328,33 @@ span.unread {
 
 .section .activity {
   padding: 0.15rem 0;
+}
+
+.section .activity.indented .activity-item {
+  border: 1px solid #dee2e6;
+}
+
+.changenumsections {
+  text-align: center;
+}
+
+.activityiconcontainer {
+  height: 42px;
+}
+
+.activity-item .bulkselect {
+  left: -1.25rem;
+  top: 0.75rem;
+}
+
+.course-section-header .bulkselect {
+  left: -1.25rem;
+}
+
+.stickyfooter .form-check input[type=checkbox],
+.bulkselect input[type=checkbox] {
+  height: 18px;
+  width: 18px;
 }
 
 
