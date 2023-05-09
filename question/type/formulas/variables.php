@@ -191,6 +191,58 @@ function fmod($x, $m) {
     return $x - $m * floor($x / $m);
 }
 
+/**
+ * Calculate the probability of exactly $x successful outcomes for
+ * $n trials under a binomial distribution with a probability of success
+ * of $p.
+ *
+ * @param int $n number of trials
+ * @param float $p probability of success for each trial
+ * @param int $x number of successful outcomes
+ *
+ * @return float probability for exactly $x successful outcomes
+ * @throws Exception
+ */
+function binomialpdf($n, $p, $x) {
+    // Probability must be 0 <= p <= 1.
+    if ($p < 0 || $p > 1) {
+        throw new Exception(get_string('error_eval_numerical', 'qtype_formulas'));
+    }
+    // Number of successful outcomes must be at least 0 and at most number of trials.
+    if ($x < 0 || $x > $n) {
+        throw new Exception(get_string('error_eval_numerical', 'qtype_formulas'));
+    }
+    return ncr($n, $x) * $p ** $x * (1 - $p) ** ($n - $x);
+}
+
+/**
+ * Calculate the probability of up to $x successful outcomes for
+ * $n trials under a binomial distribution with a probability of success
+ * of $p, known as the cumulative distribution function.
+ *
+ * @param int $n number of trials
+ * @param float $p probability of success for each trial
+ * @param int $x number of successful outcomes
+ *
+ * @return float probability for up to $x successful outcomes
+ * @throws Exception
+ */
+function binomialcdf($n, $p, $x) {
+    // Probability must be 0 <= p <= 1.
+    if ($p < 0 || $p > 1) {
+        throw new Exception(get_string('error_eval_numerical', 'qtype_formulas'));
+    }
+    // Number of successful outcomes must be at least 0 and at most number of trials.
+    if ($x < 0 || $x > $n) {
+        throw new Exception(get_string('error_eval_numerical', 'qtype_formulas'));
+    }
+    $res = 0;
+    for ($i = 0; $i <= $x; $i++) {
+        $res += binomialpdf($n, $p, $i);
+    }
+    return $res;
+}
+
 function npr($n, $r) {
     $n = (int)$n;
     $r = (int)$r;
@@ -220,14 +272,14 @@ function gcd($a, $b) {
     if ($a < 0) {
         $a = abs($a);
     }
-    if ($b < 0 ) {
+    if ($b < 0) {
         $b = abs($b);
     }
     if ($a == 0 && $b == 0) {
         return 0;
     }
-    if ($a == 0 xor $b == 0) {
-        return 1;
+    if ($a == 0 || $b == 0) {
+        return $a + $b;
     }
     if ($a == $b) {
         return $a;
@@ -410,7 +462,8 @@ class variables {
           array('log', 'round', 'atan2', 'fmod', 'pow', 'min', 'max', 'ncr', 'npr', 'gcd', 'lcm', 'sigfig', 'modinv')
         );
         $this->func_special = array_flip(
-          array('fill', 'len', 'pick', 'sort', 'sublist', 'inv', 'map', 'sum', 'concat', 'join', 'str', 'diff', 'poly', 'normcdf', 'modpow')
+          array('fill', 'len', 'pick', 'sort', 'sublist', 'inv', 'map', 'sum', 'concat', 'join', 'str', 'diff', 'poly', 'normcdf',
+          'modpow', 'binomialpdf', 'binomialcdf')
         );
         $this->func_all = array_merge($this->func_const, $this->func_unary, $this->func_binary, $this->func_special);
         $this->binary_op_map = array_flip(
@@ -598,9 +651,13 @@ class variables {
     // Return the text with the variables, or evaluable expressions, substituted by their values.
     public function substitute_variables_in_text(&$vstack, $text) {
         $funcpattern = '/(\{=[^{}]+\}|\{([A-Za-z][A-Za-z0-9_]*)(\[([0-9]+)\])?\})/';
-        $results = array();
-        // @codingStandardsIgnoreLine
-        $ts = explode("\n`", $text);     // The ` is the separator, so split it first.
+        $results = [];
+        if (is_string($text)) {
+            // @codingStandardsIgnoreLine
+            $ts = explode("\n`", $text);     // The ` is the separator, so split it first.
+        } else {
+            $ts = [];
+        }
         foreach ($ts as $text) {
             // @codingStandardsIgnoreLine
             $splitted = explode("\n`", preg_replace($funcpattern, "\n`$1\n`", $text));
@@ -662,7 +719,11 @@ class variables {
 
     // Replace the strings in the $text.
     private function substitute_strings_by_placholders(&$vstack, $text) {
-        $text = stripcslashes($text);
+        if (is_string($text)) {
+            $text = stripcslashes($text);
+        } else {
+            $text = '';
+        }
         $splitted = explode("\"", $text);
         if (mycount($splitted) % 2 == 0) {
             throw new Exception(get_string('error_vars_string', 'qtype_formulas'));
@@ -1375,6 +1436,10 @@ class variables {
                     if (!array_key_exists($values[0], $this->func_unary)) {
                         break;
                     }
+                    // Check if the function is one of our own. If it is, prepend the namespace.
+                    if (is_callable(__NAMESPACE__ . '\\' . $values[0])) {
+                        $values[0] = __NAMESPACE__ . '\\' . $values[0];
+                    }
                     $value = array_map(
                         function ($a) use ($values) {
                             return floatval($values[0]($a));
@@ -1396,6 +1461,10 @@ class variables {
                                 return eval('return floatval(($a)'.$values[0].'($b));');
                             }, $values[1], $values[2]);
                     } else if (array_key_exists($values[0], $this->func_binary)) {
+                        // Check if the function is one of our own. If it is, prepend the namespace.
+                        if (is_callable(__NAMESPACE__ . '\\' . $values[0])) {
+                            $values[0] = __NAMESPACE__ . '\\' . $values[0];
+                        }
                         $value = array_map(
                             function ($a, $b) use ($values) {
                                 return floatval($values[0]($a, $b));
@@ -1579,7 +1648,7 @@ class variables {
             $res = null;
             // In PHP 7 eval() terminates the script if the evaluated code generate a fatal error.
             try {
-                eval('namespace qtype_formulas; $res = ' . implode(' ', $splitted) . ';');
+                eval('namespace ' . __NAMESPACE__ . '; $res = ' . implode(' ', $splitted) . ';');
             } catch (Throwable $t) {
                 throw new Exception(get_string('error_eval_numerical', 'qtype_formulas'));
             }
@@ -2102,6 +2171,8 @@ class variables {
 
                 // Functions that take three arguments.
                 case 'normcdf':
+                case 'binomialpdf':
+                case 'binomialcdf':
                 case 'modpow':
                     if (strlen($regs[6]) != 0 || strlen($regs[5]) == 0) {
                         return get_string('functiontakesthreeargs', 'qtype_formulas', $regs[2]);

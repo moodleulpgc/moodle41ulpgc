@@ -140,26 +140,41 @@
                         <div> {{{ regionmainsettingsmenu }}} </div>
                     </div>
                     {{/hasregionmainsettingsmenu}}
+                    {{! additional blocks section // ecastro ULPGC }}
+                    <section id="top-blocks" data-region="blocks-rowtop" class="d-print-none">
+                        {{{ topblocks }}}
+                    </section>
                     <section id="region-main" aria-label="{{#str}}content{{/str}}">
-
-                        {{#hasregionmainsettingsmenu}}
-                            <div class="region_main_settings_menu_proxy"></div>
-                        {{/hasregionmainsettingsmenu}}
-                        {{{ output.course_content_header }}}
-                        {{#headercontent}}
-                            {{> core/activity_header }}
-                        {{/headercontent}}
-                        {{#overflow}}
-                            <div class="container-fluid tertiary-navigation">
-                                <div class="navitem">
-                                    {{> core/url_select}}
-                                </div>
+                        {{! additional blocks section // ecastro ULPGC }}
+                        {{#haslateralblocks}}
+                            <div id="lateral-side-blocks" data-region="blocks-lateral-side" class="d-print-none">
+                                {{{ lateralsideblocks }}}
                             </div>
-                        {{/overflow}}
-                        {{{ output.main_content }}}
-                        {{{ output.activity_navigation }}}
-                        {{{ output.course_content_footer }}}
+                        {{/haslateralblocks}}
+                        <div class="main-content">
+                            {{#hasregionmainsettingsmenu}}
+                                <div class="region_main_settings_menu_proxy"></div>
+                            {{/hasregionmainsettingsmenu}}
+                            {{{ output.course_content_header }}}
+                            {{#headercontent}}
+                                {{> core/activity_header }}
+                            {{/headercontent}}
+                            {{#overflow}}
+                                <div class="container-fluid tertiary-navigation">
+                                    <div class="navitem">
+                                        {{> core/url_select}}
+                                    </div>
+                                </div>
+                            {{/overflow}}
+                            {{{ output.main_content }}}
+                            {{{ output.activity_navigation }}}
+                            {{{ output.course_content_footer }}}
+                        </div>
+                    </section>
 
+                    {{! additional blocks section // ecastro ULPGC }}
+                    <section id="bottom-blocks" data-region="blocks-rowbottom" class="clearfix d-print-none">
+                        {{{ bottomblocks }}}
                     </section>
                 </div>
             </div>

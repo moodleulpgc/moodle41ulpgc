@@ -1,16 +1,16 @@
 <?php
 // This file is part of Moodle - http://moodle.org/
-//
+// 
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-//
+// 
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//
+// 
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -19,15 +19,12 @@
  * on a compliant consistant naming space for Rest or other protocol invocation
  * methods
  *
- * @package     mod_tracker
- * @category    mod
- * @author Clifford Tham, Valery Fremaux > 1.8
  */
-defined('MOODLE_INTERNAL') || die();
 
+require_once ($CFG->libdir . "/externallib.php"); 
 require_once($CFG->dirroot.'/mod/tracker/rpclib.php');
 
-class mod_tracker_external {
+class mod_tracker_external extends external_api {
 
     public static function get_instances_parameters() {
 
@@ -189,4 +186,81 @@ class mod_tracker_external {
     public static function remove_subtracker_returns() {
         return new external_value(PARAM_BOOL, 'Operation status');
     }
+
+    public static function get_recent_issues_by_username_parameters() {
+        return new external_function_parameters (
+            array(
+                'username' => new external_value(
+                        PARAM_USERNAME,
+                        'primary identifier'),
+                'trackerid' => new external_value(
+                        PARAM_INT,
+                        'remote tracker id where to search'),
+            )
+        );
+    }
+    
+    /**
+     * Get a user's recent unseen issues on a tracker.
+     *
+     * @param string $username
+     * @param int $trackerid
+     * @return array
+     */
+    public static function get_recent_issues_by_username($username, $trackerid) {
+        global $DB;
+
+        // Validate parameters passed from webservice.
+        $params = self::validate_parameters(self::get_recent_issues_by_username_parameters(), 
+                            array('username' => $username, 'trackerid' => $trackerid));
+        $result = [];
+
+        // Extract the userid from the username.
+        $userid = $DB->get_field('user', 'id', array('username' => $params[ 'username']));    
+        
+        $ticketprefix = $DB->get_field('tracker', 'ticketprefix', array('id' => $params[ 'trackerid']));
+        $openstatus = get_config('tracker', 'openstatus');
+        
+        $result = array();
+
+        $levels = explode(',', $openstatus);
+        list($insql, $inparams) = $DB->get_in_or_equal($levels, SQL_PARAMS_NAMED, 'st_');
+        $select = " reportedby = :userid AND trackerid = :trackerid AND status $insql AND usermodified < resolvermodified AND userlastseen < resolvermodified";
+        $inparams['userid'] = $userid;
+        $inparams['trackerid'] = $params[ 'trackerid'];
+        $fields = 'id, summary, status, resolution, userlastseen';
+
+        $issues = $DB->get_records_select('tracker_issue', $select, $inparams, 'usermodified DESC', $fields);
+        
+        foreach ($issues as $issue) {
+            $resolution = empty($issue->resolution) ? 0 : 1;
+            $result[] = array(
+                'id' => $issue->id,
+                'summary' => $issue->summary,
+                'ticketprefix' => $ticketprefix,
+                'hasresolution' => $resolution,
+                'status' => (int)$issue->status,
+                'userlastseen' => (int)$issue->userlastseen,
+            );    
+        }
+        
+        return $result;
+
+    }
+    
+    public static function get_recent_issues_by_username_returns() {
+       return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id'        => new external_value(PARAM_INT, 'id of issue'),
+                    'summary' => new external_value(PARAM_RAW, 'short name of issue', VALUE_DEFAULT, ''),
+                    'ticketprefix'  => new external_value(PARAM_RAW, ' prefix for issues  ', VALUE_DEFAULT, ''),
+                    'hasresolution' => new external_value(PARAM_INT, '0 no 1 yes, resolution field is filled', VALUE_DEFAULT, 0),                    
+                    'status'  => new external_value(PARAM_INT, 'status of the issue', VALUE_DEFAULT, 0),
+                    'userlastseen' => new external_value(PARAM_INT, 'date last seen by user', VALUE_DEFAULT, 0),
+                )
+            )
+        );
+    }    
+    
 }

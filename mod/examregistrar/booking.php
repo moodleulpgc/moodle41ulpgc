@@ -75,7 +75,6 @@ $bookingurl = new moodle_url($baseurl, $bookingparams);
 echo $output->box(get_string('bookinghelp1', 'examregistrar', $examregistrar), 'generalbox mod_introbox', 'examregistrarintro');
 
 /// display user form, if allowed
-$canbookothers = false;
 if($canbookothers = has_capability('mod/examregistrar:bookothers',$context)) {
     print_collapsible_region_start('', 'showhideuserselector', get_string('searchoptions'),
                     'examregistrar_booking_userselector_collapsed', true, false);

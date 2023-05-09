@@ -331,7 +331,8 @@ class examregistrar_seatstudent_actionform extends examregistrar_actionform_base
 
         $mform->addElement('header', 'assignsessionrooms', get_string('sessionroomssettings', 'examregistrar'));
 
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT ss.userid, u.id, u.idnumber, $names
                 FROM {examregistrar_session_seats} ss
                 JOIN {user} u ON ss.userid = u.id
@@ -377,7 +378,8 @@ class examregistrar_addextracall_actionform extends examregistrar_actionform_bas
         $bookedsite = $this->_customdata['venue'];
     
         $coursecontext = context_course::instance($courseid);
-        $names =  get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         if($users = get_enrolled_users($coursecontext, 'mod/examregistrar:book', 0, 'u.id, u.idnumber, '.$names, ' u.lastname ASC ')){
             foreach($users as $uid => $user) {
                 $users[$uid] = fullname($user, false, 'lastname firstname');

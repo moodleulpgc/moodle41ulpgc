@@ -142,6 +142,17 @@ $capabilities = array(
         )
     ),
 
+    'mod/tracker:otherscomments' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetype' => array(
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
+
     'mod/tracker:editcomment' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -186,4 +197,13 @@ $capabilities = array(
         )
     ),
 
+    'mod/tracker:reportpastdue' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetype' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
+    
 );

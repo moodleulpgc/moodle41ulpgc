@@ -22,7 +22,6 @@
  * @copyright  2013 Valery Fremaux
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
 
@@ -48,5 +47,29 @@ $functions = array(
             'classpath'   => 'mod/tracker/externallib.php',
             'description' => 'Allows posting an issue for cascading',
             'type'        => 'write'
+    ),
+
+    'mod_tracker_get_recent_issues_by_username' => array(
+            'classname'   => 'mod_tracker_external',
+            'methodname'  => 'get_recent_issues_by_username',
+            'classpath'   => 'mod/tracker/externallib.php',
+            'description' => 'Return a list of recent unseen issues for a user',
+            'type'        => 'read'
     )
+    
 );
+// Define web service.
+$services = array (
+        'Tracker remote issues web service' => array (
+                'functions' => array (
+                        'mod_tracker_get_recent_issues_by_username',
+                        'mod_tracker_get_instances',
+                        'mod_tracker_get_infos'
+                ),
+                'shortname' => 'mod_tracker_remote_issues',
+                'restrictedusers' => 1,
+                'enabled' => 0
+        )
+);
+
+

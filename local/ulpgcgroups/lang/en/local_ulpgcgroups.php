@@ -103,3 +103,8 @@ $string['explaingrouproles'] = 'The users with the selected roles, in any contex
 Leave empty to disable and not use roles as frontpage group assignment mechanism.';
 $string['nonexportable'] = 'No exportable groups';
 $string['nolinks'] = 'No groups tools to display';
+$string['task_enrolgroupsync'] = 'Enrol Cohort members to course group enrol_groupsync';
+$string['enrolgroupsyncenabled'] = 'Sync course group members by cohorts';
+$string['explainenrolgroupsyncenabled'] = 'In enabled, then users enrolled in a course will be added as group members to groups correponding to site cohorts. 
+Requires enrol_groupsync enrolment method in the course, that actually perform the task';
+$string['explainenrolgroupsyncno'] = 'Enrol method "enrol_groupsync" is not installed, nothing to configure.';

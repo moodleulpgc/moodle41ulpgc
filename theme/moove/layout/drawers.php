@@ -89,7 +89,8 @@ if ($PAGE->has_secondary_navigation()) {
     }
 }
 
-$primary = new core\navigation\output\primary($PAGE);
+//$primary = new core\navigation\output\primary($PAGE);
+$primary = new theme_moove\output\core\navigation\output\primarynav($PAGE);
 $renderer = $PAGE->get_renderer('core');
 $primarymenu = $primary->export_for_template($renderer);
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions() && !$PAGE->has_secondary_navigation();
@@ -105,6 +106,11 @@ $templatecontext = [
     'output' => $OUTPUT,
     'sidepreblocks' => $blockshtml,
     'hasblocks' => $hasblocks,
+    // additional block regions // ecasto ULPGC
+    'topblocks' => $OUTPUT->blocks('toprow'),
+    'lateralsideblocks' => $OUTPUT->blocks('lateral-side'),
+    'bottomblocks' => $OUTPUT->blocks('bottomrow'),
+    // additional block regions // ecasto ULPGC
     'bodyattributes' => $bodyattributes,
     'courseindexopen' => $courseindexopen,
     'blockdraweropen' => $blockdraweropen,
@@ -123,6 +129,12 @@ $templatecontext = [
     'enablecourseindex' => $themesettings->enablecourseindex
 ];
 
+$templatecontext['haslateralblocks'] = (strpos($templatecontext['lateralsideblocks'], 'data-block=') !== false); // ecastro ULPGC
+
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
+
+// ecastro ULPGC
+    $templatecontext = theme_moove_navbar_settings($templatecontext);
+    $templatecontext = array_merge($templatecontext, theme_moove_union_settings());
 
 echo $OUTPUT->render_from_template('theme_moove/drawers', $templatecontext);

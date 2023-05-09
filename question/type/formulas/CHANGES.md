@@ -1,5 +1,19 @@
 # Changelog
 
+### 5.2.1 (2023-04-22)
+- assure compatibility with Moodle 4.2
+- internal: changes for compatibility with PHP 8.1
+- internal: add PHP 8.1 to CI test matrix
+- internal: added tests for units
+
+### 5.2.0 (2023-03-17)
+- new functions: binomialpdf() and binomialcdf()
+- bugfix: gcd() now gives correct result even if one argument is 0
+- internal: removed deprecated notify()
+
+### 5.1.2 (2023-02-15)
+- bugfix: internal functions (e.g. sigfig) working with map() again
+
 ### 5.1.1 (2023-01-30)
 - bugfix: fmod() now works like in other scientific calculators
 - bugfix: sort() now uses natural sorting and does not lose values anymore

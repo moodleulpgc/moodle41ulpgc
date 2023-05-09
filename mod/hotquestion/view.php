@@ -38,7 +38,7 @@ comment::init();
 
 $id = required_param('id', PARAM_INT);                  // Course_module ID.
 $ajax = optional_param('ajax', 0, PARAM_BOOL);          // Asychronous form request.
-$action  = optional_param('action', '', PARAM_ACTION);  // Action(vote, newround).
+$action = optional_param('action', '', PARAM_ACTION);  // Action(vote, newround).
 $roundid = optional_param('round', -1, PARAM_INT);      // Round id.
 $group = optional_param('group', -1, PARAM_INT);  // Choose the current group.
 
@@ -84,13 +84,10 @@ if ($seeunapprovedpreference == 1 || $seeunapprovedpreference == 'ON') {
 }
 
 // Trigger module viewed event.
-if ($CFG->version > 2014051200) { // Moodle 2.7+.
-    $params = array('objectid' => $hq->cm->id, 'context' => $context);
-    $event = course_module_viewed::create($params);
-    $event->trigger();
-} else {
-    add_to_log($hq->course->id, 'hotquestion', 'view', "view.php?id={$hq->cm->id}", $hq->instance->name, $hq->cm->id);
-}
+$params = array('objectid' => $hq->cm->id, 'context' => $context);
+$event = course_module_viewed::create($params);
+$event->trigger();
+
 
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);

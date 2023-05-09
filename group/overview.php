@@ -106,7 +106,8 @@ foreach ($groupings as $grouping) {
 // Groups not in a grouping.
 $members[OVERVIEW_GROUPING_GROUP_NO_GROUPING] = array();
 
-$allnames = get_all_user_name_fields(true, 'u');
+$userfieldsapi = \core_user\fields::for_name();
+$allnames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 $course_users = get_enrolled_users($context, '', 0, 'u.id, u.username, u.idnumber,  '.$allnames, 'lastname ASC', '', '', $onlyactive); // ecastro ULPGC
 $courseusersids = array_keys($course_users); // ecastro ULPGC
 

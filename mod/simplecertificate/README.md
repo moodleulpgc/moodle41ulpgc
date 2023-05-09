@@ -1,9 +1,11 @@
-* v.2.2.7 for moodle 3.5 
-[![Build Status](https://travis-ci.org/bozoh/moodle.svg?branch=simple_certificate_MOODLE_35_STABLE)](https://travis-ci.org/bozoh/moodle)
-* v.2.2.7 for moodle 3.4 
-[![Build Status](https://travis-ci.org/bozoh/moodle.svg?branch=simple_certificate_MOODLE_34_STABLE)](https://travis-ci.org/bozoh/moodle/builds/)
-* v.2.2.7 for moodle 3.3
-[![Build Status](https://travis-ci.org/bozoh/moodle.svg?branch=simple_certificate_MOODLE_33_STABLE)](https://travis-ci.org/bozoh/moodle/builds/)
+* [![Build Status](https://travis-ci.org/bozoh/moodle-mod_simplecertificate.svg?branch=release/MOODLE_38_STABLE)](https://travis-ci.org/bozoh/moodle-mod_simplecertificate) - Moodle 3.8
+* [![Analytics](https://ga-beacon.appspot.com/UA-162885832-2/simplecerticate/plugin/readme?pixel)](https://github.com/bozoh/moodle-mod_simplecertificate)
+
+
+## CLONE
+
+This version of the plugin contains a 'completion_event' branch, on which there is the ability to email the certificate as an attachment automatically upon course completion event.
+
 
 ## ATTENTION
 ---

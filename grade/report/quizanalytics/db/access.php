@@ -18,15 +18,12 @@
  * Defines capabilities for the gradebook quizanalytics report
  *
  * @package   gradereport_quizanalytics
- * @author Moumita Adak <moumita.a@dualcube.com>
+ * @author DualCube <admin@dualcube.com>
  * @copyright  Dualcube (https://dualcube.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
-
 $capabilities = array(
-
     'gradereport/quizanalytics:view' => array(
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',

@@ -36,12 +36,12 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
-require_once($CFG->dirroot . '/mod/vpl/externallib.php');
 
 /**
  * Unit tests for VPL webservice.
  * @group mod_vpl
  * @covers \mod_vpl_webservice
+ * @runTestsInSeparateProcesses
  */
 class webservice_test extends base_test {
     private function vpl_call_service($url, $fun, $request = '') {
@@ -101,12 +101,18 @@ class webservice_test extends base_test {
                 'functionname' => $fn) );
         }
         $this->setUser($this->students[1]);
+    }
+
+    /**
+     * Description of test_vpl_webservice_token
+     * @runInSeparateProcess
+     */
+    public function test_vpl_webservice_token() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
-    }
-
-    public function test_vpl_webservice_token() {
         $this->assertTrue(vpl_get_webservice_token( $this->vpldefault ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplnotavailable ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplonefile ) > "");
@@ -119,11 +125,24 @@ class webservice_test extends base_test {
         $this->assertEquals(count($files), count($filesarray));
         foreach ($filesarray as $file) {
             $this->assertTrue(isset($files[$file['name']]));
-            $this->assertEquals($file['data'], $files[$file['name']]);
+            if (isset($file['encoding']) && $file['encoding'] == 1) {
+                $this->assertEquals(base64_decode($file['data']), $files[$file['name']]);
+            } else {
+                $this->assertEquals($file['data'], $files[$file['name']]);
+            }
         }
     }
 
+    /**
+     * Description of test_vpl_webservice_info
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_info() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         foreach ($this->users as $user) {
             $this->setUser($user);
             foreach ($this->vpls as $vpl) {
@@ -151,7 +170,16 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::info_returns());
     }
 
+    /**
+     * Description of test_vpl_webservice_info_exceptions
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_info_exceptions() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $ok = false;
         $this->setUser($this->editingteachers[0]);
 
@@ -203,7 +231,16 @@ class webservice_test extends base_test {
         $this->assertEquals($grade, $res['grade']);
     }
 
+    /**
+     * Description of test_vpl_webservice_open
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_open() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $id = $this->vpldefault->get_course_module()->id;
         foreach ($this->users as $user) {
             $this->setUser($user);
@@ -323,7 +360,16 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::open_returns());
     }
 
+    /**
+     * Description of test_vpl_webservice_open_exceptions
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_open_exceptions() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $ok = false;
         $this->setUser($this->editingteachers[0]);
 
@@ -368,13 +414,31 @@ class webservice_test extends base_test {
     private function internal_test_vpl_webservice_save($id, $files = array(), $password = '') {
         $filesarray = array();
         foreach ($files as $name => $data) {
-            $filesarray[] = array('name' => $name, 'data' => $data);
+            $file = [];
+            $file['name'] = $name;
+            if ( vpl_is_binary($name)) {
+                $file['encoding'] = 1;
+                $file['data'] = base64_encode($data);
+            } else {
+                $file['encoding'] = 0;
+                $file['data'] = $data;
+            }
+            $filesarray[] = $file;
         }
         mod_vpl_webservice::save($id, $filesarray, $password);
         $this->internal_test_vpl_webservice_open($id, $files);
     }
 
+    /**
+     * Description of test_vpl_webservice_save
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_save() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $id = $this->vpldefault->get_course_module()->id;
         $files = array('a.c' => '#include <content.h>\n');
         $password = $this->vpldefault->get_instance()->password;
@@ -392,7 +456,48 @@ class webservice_test extends base_test {
         $this->assertNull(mod_vpl_webservice::save_returns());
     }
 
+    /**
+     * Description of test_vpl_webservice_save_binary
+     * @runInSeparateProcess
+     */
+    public function test_vpl_webservice_save_binary() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
+        $id = $this->vpldefault->get_course_module()->id;
+        $filename = 'logo.png';
+        $fullfilename = $CFG->dirroot . '/mod/vpl/tests/behat/datafiles/' . $filename;
+        $this->assertFileExists($fullfilename);
+        $data = file_get_contents($fullfilename);
+        $this->assertTrue(strlen($data) > 1000);
+        $files = [ $filename => $data];
+        $password = $this->vpldefault->get_instance()->password;
+        foreach (array_merge($this->students, $this->teachers) as $user) {
+            $this->setUser($user);
+            if ( $this->vpldefault->is_submit_able() ) {
+                try {
+                    $this->internal_test_vpl_webservice_save($id, $files, $password);
+                } catch (Exception $e) {
+                    throw new \Exception("Saving submission " . $e);
+                }
+            }
+        }
+        $this->assertIsObject(mod_vpl_webservice::save_parameters());
+        $this->assertNull(mod_vpl_webservice::save_returns());
+    }
+
+    /**
+     * Description of test_vpl_webservice_save_exceptions
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_save_exceptions() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $ok = false;
         $this->setUser($this->editingteachers[0]);
 
@@ -466,7 +571,16 @@ class webservice_test extends base_test {
         mod_vpl_webservice::save($closed->get_course_module()->id, $files, '');
     }
 
+    /**
+     * Description of test_vpl_webservice_evaluate
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_evaluate() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $id = $this->vpldefault->get_course_module()->id;
         $password = $this->vpldefault->get_instance()->password;
         $executionfiles = $this->vpldefault->get_execution_fgm();
@@ -496,7 +610,17 @@ class webservice_test extends base_test {
         vpl_update_instance($instance);
         $this->setUser($student);
     }
+
+    /**
+     * Description of test_vpl_webservice_evaluate_exceptions
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_evaluate_exceptions() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $ok = false;
         $this->setUser($this->editingteachers[0]);
 
@@ -589,7 +713,16 @@ class webservice_test extends base_test {
         mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
     }
 
+    /**
+     * Description of test_vpl_webservice_get_result
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_get_result() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $id = $this->vpldefault->get_course_module()->id;
         $password = $this->vpldefault->get_instance()->password;
         $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
@@ -613,7 +746,16 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::get_result_returns());
     }
 
+    /**
+     * Description of test_vpl_webservice_get_result_exeptions
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_get_result_exeptions() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/externallib.php');
+        if ( ! vpl_get_webservice_available()) {
+            $this->markTestSkipped('VPL web service not tested: Web service not available.');
+        }
         $ok = false;
         $this->setUser($this->editingteachers[0]);
 

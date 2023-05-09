@@ -225,7 +225,8 @@ require_once($CFG->libdir . '/tablelib.php');
         $groupid = $baseurl->get_param('group'); 
         $context = \context_module::instance($this->cmid);
         $orderby = $userorder ? 'u.lastname' : 'u.firstname' ;
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $filter->options = get_enrolled_users($context, 'mod/examboard:view', $groupid, 'u.id, u.idnumber,'.$names, $orderby, 0, 0, true);  
         foreach($filter->options as $uid => $user) {
             $filter->options[$uid] = fullname($user);

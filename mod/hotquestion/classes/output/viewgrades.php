@@ -116,10 +116,15 @@ class viewgrades extends table_sql {
 
         // 20220520 Added to fix groups on grades.php page.
         $currentgroup = groups_get_activity_group($this->hotquestion->cm, true);
+        // 20230407 Get the current group id and groupname for later use.
+        $currentgroupid = groups_get_activity_group($this->hotquestion->cm);
         if ($currentgroup) {
             $group = $currentgroup;
+            $groupname = groups_get_group_name($currentgroupid);
+
         } else {
             $group = '';
+            $groupname = 'All participants';
         }
         if ($group) {
             $this->baseurl->param('group', $group);
@@ -128,10 +133,13 @@ class viewgrades extends table_sql {
             $this->baseurl->param($this->showallparamname, $this->showall);
         }
 
+        // 20230407 Adding course name to filename.
+        $coursename = format_string($hotquestion->course->fullname.' - ');
         $name = format_string($hotquestion->instance->name);
+
         $this->is_downloadable(true);
         $this->is_downloading(optional_param($this->downloadparamname, 0, PARAM_ALPHA),
-                $name, get_string('viewgrades', 'hotquestion'));
+                $coursename.$name.' - '.$groupname, get_string('viewgrades', 'hotquestion'));
         $this->useridfield = 'userid';
 
         $this->init($group, $userid);
@@ -406,7 +414,7 @@ class viewgrades extends table_sql {
                 $this->sql->where .= ' AND '.$wsql;
                 $this->sql->params = array_merge($this->sql->params, $wparams);
 
-                $this->totalrows  = $DB->count_records_sql($this->countsql, $this->countparams);
+                $this->totalrows = $DB->count_records_sql($this->countsql, $this->countparams);
             }
 
             if ($this->totalrows > $pagesize) {

@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2021032906;         // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2021032908;         // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2020061500;        // Requires this Moodle version
 $plugin->component = 'mod_examregistrar'; // To check on upgrade, that module sits in correct place
 $plugin->maturity = MATURITY_RC;

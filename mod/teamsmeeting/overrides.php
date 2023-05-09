@@ -203,7 +203,8 @@ if($mform) {
         $expired = '';
     }
 
-    $usernames = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $usernames = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $sql = "SELECT o.*, g.name, s.id AS onlinemeetingid, s.teacherid, s.joinurl, u.idnumber, $usernames
             FROM {teamsmeeting_overrides} o
             JOIN {groups} g ON g.id = o.groupid

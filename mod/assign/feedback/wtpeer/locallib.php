@@ -874,7 +874,8 @@ class assign_feedback_wtpeer extends assign_feedback_plugin {
         $applytoall = optional_param('applytoall', 0, PARAM_INT);
         
         if($add || $remove) {
-            $fields = 'u.id, '.get_all_user_name_fields(true, 'u');
+            $userfieldsapi = \core_user\fields::for_name();
+            $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
             if ($applytoall && $this->assignment->get_instance()->teamsubmission) {
                 $submissiongroup = $this->assignment->get_submission_group($userid);
                 $submissionusers = get_users_by_capability($this->context, 'mod/assign:submit', $fields, 'lastname ASC',
@@ -954,7 +955,8 @@ class assign_feedback_wtpeer extends assign_feedback_plugin {
         $potentialmembers  = array();
         $submissionusers = array();
         
-        $fields = 'u.id, '.get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $fields = 'u.id, '.$userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $users = get_users_by_capability($this->context, 'assignfeedback/wtpeer:'.$item.'grade', $fields, 'lastname ASC');
 
         // if auto, then universe is only users in this submission
@@ -964,7 +966,8 @@ class assign_feedback_wtpeer extends assign_feedback_plugin {
                 $submissionusers = get_users_by_capability($this->context, 'assignfeedback/wtpeer:'.$item.'grade', $fields, 'lastname ASC',
                                                             '', '', $submissiongroup->id);
             } else {
-                $fields = 'id, idnumber, '.get_all_user_name_fields(true);
+                $userfieldsapi = \core_user\fields::for_name();
+                $fields = 'id, idnumber, ' . $userfieldsapi->get_sql('', false, '', '', false)->selects;
                 $submissionusers[$userid] = $DB->get_record('user', array('id'=>$userid), $fields, MUST_EXIST);
             }
             $users = array_intersect_key($users, $submissionusers);
@@ -2163,7 +2166,8 @@ class assign_feedback_wtpeer extends assign_feedback_plugin {
                                 );
         
         if($canviewmarkers[$item]) {
-            $fields = ', u.idnumber, '.get_all_user_name_fields(true, 'u');  
+            $userfieldsapi = \core_user\fields::for_name();
+            $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
             $join = 'JOIN {user} u ON u.id = g.grader';
             $sortoptions += array(   'lastname' => array(
                                         'directional' => true,
@@ -2207,7 +2211,7 @@ class assign_feedback_wtpeer extends assign_feedback_plugin {
             foreach($grades as $grade) {
                 $grade->grade = $this->assignment->display_grade($grade->grade, false, $grade->userid);
                 if($canviewmarkers[$item]) {
-                    $fields = get_all_user_name_fields(true);  
+                    $fields = implode(',', \core_user\fields::get_name_fields());
                     $marker = $DB->get_record('user', array('id'=>$grade->grader), 'id, idnumber, '.$fields);
                     $grade->fullname = $this->assignment->fullname($marker);
                 }

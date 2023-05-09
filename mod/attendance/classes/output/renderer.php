@@ -77,16 +77,6 @@ class renderer extends plugin_renderer_base {
             $url = $fcontrols->att->url_sessions()->out(true, ['action' => mod_attendance_sessions_page_params::ACTION_ADD]);
             $context->addsession = $this->output->single_button($url, get_string('addsession', 'attendance'), 'post',
              ['class' => 'addsession', 'primary' => true]);
-
-            // ecastro ULPGC
-            
-            
-            
-            $url = clone $fcontrols->att->url_sessions();
-            $url->param('action', mod_attendance_sessions_page_params::ACTION_AUTO);
-            $button = new \single_button($url, get_string('autosession', 'attendance'), 'post',['class' => 'autosession', 'primary' => true]);
-            $context->autosession = $this->render_password_button($button);
-            // ecastro ULPGC
         }
         
         $context->curdatecontrols = $this->render_curdate_controls($fcontrols);
@@ -95,19 +85,6 @@ class renderer extends plugin_renderer_base {
 
         return $this->render_from_template('attendance/filter_controls', $context);
     }
-
-    /**
-     * Renders a password button widget.
-     *
-     * This will return HTML to display a form containing a single button.
-     *
-     * @param single_button $button
-     * @return string HTML fragment
-    */
-    protected function render_password_button(\single_button $button) {
-        return $this->render_from_template('attendance/password_button', $button->export_for_template($this));
-    }    
-    
     
     /**
      * Render group selector
@@ -1400,22 +1377,23 @@ class renderer extends plugin_renderer_base {
             }
 
             if (!empty($sess->statusid)) {
+                $updatelink = '';
                 $status = $userdata->statuses[$sess->statusid];
                 $row->cells[] = $status->description;
                 if($userdata->filtercontrols->att->seating) {
-                    // ecastro ULPGC
-                    $seat = ''; 
+                // ecastro ULPGC 
+                    $seat = '';
                     $seatinfo->row = '';
                     $seatinfo->col = '';
                     if($sess->seat) {
                         list($seatinfo->row, $seatinfo->col) = explode('_', $sess->seat);
                         $seat = get_string('seatlabel', 'attendance', $seatinfo);
-                    }
-                    // ecastro ULPGC
-                    
+                }
+                // ecastro ULPGC
+
                     $update = '';
                     list($canmark, $reason) = attendance_can_student_mark($sess, false);
-                    if($canmark) {
+                    if(attendance_check_allow_update($sess->id) && $canmark) {
                         // URL to the page that lets the student modify their attendance.
                         $url = new moodle_url('/mod/attendance/attendance.php',
                                 array('sessid' => $sess->id, 'sesskey' => sesskey()));
@@ -1423,6 +1401,13 @@ class renderer extends plugin_renderer_base {
                     }
                     $row->cells[] = $seat.' '.$update;
                 }  else {              
+                list($canmark, $reason) = attendance_can_student_mark($sess, false);
+                if (attendance_check_allow_update($sess->id) && $canmark) {
+                    $url = new moodle_url('/mod/attendance/attendance.php',
+                                array('sessid' => $sess->id, 'sesskey' => sesskey()));
+                    $updatelink = "<br>".html_writer::link($url, get_string('updateattendance', 'attendance'));
+                }
+                $row->cells[] = $status->description.$updatelink;
                 $row->cells[] = format_float($status->grade, 1, true, true) . ' / ' .
                                     format_float($statussetmaxpoints[$status->setnumber], 1, true, true);
                 }
@@ -1440,26 +1425,32 @@ class renderer extends plugin_renderer_base {
             } else {
                 list($canmark, $reason) = attendance_can_student_mark($sess, false);
                 if ($canmark) {
-                    if ($sess->rotateqrcode == 1) {
-                        $url = new moodle_url('/mod/attendance/attendance.php');
-                        $output = html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sessid',
-                                'value' => $sess->id));
-                        $output .= html_writer::empty_tag('input', array('type' => 'text', 'name' => 'qrpass',
-                                'placeholder' => "Enter password"));
-                        $output .= html_writer::empty_tag('input', array('type' => 'submit',
-                                'value' => get_string('submit'),
-                                'class' => 'btn btn-secondary'));
-                        $cell = new html_table_cell(html_writer::tag('form', $output,
-                            array('action' => $url->out(), 'method' => 'get')));
-                    } else {
-                        // Student can mark their own attendance.
-                        // ecastro ULPGC
-                        $strsubmitattendance = $sess->seatrows ? get_string('submitplace', 'attendance') : 
+                    // Student can mark their own attendance.
+                    // URL to the page that lets the student modify their attendance.
+                    $url = new moodle_url('/mod/attendance/attendance.php',
+                            array('sessid' => $sess->id, 'sesskey' => sesskey()));
+                    if (attendance_session_open_for_students($sess)) {
+                        if ($sess->rotateqrcode == 1) {
+                            $url = new moodle_url('/mod/attendance/attendance.php');
+                            $output = html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sessid',
+                                                                       'value' => $sess->id]);
+                            $output .= html_writer::empty_tag('input', ['type' => 'text', 'name' => 'qrpass',
+                                                                        'placeholder' => "Enter password"]);
+                            $output .= html_writer::empty_tag('input', ['type' => 'submit',
+                                                                        'value' => get_string('submit'),
+                                                                        'class' => 'btn btn-secondary']);
+                            $cell = new html_table_cell(html_writer::tag('form', $output,
+                                                                         ['action' => $url->out(), 'method' => 'get']));
+                        } else {
+                            // ecastro ULPGC
+                            $strsubmitattendance = $sess->seatrows ? get_string('submitplace', 'attendance') :
                                                                     get_string('submitattendance', 'attendance');
-                        // URL to the page that lets the student modify their attendance.
-                        $url = new moodle_url('/mod/attendance/attendance.php',
-                                array('sessid' => $sess->id, 'sesskey' => sesskey()));
-                        $cell = new html_table_cell(html_writer::link($url, $strsubmitattendance)); // ecastro ULPGC  setrows in submitattendance
+                            $cell = new html_table_cell(html_writer::link($url, $strsubmitattendance));
+                            // ecastro ULPGC  setrows in submitattendance
+                            //$cell = new html_table_cell(html_writer::link($url, get_string('submitattendance', 'attendance')));
+                        }
+                    } else {
+                        $cell = new html_table_cell(html_writer::link($url, get_string('submitattendancefuture', 'attendance')));
                     }
                     $cell->colspan = 3;
                     $row->cells[] = $cell;
@@ -2091,7 +2082,11 @@ class renderer extends plugin_renderer_base {
 
                             $url = new moodle_url('/mod/attendance/attendance.php',
                             array('sessid' => $sess->id, 'sesskey' => sesskey()));
-                            $cell = new html_table_cell(html_writer::link($url, get_string('submitattendance', 'attendance')));
+                            if (attendance_session_open_for_students($sess)) {
+                                $cell = new html_table_cell(html_writer::link($url, get_string('submitattendance', 'attendance')));
+                            } else {
+                                $cell = new html_table_cell(html_writer::link($url, get_string('submitattendancefuture', 'attendance')));
+                            }
                             $cell->colspan = 3;
                             $row->cells[] = $cell;
                         } else { // Student cannot mark their own attendace.

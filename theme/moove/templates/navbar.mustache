@@ -67,7 +67,7 @@
             <img src="{{output.get_logo}}" class="logo mr-1" alt="{{sitename}}">
         {{/ output.should_display_logo }}
         {{^ output.should_display_logo }}
-            {{{ sitename }}}
+            <img style='height:70px !important;' src=/campusvirtual/moodle41ulpgc2/theme/moove/pix/logo_ulpgc_nuevo.jpg> {{{ sitename }}}  <img class="logo_ulpgc">
         {{/ output.should_display_logo }}
     </a>
 
@@ -81,7 +81,6 @@
         <!-- page_heading_menu -->
         {{{ output.page_heading_menu }}}
     </ul>
-
     <div id="usernavigation" class="navbar-nav ml-auto">
         <div class="navbarcallbacks">
             {{{ output.get_navbar_callbacks_data }}}
@@ -100,15 +99,53 @@
                 {{> core/user_menu }}
             {{/usermenu}}
         </div>
+        {{^notloggedin}} {{! Do not show if NOT logged in. // ecastro ULPGC }}
+		<div data-key="miulpgc" class="miulpgc" role="none" >
+				<a href="https://www2.ulpgc.es/index.php?pagina=miulpgc&amp;ver=miulpgc&amp;login=mlpgc" class="ulpgcds-btn ulpgcds-btn--small ulpgcds-btn--primary"><span class="ulpgcds-btn__icon ulpgcds-icon-user" aria-hidden="true"></span>MiULPGC</a>
+		</div>
+		{{/notloggedin}}
         {{{ output.edit_switch }}}
     </div>
 </nav>
 
 {{#secondarymoremenu}}
     <div class="secondary-navigation d-print-none moove">
-        <div class="moove-container-fluid">
+        <div class="moove-container-fluid d-flex">
             {{> core/moremenu}}
+            {{#incoursesettings}}
+                <nav class="context-header-settings-menu incoursesettings navigation">
+                    <a href="#" tabindex="0" class=" dropdown-toggle icon-no-margin" id="dropdown-2" aria-label="{{incoursesettings}}" data-toggle="dropdown" role="button" aria-expanded="true" aria-controls="moove-incourse-settings">
+                    <i class="icon fa {{coursesettingsicon}} fa-fw " title="{{incoursesettings}}" aria-label="{{incoursesettings}}"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right menu align-tr-br" id="action-menu-2-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-2" role="menu" data-align="tr-br">
+                        {{#incoursesettings}}
+                            {{#node}}
+                                {{> theme_moove/settings_page_course}}
+                            {{/node}}
+                        {{/incoursesettings}}
+                    </div>
+                </nav>
+            {{/incoursesettings}}
+            {{#inactivitysettings}}
+                <nav class="context-header-settings-menu nav-link inactivitysettings navigation">
+                    <a href="#" tabindex="0" class="dropdown-toggle icon-no-margin" id="dropdown-3" aria-label="{{inactivitysettings}}" data-toggle="dropdown" role="button" aria-expanded="true" aria-controls="moove-inactivity-settings">
+                    <i class="icon fa {{activitysettingsicon}} fa-fw " title="{{inactivitysettings}}" aria-label="{{inactivitysettings}}"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right menu align-tr-br" id="action-menu-3-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-3" role="menu" data-align="tr-br">
+                        {{#inactivitysettings}}
+                            {{#activitynode}}
+                                {{> theme_moove/settings_page_mod}}
+                                {{!> theme_boost_campus/activity_settings_incourse }}
+                            {{/activitynode}}
+                        {{/inactivitysettings}}
+                    </div>
+                </nav>
+            {{/inactivitysettings}}
         </div>
+    </div>
+{{/secondarymoremenu}}
+{{^secondarymoremenu}}
+    <div class="secondary-navigation d-print-none moove empty">
     </div>
 {{/secondarymoremenu}}
 

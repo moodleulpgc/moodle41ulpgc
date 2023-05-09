@@ -154,6 +154,7 @@ $string['answer'] = 'Answer';
 $string['any'] = 'Any';
 $string['approve'] = 'Approve';
 $string['appearance'] = 'Appearance';
+$string['apply'] = 'Apply';
 $string['applyfilters'] = 'Apply filters';
 $string['areyousure'] = 'Are you sure?';
 $string['areyousuretorestorethis'] = 'Do you want to continue?';
@@ -318,6 +319,7 @@ $string['cookiesenabledonlysession_help'] = 'This site uses one session cookie, 
 $string['cookiesnotenabled'] = 'Unfortunately, cookies are currently not enabled in your browser';
 $string['cookiesnotice'] = 'Cookies notice';
 $string['copy'] = 'copy';
+$string['copytoclipboard'] = 'Copy to clipboard';
 $string['copyasnoun'] = 'copy';
 $string['copycourse'] = 'Copy course';
 $string['copyingcoursefiles'] = 'Copying course files';
@@ -581,6 +583,7 @@ $string['doyouagree'] = 'Have you read these conditions and understood them?';
 $string['droptoupload'] = 'Drop files here to upload';
 $string['duplicate'] = 'Duplicate';
 $string['duplicatedmodule'] = '{$a} (copy)';
+$string['duplicatedsection'] = '{$a} (copy)';
 $string['edhelpaspellpath'] = 'To use spell-checking within the editor, you MUST have <strong>aspell 0.50</strong> or later installed on your server, and you must specify the correct path to access the aspell binary.  On Unix/Linux systems, this path is usually <strong>/usr/bin/aspell</strong>, but it might be something else.';
 $string['edhelpbgcolor'] = 'Define the edit area\'s background color.<br />Valid values are, for example: #FFFFFF or white';
 $string['edhelpcleanword'] = 'This setting enables or disables Word-specific format filtering.';
@@ -1020,8 +1023,8 @@ $string['hiddenwithbrackets'] = '(hidden)';
 $string['hide'] = 'Hide';
 $string['hideadvancedsettings'] = 'Hide advanced settings';
 $string['hidechartdata'] = 'Hide chart data';
-$string['hidefromstudents'] = 'Hide from students';
-$string['hideoncoursepage'] = 'Make available but not shown on course page';
+$string['hidefromstudents'] = 'Hide on course page';
+$string['hideoncoursepage'] = 'Make available but don\'t show on course page';
 $string['hidesection'] = 'Hide section {$a}';
 $string['hidesettings'] = 'Hide settings';
 $string['hideshowblocks'] = 'Hide or show blocks';
@@ -1152,6 +1155,7 @@ $string['indicator:userforumstracking'] = 'User is tracking forums';
 $string['indicator:userforumstracking_help'] = 'This indicator represents whether or not the student has tracking turned on in the forums.';
 $string['info'] = 'Information';
 $string['inprogress'] = 'In progress';
+$string['insertresourceoractivitybefore'] = 'Insert an activity or resource before \'{$a->activityname}\'';
 $string['institution'] = 'Institution';
 $string['instudentview'] = 'in student view';
 $string['interests'] = 'Interests';
@@ -1212,7 +1216,7 @@ $string['loginalready'] = 'You are already logged in';
 $string['loginas'] = 'Log in as';
 $string['loginaspasswordexplain'] = '<p>You must enter the special "loginas password" to use this feature.<br />If you do not know it, ask your server administrator.</p>';
 $string['login_failure_logs'] = 'Login failure logs';
-$string['loginguest'] = 'Log in as a guest';
+$string['loginguest'] = 'Access as a guest';
 $string['loginsite'] = 'Log in to the site';
 $string['loginsteps'] = 'For full access to this site, you first need to create an account.';
 $string['loginstepsnone'] = '<p>Hi!</p>
@@ -1337,19 +1341,15 @@ $string['moddoesnotsupporttype'] = 'Module {$a->modname} does not support upload
 $string['modhide'] = 'Hide';
 $string['modshow'] = 'Show';
 $string['modvisible'] = 'Availability';
-$string['modvisible_help'] = 'If the availability is set to \'Show on course page\', the activity or resource is available to students (subject to any access restrictions which may be set).
-
-If the availability is set to \'Hide from students\', the activity or resource is only available to users with permission to view hidden activities (by default, users with the role of teacher or non-editing teacher).';
+$string['modvisible_help'] = '* Show on course page: Available to students (subject to any access restrictions which may be set).
+* Hide on course page: Not available to students.';
 $string['modvisiblewithstealth'] = 'Availability';
-$string['modvisiblewithstealth_help'] = 'If the availability is set to \'Show on course page\', the activity or resource is available to students (subject to any access restrictions which may be set).
-
-If the availability is set to \'Hide from students\', the activity or resource is only available to users with permission to view hidden activities (by default, users with the role of teacher or non-editing teacher).
-
-If the course contains many activities or resources, the course page may be simplified by setting the availability to \'Make available but not shown on course page\'. In this case, a link to the activity or resource must be provided from elsewhere, such as from a page resource. The activity would still be listed in the gradebook and other reports.';
+$string['modvisiblewithstealth_help'] = '* Show on course page: Available to students (subject to any access restrictions which may be set).
+* Hide on course page: Not available to students.
+* Make available but don\'t show on course page: Available to students if you provide a link. Activities will still appear in the gradebook and other reports.';
 $string['modvisiblehiddensection'] = 'Availability';
-$string['modvisiblehiddensection_help'] = 'If the availability is set to \'Hide from students\', the activity or resource is only available to users with permission to view hidden activities (by default, users with the role of teacher or non-editing teacher).
-
-If the course contains many activities or resources, the course page may be simplified by setting the availability to \'Make available but not shown on course page\'. In this case, a link to the activity or resource must be provided from elsewhere, such as from a page resource. The activity would still be listed in the gradebook and other reports.';
+$string['modvisiblehiddensection_help'] = '* Hide on course page: Not available to students.
+* Make available but don\'t show on course page: Available to students if you provide a link. Activities will still appear in the gradebook and other reports.';
 $string['moodlelogo'] = 'Moodle logo';
 $string['month'] = 'Month';
 $string['months'] = 'Months';
@@ -1372,7 +1372,7 @@ $string['moreprofileinfoneeded'] = 'Please tell us more about yourself';
 $string['morenavigationlinks'] = 'More...';
 $string['mostrecently'] = 'most recently';
 $string['move'] = 'Move';
-$string['movecoursemodule'] = 'Move resource';
+$string['movecoursemodule'] = 'Move activity';
 $string['movecoursesection'] = 'Move section';
 $string['movecontent'] = 'Move {$a}';
 $string['movecontentafter'] = 'After "{$a}"';
@@ -1663,6 +1663,7 @@ $string['pluginarea'] = 'Area';
 $string['plugindeletefiles'] = 'All data associated with the plugin \'{$a->name}\' has been deleted from the database. To prevent the plugin re-installing itself, you should now delete this directory from your server: {$a->directory}';
 $string['plugincheck'] = 'Plugins check';
 $string['pluginitemid'] = 'Item ID';
+$string['pluginmissingfromdisk'] = '{$a->name} (Missing from disk)';
 $string['pluginsetup'] = 'Setting up plugin tables';
 $string['policyaccept'] = 'I understand and agree';
 $string['policyagree'] = 'You must agree to this policy to continue using this site.  Do you agree?';
@@ -1743,6 +1744,7 @@ $string['private_files_handler_name'] = 'Email to Private files';
 $string['proceed'] = 'Proceed';
 $string['profile'] = 'Profile';
 $string['profilenotshown'] = 'This profile description will not be shown until this person is enrolled in at least one course.';
+$string['progress'] = 'Progress';
 $string['publicprofile'] = 'Public profile';
 $string['publicsitefileswarning'] = 'Note: files placed here can be accessed by anyone';
 $string['publicsitefileswarning2'] = 'Note: Files placed here can be accessed by anyone who knows (or can guess) the URL. For security reasons, it is recommended that any backup files are deleted immediately after restoring them.';
@@ -1966,6 +1968,7 @@ $string['setmode'] = 'Set mode';
 $string['setpassword'] = 'Set password';
 $string['setpasswordinstructions'] = 'Please enter your new password below, then save changes.';
 $string['settings'] = 'Settings';
+$string['share'] = 'Share';
 $string['shortname'] = 'Short name'; /* @deprecated MDL-34652 - Use shortnamecourse or shortnameuser or some own context specific string. */
 $string['shortnamecollisionwarning'] = '[*] = This shortname is already in use by a course and will need to be changed upon approval';
 $string['shortnamecourse'] = 'Course short name';

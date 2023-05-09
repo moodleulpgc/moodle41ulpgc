@@ -540,6 +540,9 @@ class mod_attendance_structure {
         if (!isset($sess->studentscanmark)) {
             $sess->studentscanmark = 0;
         }
+        if (!isset($sess->allowupdatestatus)) {
+            $sess->allowupdatestatus = 0;
+        }
         if (!isset($sess->studentsearlyopentime)) {
             $sess->studentsearlyopentime = 0;
         }
@@ -608,6 +611,7 @@ class mod_attendance_structure {
         $sess->calendarevent = empty($formdata->calendarevent) ? 0 : $formdata->calendarevent;
 
         $sess->studentscanmark = 0;
+        $sess->allowupdatestatus = 0;
         $sess->autoassignstatus = 0;
         $sess->studentpassword = '';
         $sess->subnet = '';
@@ -636,6 +640,7 @@ class mod_attendance_structure {
         if (!empty($studentscanmark) &&
             !empty($formdata->studentscanmark)) {
             $sess->studentscanmark = $formdata->studentscanmark;
+            $sess->allowupdatestatus = $formdata->allowupdatestatus;
             $sess->studentpassword = $formdata->studentpassword;
             $sess->autoassignstatus = $formdata->autoassignstatus;
             if (!empty($formdata->includeqrcode)) {
@@ -732,13 +737,10 @@ class mod_attendance_structure {
             $record->seat = optional_param('seat', '', PARAM_TEXT); // ecastro ULPGC
         }
 
-        /*
-        $existingattendance = $DB->record_exists('attendance_log',
-            array('sessionid' => $mformdata->sessid, 'studentid' => $USER->id));
-        */
         $session = $this->get_session_info($mformdata->sessid); // ecastro ULPGC moved here     
-        $existingattendance = $DB->get_record('attendance_log',
-                                array('sessionid' => $mformdata->sessid, 'studentid' => $USER->id));
+        $existingattendance = $DB->get_field('attendance_log', 'id',
+                            array('sessionid' => $mformdata->sessid, 'studentid' => $USER->id));
+        
         // ecastro ULPGC check for no duplicate users in the same seat
         if($record->seat &&  $session->seatrows) {
             $select = 'sessionid = :sid AND seat = :seat AND studentid <> :userid';
@@ -750,23 +752,23 @@ class mod_attendance_structure {
             }      
         }
 
-        if ($existingattendance) {
+        if (!empty($existingattendance)) {
             // ecastro ULPGC
             if($this->seating && $session->seatrows) {
                 if(($session->sessdate + $session->duration + DAYSECS*7) < $now) {
                     // we are late, do no t save.
                     return false;                    
                 }
-            } else { 
-            // Already recorded do not save.
-            return false;
-        }
-
-            $record->id = $existingattendance->id;
-            $DB->update_record('attendance_log', $record);
+            } elseif (!attendance_check_allow_update($mformdata->sessid)) {
+                // Already recorded do not save.
+                return false;
+            } else {
+                $record->id = $existingattendance;
+                $DB->update_record('attendance_log', $record);
+            }
         } else {
-        $logid = $DB->insert_record('attendance_log', $record, false);
-        $record->id = $logid;
+            $logid = $DB->insert_record('attendance_log', $record);
+            $record->id = $logid;
         }
 
         // Update the session to show that a register has been taken, or staff may overwrite records.
@@ -1139,6 +1141,38 @@ class mod_attendance_structure {
     }
 
     /**
+     * Helper function to return status values that a user can currently use in this session.
+     *
+     * @param stdclass $session
+     * @return array
+     */
+    public function get_student_statuses($session) {
+        $statuses = $this->get_statuses();
+        $disabledduetotime = false;
+        $sessionstarttime = empty($session->studentsearlyopentime) ?
+            $session->sessdate : $session->sessdate - $session->studentsearlyopentime;
+
+        if (time() < $sessionstarttime) {
+            foreach ($statuses as $status) {
+                if ($status->availablebeforesession == 0) {
+                    unset($statuses[$status->id]);
+                }
+            }
+        } else if (time() > $sessionstarttime) {
+            foreach ($statuses as $status) {
+                if ($status->studentavailability === '0') {
+                    unset($statuses[$status->id]);
+                } else if (!empty($status->studentavailability
+                    && time() > $session->sessdate + ($status->studentavailability * 60))) {
+                    unset($statuses[$status->id]);
+                    $disabledduetotime = true;
+                }
+            }
+        }
+        return [$statuses, $disabledduetotime];
+    }
+
+    /**
      * Get session info.
      * @param int $sessionid
      * @return mixed
@@ -1279,7 +1313,7 @@ class mod_attendance_structure {
         if ($this->get_group_mode()) {
             // ecastro ULPGC add al.seat & seatrows
             $sql = "SELECT $id, ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description,
-                           al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus,
+                           al.statusid, al.remarks, ats.studentscanmark, ats.allowupdatestatus, ats.autoassignstatus,
                            ats.preventsharedip, ats.preventsharediptime, ats.rotateqrcode,
                            ats.studentsearlyopentime, al.seat, ats.seatrows
 
@@ -1291,7 +1325,7 @@ class mod_attendance_structure {
                   ORDER BY ats.sessdate ASC";
         } else {
             $sql = "SELECT $id, ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description, ats.statusset,
-                           al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus,
+                           al.statusid, al.remarks, ats.studentscanmark, ats.allowupdatestatus, ats.autoassignstatus,
                            ats.preventsharedip, ats.preventsharediptime, ats.rotateqrcode,
                            ats.studentsearlyopentime, al.seat, ats.seatrows
                       FROM {attendance_sessions} ats
@@ -1324,7 +1358,7 @@ class mod_attendance_structure {
         }
         // ecastro ULPGC added al.seat
         $sql = "SELECT $id, ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description, ats.statusset,
-                       al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus,
+                       al.statusid, al.remarks, ats.studentscanmark, ats.allowupdatestatus, ats.autoassignstatus,
                        ats.preventsharedip, ats.preventsharediptime, ats.rotateqrcode,
                        ats.studentsearlyopentime, al.seat, ats.seatrows
                   FROM {attendance_sessions} ats

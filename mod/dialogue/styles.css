@@ -650,8 +650,9 @@ body.path-mod-dialogue #region-main .btn-group {
 }
 
 /* ecastro ULPGC */
+/*
 .path-mod-dialogue #region-main .btn {
-    color: white; 
+    color: white;
 }
 
 .path-mod-dialogue #region-main .btn:hover {

@@ -59,12 +59,7 @@ This setting is already available in the Moodle core theme Boost. For more infor
 
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
 
-#### Background image
-
-This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
-Please note: This will not override the setting "theme_boost_campus | loginbackgroundimage" which means that the pictures uploaded to the login page background will be displayed anyway.
-
-#### Tab "Advanced settings"
+#### Tab "SCSS"
 
 In this tab there are the following settings:
 
@@ -91,12 +86,6 @@ With this setting, you can override Moodle's course content width without manual
 ###### Medium content max width
 
 With this setting, you can override Moodle's default medium width without manual SCSS modifications.
-
-##### Content width
-
-###### H5P content bank max width
-
-With this setting, you can override Moodle's H5P content bank width without manual SCSS modifications.
 
 #### Tab "Branding"
 
@@ -212,9 +201,23 @@ With this setting you can upload custom fonts to the theme. The advantage of upl
 
 Moodle core ships with FontAwesome 4 icons which are fine, but FontAwesome has evolved since then. If you want to use more recent FontAwesome icons, you can do this with this setting. As soon as you choose another version than FontAwesome 4, additional settings will appear where you can upload more recent FontAwesome versions.
 
+#### Tab "H5P"
+
+##### Raw CSS for H5P
+
+###### Raw CSS for H5P
+
+Use this field to provide CSS code which will be applied to the presentation of H5P content by mod_h5p and mod_hvp. Please inspect the H5P content types to find the necessary CSS selectors.
+
+##### Content width
+
+###### H5P content bank max width
+
+With this setting, you can override Moodle's H5P content bank width without manual SCSS modifications.
+
 #### Tab "Mobile app"
 
-##### Mobile appearance 
+##### Mobile appearance
 
 ###### Additional CSS for Mobile app
 
@@ -255,6 +258,59 @@ In this tab there are the following settings:
 ###### Unneeded blocks
 
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
+
+##### Additional block regions
+
+Boost Union provides a large number of additional block regions which can be used to add and show blocks over the whole Moodle page:
+
+* The Outside block regions are placed on all four sides of the Moodle page. They can be used to show blocks which accompany the shown Moodle page but do not directly belong to the main content.
+* The Header block region is placed between the Outside (top) area and the main content area. It can be used to show a block as course header information.
+* The Content block regions are placed directly over and under the main content in the main content area. They can be used to add blocks to the course content flow.
+* The Footer block regions are placed at the bottom of the page between the Outside (bottom) area and the footnote. You have three footer regions available to build columns if necessary.
+* The Off-canvas block region is somehow special as it hovers over the whole Moodle page as a drawer. The drawer is opened by the 9-dots icon at the very right side of the navigation bar. You have three off-canvas regions available to build columns if necessary.
+
+Please note:
+
+* By default, all additional block regions are disabled. Please enable the particular block regions on the particular page layouts according to your needs. Try to be as focused as possible – too many block regions could overwhelm end users.
+* As soon as an additional block region is enabled, it is visible for all authenticated users and editable by teachers and managers (depending on the fact if the particular user is allowed to edit the particular Moodle page, of course). But there are also theme/boost_union:viewregion* and theme/boost_union:editregion* capabilities which allow you to fine-tune the usage of each block region according to your needs.
+* The Outside (left), Outside (right), Content (upper), Content (lower) and Header block regions are not available for all page layouts.
+
+##### Outside regions
+
+Outside regions can not only be enabled with the layout settings above, their appearance can also be customized.
+
+###### Block region width for 'Outside (left)' region
+
+With this setting, you can set the width of the 'Outside (left)' block region which is shown on the left hand side of the main content area.
+
+###### Block region width for 'Outside (right)' region
+
+With this setting, you can set the width of the 'Outside (right)' block region which is shown on the right hand side of the main content area.
+
+###### Block region width for 'Outside (top)' region
+
+With this setting, you can set the width of the 'Outside (top)' block region which is shown at the very top of the page.
+
+###### Block region width for 'Outside (bottom)' region
+
+With this setting, you can set the width of the 'Outside (bottom)' block region which is shown below the main content.
+
+###### Outside regions horizontal placement
+
+With this setting, you can control if, on larger screens, the 'Outside (left)' and 'Outside (right)' block regions should be placed near the main content area or rather near the window edges.
+##### Site home right-hand block drawer
+
+###### Show right-hand block drawer of site home on visit
+
+With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who are not logged in and does not overwrite the toggle state of each individual user.
+
+###### Show right-hand block drawer of site home on first login
+
+With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in for the very first time and does not overwrite the toggle state of each individual user.
+
+###### Show right-hand block drawer of site home on guest login
+
+With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in as a guest.
 
 #### Tab "Miscellaneous"
 
@@ -352,6 +408,14 @@ This capability is used to control who is able to see a hint for unrestricted se
 
 This capability is used to control who is able to see a hint in a hidden course (if this feature was enabled in the theme settings). By default, it is assigned to teachers, non-editing teachers and managers.
 
+### theme/boost_union:viewregion*
+
+These capabilities are used to control who is allowed to see a particular block region. By default, they are assigned to all authenticated users, teachers, non-editing teachers and managers
+
+### theme/boost_union:editregion*
+
+These capabilities are used to control who is allowed to edit a particular block region. By default, they are assigned to teachers, non-editing teachers and managers.
+
 
 How this theme works
 --------------------
@@ -427,6 +491,12 @@ Maintainers
 The plugin is maintained by\
 Moodle an Hochschulen e.V.
 
+in cooperation with\
+lern.link GmbH
+
+together with\
+bdecent GmbH
+
 
 Copyright
 ---------
@@ -450,14 +520,19 @@ This theme is a collaboration result of multiple organisations.
 
 Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
 
+* bdecent GmbH, Stefan Scholz: Code, Ideating, Funding
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
+* FernUniversität in Hagen, Daniel Poggenpohl: Code, Ideating
+* Hochschule Hannover - University of Applied Sciences and Arts: Funding, Ideating
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
-* Lower Saxony (Federal state of Germany): Funding
-* moodleSCHULE e.V., Ralf Krause: German translation and curation
-* Ruhr University Bochum, Melanie Treitinger: Code
+* lern.link GmbH, Beata Waloszczyk: Code
+* moodleSCHULE e.V., Ralf Krause: German translation and curation, Ideating
+* Ruhr University Bochum, Melanie Treitinger: Code, Ideating
+* RWTH Aachen, Amrita Deb Dutta: Code
 * RWTH Aachen, Josha Bartsch: Code
+* University of Graz, André Menrath: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
-* Zurich University of Applied Sciences (ZHAW): Funding
+* Zurich University of Applied Sciences (ZHAW): Funding, Ideating
 
 Additionally, we thank all other contributors who contributed ideas, feedback and code snippets within the Github issues and pull requests as well as all contributors who contributed additional translations in AMOS, the Moodle translation tool.

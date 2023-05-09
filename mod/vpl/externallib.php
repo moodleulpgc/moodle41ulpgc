@@ -31,7 +31,18 @@ require_once(dirname( __FILE__ ) . '/locallib.php');
 require_once(dirname( __FILE__ ) . '/forms/edit.class.php');
 require_once(dirname( __FILE__ ) . '/vpl_submission.class.php');
 
+/**
+ * @codeCoverageIgnore
+ */
 class mod_vpl_webservice extends external_api {
+    /**
+     * Returns VPL activity object for coursemodule id.
+     * Does checks fro required netwok and password if setted.
+     *
+     * @param int $id The coursemodule id.
+     * @param string $pssword The password for using the VPL activity.
+     * @return \mod_vpl object or throws exception if not available.
+     */
     private static function initial_checks($id, $password) {
         $vpl = new mod_vpl( $id );
         if (! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
@@ -45,6 +56,49 @@ class mod_vpl_webservice extends external_api {
         }
         return $vpl;
     }
+
+    /**
+     * Encode file format from array if key = value (filename => data),
+     * to an array of arrays with 'name', 'data' and 'enconding' for each file.
+     *
+     * @param array $files of (filename => data).
+     * @return array of array with 'name', 'data' and 'conding' keys.
+     */
+    private static function encode_files(&$oldfiles) {
+        $files = [];
+        foreach ($oldfiles as $name => $data) {
+            $file = [];
+            $file['name'] = $name;
+            if ( vpl_is_binary($name, $data) ) {
+                $file['data'] = base64_encode( $data );
+                $file['encoding'] = 1;
+            } else {
+                $file['data'] = $data;
+                $file['encoding'] = 0;
+            }
+            $files[] = $file;
+        }
+        return $files;
+    }
+    /**
+     * Revert encode_files action.
+     *
+     * @param array of array with 'name', 'data' and 'conding' keys.
+     * @return array $files of (filename => data).
+     */
+    private static function decode_files(&$oldfiles) {
+        $files = [];
+        foreach ($oldfiles as $file) {
+            $name = $file['name'];
+            if ( isset($file['encoding']) && $file['encoding'] == 1 ) {
+                $data = base64_decode( $file['data'] );
+            } else {
+                $data = $file['data'];
+            }
+            $files[$name] = $data;
+        }
+        return $files;
+    }
     /*
      * info function. return information of the activity
      */
@@ -52,7 +106,7 @@ class mod_vpl_webservice extends external_api {
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
-        ) );
+        ), 'Parameters', VALUE_REQUIRED);
     }
     public static function info($id, $password) {
         self::validate_parameters( self::info_parameters(), array (
@@ -78,25 +132,26 @@ class mod_vpl_webservice extends external_api {
         );
         $files = mod_vpl_edit::get_requested_files( $vpl );
         // Adapt array of name => value content to format array of objects {name, data}.
-        $files = mod_vpl_edit::files2object( $files );
+        $files = self::encode_files( $files );
         $ret['reqfiles'] = $files;
         return $ret;
     }
     public static function info_returns() {
         return new external_single_structure( array (
-                'name' => new external_value( PARAM_TEXT, 'Name' ),
-                'shortdescription' => new external_value( PARAM_TEXT, 'Short description' ),
-                'intro' => new external_value( PARAM_RAW, 'Full description' ),
-                'introformat' => new external_value( PARAM_INT, 'Description format' ),
-                'reqpassword' => new external_value( PARAM_INT, 'Activity requiere password' ),
-                'example' => new external_value( PARAM_INT, 'Activity is an example' ),
-                'restrictededitor' => new external_value( PARAM_INT, 'Activity edition is restricted' ),
-                'maxfiles' => new external_value( PARAM_INT, 'Maximum number of file acepted' ),
+                'name' => new external_value( PARAM_TEXT, 'Name', VALUE_REQUIRED),
+                'shortdescription' => new external_value( PARAM_TEXT, 'Short description', VALUE_REQUIRED),
+                'intro' => new external_value( PARAM_RAW, 'Full description', VALUE_REQUIRED),
+                'introformat' => new external_value( PARAM_INT, 'Description format', VALUE_REQUIRED ),
+                'reqpassword' => new external_value( PARAM_INT, 'Activity requiere password', VALUE_REQUIRED),
+                'example' => new external_value( PARAM_INT, 'Activity is an example', VALUE_REQUIRED),
+                'restrictededitor' => new external_value( PARAM_INT, 'Activity edition is restricted', VALUE_REQUIRED),
+                'maxfiles' => new external_value( PARAM_INT, 'Maximum number of file acepted', VALUE_REQUIRED),
                 'reqfiles' => new external_multiple_structure( new external_single_structure( array (
-                        'name' => new external_value( PARAM_TEXT, 'File name' ),
-                        'data' => new external_value( PARAM_RAW, 'File content' )
-                ) ) )
-        ) );
+                        'name' => new external_value( PARAM_TEXT, 'File name', VALUE_REQUIRED),
+                        'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
+                ) ), 'Required files', VALUE_REQUIRED)
+                ), 'Parameters', VALUE_REQUIRED);
     }
 
     /*
@@ -104,13 +159,14 @@ class mod_vpl_webservice extends external_api {
      */
     public static function save_parameters() {
         return new external_function_parameters( array (
-                'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
+                'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED),
                 'files' => new external_multiple_structure( new external_single_structure( array (
-                        'name' => new external_value( PARAM_RAW, 'File name' ),
-                        'data' => new external_value( PARAM_RAW, 'File content' )
-                ) ) ),
+                        'name' => new external_value( PARAM_RAW, 'File name', VALUE_REQUIRED),
+                        'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
+                ) ), 'Files', VALUE_REQUIRED),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
-        ) );
+        ), 'Parameters', VALUE_REQUIRED );
     }
     public static function save($id, $files = array(), $password = '') {
         global $USER;
@@ -129,11 +185,7 @@ class mod_vpl_webservice extends external_api {
             throw new Exception( get_string( 'notavailable' ) );
         }
         // Adapts to the file format VPL3.2.
-        $oldfiles = $files;
-        $files = array();
-        foreach ($oldfiles as $file) {
-            $files[$file['name']] = $file['data'];
-        }
+        $files = self::decode_files($files);
         mod_vpl_edit::save( $vpl, $USER->id, $files );
     }
 
@@ -149,7 +201,7 @@ class mod_vpl_webservice extends external_api {
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
                 'userid' => new external_value( PARAM_INT, 'User ID', VALUE_DEFAULT, -1 )
-        ) );
+        ), 'Parameters', VALUE_REQUIRED );
     }
     public static function open($id, $password, $userid) {
         global $USER;
@@ -170,8 +222,8 @@ class mod_vpl_webservice extends external_api {
         }
         $compilationexecution = new stdClass();
         $files = mod_vpl_edit::get_submitted_files( $vpl, $userid, $compilationexecution );
-        // Adapt array of name => value content to format array of objects {name, data}.
-        $files = mod_vpl_edit::files2object( $files );
+        // Adapt array of name => value content to format array of objects {name, data, encoding}.
+        $files = self::encode_files( $files );
         $ret = [
                 'files' => $files,
                 'compilation' => '',
@@ -189,13 +241,14 @@ class mod_vpl_webservice extends external_api {
     public static function open_returns() {
         return new external_single_structure( array (
                 'files' => new external_multiple_structure( new external_single_structure( array (
-                        'name' => new external_value( PARAM_TEXT, 'File name' ),
-                        'data' => new external_value( PARAM_RAW, 'File content' )
-                ) ) ),
-                'compilation' => new external_value( PARAM_RAW, 'Compilation result' ),
-                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result' ),
-                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade' )
-        ) );
+                        'name' => new external_value( PARAM_TEXT, 'File name', VALUE_REQUIRED),
+                        'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
+                ) ), 'Files', VALUE_REQUIRED),
+                'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
+                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
+                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED)
+        ), 'Parameters', VALUE_REQUIRED );
     }
 
     /*
@@ -205,7 +258,7 @@ class mod_vpl_webservice extends external_api {
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
-        ) );
+        ), 'Parameters', VALUE_REQUIRED );
     }
     public static function evaluate($id, $password) {
         global $USER;
@@ -241,9 +294,9 @@ The jail send information as text in this format:
 'close': the conection is to be closed.
 if the websocket client send something to the server then the evaluation is stopped.";
         return new external_single_structure( array (
-                'monitorURL' => new external_value( PARAM_RAW, $desc ),
-                'smonitorURL' => new external_value( PARAM_RAW, $desc ),
-        ) );
+                'monitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
+                'smonitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
+        ), 'Parameters', VALUE_REQUIRED );
     }
 
     /*
@@ -288,9 +341,9 @@ if the websocket client send something to the server then the evaluation is stop
     }
     public static function get_result_returns() {
         return new external_single_structure( array (
-                'compilation' => new external_value( PARAM_RAW, 'Compilation result' ),
-                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result' ),
-                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade' )
-        ) );
+                'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
+                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
+                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED)
+        ), 'Parameters', VALUE_REQUIRED);
     }
 }

@@ -43,14 +43,16 @@ class populate_objects_filesize extends adhoc_task {
         $maxupdates = !empty($data->maxupdates) ? $data->maxupdates : self::MAX_UPDATES;
 
         // Get all objects without a filesize and join them to a filesize from the files table.
+        // Values less than 0 for object's location indicate an error for the object.
         $sql = "SELECT o.id, o.contenthash, o.timeduplicated, o.location, f.filesize
                   FROM {tool_objectfs_objects} o
-             LEFT JOIN {files} f ON o.contenthash = f.contenthash
+                  JOIN {files} f ON o.contenthash = f.contenthash
                  WHERE o.filesize IS NULL
+                   AND o.location >= 0
               GROUP BY o.id,
                        o.contenthash,
                        f.filesize";
-        $records = $DB->get_recordset_sql($sql);
+        $records = $DB->get_recordset_sql($sql, null, 0, $maxupdates + 1);
 
         // If more records found than the max number of updates, only process max updates then queue new task.
         $queueadditionaltask = false;
@@ -65,8 +67,14 @@ class populate_objects_filesize extends adhoc_task {
             $updatecount += 1;
         }
         $records->close();
+        if (!PHPUNIT_TEST) {
+            mtrace("$updatecount records updated");
+        }
 
         if ($queueadditionaltask) {
+            if (!PHPUNIT_TEST) {
+                mtrace("Queueing additional task");
+            }
             manager::queue_adhoc_task(new populate_objects_filesize());
         }
     }

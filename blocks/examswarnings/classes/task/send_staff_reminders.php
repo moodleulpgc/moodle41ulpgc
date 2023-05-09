@@ -94,7 +94,8 @@ class send_staff_reminders extends base {
                         foreach($exams as $exam) {
                             $examnames[$exam->id] = $exam->shortname.' - '.$exam->fullname.'<br />';
                         }
-                        $names = get_all_user_name_fields(true, 'u');
+                        $userfieldsapi = \core_user\fields::for_name();
+                        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
                         
                         $sql = "SELECT s.id AS sid, s.info, s.role, e.name AS rolename, e.idnumber AS roleidnumber,
                                                 u.id, u.email, u.mailformat, u.username, u.maildisplay, $names

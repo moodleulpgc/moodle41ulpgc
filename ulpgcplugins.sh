@@ -20,6 +20,7 @@ git submodule add git@bitbucket.org:moodleulpgc/moodle-tool_backuprestore.git   
 git submodule set-branch -b moodle41 -- admin/tool/backuprestore
 git submodule add git@bitbucket.org:moodleulpgc/moodle-tool_batchmanage.git     admin/tool/batchmanage
 git submodule set-branch -b moodle41 -- admin/tool/batchmanage
+git submodule add git@bitbucket.org:moodleulpgc/moodle-tool_ulpgcqc.git         admin/tool/ulpgcqc
 
 #auth plugins
 git submodule add git@bitbucket.org:moodleulpgc/moodle-auth_casulpgc.git        auth/casulpgc
@@ -111,8 +112,10 @@ git submodule add git@bitbucket.org:moodleulpgc/moodle-qformat_ulpgctf.git      
 git submodule set-branch -b moodle41 --  question/format/ulpgctf
 
 #Report plugins
+git submodule add git@bitbucket.org:moodleulpgc/moodle-report_attendancetools.git    report/attendancetools
+git submodule set-branch -b moodle41 -- report/attendancetools 
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_autogroups.git    report/autogroups
-git submodule set-branch -b moodle41 --
+git submodule set-branch -b moodle41 -- report/autogroups
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_datacheck.git     report/datacheck
 git submodule set-branch -b moodle41 -- report/datacheck
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_supervision.git   report/supervision
@@ -127,6 +130,9 @@ git submodule add git@bitbucket.org:moodleulpgc/moodle-local_o365teams.git     l
 git submodule set-branch -b moodle41 --
 git submodule add git@bitbucket.org:moodleulpgc/moodle-report_o365channels.git report/o365channels
 git submodule set-branch -b moodle41 -- report/o365channels
+
+git submodule add git@bitbucket.org:moodleulpgc/moodle-profilefield_callsummons.git user/profile/field/callsummons
+
 
 #NOT developed by ULPGC, but used as ULPGC, no other repo
 #git submodule add git@bitbucket.org:moodleulpgc/moodle-gradingform_mcq.git     grade/grading/form/mcq

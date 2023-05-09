@@ -150,8 +150,9 @@ function report_trackertools_exportuser_getsql($tracker, $fromform) {
         }
     }
     
-    $studentuserfields = get_all_user_name_fields(true, 'su', '', 'su');
-    $tutoruserfields = get_all_user_name_fields(true, 'tu', '', 'tu');
+    $userfieldsapi = \core_user\fields::for_name();
+    $studentuserfields = $userfieldsapi->get_sql('su', false, 'su', '', false)->selects;
+    $tutoruserfields = $userfieldsapi->get_sql('tu', false, 'tu', '', false)->selects;
     if($fromform->useridnumber) {
         $studentuserfields .= ', su.idnumber AS reportedbyidnumber';
         $tutoruserfields .= ', tu.idnumber AS assignedtoidnumber';
@@ -311,7 +312,7 @@ function report_trackertools_exportissue_row($row) {
     $columns = $SESSION->report_trackertools_export_columns;
     $statuskeys = $SESSION->report_trackertools_export_statuskeys;
     $elements = $SESSION->report_trackertools_export_elements;
-    $names = get_all_user_name_fields();
+    $names = \core_user\fields::get_name_fields();
     $user = core_user::get_support_user(); 
     
     $newrow = array();
@@ -384,7 +385,7 @@ function report_trackertools_exportissue_row($row) {
 function report_trackertools_get_filename($filename, $issue, $fromform) {
     $pathfilename = '';
     $prefixedfilename = '';
-    $names = get_all_user_name_fields();
+    $names = \core_user\fields::get_name_fields();
     $user = core_user::get_support_user(); 
     
     if ($fromform->groupfield) {
@@ -459,10 +460,11 @@ function report_trackertools_download_files($course, $tracker, $fromform) {
         }
     }
 
+    $userfieldsapi = \core_user\fields::for_name();
     $studentuserfields = 'su.id AS suid, su.idnumber AS suidnumber, '.
-                                get_all_user_name_fields(true, 'su', '', 'su');
+                                $userfieldsapi->get_sql('su', false, 'su', '', false)->selects;
     $tutoruserfields = 'tu.id AS tuid, tu.idnumber AS tuidnumber, '.
-                                get_all_user_name_fields(true, 'tu', '', 'tu');
+                                $userfieldsapi->get_sql('tu', false, 'tu', '', false)->selects;
 
                                  
     $sql = "SELECT CONCAT_WS('-', i.id, ia.id) AS idid, i.id, i.trackerid, i.reportedby, i.assignedto, i.summary, ia.id AS iaid, ia.elementid, ia.elementitemid, 
@@ -711,7 +713,7 @@ function report_trackertools_import_issues($course, $tracker, $fromform, $cir, $
     $item->active = 1;
     $item->autoresponse = '';
     
-    $usernames = get_all_user_name_fields();
+    $usernames = \core_user\fields::get_name_fields();
     $noreplyuser = core_user::get_noreply_user();
     foreach($usernames as $field) {
         $noreplyuser->{$field} = $USER->{$field};
@@ -875,7 +877,8 @@ function report_trackertools_import_issues($course, $tracker, $fromform, $cir, $
 function report_trackertools_send_email($course, $tracker, $fromform, $issue, &$mails, $noreplyuser = '') {
     global $USER, $DB;
 
-    $usernames = get_all_user_name_fields();
+    $usernames = \core_user\fields::get_name_fields();
+
     if(!$noreplyuser) {
         $noreplyuser = core_user::get_noreply_user();
             foreach($usernames as $field) {
@@ -923,7 +926,7 @@ function report_trackertools_send_email($course, $tracker, $fromform, $issue, &$
 function report_trackertools_send_control_email($course, $tracker, $sent, $userid = 0, $noreplyuser = '') {
     global $USER, $DB;
     // send control e-mail to operating staff
-    $usernames = get_all_user_name_fields();
+    $usernames =  \core_user\fields::get_name_fields();
     if(!$noreplyuser) {
         $noreplyuser = core_user::get_noreply_user();
             foreach($usernames as $field) {
@@ -963,7 +966,7 @@ function report_trackertools_warning_issues($course, $tracker, $fromform, $issue
 
     $issueswarn = 0;
 
-    $usernames = get_all_user_name_fields();
+    $usernames =  \core_user\fields::get_name_fields();
     $noreplyuser = core_user::get_noreply_user();
     foreach($usernames as $field) {
         $noreplyuser->{$field} = $USER->{$field};
@@ -1190,7 +1193,7 @@ function report_trackertools_userids_from_input($userids, $userfield) {
         array_unshift($ufields, $userfield);
         $ufields = array_unique($ufields);
     }
-    $ufields = implode(', ',$ufields).', email, mailformat, '.get_all_user_name_fields(true);
+    $ufields = implode(', ',$ufields).', email, mailformat, '.implode(',', \core_user\fields::get_name_fields());
 
     $users = $DB->get_records_list('user', $userfield, $userids, 'lastname', $ufields);
     $notfound = array_diff($userids, array_keys($users));
@@ -1278,7 +1281,7 @@ function report_trackertools_create_issues($course, $tracker, $fromform) {
     }
     
     $filerequired = get_string('filerequiredabsent', 'report_trackertools');
-    $usernames = get_all_user_name_fields();
+    $usernames =  \core_user\fields::get_name_fields();
     $noreplyuser = core_user::get_noreply_user();
     foreach($usernames as $field) {
         $noreplyuser->{$field} = $USER->{$field};
@@ -1357,10 +1360,11 @@ function report_trackertools_compliance_list($tracker, $fromform) {
 
     list($issuewhere, $params) = report_trackertools_issue_where_sql($tracker->id, $fromform);
 
+    $userfieldsapi = \core_user\fields::for_name();
     $studentuserfields = 'su.id AS suid, su.idnumber AS suidnumber, '.
-                                get_all_user_name_fields(true, 'su', '', 'su');
+                                $userfieldsapi->get_sql('su', false, 'su', '', false)->selects;
     $tutoruserfields = 'tu.id AS tuid, tu.idnumber AS tuidnumber, '.
-                                get_all_user_name_fields(true, 'tu', '', 'tu');
+                                $userfieldsapi->get_sql('tu', false, 'tu', '', false)->selects;
 
     $resolutionwhere = '';                                
     if($fromform->hasresolution) {
@@ -1459,7 +1463,8 @@ function report_trackertools_field_compliance_list($tracker, $fromform) {
     $params['trackerid'] = $tracker->id;
     $params['elementid'] = $element->id;
     
-    $names = get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
     $otherjoins = '';
     
     if($fromform->fillstatus) {
@@ -1491,12 +1496,13 @@ function report_trackertools_field_compliance_list($tracker, $fromform) {
         $fields = ' i.*,  ei.id AS itemid, ei.name AS itemname '; 
         $otherjoins = 'LEFT JOIN {user} tu ON tu.id = i.assignedto 
                        LEFT JOIN {user} su ON su.id = i.reportedby ';
-        
+
+        $userfieldsapi = \core_user\fields::for_name();
         $studentuserfields = 'su.id AS suid, su.idnumber AS suidnumber, '.
-                                    get_all_user_name_fields(true, 'su', '', 'su');
+                                    $userfieldsapi->get_sql('su', false, 'su', '', false)->selects;
         $tutoruserfields = 'tu.id AS tuid, tu.idnumber AS tuidnumber, '.
-                                    get_all_user_name_fields(true, 'tu', '', 'tu');
-        
+                                    $userfieldsapi->get_sql('tu', false, 'tu', '', false)->selects;
+
         $fields .= ', '. $studentuserfields .', '. $tutoruserfields;
         
     }

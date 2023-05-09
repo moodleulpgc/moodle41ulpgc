@@ -57,12 +57,17 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
     
     // modifications in course pages
     if ($PAGE->course && $PAGE->course->id != 1) {
-        if($coursenode =  $nav->find('courseadmin', navigation_node::TYPE_COURSE)) {    
+        $coursenode =  $nav->find('courseadmin', navigation_node::TYPE_COURSE);
+        if(!empty($coursenode) && has_any_capability(['moodle/course:manageactivities', 'moodle/grade:edit'], $context)) {
             //print_object($coursenode->get_children_key_list());
-            $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
-            $coursenode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'courselog', new pix_icon('i/report', ''));
-            $url = new moodle_url('/report/loglive/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
-            $coursenode->add(get_string('pluginname', 'report_loglive'), $url, navigation_node::TYPE_SETTING, null, 'courseloglive', new pix_icon('i/report', ''));
+            //$url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
+            //$coursenode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'courselog', new pix_icon('i/report', ''));
+            //$url = new moodle_url('/report/loglive/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
+            //$coursenode->add(get_string('pluginname', 'report_loglive'), $url, navigation_node::TYPE_SETTING, null, 'courseloglive', new pix_icon('i/report', ''));
+
+            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin'];
+            $name = get_string('archivereuse', 'local_ulpgccore');
+            local_ulpgccore_regroup_nav_nodes($coursenode, $links, $name, 'course_archive_reuse');
         }
     }
     
@@ -74,6 +79,13 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
             $key = null;
         }
         $settingsnode->add_node($node, $key);
+
+        // re-name some items fotr Participants
+        $settingsnode->title(get_string('participants'));
+        $settingsnode->text = get_string('participants');
+        if($n = $nav->find('review', navigation_node::TYPE_SETTING)) {
+            $n->text = get_string('participants', 'local_ulpgccore');
+        }        
    } 
    
     // modifications in module pages
@@ -97,11 +109,42 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
         }
         
         if($modnode =  $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {    
-            //print_object($modnode->get_children_key_list());
             $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
             $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
-            
-        }        
+
+
+            if(has_any_capability(['moodle/role:assign', 'moodle/grade:edit'], $context)) {
+            $links = ['roleoverride', 'roleassign', 'rolecheck'];
+            $name = get_string('rolepermissions', 'local_ulpgccore');
+            local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
+
+            }
+            if(has_any_capability(['moodle/backup:backupcourse', 'moodle/grade:edit'], $context)) {
+            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
+            $name = get_string('archivereuse', 'local_ulpgccore');
+            local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
+            }
+
+/*
+            $siblibgs = $modnode->get_siblings();
+            foreach($siblibgs as $n) {
+                print_object($n->get_children_key_list());
+                print_object(' SIB node coursesettings ' . $n->key);
+            }
+
+            local_ulpgccore_boostnav_get_all_childrenkeys($modnode);
+
+            foreach($modnode->get_children_key_list() as $key) {
+                $nod = $modnode->get($key);
+                if($nod->has_children  ) {
+                    print_object($nod->get_children_key_list());
+                    print_object("Children for key: $key");
+                }
+            }
+*/
+
+
+        }
     }
 
     // always make this into more, or last positions 
@@ -140,202 +183,33 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
 
 /**
  * This function takes the plugin's custom nodes setting, builds the custom nodes and adds them to the given navigation_node.
- * Based on local_boostnavigation 
+ * Based on local_boostnavigation
  *
- * @param string $customnodes
- * @param navigation_node $node
- * @param string $beforekey 
- * @param string $keyprefix
- * @param bool $showinflatnavigation
- * @param bool $collapse
- * @param bool $collapsedefault
- * @return array
+ * @param navigation_node $node the parent node containing the leafs to regroup
+ * @param array $subnodes a list of node keys to search and place within new branch
+ * @param string $name
+ * @param string $key
+ * @param string $beforekey
+ * @return void
  */
-function local_ulpgccore_build_custom_nav_nodes($customnodes, navigation_node $node, $beforekey=null,
-        $keyprefix='localulpgccorecustomnav', $showinflatnavigation=true, $collapse=false,
-        $collapsedefault=false) {
-    global $USER;
-
-    // Initialize counter which is later used for the node IDs.
-    $nodecount = 0;
-
-    // Initialize variables for remembering the last parent node.
-    $lastparentnode = null;
-    $lastparentnodevisible = false;
-
-    // Initialize variables for remembering the node keys for collapsing.
-    $collapsenodesforjs = array();
-    $collapselastparentprepared = false;
-
-    // Make a new array on delimiter "new line".
-    $lines = explode("\n", $customnodes);
-
-    // Parse node settings.
-    foreach ($lines as $line) {
-
-        // Trim setting lines.
-        $line = trim($line);
-
-        // Skip empty lines.
-        if (strlen($line) == 0) {
-            continue;
-        }
-
-        // Initialize node variables.
-        $nodeurl = null;
-        $nodetitle = null;
-        $nodevisible = false;
-        $nodeischild = false;
-        $nodekey = null;
-
-        // Make a new array on delimiter "|".
-        $settings = explode('|', $line);
-
-        // Check for the mandatory conditions first.
-        // If array contains too less or too many settings, do not proceed and therefore do not create the node.
-        // Furthermore check it at least the first two mandatory params are not an empty string.
-        if (count($settings) >= 2 && count($settings) <= 4 && $settings[0] !== '' && $settings[1] !== '') {
-            foreach ($settings as $i => $setting) {
-                $setting = trim($setting);
-                if (!empty($setting)) {
-                    switch ($i) {
-                        // Check for the mandatory first param: title.
-                        case 0:
-                            // Check if this is a child node and get the node title.
-                            if (substr($setting, 0, 1) == '-') {
-                                $nodeischild = true;
-                                $nodetitle = substr($setting, 1);
-                            } else {
-                                $nodeischild = false;
-                                $nodetitle = $setting;
-                            }
-
-                            // Set the node to be basically visible.
-                            $nodevisible = true;
-
-                            break;
-                        // Check for the mandatory second param: URL.
-                        case 1:
-                            // Get the URL.
-                            try {
-                                $nodeurl = new moodle_url($setting);
-                                $nodevisible = true;
-                            } catch (moodle_exception $exception) {
-                                // We're not actually worried about this, we don't want to mess up the navigation
-                                // just for a wrongly entered URL. We just don't create a node in this case.
-                                $nodeurl = null;
-                                $nodevisible = false;
-                            }
-
-                            break;
-                        // Check for the optional third param: language support.
-                        case 2:
-                            // Only proceed if something is entered here. This parameter is optional.
-                            // If no language is given the node will be added to the navigation by default.
-                            $nodelanguages = array_map('trim', explode(',', $setting));
-                            $nodevisible &= in_array(current_language(), $nodelanguages);
-                    }
-
-                    // Support for inheritance of the parent node's visibility to his child notes.
-                    if ($nodeischild == false) {
-                        // To inherit the parent node's visibility to his child nodes later, we have to remember
-                        // this visibility now.
-                        $lastparentnodevisible = $nodevisible;
-                    } else {
-                        // Inherit the parent node's visibility. This overrules the child node's visibility.
-                        $nodevisible &= $lastparentnodevisible;
-                    }
-
-                }
-            }
-        }
-
-        // Add a custom node to the given navigation_node.
-        // This is if all mandatory params are set and the node matches the optional given language setting.
-        if ($nodevisible) {
-
-            // Generate node key.
-            $nodekey = $keyprefix.++$nodecount;
-
-            // Create custom node.
-            $customnode = navigation_node::create($nodetitle,
-                    $nodeurl,
-                    global_navigation::TYPE_CUSTOM,
-                    null,
-                    $nodekey,
-                    null);
-
-            // Show the custom node in Boost's nav drawer if requested.
-            if ($showinflatnavigation) {
-                $customnode->showinflatnavigation = true;
-            }
-
-            // If it's a parent node.
-            if (!$nodeischild) {
-                // If the nodes should be collapsed and collapsing hasn't been prepared yet, prepare collapsing of the parent node.
-                if ($collapse) {
-                    // Remember that we haven't prepared collapsing yet for this parent node.
-                    $collapselastparentprepared = false;
-
-                    // If the node shouldn't be collapsed, set some node attributes to avoid side effects with the CSS styles
-                    // which ship with this plugin.
-                } else {
-                    // Change the isexpandable attribute for the parent node to false
-                    // (it's the default in Moodle core, just to be safe).
-                    $customnode->isexpandable = false;
-                }
-
-                // Add the custom node to the given navigation_node.
-                $node->add_node($customnode, $beforekey);
-
-                // Remember the node as a potential parent node for the next node.
-                $lastparentnode = $customnode;
-
-                // Get the user preference for the collapse state of this custom node and set the collapse attribute accordingly.
-                $userprefcustomnode = get_user_preferences('local_ulpgccorenav-collapse_'.$nodekey.'node', $collapsedefault);
-                if ($userprefcustomnode == 1) {
-                    $customnode->collapse = true;
-                } else {
-                    $customnode->collapse = false;
-                }
-
-                // Otherwise, if it's a child node.
-            } else {
-                // If the nodes should be collapsed and collapsing hasn't been prepared yet, prepare collapsing of the parent node.
-                // This is done here (in the first child node and not in the parent node) because parent nodes without any child
-                // node shouldn't be collapsible.
-                if ($collapse && !$collapselastparentprepared) {
-                    // Remember the node key for collapsing.
-                    $collapsenodesforjs[] = $lastparentnode->key;
-
-                    // Change the isexpandable attribute for the parent node to true.
-                    $lastparentnode->isexpandable = true;
-                    // Remember that we have prepared collapsing now.
-                    $collapselastparentprepared = true;
-                }
-
-                // For some crazy reason, if we add the child node directly to the parent node, it is not shown in the
-                // course navigation section.
-                // Thus, add the custom node to the given navigation_node.
-                $node->add_node($customnode, $beforekey);
-                // And change the parent node directly afterwards.
-                $customnode->set_parent($lastparentnode);
-
-                // Get the user preference for the collapse state of the last parent node and set the hidden attribute accordingly.
-                $userprefcustomnode = get_user_preferences('local_ulpgccorenav-collapse_'.$lastparentnode->key.'node',
-                        $collapsedefault);
-                if ($userprefcustomnode == 1) {
-                    $customnode->hidden = true;
-                } else {
-                    $customnode->hidden = false;
-                }
+function local_ulpgccore_regroup_nav_nodes(navigation_node $node, array $subnodes,
+                                            $name, $key, $beforekey = null) {
+    if($subnodes) {
+        $newnode = navigation_node::create($name, null, navigation_node::TYPE_CONTAINER,
+                                            null, $key);
+        $newnode->action = null;
+        $branch = $node->add_node($newnode, $beforekey);
+        $branch->action = null;
+        foreach($subnodes as $item) {
+            if($n = $node->get($item)) {
+                //$n->set_parent($branch);
+                $branch->add_node(clone $n);
+                $n->remove();
             }
         }
     }
-
-    // Return the node keys for collapsing.
-    return $collapsenodesforjs;
 }
+
 
 /**
  * Moodle core does not have a built-in functionality to get all keys of all children of a navigation node,
@@ -358,7 +232,12 @@ function local_ulpgccore_boostnav_get_all_childrenkeys(navigation_node $navigati
         $childrennodeskeys = $navigationnode->get_children_key_list();
         // Get all children keys of our children recursively.
         foreach ($childrennodeskeys as $ck) {
-            $allchildren = array_merge($allchildren, local_ulpgccore_boostnav_get_all_childrenkeys($navigationnode->get($ck)));
+            print_object("start key: $ck");
+            $n = $navigationnode->get($ck);
+            $ch = local_ulpgccore_boostnav_get_all_childrenkeys($navigationnode->get($ck));
+            print_object($ch);
+            print_object("key end: $ck  -- name {$n->text}  type: {$n->type} ---------------------------");
+            $allchildren = array_merge($allchildren, $ch);
         }
         // And add our own children keys to the result.
         $allchildren = array_merge($allchildren, $childrennodeskeys);
@@ -478,29 +357,6 @@ function local_ulpgccore_block_alert_message() {
         return $html;        
 }        
 
-
-function local_ulpgccore_cron_disabled_todelete() {
-    global $SITE;
-    
-    $now = time();
-
-    if($emails = get_config('local_ulpgccore', 'cronchekemail')) {
-        $lastcron = get_config('local_ulpgccore', 'lastcron');
-        $croncheck = get_config('local_ulpgccore', 'croncheck');
-        if($croncheck && (($now - $lastcron)/3600 > $croncheck)) {        
-            $user = core_user::get_support_user();
-            $user->mailformat = 1;
-            $user->id = 1;
-            foreach(explode(',', $emails) as $email) {
-                $user->email = trim($email);           
-                $taxet = $html = $subject = $SITE->shortname. '  cron delayed > '. $croncheck;
-                email_to_user($user, 'local_ulpgccore_croncheck', $subject, $text, $html);
-            }
-        }
-    }
-    
-    return true;
-}
 
 /**
  * Returns an array of user fields
@@ -916,16 +772,6 @@ function local_ulpgccore_exportuser_row($row) {
         }
     }
 
-/*    
-    $newrow = new StdClass();
-    foreach($columns as $col) {
-        if(isset($row->{$col})) {
-            $newrow->{$col} = $row->{$col};
-        } else {
-            $newrow->{$col} = '';
-        }
-    }
- */   
     $newrow = array();
     foreach($columns as $col) {
         if(isset($row->{$col})) {
@@ -935,7 +781,6 @@ function local_ulpgccore_exportuser_row($row) {
         }
     }
 
- 
     return $newrow;
 }
 
@@ -1437,7 +1282,7 @@ function local_ulpgccore_render_navbar_output(\renderer_base $renderer) {
         $items = \message_popup\api::get_popup_notifications($USER->id);
         $caneditownmessageprofile = has_capability('moodle/user:editownmessageprofile', context_system::instance());
         $preferencesurl = $caneditownmessageprofile ? new moodle_url('/message/notificationpreferences.php') : null;
-        
+
         $context = [
             'userid' => $USER->id,
             'unreadcount' => $unreadcount,
@@ -1452,3 +1297,41 @@ function local_ulpgccore_render_navbar_output(\renderer_base $renderer) {
     
     return $output; 
 }
+
+/**
+ * Add Config related service qc checks
+ *
+ * @return array of check objects
+ */
+function local_ulpgccore_config_checks() : array {
+    return [
+        new \local_ulpgccore\check\blockpresets(),
+    ];
+}
+
+/**
+ * Add Courses related service qc checks
+ *
+ * @return array of check objects
+ */
+function local_ulpgccore_courses_checks() : array {
+    return [
+        //new \local_ulpgccore\check\maintemplate(),
+        new \local_ulpgccore\check\referencecourse(),
+    ];
+}
+
+/**
+ * Add Users related service qc checks
+ *
+ * @return array of check objects
+ */
+function local_ulpgccore_users_checks() : array {
+    return [
+        new \local_ulpgccore\check\customroles(),
+        new \local_ulpgccore\check\presetprofilefields(),
+    ];
+}
+
+
+

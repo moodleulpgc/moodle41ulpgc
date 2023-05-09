@@ -596,6 +596,7 @@ function xmldb_examregistrar_upgrade($oldversion) {
             }
         }
     
+        // Define field deliveryid to be added to responses table.
         $table = new xmldb_table('examregistrar_exams');
         $field = new xmldb_field('assignplugincm', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         // Conditionally launch drop field assignplugincm.
@@ -622,13 +623,15 @@ function xmldb_examregistrar_upgrade($oldversion) {
         }    
     
         upgrade_mod_savepoint(true, 2021032905, 'examregistrar');
-    }        
+    }
+
     /* 
      examregistrar_examdelivery.bookedsite may be takingmode (rooms, online, other) NO directly a bookedsite
      then associate delivery with a takingmode 
      
      In session, associate bookedsites with takingmodes
     */
+
     // field allowedtools in examfiles table, for examiner's instructions.
     if ($oldversion < 2021032906) {        
         $table = new xmldb_table('examregistrar_examfiles');    

@@ -49,8 +49,7 @@ $baseurl = new moodle_url('/mod/examregistrar/view.php', array('id' => $cm->id, 
 $tab = 'session';
 
 if(!$session = optional_param('session', 0, PARAM_INT)) {
-
-$now = time();
+    $now = time();
     $session = examregistrar_next_sessionid($examregistrar, $now);
 }
 $baseurl->param('session', $session);
@@ -115,7 +114,8 @@ if($action == 'assignseats_venues') {
         $cinfo = new stdClass();
         list($sname, $sidnumber) = examregistrar_get_namecodefromid($session, 'examsessions', 'examsession');
         $cinfo->session = $sidnumber;
-        $names = get_all_user_name_fields(true, 'u');
+        $userfieldsapi = \core_user\fields::for_name();
+        $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $from = get_string('mailfrom',  'examregistrar');
         $delivered = array();
         foreach($pending as $file) {

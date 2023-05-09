@@ -15,13 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme Boost Campus Login - Login page layout.
+ * Theme Boost Union Login - Login page layout.
  *
  * This layoutfile is based on theme/boost/layout/login.php
  *
  * Modifications compared to this layout file:
- * * Include footnote
  * * Render theme_boost_union/login instead of theme_boost/login template
+ * * Include footnote
+ * * Include static pages
+ * * Include info banners
  *
  * @package   theme_boost_union
  * @copyright 2022 Luca Bösch, BFH Bern University of Applied Sciences luca.boesch@bfh.ch
@@ -40,9 +42,9 @@ $templatecontext = [
     'bodyattributes' => $bodyattributes,
     'loginbackgroundimagetext' => $loginbackgroundimagetext,
     'loginbackgroundimagetextcolor' => $loginbackgroundimagetextcolor,
-    'loginwrapperclass' => 'login-wrapper-'.$this->page->theme->settings->loginformposition,
+    'loginwrapperclass' => 'login-wrapper-'.get_config('theme_boost_union', 'loginformposition'),
     'logincontainerclass' =>
-            ($this->page->theme->settings->loginformtransparency == THEME_BOOST_UNION_SETTING_SELECT_YES) ?
+            (get_config('theme_boost_union', 'loginformtransparency') == THEME_BOOST_UNION_SETTING_SELECT_YES) ?
                     'login-container-80t' : ''
 ];
 

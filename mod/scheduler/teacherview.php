@@ -462,6 +462,8 @@ if ($groupmode) {
     }
 }
 
+// Print intro.
+echo $output->mod_intro($scheduler); // ecastro ULPGC
 
 if($subpage !='schedulestudents' ) { // ecastro ULPGC separate pages
     // this is the slots list page

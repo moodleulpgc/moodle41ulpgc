@@ -46,10 +46,8 @@ class mod_moodleoverflow_external extends external_api {
     public static function record_vote_parameters() {
         return new external_function_parameters(
             array(
-                'discussionid' => new external_value(PARAM_INT, 'id of discussion'),
                 'postid'       => new external_value(PARAM_INT, 'id of post'),
-                'ratingid'     => new external_value(PARAM_INT, 'rating'),
-                'sesskey'      => new external_value(PARAM_TEXT, 'session key'),
+                'ratingid'     => new external_value(PARAM_INT, 'rating')
             )
         );
     }
@@ -61,10 +59,10 @@ class mod_moodleoverflow_external extends external_api {
     public static function record_vote_returns() {
         return new external_single_structure(
             array(
-                'postrating'      => new external_value(PARAM_INT, 'new post rating'),
+                'postrating' => new external_value(PARAM_INT, 'new post rating'),
                 'ownerreputation' => new external_value(PARAM_INT, 'new reputation of post owner'),
                 'raterreputation' => new external_value(PARAM_INT, 'new reputation of rater'),
-                'ownerid'         => new external_value(PARAM_INT, 'user id of post owner'),
+                'ownerid' => new external_value(PARAM_INT, 'user id of post owner'),
             )
         );
     }
@@ -72,27 +70,25 @@ class mod_moodleoverflow_external extends external_api {
     /**
      * Records upvotes and downvotes.
      *
-     * @param int $discussionid ID of discussion
      * @param int $postid ID of post
      * @param int $ratingid Rating value
-     * @param int $sesskey Session key
      * @return array with updated information about rating /reputation
      */
-    public static function record_vote($discussionid, $postid, $ratingid, $sesskey) {
+    public static function record_vote($postid, $ratingid) {
         global $DB, $USER;
 
         // Parameter validation.
         $params = self::validate_parameters(self::record_vote_parameters(), array(
-            'discussionid' => $discussionid,
             'postid'       => $postid,
             'ratingid'     => $ratingid,
-            'sesskey'      => $sesskey,
         ));
 
         $transaction = $DB->start_delegated_transaction();
 
+        $post = $DB->get_record('moodleoverflow_posts', array('id' => $params['postid']), '*', MUST_EXIST);
+
         // Check if the discussion is valid.
-        if (!$discussion = $DB->get_record('moodleoverflow_discussions', array('id' => $params['discussionid']))) {
+        if (!$discussion = $DB->get_record('moodleoverflow_discussions', array('id' => $post->discussion))) {
             throw new moodle_exception('invaliddiscussionid', 'moodleoverflow');
         }
 
@@ -115,9 +111,6 @@ class mod_moodleoverflow_external extends external_api {
         $context = context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/moodleoverflow:ratepost', $context);
-        if (!confirm_sesskey($sesskey)) {
-            throw new moodle_exception('invalidsesskey');
-        }
 
         // Rate the post.
         if (!\mod_moodleoverflow\ratings::moodleoverflow_add_rating($moodleoverflow,
@@ -127,7 +120,7 @@ class mod_moodleoverflow_external extends external_api {
 
         $post = moodleoverflow_get_post_full($params['postid']);
         $postownerid = $post->userid;
-        $rating      = \mod_moodleoverflow\ratings::moodleoverflow_get_ratings_by_discussion($discussion->id,
+        $rating = \mod_moodleoverflow\ratings::moodleoverflow_get_ratings_by_discussion($discussion->id,
             $params['postid']);
         $ownerrating = \mod_moodleoverflow\ratings::moodleoverflow_get_reputation($moodleoverflow->id, $postownerid);
         $raterrating = \mod_moodleoverflow\ratings::moodleoverflow_get_reputation($moodleoverflow->id, $USER->id);
@@ -135,10 +128,10 @@ class mod_moodleoverflow_external extends external_api {
         $cannotseeowner = \mod_moodleoverflow\anonymous::is_post_anonymous($discussion, $moodleoverflow, $USER->id) &&
             $USER->id != $postownerid;
 
-        $params['postrating']      = $rating->upvotes - $rating->downvotes;
+        $params['postrating'] = $rating->upvotes - $rating->downvotes;
         $params['ownerreputation'] = $cannotseeowner ? null : $ownerrating;
         $params['raterreputation'] = $raterrating;
-        $params['ownerid']         = $cannotseeowner ? null : $postownerid;
+        $params['ownerid'] = $cannotseeowner ? null : $postownerid;
 
         $transaction->allow_commit();
 

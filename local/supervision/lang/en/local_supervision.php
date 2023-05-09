@@ -153,7 +153,8 @@ $string['failuresubject'] = 'Fallos en envío de Notificaciones de actividades p
 $string['messageprovider:supervision_warning'] = 'Recordatorios de Supervisión de actividades pendientes';
 
 $string['settingsmailing'] = 'Mailing settings';
-$string['settingsfromunits'] = 'Synch from ULPGC units settings';
+$string['syncfromunits'] = 'Supervisors from ULPGC units';
+$string['settingsfromunits'] = 'Settings';
 $string['sinculpgcnotinstalled'] = 'local_sinculpgc not installed. Parameters below will not work';
 $string['supervisorrole'] = 'Role for superviser';
 $string['supervisorrole_help'] = 'The role assigned to supervisor users in the supervised categories/courses';
@@ -166,3 +167,4 @@ $string['syncsecretary'] = 'Synch. Secretary';
 $string['syncsecretary_help'] = 'If checked, in addition to unit\'s Director, the unit Secretary will be added as supervisor. ';
 $string['use_ulpgccore_categories'] = 'Use ULPGC core categories';
 $string['use_ulpgccore_categories_help'] = 'When checked, the matching of course categories and Units will use the table local_ulpgccore_categories instead of data in course_categories.idnumber. ';
+$string['supervisionwarningplugins'] = 'Supervision warnings plugins';

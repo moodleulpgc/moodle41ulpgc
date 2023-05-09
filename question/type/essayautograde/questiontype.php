@@ -61,6 +61,9 @@ class qtype_essayautograde extends question_type {
     const SHOW_TEACHERS_ONLY         = 2;
     const SHOW_TEACHERS_AND_STUDENTS = 3;
 
+    /** @var array Combined feedback fields */
+    public $feedbackfields = array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback');
+
     public function is_manual_graded() {
         return true;
     }
@@ -71,7 +74,7 @@ class qtype_essayautograde extends question_type {
                      'attachments', 'attachmentsrequired',
                      'graderinfo', 'graderinfoformat',
                      'responsetemplate', 'responsetemplateformat',
-                     'responsesample', 'responsesampleformat',
+                     'responsesample', 'responsesampleformat', 'allowsimilarity',
                      'minwordlimit', 'maxwordlimit',
                      'maxbytes', 'filetypeslist',
                      'enableautograde', 'itemtype', 'itemcount',
@@ -144,6 +147,7 @@ class qtype_essayautograde extends question_type {
             'responsetemplateformat' => $formdata->responsetemplate['format'],
             'responsesample'      => $formdata->responsesample['text'],
             'responsesampleformat' => $formdata->responsesample['format'],
+            'allowsimilarity'     => isset($formdata->allowsimilarity) ? $formdata->allowsimilarity : 10,
             'minwordlimit'        => (empty($formdata->minwordenabled) || empty($formdata->minwordlimit)) ? 0 : $formdata->minwordlimit,
             'maxwordlimit'        => (empty($formdata->maxwordenabled) || empty($formdata->maxwordlimit)) ? 0 : $formdata->maxwordlimit,
             'maxbytes'            => isset($formdata->maxbytes) ? $formdata->maxbytes : 0,
@@ -332,7 +336,6 @@ class qtype_essayautograde extends question_type {
     }
 
     protected function initialise_question_instance(question_definition $question, $questiondata) {
-
         // initialize standard question fields
         parent::initialise_question_instance($question, $questiondata);
 
@@ -659,10 +662,26 @@ class qtype_essayautograde extends question_type {
         }
         $newquestion->countphrases = $i;
 
+        // Check that the required feedback fields exist.
+        $this->check_combined_feedback_fields($newquestion);
+
         //$format->import_combined_feedback($newquestion, $data, false);
         $format->import_hints($newquestion, $data, false);
 
         return $newquestion;
+    }
+
+    /**
+     * Check that the required feedback fields exist
+     *
+     * @param object $question
+     */
+    protected function check_combined_feedback_fields(&$question) {
+        foreach ($this->feedbackfields as $field) {
+            if (empty($question->$field)) {
+                $question->$field = array('text' => '', 'format' => FORMAT_MOODLE, 'itemid' => 0, 'files' => null);
+            }
+        }
     }
 
     /**
@@ -877,7 +896,28 @@ class qtype_essayautograde extends question_type {
         $question->responsesample   = array('text' => '', 'format' => FORMAT_MOODLE);
         $question->graderinfo       = array('text' => '', 'format' => FORMAT_MOODLE,
                                             'itemid' => '', 'files' => null);
+
+        // Check that the required feedback fields exist.
+        $this->check_combined_feedback_fields($question);
+
         return $question;
+    }
+
+    /**
+     * Check that the required feedback fields exist
+     *
+     * @param object $question
+     */
+    protected function check_essayautograde_combined_feedback(&$question) {
+        $feedback = array('text' => '',
+                          'format' => FORMAT_MOODLE,
+                          'itemid' => 0,
+                          'files' => null);
+        foreach ($this->feedbackfields as $field) {
+            if (empty($question->$field)) {
+                $question->$field = $feedback;
+            }
+        }
     }
 
     /**
@@ -931,7 +971,7 @@ class qtype_essayautograde extends question_type {
     }
 
     /**
-     * get_gift_fields
+     * get_text_fields
      *
      * @return array of fields used in GIFT format
      */
@@ -980,6 +1020,7 @@ class qtype_essayautograde extends question_type {
             'responsetemplateformat' => 0,
             'responsesample'       => '',
             'responsesampleformat' =>  0,
+            'allowsimilarity'      =>  10,
             'minwordlimit'         =>  0,
             'maxwordlimit'         =>  0,
             'maxbytes'             =>  0,

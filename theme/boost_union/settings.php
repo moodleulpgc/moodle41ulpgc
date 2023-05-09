@@ -154,8 +154,8 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $page->add($tab);
 
 
-        // Create advanced settings tab.
-        $tab = new admin_settingpage('theme_boost_union_look_advanced', get_string('advancedsettings', 'theme_boost', null, true));
+        // Create SCSS tab.
+        $tab = new admin_settingpage('theme_boost_union_look_scss', get_string('scsstab', 'theme_boost_union', null, true));
 
         // Create Raw SCSS heading.
         $name = 'theme_boost_union/scssheading';
@@ -208,21 +208,6 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $title = get_string('mediumcontentmaxwidthsetting', 'theme_boost_union', null, true);
         $description = get_string('mediumcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
         $default = '1120px';
-        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $tab->add($setting);
-
-        // Create content width heading.
-        $name = 'theme_boost_union/contentwidthheading';
-        $title = get_string('contentwidthheading', 'theme_boost_union', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
-        $tab->add($setting);
-
-        // Setting: H5P content bank max width.
-        $name = 'theme_boost_union/h5pcontentmaxwidth';
-        $title = get_string('h5pcontentmaxwidthsetting', 'theme_boost_union', null, true);
-        $description = get_string('h5pcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
-        $default = '960px';
         $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
@@ -402,6 +387,29 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('activityiconcolorinterfacesetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
         $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Create navbar heading.
+        $name = 'theme_boost_union/navbarheading';
+        $title = get_string('navbarheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Navbar color.
+        $name = 'theme_boost_union/navbarcolor';
+        $title = get_string('navbarcolorsetting', 'theme_boost_union', null, true);
+        $description = get_string('navbarcolorsetting_desc', 'theme_boost_union', null, true);
+        $navbarcoloroptions = array(
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT =>
+                        get_string('navbarcolorsetting_light', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_DARK =>
+                        get_string('navbarcolorsetting_dark', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYLIGHT =>
+                        get_string('navbarcolorsetting_primarylight', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYDARK =>
+                        get_string('navbarcolorsetting_primarydark', 'theme_boost_union'));
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT,
+                $navbarcoloroptions);
         $tab->add($setting);
 
         // Add tab to settings page.
@@ -844,6 +852,44 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $page->add($tab);
 
 
+        // Create H5P tab.
+        $tab = new admin_settingpage('theme_boost_union_look_h5p',
+                get_string('h5ptab', 'theme_boost_union', null, true));
+
+        // Create Raw CSS for H5P heading.
+        $name = 'theme_boost_union/cssh5pheading';
+        $title = get_string('cssh5pheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Raw CSS for H5P.
+        $name = 'theme_boost_union/cssh5p';
+        $title = get_string('cssh5psetting', 'theme_boost_union', null, true);
+        $description = get_string('cssh5psetting_desc', 'theme_boost_union', null, true);
+        $default = '';
+        $setting = new admin_setting_scsscode($name, $title, $description, $default, PARAM_RAW);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Create content bank width heading.
+        $name = 'theme_boost_union/contentwidthheading';
+        $title = get_string('contentwidthheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: H5P content bank max width.
+        $name = 'theme_boost_union/h5pcontentmaxwidth';
+        $title = get_string('h5pcontentmaxwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('h5pcontentmaxwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '960px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Add tab to settings page.
+        $page->add($tab);
+
+
         // Create mobile app tab.
         $tab = new admin_settingpage('theme_boost_union_look_mobile',
                 get_string('mobiletab', 'theme_boost_union', null, true));
@@ -975,6 +1021,180 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('unaddableblocks_desc', 'theme_boost', null, true);
         $default = 'navigation,settings,course_list,section_links';
         $setting = new admin_setting_configtext($name, $title, $description, $default, PARAM_TEXT);
+        $tab->add($setting);
+
+        // Create block regions heading.
+        $name = 'theme_boost_union/blockregionsheading';
+        $title = get_string('blockregionsheading', 'theme_boost_union', null, true);
+        $description = get_string('blockregionsheading_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, $description);
+        $tab->add($setting);
+
+        // Add experimental warning.
+        $name = 'theme_boost_union/blockregionsheadingexperimental';
+        $notification = new \core\output\notification(get_string('blockregionsheading_experimental', 'theme_boost_union'),
+                \core\output\notification::NOTIFY_WARNING);
+        $notification->set_show_closebutton(false);
+        $description = $OUTPUT->render($notification);
+        $setting = new admin_setting_heading($name, '', $description);
+        $tab->add($setting);
+
+        // Settings: Additional block regions for 'x' layout.
+        // List of region strings.
+        $regionstr = (array) get_strings([
+            'region-outside-top',
+            'region-outside-left',
+            'region-outside-right',
+            'region-outside-bottom',
+            'region-content-upper',
+            'region-content-lower',
+            'region-header',
+            'region-footer-left',
+            'region-footer-right',
+            'region-footer-center',
+            'region-offcanvas-left',
+            'region-offcanvas-right',
+            'region-offcanvas-center'
+        ], 'theme_boost_union');
+        // List of all available regions.
+        $allavailableregions = array(
+            'outside-top' => $regionstr['region-outside-top'],
+            'outside-left' => $regionstr['region-outside-left'],
+            'outside-right' => $regionstr['region-outside-right'],
+            'outside-bottom' => $regionstr['region-outside-bottom'],
+            'footer-left' => $regionstr['region-footer-left'],
+            'footer-right' => $regionstr['region-footer-right'],
+            'footer-center' => $regionstr['region-footer-center'],
+            'offcanvas-left' => $regionstr['region-offcanvas-left'],
+            'offcanvas-right' => $regionstr['region-offcanvas-right'],
+            'offcanvas-center' => $regionstr['region-offcanvas-center'],
+            'content-upper' => $regionstr['region-content-upper'],
+            'content-lower' => $regionstr['region-content-lower'],
+            'header' => $regionstr['region-header']
+        );
+        // Partial list of regions (used on some layouts).
+        $partialregions = [
+            'outside-top' => $regionstr['region-outside-top'],
+            'outside-bottom' => $regionstr['region-outside-bottom'],
+            'footer-left' => $regionstr['region-footer-left'],
+            'footer-right' => $regionstr['region-footer-right'],
+            'footer-center' => $regionstr['region-footer-center'],
+            'offcanvas-left' => $regionstr['region-offcanvas-left'],
+            'offcanvas-right' => $regionstr['region-offcanvas-right'],
+            'offcanvas-center' => $regionstr['region-offcanvas-center']
+        ];
+        // Build list of page layouts and map the regions to each page layout.
+        $pagelayouts = [
+            'standard' => $partialregions,
+            'admin' => $partialregions,
+            'coursecategory' => $partialregions,
+            'incourse' => $partialregions,
+            'mypublic' => $partialregions,
+            'report' => $partialregions,
+            'course' => $allavailableregions,
+            'frontpage' => $allavailableregions
+        ];
+        // For the mydashboard layout, remove the content-* layouts as there are already block regions.
+        $pagelayouts['mydashboard'] = array_filter($allavailableregions, function($key) {
+            return ($key != 'content-upper' && $key != 'content-lower') ? true : false;
+        }, ARRAY_FILTER_USE_KEY);
+        // Create admin setting for each page layout.
+        foreach ($pagelayouts as $layout => $regions) {
+            $name = 'theme_boost_union/blockregionsfor'.$layout;
+            $title = get_string('blockregionsforlayout', 'theme_boost_union', $layout, true);
+            $description = get_string('blockregionsforlayout_desc', 'theme_boost_union', $layout, true);
+            $setting = new admin_setting_configmulticheckbox($name, $title, $description, array(), $regions);
+            $tab->add($setting);
+        }
+
+        // Create outside regions heading.
+        $name = 'theme_boost_union/outsideregionsheading';
+        $title = get_string('outsideregionsheading', 'theme_boost_union', null, true);
+        $description = get_string('outsideregionsheading_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, $description);
+        $tab->add($setting);
+
+        // Setting: Block region width for Outside (left) region.
+        $name = 'theme_boost_union/blockregionoutsideleftwidth';
+        $title = get_string('blockregionoutsideleftwidth', 'theme_boost_union', null, true);
+        $description = get_string('blockregionoutsideleftwidth_desc', 'theme_boost_union', null, true);
+        $default = '300px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Block region width for Outside (right) region.
+        $name = 'theme_boost_union/blockregionoutsiderightwidth';
+        $title = get_string('blockregionoutsiderightwidth', 'theme_boost_union', null, true);
+        $description = get_string('blockregionoutsiderightwidth_desc', 'theme_boost_union', null, true);
+        $default = '300px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Block region width for Outside (top) region.
+        $outsideregionswidthoptions = array(
+            // Don't use string lazy loading (= false) because the string will be directly used and would produce a
+            // PHP warning otherwise.
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH =>
+                        get_string('outsideregionswidthfullwidth', 'theme_boost_union', null, false),
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_COURSECONTENTWIDTH =>
+                        get_string('outsideregionswidthcoursecontentwidth', 'theme_boost_union', null, false),
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_HEROWIDTH =>
+                        get_string('outsideregionswidthherowidth', 'theme_boost_union', null, false));
+        $name = 'theme_boost_union/blockregionoutsidetopwidth';
+        $title = get_string('blockregionoutsidetopwidth', 'theme_boost_union', null, true);
+        $description = get_string('blockregionoutsidetopwidth_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH, $outsideregionswidthoptions);
+        $tab->add($setting);
+
+        // Setting: Block region width for Outside (bottom) region.
+        $name = 'theme_boost_union/blockregionoutsidebottomwidth';
+        $title = get_string('blockregionoutsidebottomwidth', 'theme_boost_union', null, true);
+        $description = get_string('blockregionoutsidebottomwidth_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH, $outsideregionswidthoptions);
+        $tab->add($setting);
+
+        // Setting: Outside regions horizontal placement.
+        $outsideregionsplacementoptions = array(
+            // Don't use string lazy loading (= false) because the string will be directly used and would produce a
+            // PHP warning otherwise.
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEXTMAINCONTENT =>
+                        get_string('outsideregionsplacementnextmaincontent', 'theme_boost_union', null, false),
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEARWINDOW =>
+                        get_string('outsideregionsplacementnearwindowedges', 'theme_boost_union', null, false));
+        $name = 'theme_boost_union/outsideregionsplacement';
+        $title = get_string('outsideregionsplacement', 'theme_boost_union', null, true);
+        $description = get_string('outsideregionsplacement_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEXTMAINCONTENT, $outsideregionsplacementoptions);
+        // Creat site home right-hand blocks drawer behaviour heading.
+        $name = 'theme_boost_union/sitehomerighthandblockdrawerbehaviour';
+        $title = get_string('sitehomerighthandblockdrawerbehaviour', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Show site home right-hand blocks drawer when logged out users visit.
+        $name = 'theme_boost_union/showsitehomerighthandblockdraweronvisit';
+        $title = get_string('showsitehomerighthandblockdraweronvisitsetting', 'theme_boost_union', null, true);
+        $description = get_string('showsitehomerighthandblockdraweronvisitsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Setting: Show site home right-hand blocks drawer when user logs in for the very first time.
+        $name = 'theme_boost_union/showsitehomerighthandblockdraweronfirstlogin';
+        $title = get_string('showsitehomerighthandblockdraweronfirstloginsetting', 'theme_boost_union', null, true);
+        $description = get_string('showsitehomerighthandblockdraweronfirstloginsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Setting: Show site home right-hand blocks drawer when user logs in as guest.
+        $name = 'theme_boost_union/showsitehomerighthandblockdraweronguestlogin';
+        $title = get_string('showsitehomerighthandblockdraweronguestloginsetting', 'theme_boost_union', null, true);
+        $description = get_string('showsitehomerighthandblockdraweronguestloginsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
         $tab->add($setting);
 
         // Add tab to settings page.

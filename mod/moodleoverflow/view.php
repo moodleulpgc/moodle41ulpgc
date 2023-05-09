@@ -27,14 +27,15 @@
 
 // Include config and locallib.
 require_once(__DIR__.'/../../config.php');
-global $CFG, $PAGE, $DB, $OUTPUT, $SESSION;
+global $CFG, $PAGE, $DB, $OUTPUT, $SESSION, $USER;
 require_once($CFG->dirroot.'/mod/moodleoverflow/locallib.php');
 
 // Declare optional parameters.
-$id      = optional_param('id', 0, PARAM_INT);       // Course Module ID.
-$m       = optional_param('m', 0, PARAM_INT);        // MoodleOverflow ID.
-$page    = optional_param('page', 0, PARAM_INT);     // Which page to show.
-
+$id = optional_param('id', 0, PARAM_INT);       // Course Module ID.
+$m = optional_param('m', 0, PARAM_INT);        // MoodleOverflow ID.
+$page = optional_param('page', 0, PARAM_INT);     // Which page to show.
+$movetopopup = optional_param('movetopopup', 0, PARAM_INT);     // Which Topic to move.
+$linktoforum = optional_param('movetoforum', 0, PARAM_INT);     // Forum to which it is moved.
 // Set the parameters.
 $params = array();
 if ($id) {
@@ -49,13 +50,13 @@ $PAGE->set_url('/mod/moodleoverflow/view.php', $params);
 
 // Check for the course and module.
 if ($id) {
-    $cm              = get_coursemodule_from_id('moodleoverflow', $id, 0, false, MUST_EXIST);
-    $course          = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moodleoverflow  = $DB->get_record('moodleoverflow', array('id' => $cm->instance), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_id('moodleoverflow', $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $moodleoverflow = $DB->get_record('moodleoverflow', array('id' => $cm->instance), '*', MUST_EXIST);
 } else if ($m) {
-    $moodleoverflow  = $DB->get_record('moodleoverflow', array('id' => $m), '*', MUST_EXIST);
-    $course          = $DB->get_record('course', array('id' => $moodleoverflow->course), '*', MUST_EXIST);
-    $cm              = get_coursemodule_from_instance('moodleoverflow', $moodleoverflow->id, $course->id, false, MUST_EXIST);
+    $moodleoverflow = $DB->get_record('moodleoverflow', array('id' => $m), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $moodleoverflow->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('moodleoverflow', $moodleoverflow->id, $course->id, false, MUST_EXIST);
 } else {
     throw new moodle_exception('missingparameter');
 }
@@ -92,6 +93,8 @@ $PAGE->set_url('/mod/moodleoverflow/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($moodleoverflow->name));
 $PAGE->set_heading(format_string($course->fullname));
 
+$PAGE->requires->js_call_amd('mod_moodleoverflow/rating', 'init', [$USER->id]);
+
 // Output starts here.
 echo $OUTPUT->header();
 
@@ -112,12 +115,27 @@ if ($reviewlevel > 0) {
     echo html_writer::tag('p', get_string($strkeys[$reviewlevel], 'moodleoverflow'));
 }
 
+echo '<div id="moodleoverflow-root">';
+
 if (has_capability('mod/moodleoverflow:reviewpost', $context)) {
     $reviewpost = \mod_moodleoverflow\review::get_first_review_post($moodleoverflow->id);
 
     if ($reviewpost) {
-        echo html_writer::link($reviewpost, get_string('review_needed', 'mod_moodleoverflow'), ['class' => 'btn btn-danger']);
+        echo html_writer::link($reviewpost, get_string('review_needed', 'mod_moodleoverflow'),
+                ['class' => 'btn btn-danger my-2']);
     }
+}
+
+if ($movetopopup && has_capability('mod/moodleoverflow:movetopic', $context)) {
+    moodleoverflow_print_forum_list($course, $cm, $movetopopup);
+}
+
+if ($linktoforum && $movetopopup && has_capability('mod/moodleoverflow:movetopic', $context)) {
+    // Take the $movetopopup-id and the $linktoforum-id and move the discussion to the forum.
+    $topic = $DB->get_record('moodleoverflow_discussions', array('id' => $movetopopup));
+    $topic->moodleoverflow = $linktoforum;
+    $DB->update_record('moodleoverflow_discussions', $topic);
+    redirect($CFG->wwwroot . '/mod/moodleoverflow/view.php?id=' . $cm->id);
 }
 
 // Return here after posting, etc.
@@ -125,6 +143,8 @@ $SESSION->fromdiscussion = qualified_me();
 
 // Print the discussions.
 moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page, get_config('moodleoverflow', 'manydiscussions'));
+
+echo '</div>';
 
 // Finish the page.
 echo $OUTPUT->footer();

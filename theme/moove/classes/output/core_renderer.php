@@ -38,6 +38,28 @@ use theme_moove\output\core_course\activity_navigation;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class core_renderer extends \theme_boost\output\core_renderer {
+
+
+    /**
+     * User image rendering with checking for hidepicture setting
+     *
+     * @param user_picture $userpicture
+     * @return string
+     * @auth ecastro @ULPGC
+     */
+    protected function render_user_picture(\user_picture $userpicture) {
+        $user = $userpicture->user;
+        // only check permissions when viewable picture
+        if($user->picture && !$user->imagealt && $hidepicture = get_config('local_ulpgccore', 'hidepicture')) {
+            if(!$canview = has_capability('moodle/course:viewhiddenuserfields', $this->page->context)) {
+                $userpicture->user->picture = 0;
+            }
+        }
+
+        return parent::render_user_picture($userpicture);
+    }
+
+
     /**
      * The standard tags (meta tags, links to stylesheets and JavaScript, etc.)
      * that should be included in the <head> tag. Designed to be called in theme
@@ -235,11 +257,23 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 'class' => 'btn contactsitesupport btn-outline-info'
             ];
         }
+        // ecastro ULPGC
+        unset($attributes['class']);
 
         $attributes += $customattribs;
 
         return \html_writer::tag('a', $content, $attributes);
     }
+
+    /**
+    * Returns the services and support link for the help pop-up.
+    *
+    * @return string
+    */
+    public function services_support_link(): string {
+        return '';
+    }
+
 
     /**
      * Returns the moodle_url for the favicon.
@@ -263,6 +297,25 @@ class core_renderer extends \theme_boost\output\core_renderer {
 
         return parent::favicon();
     }
+
+    /**
+     * Renders the context header for the page.
+     *
+     * @auth Enrique Castro ULPGC to add course shortname.
+     *       relies on boost context_header() and context name
+     * @param array $headerinfo Heading information.
+     * @param int $headinglevel What 'h' level to make the heading.
+     * @return string A rendered context header.
+     */
+    public function context_header($headerinfo = null, $headinglevel = 1): string {
+        $context = $this->page->context;
+        if($context->contextlevel == CONTEXT_COURSE) {
+            $headerinfo['heading'] = $context->get_context_name(false);
+        }
+
+        return parent::context_header($headerinfo, $headinglevel);
+    }
+
 
     /**
      * Renders the header bar.
@@ -418,6 +471,31 @@ class core_renderer extends \theme_boost\output\core_renderer {
      */
     public function get_navbar_callbacks_data() {
         $callbacks = get_plugins_with_function('moove_additional_header', 'lib.php');
+
+        if (!$callbacks) {
+            return '';
+        }
+
+        $output = '';
+
+        foreach ($callbacks as $plugins) {
+            foreach ($plugins as $pluginfunction) {
+                if (function_exists($pluginfunction)) {
+                    $output .= $pluginfunction();
+                }
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * Returns plugins callback renderable data to be printed on navbar.
+     *
+     * @return string Final html code.
+     */
+    public function get_module_footer_callbacks_data() {
+        $callbacks = get_plugins_with_function('moove_module_footer', 'lib.php');
 
         if (!$callbacks) {
             return '';

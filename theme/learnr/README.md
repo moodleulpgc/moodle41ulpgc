@@ -1,45 +1,108 @@
 moodle-theme_learnr
 ========================
-# LearnR
-A Moodle 4.0 Boost child theme made for learners. The LearnR theme builds on the new layouts and user experiences introduced in Moodle 4.0. LearnR provides a variety of layouts and options that allow you to provide incredibly structured navigation and pathways to course materials. Continuing the line of evolve-D, Pioneer, and Fordson, the LearnR theme is focused on a student going from “login to learning” quickly and easily.
 
-## Ver 1.7
-* Layout changes: Moved course header image out of main content area and into actual header area behind the main content area.  Moved the header block panel button to the upper right of the screen next to the Latest Courses drop down.  
-* Easy Enrollment course code button and enrollment form has been integrated to work with the Easy Enrollment Button https://moodle.org/plugins/enrol_easy
-* Many styling fixes.
+LearnR is a Boost child theme for Moodle 4+..  Made for learners and focused on providing unique feattures to enhance management and delivery of instruction.  The LearnR theme builds on the new layouts and user exeperiences introduced in Moodle 4 and provides a variety of enhancements to core features and styles.  The LearnR theme is focused on students going from “login to learning” quickly and easily.
+
+LearnR is almost entirely based on the core foundation of the Boost Union Theme.  If you have not seen the Boost Union theme you are missing out! We like to think of LearnR as an enhanced version of Boost Union that is very focused on styling, integrations with other plugins, and we have carried over some of the most popular features from all of our previous themes like Fordson and Evolve-D.  
+
+Recommended Plugins:
+------------
+* User bulk enrolment https://moodle.org/plugins/local_bulkenrol
+* Easy Enrollment https://moodle.org/plugins/enrol_easy
+* MISTAR Gradebook (Michigan K12 SIS Integration)
+
+LearnR adds the following features to Boost Union:
+------------
+* Removal of drawers
+* Teacher Course Management Dashboard
+* Course Tile Display Chooser
+* Section Style Chooser
+* Course Progress Bar
+* Latest Course Drop Down
+* Icon Navigation Menu System for Home, MyCourses, and Dashboard pages
+* Course Activity List Drop Down
+* Default Image on My Courses Page
+* Additional Color Choosers
+* Additional Page Selectors for Advertisement Tiles
+* Hide Login Form (If using SSO like Google login)
+* Tweaks to default installation settings to enhance styling out of the box
+
+Custom Login Page coming soon!
+
+Features Core to Boost Union:
+------------
+* Page Width Settings
+* Logo Uploads
+* Fav Icon
+* Background, Course Header, and other Image Uploads
+* Variety of Core Color Choosers
+* Course Header Images with customizations
+* Custom Fonts
+* Font Awesome Updates
+* Hide Primary Nav Menu Items
+* Back To Top button
+* Scroll Spy
+* Activity Navigation
+* Huge Selection of Additional Block Layouts
+* Custom Pages
+* Custom Alerts and Info Banners
+* Custom Advertisement Tiles
+* Course Related Hints for Teachers
+Check out the Boost Union theme: https://moodle.org/plugins/theme_boost_union 
 
 
-## Ver 1.6.1
-* Fixed conflict with Fordson theme
+Requirements
+------------
 
-## Ver 1.6
-* Added course display options for categories and homepage.  There are 10 different ways to display course tiles in categories and the site home page.
-* Added course progressbar to course main pages.
-* Fixed various styling issues.
-* Added Easy Enrollment form integration to show the easy enrollment form on the site home, dashboard, and my courses page.  Just install Easy Enrollment and turn it on.  The form will automatically appear on the pages.
+This theme requires Moodle 4.0+
 
-## Ver 1.5
-* Added Icon Navigation bar to Dashboard, My Courses, and Home pages of the site
-* Initial feature set is implemented
-* Added show/hide for Latest Courses drop down menu.
-* Fixed color of dropdown icon in usermenu
 
-## Ver 1.4
-* New Section Style chooser for course sections allows for quick customization of the course section area.  Initially, 4 styles are provided.
-* Added full width page toggle to force full width or default Boost narrow width page layouts.
-* Styling adjustments and improvements
-* Language string additions and corrections
-* Course Dashboard is now Header Block Panel and can display custom header images as a background
-* Header block panel is not collapsible anymore
+Installation
+------------
 
-## Ver 1.3
-* Code derivitive notice and version update
+Install the theme like any other theme to folder
+/theme/learnr
 
-## Ver 1.2
-* Code clean up and other various fixes
+See http://docs.moodle.org/en/Installing_plugins for details on installing Moodle plugins
 
-## Ver 1.1
-* Code clean up and fixes
 
-## Ver 1.0
-* Initial release for Moodle 4.0
+
+Copyright Notices Boost Union
+---------
+
+The copyright of this plugin is held by\
+Moodle an Hochschulen e.V.
+
+Individual copyrights of individual developers are tracked in PHPDoc comments and Git commits.
+
+
+Boost Union Credits
+-------
+
+This theme is based on the successor of and heavily inspired by the former theme theme_boost_campus by Kathrin Osswald and Alexander Bias from Ulm University which was maintained until Moodle 3.11 on https://github.com/moodle-an-hochschulen/moodle-theme_boost_campus.  
+LearnR was also enhanced with code from Fordson theme, Rebel theme, and evolve-D theme.
+
+
+Boost Union Contributors
+------------
+
+This theme is a collaboration result of multiple organisations.
+
+Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
+
+* bdecent GmbH, Stefan Scholz: Code, Ideating, Funding
+* Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
+* FernUniversität in Hagen, Daniel Poggenpohl: Code, Ideating
+* Käferfreie Software, Nina Herrmann: Code
+* lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
+* lern.link GmbH, Beata Waloszczyk: Code
+* Lower Saxony (Federal state of Germany): Funding
+* moodleSCHULE e.V., Ralf Krause: German translation and curation, Ideating
+* Ruhr University Bochum, Melanie Treitinger: Code, Ideating
+* RWTH Aachen, Amrita Deb Dutta: Code
+* RWTH Aachen, Josha Bartsch: Code
+* University of Graz, André Menrath: Code
+* University of Lübeck, Christian Wolters: Peer Review, Ideating
+* Zurich University of Applied Sciences (ZHAW): Funding, Ideating
+
+Additionally, we thank all other contributors who contributed ideas, feedback and code snippets within the Github issues and pull requests as well as all contributors who contributed additional translations in AMOS, the Moodle translation tool.

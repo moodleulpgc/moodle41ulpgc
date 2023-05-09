@@ -27,8 +27,6 @@ namespace tool_pluginskel\local\skel;
 
 use tool_pluginskel\local\util\exception;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class representing the plugin's version.php file.
  *
@@ -37,8 +35,9 @@ defined('MOODLE_INTERNAL') || die();
  */
 class version_php_file extends php_internal_file {
 
-    /** @var string[] Moodle versions - see https://docs.moodle.org/dev/Releases */
+    /** @var string[] Moodle versions - see https://moodledev.io/general/releases */
     protected static $moodleversions = [
+        '2022112800' => '4.1',
         '2022041900' => '4.0',
         '2021051700' => '3.11',
         '2020110900' => '3.10',

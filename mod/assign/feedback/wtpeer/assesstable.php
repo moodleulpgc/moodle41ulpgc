@@ -920,7 +920,8 @@ class assignfeedback_wtpeer_assessment_table extends table_sql implements render
                     foreach($grades as $grade) {
                         $grade->grade = $this->get_assignment()->display_grade($grade->grade, false, $grade->userid);
                         if($this->canviewmarkers[$item]) {
-                            $fields = get_all_user_name_fields(true);  
+                            $userfieldsapi = \core_user\fields::for_name();
+                            $fields = $userfieldsapi->get_sql('', false, '', '', false)->selects;
                             $marker = $DB->get_record('user', array('id'=>$grade->grader), 'id, idnumber, '.$fields);
                             $grade->fullname = $this->get_assignment()->fullname($marker);
                         }

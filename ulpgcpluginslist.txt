@@ -43,9 +43,11 @@ mod/registry
 mod/teamsmeeting
 mod/videolib
 question/format/ulpgctf
+report/attendancetools
 report/autogroups
 report/datacheck
 report/o365channels
 report/supervision
 report/syncgroups
 report/trackertools
+user/profile/field/callsummons

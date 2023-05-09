@@ -77,7 +77,7 @@ class block_remote_courses extends block_base {
             
             // Fist recall common courses list
             if($this->config->courselist) {
-            
+            /*
                 // using ULPGC call
                 // Function call is hard-coded.
                 $url = $this->config->remotesite
@@ -94,6 +94,8 @@ class block_remote_courses extends block_base {
                 // Retrieve data.
                 $curl = new curl;
                 $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
+               */ 
+                $resp = $this->get_remote_courses_list();
                 
                 if (!is_null($resp) && is_array($resp) && count($resp) > 0) {
                     if(!empty($this->config->listheader)) {
@@ -155,6 +157,41 @@ class block_remote_courses extends block_base {
             $this->title = get_string('remote_courses', 'block_remote_courses');
         }
     }
+    
+    
+    public function  get_remote_courses_list(): array  {
+        global $USER;
+        
+        $courses = [];
+        
+        if($this->config->courselist) {
+        
+            // using ULPGC call
+            // Function call is hard-coded.
+            $url = $this->config->remotesite
+                . '/webservice/rest/server.php?wstoken='
+                . $this->config->wstoken . '&wsfunction=local_ulpgccore_get_remote_courses_by_field';
+            $format = 'json';
+            // Params: we use the username to retrieve recent activity
+            $params = array('searchlist' => $this->config->courselist, 
+                                        'field' => $this->config->coursefield);
+            if($this->config->recentactivity) {
+                $params['username'] = $USER->username;
+                //$params['username'] = '42810976';
+            }
+            // Retrieve data.
+            $curl = new curl;
+            $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
+                    
+        }
+
+        if(is_array($resp)) {
+            $courses = $resp;
+        }
+
+        return $courses;
+    }
+    
     
     private function print_courses($courses, $listclass, $limit = 0) {
         global $OUTPUT; 

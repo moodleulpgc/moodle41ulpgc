@@ -81,7 +81,8 @@ if ($PAGE->has_secondary_navigation()) {
     }
 }
 
-$primary = new core\navigation\output\primary($PAGE);
+//$primary = new core\navigation\output\primary($PAGE);
+$primary = new theme_moove\output\core\navigation\output\primarynav($PAGE);
 $renderer = $PAGE->get_renderer('core');
 $primarymenu = $primary->export_for_template($renderer);
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions() && !$PAGE->has_secondary_navigation();
@@ -122,6 +123,7 @@ $templatecontext = array_merge($templatecontext, $themesettings->footer());
 if (isloggedin()) {
     echo $OUTPUT->render_from_template('theme_moove/drawers', $templatecontext);
 } else {
+    $templatecontext['notloggedin'] = true; // ecastro ULPGC    
     $templatecontext = array_merge($templatecontext, $themesettings->frontpage());
 
     echo $OUTPUT->render_from_template('theme_moove/frontpage', $templatecontext);

@@ -72,7 +72,8 @@ class send_teacher_reminders extends base {
 
                     list($incoursesql,$inparams) = $DB->get_in_or_equal($exams);
                     $params = array_merge($params, $inparams);
-                    $names = get_all_user_name_fields(true, 'u');
+                    $userfieldsapi = \core_user\fields::for_name();
+                    $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 
                     $sql = "SELECT DISTINCT ra.id as rid, c.id AS courseid, c.shortname, c.fullname, u.id, u.email, u.mailformat, u.username, u.mailformat, $names
                             FROM {user} u

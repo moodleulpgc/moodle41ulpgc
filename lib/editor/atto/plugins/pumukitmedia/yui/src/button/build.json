@@ -1,0 +1,10 @@
+{
+  "name": "moodle-atto_pumukitmedia-button",
+  "builds": {
+    "moodle-atto_pumukitmedia-button": {
+      "jsfiles": [
+        "button.js"
+      ]
+    }
+  }
+}

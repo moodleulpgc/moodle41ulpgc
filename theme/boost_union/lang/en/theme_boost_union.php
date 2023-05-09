@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // General.
 $string['pluginname'] = 'Boost Union';
-$string['choosereadme'] = 'Theme Boost Union is an enhanced child theme of Boost provided by Moodle an Hochschulen e.V.';
+$string['choosereadme'] = '<p>Theme Boost Union is an enhanced child theme of Boost which is intended, on the one hand, to make Boost simply more configurable and, on the other hand, to provide helpful additional features for the daily Moodle operation of admins, teachers and students.</p><p>Boost Union is maintained by<br />Moodle an Hochschulen e.V.,</p><p>in cooperation with<br />lern.link GmbH</p><p>together with<br />bdecent GmbH</p>';
 $string['configtitle'] = 'Boost Union';
 
 // Settings: Look page.
@@ -36,7 +36,8 @@ $string['configtitlelook'] = 'Look';
 // ... Section: Theme presets.
 $string['presetheading'] = 'Theme presets';
 
-// Settings: Advances settings tab.
+// Settings: SCSS tab.
+$string['scsstab'] = 'SCSS';
 // ... Section: Raw SCSS.
 $string['scssheading'] = 'Raw SCSS';
 
@@ -50,11 +51,6 @@ $string['coursecontentmaxwidthsetting_desc'] = 'With this setting, you can overr
 // ... ... Setting: Medium content max width.
 $string['mediumcontentmaxwidthsetting'] = 'Medium content max width';
 $string['mediumcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s medium content width without manual SCSS modifications. This page width is used in certain activities like the database activity. By default, Moodle uses a medium content max width of 1120px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
-// ... Section: Content width.
-$string['contentwidthheading'] = 'Content width';
-// ... ... Setting: H5P content bank max width.
-$string['h5pcontentmaxwidthsetting'] = 'H5P content bank max width';
-$string['h5pcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s H5P content bank width without manual SCSS modifications. This width is used for the H5P editor within the content bank. It is <em>not</em> used for the width of the H5P activity. By default, Moodle uses a H5P content bank max width of 960px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
 
 // Settings: Branding tab.
 $string['brandingtab'] = 'Branding';
@@ -114,6 +110,15 @@ $string['activityiconcolorcontentsetting_desc'] = 'The activity icon color for "
 // ... ... Setting: Activity icon color for 'Interface'.
 $string['activityiconcolorinterfacesetting'] = 'Activity icon color for "Interface"';
 $string['activityiconcolorinterfacesetting_desc'] = 'The activity icon color for "Interface"';
+// ... Section: Navbar.
+$string['navbarheading'] = 'Navbar';
+// ... ... Setting: Navbar color.
+$string['navbarcolorsetting'] = 'Navbar color';
+$string['navbarcolorsetting_desc'] = 'With this setting, you can change the navbar color from the default light navbar to a dark one or a colored one.';
+$string['navbarcolorsetting_light'] = 'Light navbar with dark font color (unchanged as presented by Moodle core)';
+$string['navbarcolorsetting_dark'] = 'Dark navbar with light font color';
+$string['navbarcolorsetting_primarydark'] = 'Primary color navbar with light font color';
+$string['navbarcolorsetting_primarylight'] = 'Primary color navbar with dark font color';
 
 // Settings: Login page tab.
 $string['loginpagetab'] = 'Login page';
@@ -273,6 +278,20 @@ $string['fontawesomecheck-fa6free-newstuff-title'] = 'FontAwesome 6 icons';
 $string['fontawesomecheck-fa6free-newstuff-description'] = 'Newer FontAwesome versions ship with additional icons compared to the FontAwesome 4 iconset. If you see a virus icon on the left hand side, your FontAwesome 6 version is properly showing new icons which are new in FontAwesome 6.';
 $string['fontawesomecheck-fa6free-filter-title'] = 'FontAwesome filter';
 $string['fontawesomecheck-fa6free-filter-description'] = 'As you have the FontAwesome filter plugin installed, you should be sure that the filter handles the new FontAwesome 6 icons correctly as well. If you see a users icon on the left hand side, the filter is working properly with the FontAwesome 6 version icons.';
+
+// Settings: H5P tab.
+$string['h5ptab'] = 'H5P';
+// ... Section: Raw CSS for H5P.
+$string['cssh5pheading'] = 'Raw CSS for H5P';
+// ... ... Setting: Raw CSS for H5P.
+$string['cssh5psetting'] = 'Raw CSS for H5P';
+$string['cssh5psetting_desc'] = 'Use this field to provide CSS code which will be applied to the presentation of H5P content by mod_h5p and mod_hvp. Please inspect the H5P content types to find the necessary CSS selectors.';
+// ... Section: Content width.
+$string['contentwidthheading'] = 'Content width';
+// ... ... Setting: H5P content bank max width.
+$string['h5pcontentmaxwidthsetting'] = 'H5P content bank max width';
+$string['h5pcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s H5P content bank width without manual SCSS modifications. This width is used for the H5P editor within the content bank. It is <em>not</em> used for the width of the H5P activity. By default, Moodle uses a H5P content bank max width of 960px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
+
 // Settings: Mobile app tab.
 $string['mobiletab'] = 'Mobile app';
 // ... Section: Mobile appearance.
@@ -313,6 +332,61 @@ $string['activitynavigationsetting_desc'] = 'With this setting the elements to j
 $string['blockstab'] = 'Blocks';
 // ... Section: General blocks.
 $string['blocksgeneralheading'] = 'General blocks';
+// ... Section: Block regions.
+$string['blockregionsheading'] = 'Additional block regions';
+$string['blockregionsheading_desc'] = '<p>Boost Union provides a large number of additional block regions which can be used to add and show blocks over the whole Moodle page:</p>
+<ul><li>The <em>Outside block regions</em> are placed on all four sides of the Moodle page. They can be used to show blocks which accompany the shown Moodle page but do not directly belong to the main content.</li>
+<li>The <em>Header block region</em> is placed between the Outside (top) area and the main content area. It can be used to show a block as course header information.</li>
+<li>The <em>Content block regions</em> are placed directly over and under the main content in the main content area. They can be used to add blocks to the course content flow.</li>
+<li>The <em>Footer block regions</em> are placed at the bottom of the page between the Outside (bottom) area and the footnote. You have three footer regions available to build columns if necessary.</li>
+<li>The <em>Off-canvas block region</em> is somehow special as it hovers over the whole Moodle page as a drawer. The drawer is opened by the 9-dots icon at the very right side of the navigation bar. You have three off-canvas regions available to build columns if necessary.</li></ul>
+<p>Please note:</p>
+<ul><li>By default, all additional block regions are disabled. Please enable the particular block regions on the particular page layouts according to your needs. Try to be as focused as possible – too many block regions could overwhelm end users.</li>
+<li>As soon as an additional block region is enabled, it is visible for all authenticated users and editable by teachers and managers (depending on the fact if the particular user is allowed to edit the particular Moodle page, of course). But there are also theme/boost_union:viewregion* and theme/boost_union:editregion* capabilities which allow you to fine-tune the usage of each block region according to your needs.</li>
+<li>The Outside (left), Outside (right), Content (upper), Content (lower) and Header block regions are not available for all page layouts.</li></ul>';
+$string['blockregionsheading_experimental'] = 'Please note: The <em>Outside (left) and Outside (right) block regions</em> are fully working in the current state of implementation, but have to be <em>considered as experimental</em> as they do not wrap properly on medium width screens yet. Against this background, please use them with care. This issue will be fixed in an upcoming release.';
+$string['region-none'] = 'None';
+$string['region-outside-left'] = 'Outside (left)';
+$string['region-outside-top'] = 'Outside (top)';
+$string['region-outside-bottom'] = 'Outside (bottom)';
+$string['region-outside-right'] = 'Outside (right)';
+$string['region-content-upper'] = 'Content (upper)';
+$string['region-content-lower'] = 'Content (lower)';
+$string['region-footer-left'] = 'Footer (left)';
+$string['region-footer-right'] = 'Footer (right)';
+$string['region-footer-center'] = 'Footer (center)';
+$string['region-header'] = 'Header';
+$string['region-offcanvas-left'] = 'Off-canvas (left)';
+$string['region-offcanvas-right'] = 'Off-canvas (right)';
+$string['region-offcanvas-center'] = 'Off-canvas (center)';
+$string['closeoffcanvas'] = 'Close Off-canvas drawer';
+$string['openoffcanvas'] = 'Open Off-canvas drawer';
+// ... ... Setting: Block regions for 'x' layout.
+$string['blockregionsforlayout'] = 'Additional block regions for \'{$a}\' layout';
+$string['blockregionsforlayout_desc'] = 'With this setting, you can enable additional block regions for the \'{$a}\' layout.';
+// ... Section: Outside regions.
+$string['outsideregionsheading'] = 'Outside regions';
+$string['outsideregionsheading_desc'] = 'Outside regions can not only be enabled with the layout settings above, their appearance can also be customized.';
+// ... ... Setting: Block region width for Outside (left) region.
+$string['blockregionoutsideleftwidth'] = 'Block region width for \'Outside (left)\' region';
+$string['blockregionoutsideleftwidth_desc'] = 'With this setting, you can set the width of the \'Outside (left)\' block region which is shown on the left hand side of the main content area. By default, Boost Union uses a width of 300px. You can enter other pixel-based values like 200px, but you can also enter a percentage-based value like 10% or a viewport-width value like 10vw.';
+// ... ... Setting: Block region width for Outside (right) region.
+$string['blockregionoutsiderightwidth'] = 'Block region width for \'Outside (right)\' region';
+$string['blockregionoutsiderightwidth_desc'] = 'With this setting, you can set the width of the \'Outside (right)\' block region which is shown on the right hand side of the main content area. By default, Boost Union uses a width of 300px. You can enter other pixel-based values like 200px, but you can also enter a percentage-based value like 10% or a viewport-width value like 10vw.';
+// ... ... Setting: Block region width for Outside (top) region.
+$string['blockregionoutsidetopwidth'] = 'Block region width for \'Outside (top)\' region';
+$string['blockregionoutsidetopwidth_desc'] = 'With this setting, you can set the width of the \'Outside (top)\' block region which is shown at the very top of the page. You can choose between full width, course content width and hero width.';
+$string['outsideregionswidthfullwidth'] = 'Full width';
+$string['outsideregionswidthcoursecontentwidth'] = 'Course content width';
+$string['outsideregionswidthherowidth'] = 'Hero width';
+// ... ... Setting: Block region width for Outside (bottom) region.
+$string['blockregionoutsidebottomwidth'] = 'Block region width for \'Outside (bottom)\' region';
+$string['blockregionoutsidebottomwidth_desc'] = 'With this setting, you can set the width of the \'Outside (bottom)\' block region which is shown below the main content. You can choose between full width, course content width and hero width.';
+// ... ... Setting: Outside regions horizontal placement.
+$string['outsideregionsplacement'] = 'Outside regions horizontal placement';
+$string['outsideregionsplacement_desc'] = 'With this setting, you can control if, on larger screens, the \'Outside (left)\' and \'Outside (right)\' block regions should be placed near the main content area or rather near the window edges.';
+$string['outsideregionsplacementnextmaincontent'] = 'Display \'Outside (left)\' and \'Outside (right)\' regions next to the main content area';
+$string['outsideregionsplacementnearwindowedges'] = 'Display \'Outside (left)\' and \'Outside (right)\' regions near the window edges';
 
 // Settings: Misc tab.
 $string['misctab'] = 'Miscellaneous';
@@ -415,7 +489,7 @@ $string['maintenancelinkpositionsetting_desc'] = 'In this setting, you can confi
 // Settings: Info banners tab.
 $string['infobannertab'] = 'Info banner';
 // ... Section: Info banners.
-$string['infobannerheading'] = 'Info banner no. {$a->no}';
+$string['infobannerheading'] = 'Info banner {$a->no}';
 $string['infobannerpageloginpage'] = 'Login page';
 $string['infobannermodeperpetual'] = 'Perpetual';
 $string['infobannermodetimebased'] = 'Time controlled';
@@ -430,30 +504,29 @@ $string['bootstrapdarkcolor'] = 'Dark color';
 $string['bootstrapnone'] = 'No Bootstrap color';
 $string['infobannerclose'] = 'Close';
 $string['infobannerdismissreset'] = 'Reset visibility of dismissed info banner';
-$string['infobannerdismissresetbutton'] = 'Reset visibility of info banner no. {$a->no}';
-$string['infobannerdismissconfirm'] = 'Do you really want to reset the visibility of info banner no. {$a->no} and want to re-show it for all users who have dismissed it?';
-$string['infobannerdismisssuccess'] = 'The visibility of info banner no. {$a->no} has been reset';
-$string['infobannerdismissfail'] = 'The visibility reset of info banner no. {$a->no} has failed for at least one user';
+$string['infobannerdismissresetbutton'] = 'Reset visibility of info banner {$a->no}';
+$string['infobannerdismissconfirm'] = 'Do you really want to reset the visibility of info banner {$a->no} and want to re-show it for all users who have dismissed it?';
+$string['infobannerdismisssuccess'] = 'The visibility of info banner {$a->no} has been reset';
+$string['infobannerdismissfail'] = 'The visibility reset of info banner {$a->no} has failed for at least one user';
 $string['error:infobannerdismissnonotvalid'] = 'The given info banner number is not valid';
 $string['error:infobannerdismissnonotdismissible'] = 'The given info banner is not dismissible';
-$string['infobannerenabledsetting'] = 'Enable info banner no. {$a->no}';
-$string['infobannerenabledsetting_desc'] = 'With this setting, you can enable info banner no. {$a->no}.';
-$string['infobannercontentsetting'] = 'Info banner no. {$a->no} content';
-$string['infobannercontentsetting_desc'] = 'Here, you enter the information which should be shown within info banner no. {$a->no}.';
-$string['infobannerpagessetting'] = 'Page layouts to display info banner no. {$a->no} on';
-$string['infobannerpagessetting_desc'] = 'With this setting, you can select the page layouts on which info banner no. {$a->no} should be displayed.';
-$string['infobannerbsclasssetting'] = 'Info banner no. {$a->no} Bootstrap class';
-$string['infobannerbsclasssetting_desc'] = 'With this setting, you can select the Bootstrap style with which info banner no. {$a->no} should be displayed. If you choose the \'No Bootstrap color\' option, the info banner will be output without any particular Bootstrap color which gives you the freedom to style the banner yourself within the rich-text editor.';
-$string['infobannerordersetting'] = 'Info banner no. {$a->no} order position';
-$string['infobannerordersetting_desc'] = 'With this setting, you define the order position of info banner no. {$a->no}. By default, the info banners are ordered from top to bottom like you see them on this settings page here. However, you can decide to assign another order position with this setting. If you assign the same order position to two or more information banners, they will be ordered again according to the order on this settings page.';
-$string['infobannermodesetting'] = 'Info banner no. {$a->no} display mode';
-$string['infobannermodesetting_desc'] = 'With this setting, you can define if info banner no. {$a->no} should be a perpetual banner (which is always shown) or a time controlled banner (which is only shown within the configured time interval)';
-$string['infobannerdismissiblesetting'] = 'Info banner no. {$a->no} dismissible';
-$string['infobannerdismissiblesetting_desc'] = 'With this setting, you can make info banner no. {$a->no} dismissible. If the user clicks on the x-button in the info banner, the banner will be hidden for this user permanently. The visibility is not reset anyhow automatically, even if you change the content of the info banner. If you want to reset the visibility of the info banner, click the \'Reset visibility\' button below.';
-$string['infobannerstartsetting'] = 'Info banner no. {$a->no} start time';
-$string['infobannerstartsetting_desc'] = 'With this setting, you can define from when on info banner no. {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';
-$string['infobannerendsetting'] = 'Info banner no. {$a->no} end time';
-$string['infobannerendsetting_desc'] = 'With this setting, you can define until when info banner no. {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';
+$string['infobannerenabledsetting'] = 'Enable info banner {$a->no}';
+$string['infobannerenabledsetting_desc'] = 'With this setting, you can enable info banner {$a->no}.';
+$string['infobannercontentsetting'] = 'Info banner {$a->no} content';
+$string['infobannercontentsetting_desc'] = 'Here, you enter the information which should be shown within info banner {$a->no}.';
+$string['infobannerpagessetting'] = 'Page layouts to display info banner {$a->no} on';
+$string['infobannerpagessetting_desc'] = 'With this setting, you can select the page layouts on which info banner {$a->no} should be displayed.';
+$string['infobannerbsclasssetting'] = 'Info banner {$a->no} Bootstrap class';
+$string['infobannerbsclasssetting_desc'] = 'With this setting, you can select the Bootstrap style with which info banner {$a->no} should be displayed. If you choose the \'No Bootstrap color\' option, the info banner will be output without any particular Bootstrap color which gives you the freedom to style the banner yourself within the rich-text editor.';
+$string['infobannerordersetting'] = 'Info banner {$a->no} order position';
+$string['infobannerordersetting_desc'] = 'With this setting, you define the order position of info banner {$a->no}. By default, the info banners are ordered from top to bottom like you see them on this settings page here. However, you can decide to assign another order position with this setting. If you assign the same order position to two or more information banners, they will be ordered again according to the order on this settings page.';
+$string['infobannermodesetting'] = 'Info banner {$a->no} display mode';
+$string['infobannermodesetting_desc'] = 'With this setting, you can define if info banner {$a->no} should be a perpetual banner (which is always shown) or a time controlled banner (which is only shown within the configured time interval)';
+$string['infobannerdismissiblesetting'] = 'Info banner {$a->no} dismissible';
+$string['infobannerdismissiblesetting_desc'] = 'With this setting, you can make info banner {$a->no} dismissible. If the user clicks on the x-button in the info banner, the banner will be hidden for this user permanently. The visibility is not reset anyhow automatically, even if you change the content of the info banner. If you want to reset the visibility of the info banner, click the \'Reset visibility\' button below.';
+$string['infobannerstartsetting'] = 'Info banner {$a->no} start time';
+$string['infobannerstartsetting_desc'] = 'With this setting, you can define from when on info banner {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';$string['infobannerendsetting'] = 'Info banner {$a->no} end time';
+$string['infobannerendsetting_desc'] = 'With this setting, you can define until when info banner {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';
 
 // Settings: Functionality page.
 $string['configtitlefunctionality'] = 'Functionality';
@@ -547,28 +620,40 @@ $string['tilefrontpagepositionsetting_after'] = 'After the site home content';
 $string['tileheightsetting'] = 'Advertisement tiles height';
 $string['tileheightsetting_desc'] = 'With this setting, you control the height of the advertisement tiles. The configured height is the minimum height of each tile. If a tile\'s content is higher than this configured height, the whole row of tiles will be automatically made higher as needed.';
 // ... Section: Advertisement tiles.
-$string['tileheading'] = 'Advertisement tile no. {$a->no}';
-$string['tilebackgroundimagepositionsetting'] = 'Advertisement tile no. {$a->no} background image position';
-$string['tilebackgroundimagepositionsetting_desc'] = 'With this setting, you control the positioning of the background image within the advertisement tile no. {$a->no} container. The first value is the horizontal position, the second value is the vertical position.';
-$string['tilebackgroundimagesetting'] = 'Advertisement tile no. {$a->no} background image';
-$string['tilebackgroundimagesetting_desc'] = 'Here, you can upload an image file which will be shown as background image behind the content of the advertisement tile no. {$a->no}. Please make sure or check that the content is still readable on the background image. This is an optional setting, the advertisement tile will work even if you do not upload any background image.';
-$string['tilecontentsetting'] = 'Advertisement tile no. {$a->no} content';
-$string['tilecontentsetting_desc'] = 'Here, you enter the content which should be displayed in the advertisement tile no. {$a->no}. The content is displayed in the middle of the tile. This is an optional setting, the advertisement tile will be shown even if you do not set any content.';
-$string['tileenabledsetting'] = 'Enable advertisement tile no. {$a->no}';
-$string['tileenabledsetting_desc'] = 'With this setting, you can enable advertisement tile no. {$a->no}.';
-$string['tilelinksetting'] = 'Advertisement tile no. {$a->no} link URL';
-$string['tilelinksetting_desc'] = 'Here, you can set a (Moodle-internal or external) URL which will be offered as link button at the end of the advertisement tile no. {$a->no}. This is an optional setting, the advertisement tile will work even if you do not set any link URL.';
+$string['tileheading'] = 'Advertisement tile {$a->no}';
+$string['tilebackgroundimagepositionsetting'] = 'Advertisement tile {$a->no} background image position';
+$string['tilebackgroundimagepositionsetting_desc'] = 'With this setting, you control the positioning of the background image within the advertisement tile {$a->no} container. The first value is the horizontal position, the second value is the vertical position.';
+$string['tilebackgroundimagesetting'] = 'Advertisement tile {$a->no} background image';
+$string['tilebackgroundimagesetting_desc'] = 'Here, you can upload an image file which will be shown as background image behind the content of the advertisement tile {$a->no}. Please make sure or check that the content is still readable on the background image. This is an optional setting, the advertisement tile will work even if you do not upload any background image.';
+$string['tilecontentsetting'] = 'Advertisement tile {$a->no} content';
+$string['tilecontentsetting_desc'] = 'Here, you enter the content which should be displayed in the advertisement tile {$a->no}. The content is displayed in the middle of the tile. This is an optional setting, the advertisement tile will be shown even if you do not set any content.';
+$string['tileenabledsetting'] = 'Enable advertisement tile {$a->no}';
+$string['tileenabledsetting_desc'] = 'With this setting, you can enable advertisement tile {$a->no}.';
+$string['tilelinksetting'] = 'Advertisement tile {$a->no} link URL';
+$string['tilelinksetting_desc'] = 'Here, you can set a (Moodle-internal or external) URL which will be offered as link button at the end of the advertisement tile {$a->no}. This is an optional setting, the advertisement tile will work even if you do not set any link URL.';
 $string['tilelinktitlefallback'] = 'Link';
-$string['tilelinktitlesetting'] = 'Advertisement tile no. {$a->no} link title';
-$string['tilelinktitlesetting_desc'] = 'Here, you can set a link title which is used as label of the link button as soon as you set a link URL in the advertisement tile no. {$a->no}. Please note that if you set a link URL but do not set a link title, the link button will just be labeled with \'Link\'.';
-$string['tilelinktargetsetting'] = 'Advertisement tile no. {$a->no} link target';
-$string['tilelinktargetsetting_desc'] = 'Here, you can set the link target which is set for the link button as soon as you set a link URL in the advertisement tile no. {$a->no}.';
+$string['tilelinktitlesetting'] = 'Advertisement tile {$a->no} link title';
+$string['tilelinktitlesetting_desc'] = 'Here, you can set a link title which is used as label of the link button as soon as you set a link URL in the advertisement tile {$a->no}. Please note that if you set a link URL but do not set a link title, the link button will just be labeled with \'Link\'.';
+$string['tilelinktargetsetting'] = 'Advertisement tile {$a->no} link target';
+$string['tilelinktargetsetting_desc'] = 'Here, you can set the link target which is set for the link button as soon as you set a link URL in the advertisement tile {$a->no}.';
 $string['tilelinktargetsetting_samewindow'] = 'Same window';
 $string['tilelinktargetsetting_newtab'] = 'New tab';
-$string['tileordersetting'] = 'Advertisement tile no. {$a->no} order position';
-$string['tileordersetting_desc'] = 'With this setting, you define the order position of the advertisement tile no. {$a->no}. By default, the advertisement tiles are ordered from top to bottom and left to right like you see them on this settings page here. However, you can decide to assign another order position with this setting. If you assign the same order position to two or more advertisement tiles, they will be ordered again according to the order on this settings page.';
-$string['tiletitlesetting'] = 'Advertisement tile no. {$a->no} title';
-$string['tiletitlesetting_desc'] = 'Here, you enter the title which should be displayed in the advertisement tile no. {$a->no}. This is an optional setting, the advertisement tile will be shown even if you do not set a title.';
+$string['tileordersetting'] = 'Advertisement tile {$a->no} order position';
+$string['tileordersetting_desc'] = 'With this setting, you define the order position of the advertisement tile {$a->no}. By default, the advertisement tiles are ordered from top to bottom and left to right like you see them on this settings page here. However, you can decide to assign another order position with this setting. If you assign the same order position to two or more advertisement tiles, they will be ordered again according to the order on this settings page.';
+$string['tiletitlesetting'] = 'Advertisement tile {$a->no} title';
+$string['tiletitlesetting_desc'] = 'Here, you enter the title which should be displayed in the advertisement tile {$a->no}. This is an optional setting, the advertisement tile will be shown even if you do not set a title.';
+
+// ... Section: Site home right-hand block drawer behaviour.
+$string['sitehomerighthandblockdrawerbehaviour'] = 'Site home right-hand block drawer';
+// ... ... Setting: Show site home right-hand blocks drawer on visit setting.
+$string['showsitehomerighthandblockdraweronvisitsetting'] = 'Show right-hand block drawer of site home on visit';
+$string['showsitehomerighthandblockdraweronvisitsetting_desc'] = 'With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who are not logged in and does not overwrite the toggle state of each individual user.';
+// ... ... Setting: Show site home right-hand block drawer on first login setting.
+$string['showsitehomerighthandblockdraweronfirstloginsetting'] = 'Show right-hand block drawer of site home on first login';
+$string['showsitehomerighthandblockdraweronfirstloginsetting_desc'] = 'With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in for the very first time and does not overwrite the toggle state of each individual user.';
+// ... ... Setting: Show site home right-hand block drawer on guest login setting.
+$string['showsitehomerighthandblockdraweronguestloginsetting'] = 'Show right-hand block drawer of site home on guest login';
+$string['showsitehomerighthandblockdraweronguestloginsetting_desc'] = 'With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in as a guest.';
 
 // Privacy API.
 $string['privacy:metadata'] = 'The Boost Union theme does not store any personal data about any user.';
@@ -577,6 +662,32 @@ $string['privacy:metadata'] = 'The Boost Union theme does not store any personal
 $string['boost_union:configure'] = 'To be able to configure the theme as non-admin';
 $string['boost_union:viewhintcourseselfenrol'] = 'To be able to see a hint for unrestricted self enrolment in a visible course.';
 $string['boost_union:viewhintinhiddencourse'] = 'To be able to see a hint in a hidden course.';
+$string['boost_union:viewregionheader'] = 'To be able to see the Header block region';
+$string['boost_union:editregionheader'] = 'To be able to edit the Header block region';
+$string['boost_union:viewregionoutsideleft'] = 'To be able to see the Outside (left) block region';
+$string['boost_union:editregionoutsideleft'] = 'To be able to edit the Outside (left) block region';
+$string['boost_union:viewregionoutsideright'] = 'To be able to see the Outside (right) block region';
+$string['boost_union:editregionoutsideright'] = 'To be able to edit the Outside (right) block region';
+$string['boost_union:viewregionoutsidetop'] = 'To be able to see the Outside (top) block region';
+$string['boost_union:editregionoutsidetop'] = 'To be able to edit the Outside (top) block region';
+$string['boost_union:viewregionoutsidebottom'] = 'To be able to see the Outside (bottom) block region';
+$string['boost_union:editregionoutsidebottom'] = 'To be able to edit the Outside (bottom) block region';
+$string['boost_union:viewregioncontentupper'] = 'To be able to see the Content (upper) block region';
+$string['boost_union:editregioncontentupper'] = 'To be able to edit the Content (upper) block region';
+$string['boost_union:viewregioncontentlower'] = 'To be able to see the Content (lower) block region';
+$string['boost_union:editregioncontentlower'] = 'To be able to edit the Content (lower) block region';
+$string['boost_union:viewregionfooterleft'] = 'To be able to see the Footer (left) block region';
+$string['boost_union:editregionfooterleft'] = 'To be able to edit the Footer (left) block region';
+$string['boost_union:viewregionfooterright'] = 'To be able to see the Footer (right) block region';
+$string['boost_union:editregionfooterright'] = 'To be able to edit the Footer (right) block region';
+$string['boost_union:viewregionfootercenter'] = 'To be able to see the Footer (center) block region';
+$string['boost_union:editregionfootercenter'] = 'To be able to edit the Footer (center) block region';
+$string['boost_union:viewregionoffcanvasleft'] = 'To be able to see the Off-canvas (left) block region';
+$string['boost_union:editregionoffcanvasleft'] = 'To be able to edit the Off-canvas (left) block region';
+$string['boost_union:viewregionoffcanvasright'] = 'To be able to see the Off-canvas (right) block region';
+$string['boost_union:editregionoffcanvasright'] = 'To be able to edit the Off-canvas (right) block region';
+$string['boost_union:viewregionoffcanvascenter'] = 'To be able to see the Off-canvas (center) block region';
+$string['boost_union:editregionoffcanvascenter'] = 'To be able to edit the Off-canvas (center) block region';
 
 // Caches.
 $string['cachedef_fontawesome'] = 'FontAwesome files (which are uploaded in the Boost Union settings)';

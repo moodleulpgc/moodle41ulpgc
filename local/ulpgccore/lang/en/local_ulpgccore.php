@@ -10,7 +10,7 @@
 
 $string['pluginname'] = 'ULPGC core mods';
 $string['ulpgcsettings'] = 'ULPGC Settings';
-
+$string['configsettings'] = 'ULPGC Configuration Settings';
 $string['coresettings'] = 'ULPGC Core settings';
 $string['gradesettings'] = 'Grade settings';
 
@@ -274,7 +274,11 @@ Peritia Et Doctrina,PeD
 Peritia et Doctrina,PeD
 ';
 $string['enableadvchooser'] = 'Enable advanced chooser';
-$string['explainenableadvchooser'] = 'If enabled, the javascript mod chooser will sho modules grouped and ordered in categories ';
+$string['explainenableadvchooser'] = 'If enabled,
+the javascript mod chooser will show modules grouped in categories ';
+$string['sortadvchooser'] = 'Sort items in Chooser';
+$string['explainsortadvchooser'] = 'If active,
+the javascript mod chooser will show modules sorted in the same order as listed here within each category. ';
 $string['actv_communication'] = 'Communication';
 $string['actv_collaboration'] = 'Collaboration';
 $string['actv_adminwork'] = 'Management';
@@ -321,3 +325,65 @@ $string['checkcrontrask'] = 'Check cron is running task';
 $string['blockalert'] = 'Right panel open on alert';
 $string['explainblockalert'] = 'When enabled, if some right panel blocks has content that must be seen, 
 the right panel is set open at beginning';
+$string['activityindentation'] = 'Indent Activiies/Resources';
+$string['activityindentation_help'] = 'If enabled, activities or resources in the course page may be indented horizontally.';
+$string['activityindentationenabled'] = 'Enable activity indentation';
+$string['explainactivityindentationenabled'] = 'If enabled, then activity cards in course page may be indentated, 
+and edit menu will show indent tools.';
+$string['eventroleimported'] = 'Role imported from ULPGC preset';
+$string['eventpresetimported'] = 'Preset imported from file';
+$string['eventpresetexported'] = 'Preset exported to file';
+$string['customroles'] = 'Manage custom roles';
+$string['rolecapscheck'] = 'Check capabilities for custom roles';
+$string['presetrolestable'] = 'ULPGC preset roles';
+$string['presetblockstable'] = 'ULPGC preset blocks';
+$string['otherrolestable'] = 'Other custom roles';
+$string['otherblockstable'] = 'Other sticky blocks';
+$string['presetname'] = 'Preset file name';
+$string['presetdateload'] = 'Date loaded';
+$string['presetdatechanged'] = 'Date changed';
+
+$string['presetimport'] = 'Import preset';
+$string['presetreset'] = 'Reset item from preset';
+$string['confirmpresetimport'] = 'About to import item definition & settings from ULPGC preset "{$a}".
+<br />Confirm to proceed? ';
+$string['presetexport'] = 'Save data as preset';
+$string['confirmpresetexport'] = 'About to export definition & settings as ULPGC preset "{$a}".
+<br />Confirm to proceed? ';
+$string['presetsinstall'] = 'Install presets';
+$string['sitepreset'] = 'Site preset';
+$string['explainsitepreset'] = 'An XML file that contains default values for site settings specific for this platform. <br />
+Will be used to check & keep configuration changes. ';
+$string['rolepresets'] = 'Default Additional Roles';
+$string['explainrolepresets'] = 'List or role preset names that the system will try to install & check.
+ A comma-separated list of shortnames. ';
+$string['blockpresets'] = 'Default Sticky Blocks ';
+$string['explainblockpresets'] = 'List or Block preset names that the system will try to install & check.
+A comma-separated list of shortnames. ';
+$string['profilefieldpresets'] = 'Custom profile fields';
+$string['explainprofilefieldpresets'] = 'List of Custom profile fields that the system will try to install & check.
+A comma-separated list of shortnames. ';
+$string['hidepicture'] = 'Hide user picture';
+$string['hidepicture_desc'] = 'If enabled, user pictures will be hidden for users without viewhiddenfields capability,
+unless the user allows acces by writing any text into imagealt property.';
+$string['hidepicwarning'] = 'Image description & control of image visibility';
+$string['hidepicwarning_help'] = 'You picture will be visible only for Teachers in your courses
+(or other Administrative roles with access to course). Other students won\'t see your picture unless you grant explicit permission
+by writing any text into this alternate text box.
+If this box is empty, only teachers will see you picture across all the platform pages and activities. ';
+$string['cpostal'] = 'Postal code';
+$string['preseterrorxml'] = 'Error parsing XML / Required fields missing.';
+$string['rolepreseterrorarchetype'] = 'Error parsing XML';
+$string['presetloaded'] = 'Loaded {$a} preset file.';
+$string['presetloaderror'] = 'Error on loading {$a} preset file.';
+$string['presetsaved'] = 'Saved preset file "{$a}".';
+$string['presetsaveerror'] = 'Error on saving preset file "{$a}".';
+$string['referencecourse'] = 'Reference course';
+$string['explainreferencecourse'] = 'The shortname of a course to use as template or reference
+(for looking for default course settings or modules).';
+$string['maintemplate'] = 'Main template';
+$string['explainmaintemplate'] = 'An MBZ file containing a complete course to use as default template.
+If configured and installed, the shortname of this course will be used as referencce course.';
+$string['archivereuse'] = 'Archive/Reuse';
+$string['rolepermissions'] = 'Permissions';
+$string['participants'] = 'Participants list';

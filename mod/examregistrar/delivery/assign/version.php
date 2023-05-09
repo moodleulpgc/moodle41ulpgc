@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2021061500;
-$plugin->requires = 2020060900;  // Requires this Moodle version.
+$plugin->version  = 2023041500;
+$plugin->requires = 2022112800;  // Requires this Moodle version.
 $plugin->component = 'examdelivery_assign';
 $plugin->maturity = MATURITY_BETA;
-$plugin->release  = '0.5';
+$plugin->release  = '0.6';

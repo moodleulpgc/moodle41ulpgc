@@ -251,31 +251,31 @@ function mod_studentquiz_prepare_notify_data($studentquizquestion, $recepient, $
     $data = new stdClass();
 
     // Course info.
-    $data->courseid        = $course->id;
-    $data->coursename      = $course->fullname;
+    $data->courseid = $course->id;
+    $data->coursename = $course->fullname;
     $data->courseshortname = $course->shortname;
 
     // Module info.
-    $data->modulename      = $module->name;
+    $data->modulename = $module->name;
     $data->moduleid = $module->id;
 
     // Question info.
-    $data->questionname    = $question->name;
+    $data->questionname = $question->name;
     $questionurl = new moodle_url('/mod/studentquiz/preview.php', ['cmid' => $module->id,
             'studentquizquestionid' => $studentquizquestion->get_id()]);
-    $data->questionurl     = $questionurl->out(false);
+    $data->questionurl = $questionurl->out(false);
 
     // Notification timestamp.
     // TODO: Note: userdate will format for the actor, not for the recepient.
-    $data->timestamp    = userdate($time->getTimestamp(), get_string('strftimedatetime', 'langconfig'));
+    $data->timestamp = userdate($time->getTimestamp(), get_string('strftimedatetime', 'langconfig'));
 
     // Recepient who receives the notification.
     $data->recepientidnumber = $recepient->idnumber;
-    $data->recepientname     = fullname($recepient);
+    $data->recepientname = fullname($recepient);
     $data->recepientusername = $recepient->username;
 
     // User who triggered the noticication.
-    $data->actorname     = fullname($actor);
+    $data->actorname = fullname($actor);
     $data->actorusername = $actor->username;
 
     // Set to anonymous student and manager if needed.
@@ -863,24 +863,6 @@ function mod_studentquiz_check_availability($openform, $closefrom, $type) {
     }
 
     return [$message, $availabilityallow];
-}
-
-/**
- * Saves question rating.
- *
- * @param stdClass $data requires userid, questionid, rate
- */
-function mod_studentquiz_save_rate($data) {
-    global $DB;
-
-    $row = $DB->get_record('studentquiz_rate', ['userid' => $data->userid,
-        'studentquizquestionid' => $data->studentquizquestionid]);
-    if ($row === false) {
-        $DB->insert_record('studentquiz_rate', $data);
-    } else {
-        $data->id = $row->id;
-        $DB->update_record('studentquiz_rate', $data);
-    }
 }
 
 /**

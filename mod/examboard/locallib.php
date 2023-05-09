@@ -150,7 +150,8 @@ function examboard_get_potential_board_graders($cm, $context, $boardorid, $usetu
     if($SESSION->nameformat == 'firstname') {
         $orderby = 'firstname ASC, lastname ASC';
     }
-    $userfields = 'u.id, u.idnumber, '.get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $userfields = 'u.id, u.idnumber, ' . $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 
     if(!$board->groupid) {
         $groupmode = groups_get_activity_groupmode($cm);
@@ -363,7 +364,8 @@ function examboard_get_potential_exam_users($cm, $context, $examorid) {
     if($SESSION->nameformat == 'firstname') {
         $orderby = 'firstname ASC, lastname ASC';
     }
-    $userfields = 'u.id, u.idnumber, '.get_all_user_name_fields(true, 'u');
+    $userfieldsapi = \core_user\fields::for_name();
+    $userfields = 'u.id, u.idnumber, ' . $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 
     if(!$groupid) {
         $groupmode = groups_get_activity_groupmode($cm);
@@ -2053,7 +2055,7 @@ function  examboard_process_notifications($examboard, $course, $cm, $context, $f
     $notification->timeissued = time();
     $attachname = '';
     $sent = array();
-    $usernames = get_all_user_name_fields();
+    $usernames = \core_user\fields::get_name_fields()
     $noreplyuser = core_user::get_noreply_user();
         foreach($usernames as $field) {
         $noreplyuser->{$field} = $USER->{$field};
@@ -2977,7 +2979,7 @@ function examboard_export_exam_row(&$row) {
     $rolestr = $SESSION->mod_examboard_export_rolestr;
     list($skipped, $examineefields, $memberfields) = $SESSION->mod_examboard_export_fieldtypes;
     
-    $names = get_all_user_name_fields();
+    $names = \core_user\fields::get_name_fields();
     $user = core_user::get_support_user(); 
 
     $renderer = $PAGE->get_renderer('mod_examboard');
@@ -3242,7 +3244,8 @@ function examboard_export_examinations($examboard, $fromform) {
         }
         
         if($names) {
-            $names = ', '.get_all_user_name_fields(true, $names);
+            $userfieldsapi = \core_user\fields::for_name();
+            $names = ', ' . $userfieldsapi->get_sql($names, false, '', '', false)->selects;
         }
         
         $sql = "SELECT $index AS idx, e.*, e.id AS examid, e.active AS examactive, b.title, b.name, b.idnumber, b.active as boardactive, b.groupid 

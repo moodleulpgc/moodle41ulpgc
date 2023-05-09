@@ -920,13 +920,8 @@ class single_button implements renderable {
         }
 
         // Form parameters.
-        $params = $this->url->params();
-        if ($this->method === 'post') {
-            $params['sesskey'] = sesskey();
-        }
-        $data->params = array_map(function($key) use ($params) {
-            return ['name' => $key, 'value' => $params[$key]];
-        }, array_keys($params));
+        $actionurl = new moodle_url($this->url, ['sesskey' => sesskey()]);
+        $data->params = $actionurl->export_params_for_template();
 
         // Button actions.
         $actions = $this->actions;
@@ -1128,13 +1123,8 @@ class single_select implements renderable, templatable {
         }, array_keys($attributes));
 
         // Form parameters.
-        $params = $this->url->params();
-        if ($this->method === 'post') {
-            $params['sesskey'] = sesskey();
-        }
-        $data->params = array_map(function($key) use ($params) {
-            return ['name' => $key, 'value' => $params[$key]];
-        }, array_keys($params));
+        $actionurl = new moodle_url($this->url, ['sesskey' => sesskey()]);
+        $data->params = $actionurl->export_params_for_template();
 
         // Select options.
         $hasnothing = false;
@@ -4302,6 +4292,31 @@ class action_menu implements renderable, templatable {
     public function set_menu_trigger($trigger, $extraclasses = '') {
         $this->menutrigger = $trigger;
         $this->triggerextraclasses = $extraclasses;
+    }
+
+    /**
+     * Classes for the trigger menu
+     */
+    const DEFAULT_KEBAB_TRIGGER_CLASSES = 'btn btn-icon d-flex align-items-center justify-content-center';
+
+    /**
+     * Setup trigger as in the kebab menu.
+     *
+     * @param string|null $triggername
+     * @param core_renderer|null $output
+     * @param string|null $extraclasses extra classes for the trigger {@see self::set_menu_trigger()}
+     * @throws coding_exception
+     */
+    public function set_kebab_trigger(?string $triggername = null, ?core_renderer $output = null,
+        ?string $extraclasses = '') {
+        global $OUTPUT;
+        if (empty($output)) {
+            $output = $OUTPUT;
+        }
+        $label = $triggername ?? get_string('actions');
+        $triggerclasses = self::DEFAULT_KEBAB_TRIGGER_CLASSES . ' ' . $extraclasses;
+        $icon = $output->pix_icon('i/menu', $label);
+        $this->set_menu_trigger($icon, $triggerclasses);
     }
 
     /**

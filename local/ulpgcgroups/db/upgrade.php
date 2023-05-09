@@ -77,13 +77,9 @@ function xmldb_local_ulpgcgroups_upgrade($oldversion) {
         if ($dbman->field_exists($table, $field)) {
             $dbman->drop_field($table, $field);
         }
-
-    
     
          upgrade_plugin_savepoint(true, 2016020100, 'local', 'ulpgcgroups');
     }
-
-    
     
     if ($oldversion < 2019102500) {
         $tables = array('groups' => ['enrol', 'cod_grupo', 'component', 'itemid'],
@@ -103,6 +99,13 @@ function xmldb_local_ulpgcgroups_upgrade($oldversion) {
     
          upgrade_plugin_savepoint(true, 2019102500, 'local', 'ulpgcgroups');
     }
+    
+    if ($oldversion < 2023022400) {
+        // remove old task introduced by enrol_groupsync 
+        $DB->delete_records('task_scheduled', ['component' => 'enrol_groupsync']);
+    
+         upgrade_plugin_savepoint(true, 2023022400, 'local', 'ulpgcgroups');
+    }    
     
     return true;
 }

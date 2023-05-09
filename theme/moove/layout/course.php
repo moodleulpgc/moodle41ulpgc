@@ -93,9 +93,15 @@ if ($PAGE->has_secondary_navigation()) {
     }
 }
 
-$primary = new core\navigation\output\primary($PAGE);
+//$primary = new core\navigation\output\primary($PAGE);
+$primary = new theme_moove\output\core\navigation\output\primarynav($PAGE);
+
+
 $renderer = $PAGE->get_renderer('core');
 $primarymenu = $primary->export_for_template($renderer);
+
+//print_object($primarymenu['moremenu']);
+
 $buildregionmainsettings = !$PAGE->include_region_main_settings_in_header_actions() && !$PAGE->has_secondary_navigation();
 // If the settings menu will be included in the header then don't add it here.
 $regionmainsettingsmenu = $buildregionmainsettings ? $OUTPUT->region_main_settings_menu() : false;
@@ -130,5 +136,9 @@ $templatecontext = [
 ];
 
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
+
+// ecastro ULPGC
+$templatecontext = theme_moove_navbar_settings($templatecontext);
+$templatecontext = array_merge($templatecontext, theme_moove_union_settings());
 
 echo $OUTPUT->render_from_template('theme_moove/course', $templatecontext);

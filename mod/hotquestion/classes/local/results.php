@@ -297,11 +297,11 @@ class results {
             $context = context_module::instance($cm->id);
             $cmt = new stdClass();
             $cmt->component = 'mod_hotquestion';
-            $cmt->context   = $context;
-            $cmt->course    = $course;
-            $cmt->cm        = $cm;
-            $cmt->area      = 'hotquestion_questions';
-            $cmt->itemid    = $question->id;
+            $cmt->context = $context;
+            $cmt->course = $course;
+            $cmt->cm = $cm;
+            $cmt->area = 'hotquestion_questions';
+            $cmt->itemid = $question->id;
             $cmt->showcount = true;
             $comment = new comment($cmt);
             $html = $comment->output(true);
@@ -389,17 +389,13 @@ class results {
         if (!empty($newentry->content)) {
             // If there is some actual content, then create a new record.
             $DB->insert_record('hotquestion_questions', $newentry);
-            if ($CFG->version > 2014051200) { // If newer than Moodle 2.7+ use new event logging.
-                $params = array(
-                    'objectid' => $hq->cm->id,
-                    'context' => $context,
-                );
-                $event = add_question::create($params);
-                $event->trigger();
-            } else {
-                add_to_log($fromform->course->id, "hotquestion", "add question"
-                    , "view.php?id={$fromform->cm->id}", $newentry->content, $fromform->cm->id);
-            }
+            $params = array(
+                'objectid' => $hq->cm->id,
+                'context' => $context,
+            );
+            $event = add_question::create($params);
+            $event->trigger();
+
             // Update completion state for current user.
             $hq->update_completion_state();
             // Contrib by ecastro ULPGC update grades for question author.

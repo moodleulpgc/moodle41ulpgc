@@ -26,10 +26,10 @@ cache:
 env:
   global:
     - MOODLE_START_BEHAT_SERVERS=NO
-    - MOODLE_BRANCH=MOODLE_35_STABLE
+    - MOODLE_BRANCH=MOODLE_38_STABLE
     - DB=pgsql
     - DOCKER_IMAGE=selenium/standalone-chrome
-    - DOCKER_TAG_VERSION=3.14.0-arsenic
+    - DOCKER_TAG_VERSION=latest
     - MOODLE_CI_VER=2
     - MOODLE_DIR=/home/travis/build/moodle
   
@@ -41,7 +41,9 @@ matrix:
   # - env: MOODLE_BRANCH=MOODLE_34_STABLE MOODLE_CI_VER=2
   # - env: MOODLE_BRANCH=MOODLE_35_STABLE MOODLE_CI_VER=2
   exclude:
+    # New behat version only work with php 7.2
     - php: 5.6
+    - php: 7.0
 
 before_install:
   - >
@@ -69,4 +71,4 @@ install:
 
 script:
   #- moodle-plugin-ci behat --moodle=${MOODLE_DIR} --auto-rerun=0
-  - moodle-plugin-ci behat --profile='chrome' --moodle=${MOODLE_DIR} --auto-rerun=0
+  - moodle-plugin-ci behat --profile='chrome' --moodle=${MOODLE_DIR}

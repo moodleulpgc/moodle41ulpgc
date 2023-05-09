@@ -40,4 +40,13 @@ $tasks = [
         'dayofweek' => '*',
         'month' => '*'
     ],
+    [
+        'classname' => 'local_ulpgcgroups\task\enrolgroupsync',
+        'blocking' => 0,
+        'minute' => '35',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],    
 ];

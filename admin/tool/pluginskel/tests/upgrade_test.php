@@ -22,6 +22,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_pluginskel;
+
 use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 use tool_pluginskel\local\util\manager;
@@ -35,11 +37,12 @@ require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/pluginskel/vendor/autolo
 /**
  * Upgrade test class.
  *
+ * @coversNothing
  * @package     tool_pluginskel
  * @copyright   2016 Alexandru Elisei alexandru.elisei@gmail.com
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_pluginskel_upgrade_testcase extends advanced_testcase {
+class upgrade_test extends \advanced_testcase {
 
     /** @var string[] The test recipe for a local plugin type. */
     protected static $recipelocal = array(
@@ -128,7 +131,7 @@ class tool_pluginskel_upgrade_testcase extends advanced_testcase {
         $upgradelibfile = $files['db/upgradelib.php'];
 
         $moodleinternal = "defined('MOODLE_INTERNAL') || die()";
-        $this->assertStringContainsString($moodleinternal, $upgradelibfile);
+        $this->assertStringNotContainsString($moodleinternal, $upgradelibfile);
 
         $this->assertStringContainsString("require_once(__DIR__.'/upgradelib.php')", $upgradefile);
 

@@ -606,8 +606,8 @@ class teamschannels extends \local_o365\feature\coursesync\main {
             $teamsobjectid = $courseteamsrec->objectid;
         }
         
-        $currentowners $this->get_channel_owners($teamsobjectid, $channelobjectid));
-        $currentmembers = $this->get_channel_members($teamsobjectid, $channelobjectid));
+        $currentowners = $this->get_channel_owners($teamsobjectid, $channelobjectid);
+        $currentmembers = $this->get_channel_members($teamsobjectid, $channelobjectid);
         
         $intendedowners = utils::get_channel_owner_object_ids_by_coursegroup($courseid, $groupid);
         $intendedmembers = utils::get_channel_member_object_ids_by_coursegroup($courseid, $groupid);
@@ -730,10 +730,10 @@ class teamschannels extends \local_o365\feature\coursesync\main {
      * @return bool
      */    
     public function update_course_group_name_extended(\stdClass $course, string $groupobjectid, string $groupo365name = null, \stdClass $group = null) : bool {
-        global $DB
+        global $DB;
     
         $groupname = utils::get_group_display_name($course, $group);
-        $mailalias utils::get_group_mail_alias($course, $group);
+        $mailalias = utils::get_group_mail_alias($course, $group);
         // only update if need
         if($groupname != $groupo365name) {
             $updatedexistinggroup = [
@@ -1179,8 +1179,8 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         $groups = $DB->get_recordset_sql($sql, $params);    
         
         $channelpattern = get_config('local_o365teams', 'channelpattern');
-        $added = []
-        foreach ($groups as $group) {
+        $added = [];
+        foreach($groups as $group) {
             // to ensure both courseteamid and teamfromgroup are processed but only once
             $process = [];
             if($group->courseteamid) {
@@ -1298,7 +1298,7 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         if($groupchannels->valid()) {
             foreach($groupchannels as $channel) {
                 try {
-                    $this->resync_channel_membership($channel->courseid, $channel->groupid, $channel->teamsobjectid, $channel->channelobjectid)
+                    $this->resync_channel_membership($channel->courseid, $channel->groupid, $channel->teamsobjectid, $channel->channelobjectid);
                 } catch (\Exception $e) {
                     // Do nothing.
                     $this->mtrace("    ... Group/Channel resync failed.  " . $e->getMessage());
@@ -1365,7 +1365,7 @@ class teamschannels extends \local_o365\feature\coursesync\main {
     
         if(!$sitelabel) {
             mtrace("    NO sitealbel, nothing to do.");        
-            return true
+            return true;
         }
     
         // Get course groups without sitelabel in o365 name

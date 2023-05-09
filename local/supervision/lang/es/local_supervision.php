@@ -149,3 +149,5 @@ $string['warningdigesttxt'] = 'Notificaciones remitidas por usuario / asignatura
 $string['errorsubject'] = 'Errores en Monitorización de actividades pendientes';
 $string['failuresubject'] = 'Fallos en envío de Notificaciones de actividades pendientes.';
 $string['messageprovider:supervision_warning'] = 'Recordatorios de Supervisión de actividades pendientes';
+$string['syncfromunits'] = 'Supervisores desde ULPGC units';
+$string['settingsfromunits'] = 'Configuración';

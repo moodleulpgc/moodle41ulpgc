@@ -40,7 +40,6 @@ abstract class examregistrar_manageform_base extends moodleform {
         }
     }
     
-    
     function add_standard_hidden_fields($edit) {
         $mform =& $this->_form;
         
@@ -302,7 +301,6 @@ class examregistrar_exam_form extends examregistrar_manageform_base {
         $repeatedoptions = array();
         $repeated = examregistrar_get_per_delivery_fields($courseid, $mform, $repeatedoptions);
 
-        
         $this->repeat_elements($repeated, $deliverynum, $repeatedoptions, 
                                 'deliver_repeats', 'deliver_add_fields', 1, 
                                 get_string('adddelivery' , 'examregistrar'), false);        
