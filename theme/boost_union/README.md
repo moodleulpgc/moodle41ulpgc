@@ -235,6 +235,12 @@ In this tab there are the following settings:
 
 With this setting, you can hide one or multiple nodes from the primary navigation.
 
+##### Breadcrumbs
+
+###### Display the category breadcrumbs in the course header
+
+By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.
+
 ##### Navigation
 
 ###### Back to top button
@@ -298,6 +304,7 @@ With this setting, you can set the width of the 'Outside (bottom)' block region 
 ###### Outside regions horizontal placement
 
 With this setting, you can control if, on larger screens, the 'Outside (left)' and 'Outside (right)' block regions should be placed near the main content area or rather near the window edges.
+
 ##### Site home right-hand block drawer
 
 ###### Show right-hand block drawer of site home on visit
@@ -527,10 +534,13 @@ Moodle an Hochschulen e.V. would like to thank these main contributors (in alpha
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
 * lern.link GmbH, Beata Waloszczyk: Code
+* Moodle.NRW / Ruhr University Bochum, Tim Trappen: Code, Ideating
+* Moodle.NRW / Ruhr University Bochum, Matthias Buttgereit: Code, Ideating
 * moodleSCHULE e.V., Ralf Krause: German translation and curation, Ideating
 * Ruhr University Bochum, Melanie Treitinger: Code, Ideating
 * RWTH Aachen, Amrita Deb Dutta: Code
 * RWTH Aachen, Josha Bartsch: Code
+* Solent University, Mark Sharp: Code
 * University of Graz, André Menrath: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
 * Zurich University of Applied Sciences (ZHAW): Funding, Ideating

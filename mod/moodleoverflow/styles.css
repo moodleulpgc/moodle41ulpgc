@@ -35,8 +35,8 @@
 }
 
 .moodleoverflowdiscussion .discussionmove .icon {
-    width: 24px;
-    height: 24px;
+    width: 16px; /* ecastro ULPGC 24 */ 
+    height: 16px;
     color: #848d95;
 }
 
@@ -109,6 +109,34 @@
 .moodleoverflowdiscussion .subject {
     font-size: 1.25em;
 }
+
+/* ecastro ULPGC */
+.moodleoverflowdiscussion .actions {
+    float: right;
+    margin-left: auto;
+}
+
+.moodleoverflowdiscussion .discussiontoggle {
+    font-size: 12px;
+    padding-top: 4px;
+}
+
+.moodleoverflowdiscussion .upper {
+    justify-content: center;
+}
+
+.moodleoverflowdiscussion .status {
+    flex-direction: column;
+    margin-left: 12px;
+    align-content: flex-start;
+}
+
+.rrreply-correction  .fa-reply::before {
+    font-family: "Fontawesome";
+    content: '\f112';
+}
+
+/* ecastro ULPGC */
 
 /*
  * The form to post new messages.

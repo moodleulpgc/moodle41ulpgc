@@ -277,3 +277,6 @@ body.path-mod-dialogue #region-main  .btn.btn-small.disabled {
     margin-left: 480px; }
 }
    
+.popover-region-notifications.ulpgc .fa-bullhorn::before {
+  font-family: 'fontawesome';
+}

@@ -22,7 +22,7 @@
       width: 236px;
       height: 40px;
       margin: 0;
-      display: block;
+      display: inline;
       /* @media (max-device-width: 1366px) and (orientation : "landscape"){
           @content;
       }*/ }
@@ -64,9 +64,28 @@
   display: inline-block;
 }
 .ulpgcds-icon-user::before, .icon-user::before {
-  font-family: "FontAwesome" !important;
+  font-family: "Fontawesome" !important;
   font-weight: 400;
   content: "\f007";
+}
+
+
+.icon.fa, 
+.dropdown-toggle::after,
+.dropdown-toggle::before {
+  /* font-family: 'Fontawesome'; */
+  font-family: 'Font Awesome 6 Free';
+}
+
+.dropdown-item span.currentcourse::before {
+  font-family: 'fontawesome';
+  content: "\f115";  
+margin-left: -1.2rem;
+padding-right: 0.2rem;
+}
+
+.primary-navigation  .dropdown-item[aria-current="true"] {
+  background-color: #f0ad4e;
 }
 
 
@@ -90,10 +109,23 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     height: 6px;
 }
 
-
+.secondary-navigation .moremenu.navigation {
+  float: left;
+}
 
 .secondary-navigation > .moove-container-fluid,  .secondary-navigation .moremenu,  .moremenu .nav-link{
      height: 36px;
+}
+
+.secondary-navigation .moremenu-toggles{
+    height: 36px;
+    margin-left: auto;
+    float: right;     
+}
+
+.secondary-navigation .moremenu-toggles .menupanel {
+  float: right;
+  padding: 0.5rem 0.2rem;
 }
 
 .navigation.inactivitysettings,
@@ -116,21 +148,30 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 }
 
 
-
+.dropdown-toggle::after {
+    @extend .fa-solid;
+    font-family: 'Fontawesome';
+    content: fa-content($fa-var-chevron-down);
+    margin-right: 0;
+    margin-left: 2px;
+    font-size: 12px;
+    width: 9px;
+    border: 0; 
+}
 
 /* Change the block column width on the Dashboard if setting 'blockcolumnwidthdashboard' is different from setting 'blockcolumnwidth'. */
 @if variable-exists(blockwidthdashboard) {
     @if $blocks-width-dashboard {
-  .path-my #lateral-side-blocks {
-    max-width: $blocks-width-dashboard;
-    float: left;
-  }
+    .path-my #lateral-side-blocks {
+      max-width: $blocks-width-dashboard;
+      float: left;
+    }
 
-  .path-my #region-main .main-content {
-    //float: right;
-    //max-width: calc(100% - 4px - #{$blocks-width-dashboard});
+    .path-my #region-main .main-content {
+      //float: right;
+      //max-width: calc(100% - 4px - #{$blocks-width-dashboard});
+    }
   }
-}
 }
 
 
@@ -503,6 +544,16 @@ span.unread {
     }
 }
 
+
+/*---------------------------------------
+ * Activity modules: Attendance.
+ --------------------------------------*/
+
+#page-mod-attendance-report .attendancereporttable {
+  margin-left: 0;
+}
+
+
 /*---------------------------------------
  * Activity modules: Forum.
  --------------------------------------*/
@@ -515,3 +566,5 @@ span.unread {
 #page-mod-forum-view .discussion-list .text-truncate {
   white-space: pre-wrap;
 }
+
+

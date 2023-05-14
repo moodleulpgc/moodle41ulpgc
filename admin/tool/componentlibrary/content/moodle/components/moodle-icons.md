@@ -35,8 +35,23 @@ Options:
 
 {{< example >}}
 <span class="fa-stack fa-lg">
-  <i class="fa fa-comment fa-stack-2x"></i>
-  <i class="fa fa-thumbs-o-up fa-stack-1x fa-inverse"></i>
+  <i class="fa-solid fa-comment fa-stack-2x"></i>
+  <i class="fa-solid fa-thumbs-up fa-stack-1x fa-inverse"></i>
+</span>
+
+<span class="fa-stack fa-2x">
+    <i class="fa-solid fa-camera fa-stack-1x"></i>
+    <i class="fa-solid fa-ban fa-stack-2x" style="color:Tomato"></i>
+</span>
+
+<span class="fa-stack fa-2x">
+    <i class="fa-solid fa-square fa-stack-2x"></i>
+    <i class="fa-solid fa-terminal fa-stack-1x fa-inverse"></i>
+</span>
+
+<span class="fa-stack fa-4x">
+    <i class="fa-solid fa-square fa-stack-2x"></i>
+    <i class="fa-solid fa-terminal fa-stack-1x fa-inverse"></i>
 </span>
 {{< /example >}}
 ## List of mapped font-awesome icons

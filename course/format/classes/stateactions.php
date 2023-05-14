@@ -673,7 +673,7 @@ class stateactions {
         ?int $targetsectionid = null,
         ?int $targetcmid = null
     ): void {
-        $this->set_cm_indentation($updates, $course, $ids, 0);
+        $this->set_cm_indentation($updates, $course, $ids, -1); // ecastro ULPGC to allow de-indent
     }
 
     /**
@@ -695,8 +695,18 @@ class stateactions {
         $this->validate_cms($course, $ids, __FUNCTION__, ['moodle/course:manageactivities']);
         $modinfo = get_fast_modinfo($course);
         $cms = $this->get_cm_info($modinfo, $ids);
-        list($insql, $inparams) = $DB->get_in_or_equal(array_keys($cms), SQL_PARAMS_NAMED);
-        $DB->set_field_select('course_modules', 'indent', $indent, "id $insql", $inparams);
+        //list($insql, $inparams) = $DB->get_in_or_equal(array_keys($cms), SQL_PARAMS_NAMED);
+        //$DB->set_field_select('course_modules', 'indent', $indent, "id $insql", $inparams);
+        // ecastro ULPGC 
+        foreach($cms as $cmid => $cm) {
+            $newindent = $cm->indent + $indent;
+            if($newindent < 0) {
+                $newindent = 0;
+            }
+            $DB->set_field('course_modules', 'indent', $newindent, ['id' => $cmid]);
+        }
+        // ecastro ULPGC 
+        
         rebuild_course_cache($course->id, false, true);
         foreach ($cms as $cm) {
             $modcontext = context_module::instance($cm->id);

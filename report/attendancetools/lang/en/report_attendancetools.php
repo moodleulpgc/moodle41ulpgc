@@ -28,4 +28,6 @@ defined('MOODLE_INTERNAL') || die;
 $string['attendancetools'] = 'Attendance tools';
 $string['attendancetools:view'] = 'View Autopopulate groups course report';
 $string['pluginname'] = 'Attendance tools';
-
+$string['autosession'] = 'Instant session';
+$string['milista'] = 'Milista';
+$string['asistencia'] = 'External CRUE';

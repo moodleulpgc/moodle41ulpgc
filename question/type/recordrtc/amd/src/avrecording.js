@@ -42,15 +42,18 @@ import ModalFactory from 'core/modal_factory';
  * @return {string} 'ok' if it looks OK, else 'nowebrtc' or 'nothttps' if there is a problem.
  */
 function checkCanWork() {
+    // Check APIs are known.
     if (!(navigator.mediaDevices && window.MediaRecorder)) {
         return 'nowebrtc';
     }
 
-    if (!(location.protocol === 'https:' || location.host.indexOf('localhost') !== -1)) {
+    // Check protocol (localhost).
+    if (location.protocol === 'https:' ||
+            location.host === 'localhost' || location.host === '127.0.0.1') {
+        return 'ok';
+    } else {
         return 'nothttps';
     }
-
-    return 'ok';
 }
 
 /**
@@ -64,7 +67,7 @@ function checkCanWork() {
  *  - recording: Media is being recorded. Pause button visible if allowed. Main button shows 'Stop'. Countdown displayed.
  *  - paused:    If pause was pressed. Media recording paused, but resumable. Pause button changed to say 'resume'.
  *  - saving:    Media being uploaded. Progress indication shown. Pause button hidden if was visible.
- *  - recorded:  Recording and upload complete. Buttons shows 'Record again'.
+ *  - recorded:  Recording and upload complete. The button then shows 'Record again'.
  *
  * @param {HTMLElement} widget the DOM node that is the top level of the whole recorder.
  * @param {(AudioSettings|VideoSettings)} mediaSettings information about the media type.
@@ -119,9 +122,15 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
     const button = widget.querySelector('button.qtype_recordrtc-main-button');
     const pauseButton = widget.querySelector('.qtype_recordrtc-pause-button button');
     const controlRow = widget.querySelector('.qtype_recordrtc-control-row');
-    const mediaElement = widget.querySelector('.qtype_recordrtc-media-player ' + mediaSettings.name);
+    const mediaElement = widget.querySelector('.qtype_recordrtc-media-player ' +
+        (mediaSettings.name === 'screen' ? 'video' : mediaSettings.name));
     const noMediaPlaceholder = widget.querySelector('.qtype_recordrtc-no-recording-placeholder');
     const timeDisplay = widget.querySelector('.qtype_recordrtc-time-left');
+    const progressBar = widget.querySelector('.qtype_recordrtc-time-left .qtype_recordrtc-timer-front');
+    const backTimeEnd = widget.querySelector('.qtype_recordrtc-time-left .qtype_recordrtc-timer-back span.timer-end');
+    const backtimeStart = widget.querySelector('.qtype_recordrtc-time-left .qtype_recordrtc-timer-back span.timer-start');
+    const frontTimeEnd = widget.querySelector('.qtype_recordrtc-time-left .qtype_recordrtc-timer-front span.timer-end');
+    const fronttimeStart = widget.querySelector('.qtype_recordrtc-time-left .qtype_recordrtc-timer-front span.timer-start');
 
     widget.addEventListener('click', handleButtonClick);
     this.uploadMediaToServer = uploadMediaToServer; // Make this method available.
@@ -143,7 +152,11 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
                 startRecording();
                 break;
             case 'starting':
-                startSaving();
+                if (mediaSettings.name === 'screen') {
+                    startScreenSaving();
+                } else {
+                    startSaving();
+                }
                 break;
             case 'recording':
                 if (clickedButton === pauseButton) {
@@ -163,9 +176,58 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
     }
 
     /**
+     * To handle every time the audio mic has a problem.
+     * For now, we will allow video to be saved without sound when there is an error with the microphone.
+     *
+     * @param {Object} error A error object.
+     */
+    function handleScreenSharingError(error) {
+        Log.debug(error);
+        startSaving();
+    }
+
+    /**
+     * When recorder type is screen, we need add audio mic stream into mediaStream
+     * before saving.
+     */
+    function startScreenSaving() {
+        // We need to combine 2 audio and screen-sharing streams to create a recording with audio from the mic.
+        navigator.mediaDevices.enumerateDevices().then(() => {
+            // Get audio stream from microphone.
+            return navigator.mediaDevices.getUserMedia({audio: true});
+        }).then(micStream => {
+            let composedStream = new MediaStream();
+            // When the user shares their screen, we need to merge the video track from the media stream with
+            // the audio track from the microphone stream and stop any unnecessary tracks to ensure
+            // that the recorded video has microphone sound.
+            mediaStream.getTracks().forEach(function(track) {
+                if (track.kind === 'video') {
+                    // Add video track into stream.
+                    composedStream.addTrack(track);
+                } else {
+                    // Stop any audio track.
+                    track.stop();
+                }
+            });
+
+            // Add mic audio track from mic stream into composedStream to track audio.
+            // This will make sure the recorded video will have mic sound.
+            micStream.getAudioTracks().forEach(function(micTrack) {
+                composedStream.addTrack(micTrack);
+            });
+            mediaStream = composedStream;
+            startSaving();
+            return true;
+        }).catch(handleScreenSharingError);
+    }
+
+    /**
      * Start recording (because the button was clicked).
      */
     function startRecording() {
+
+        // Reset timer label.
+        setLabelForTimer(0, parseInt(widget.dataset.maxRecordingDuration));
 
         if (mediaSettings.name === 'audio') {
             mediaElement.parentElement.classList.add('hide');
@@ -188,9 +250,15 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         // Empty the array containing the previously recorded chunks.
         chunks = [];
         bytesRecordedSoFar = 0;
-        navigator.mediaDevices.getUserMedia(mediaSettings.mediaConstraints)
-            .then(handleCaptureStarting)
-            .catch(handleCaptureFailed);
+        if (mediaSettings.name === 'screen') {
+            navigator.mediaDevices.getDisplayMedia(mediaSettings.mediaConstraints)
+                .then(handleCaptureStarting)
+                .catch(handleCaptureFailed);
+        } else {
+            navigator.mediaDevices.getUserMedia(mediaSettings.mediaConstraints)
+                .then(handleCaptureStarting)
+                .catch(handleCaptureFailed);
+        }
     }
 
     /**
@@ -207,6 +275,10 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         if (mediaSettings.name === 'audio') {
             startSaving();
         } else {
+            // Cover when user clicks Browser's "Stop Sharing Screen" button.
+            if (mediaSettings.name === 'screen') {
+                mediaStream.getVideoTracks()[0].addEventListener('ended', handleStopSharing);
+            }
             mediaElement.play();
             mediaElement.controls = false;
 
@@ -237,13 +309,36 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         mediaRecorder.start(1000); // Capture in one-second chunks. Firefox requires that.
 
         widget.dataset.state = 'recording';
+        // Set duration for progressbar and start animate.
+        progressBar.style.animationDuration = widget.dataset.maxRecordingDuration + 's';
+        progressBar.classList.add('animate');
         setButtonLabel('stoprecording');
         startCountdownTimer();
-        if (mediaSettings.name === 'video') {
+        if (mediaSettings.name === 'video' || mediaSettings.name === 'screen') {
             button.parentElement.classList.add('hide');
             controlRow.classList.remove('hide');
             controlRow.classList.add('d-flex');
+            timeDisplay.classList.remove('hide');
         }
+    }
+
+    /**
+     * Callback that is called by the user clicking Stop screen sharing on the browser.
+     */
+    function handleStopSharing() {
+        if (widget.dataset.state === 'starting') {
+            widget.dataset.state = 'new';
+            mediaElement.parentElement.classList.add('hide');
+            noMediaPlaceholder.classList.remove('hide');
+            setButtonLabel('startsharescreen');
+            button.blur();
+        } else {
+            const controlEl = widget.querySelector('.qtype_recordrtc-control-row');
+            if (!controlEl.classList.contains('hide')) {
+                controlEl.querySelector('.qtype_recordrtc-stop-button').click();
+            }
+        }
+        enableAllButtons();
     }
 
     /**
@@ -291,6 +386,8 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         setPauseButtonLabel('resume');
         mediaRecorder.pause();
         widget.dataset.state = 'paused';
+        // Pause animate.
+        toggleProgressbarState();
     }
 
     /**
@@ -302,6 +399,8 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         widget.dataset.state = 'recording';
         setPauseButtonLabel('pause');
         mediaRecorder.resume();
+        // Resume animate.
+        toggleProgressbarState();
     }
 
     /**
@@ -321,6 +420,11 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
             setPauseButtonLabel('pause');
             pauseButton.parentElement.classList.add('hide');
         }
+
+        // Reset animation state.
+        progressBar.style.animationPlayState = 'running';
+        // Stop animate.
+        progressBar.classList.remove('animate');
 
         // Ask the recording to stop.
         mediaRecorder.stop();
@@ -379,7 +483,7 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
      * @param {DOMException} error
      */
     function handleCaptureFailed(error) {
-        Log.debug('Audio/video question: error received');
+        Log.debug('Audio/video/screen question: error received');
         Log.debug(error);
 
         setPlaceholderMessage('recordingfailed');
@@ -387,8 +491,10 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         button.classList.remove('btn-danger');
         button.classList.add('btn-outline-danger');
         widget.dataset.state = 'new';
+        // Hide time display.
+        timeDisplay.classList.add('hide');
 
-        if (mediaRecorder) {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             mediaRecorder.stop();
         }
 
@@ -435,15 +541,45 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
     function updateTimerDisplay() {
         const millisecondsRemaining = stopTime - Date.now();
         const secondsRemaining = Math.round(millisecondsRemaining / 1000);
-        const secs = secondsRemaining % 60;
-        const mins = Math.round((secondsRemaining - secs) / 60);
-
-        timeDisplay.innerText = M.util.get_string('timedisplay', 'qtype_recordrtc',
-                {mins: pad(mins), secs: pad(secs)});
-
+        const secondsStart = widget.dataset.maxRecordingDuration - secondsRemaining;
+        // Set time label for elements.
+        setLabelForTimer(secondsStart, secondsRemaining);
         if (millisecondsRemaining <= 0) {
             stopRecording();
         }
+    }
+
+    /**
+     * Get time label for timer.
+     *
+     * @param {number} seconds The time in seconds.
+     * @return {string} The label for timer. e.g. '00:00' or '10:00'.
+     */
+    function getTimeLabelForTimer(seconds) {
+        const secs = seconds % 60;
+        const mins = Math.round((seconds - secs) / 60);
+
+        return M.util.get_string('timedisplay', 'qtype_recordrtc',
+            {mins: pad(mins), secs: pad(secs)});
+    }
+
+    /**
+     * Set time label for timer.
+     * We need to update the labels for both the timer back(whose background color is white) and
+     * timer front (with blue background) to create a text effect that contrasts with the background color.
+     *
+     * @param {Number} secondsStart The second start. e.g: With duration 1 minute
+     * secondsStart will start from 0 and increase up to 60.
+     * @param {Number} secondsRemaining The second remaining. e.g: With duration 1 minute
+     * secondsRemaining will decrease from 60 to 0.
+     */
+    function setLabelForTimer(secondsStart, secondsRemaining) {
+        // Set time label for timer back.
+        backTimeEnd.innerText = getTimeLabelForTimer(secondsRemaining);
+        backtimeStart.innerText = getTimeLabelForTimer(secondsStart);
+        // Set time label for timer front.
+        frontTimeEnd.innerText = getTimeLabelForTimer(secondsRemaining);
+        fronttimeStart.innerText = getTimeLabelForTimer(secondsStart);
     }
 
     /**
@@ -465,35 +601,151 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
     /**
      * Trigger the upload of the recorded media back to Moodle.
      */
-    function uploadMediaToServer() {
+    async function uploadMediaToServer() {
         setButtonLabel('uploadpreparing');
 
-        // First we need to get the media data from the media element.
-        const fetchRequest = new XMLHttpRequest();
-        fetchRequest.open('GET', mediaElement.src);
-        fetchRequest.responseType = 'blob';
-        fetchRequest.addEventListener('load', handleRecordingFetched);
-        fetchRequest.send();
+        if (widget.dataset.convertToMp3) {
+            const mp3DataBlob = await convertOggToMp3(mediaElement.src);
+            mediaElement.src = URL.createObjectURL(mp3DataBlob);
+            uploadBlobToRepository(mp3DataBlob, widget.dataset.recordingFilename.replace(/\.ogg$/, '.mp3'));
+        } else {
+            // First we need to get the media data from the media element.
+            const oggDataBlob = await fetchOggData(mediaElement.src, 'blob');
+            uploadBlobToRepository(oggDataBlob, widget.dataset.recordingFilename);
+        }
     }
 
     /**
-     * Callback called once we have the data from the media element, ready to upload to Moodle.
+     * Convert audio data to MP3.
      *
-     * @param {ProgressEvent} e
+     * @param {string} sourceUrl URL from which to fetch the Ogg audio file to convert.
+     * @returns {Promise<Blob>}
      */
-    function handleRecordingFetched(e) {
-        const fetchRequest = e.target;
-        if (fetchRequest.status !== 200) {
-            // No data.
-            return;
+    async function convertOggToMp3(sourceUrl) {
+        const lamejs = await getLameJs();
+        const oggData = await fetchOggData(sourceUrl, 'arraybuffer');
+        const audioBuffer = await (new AudioContext()).decodeAudioData(oggData);
+        const [left, right] = getRawAudioDataFromBuffer(audioBuffer);
+        return await createMp3(lamejs, audioBuffer.numberOfChannels, audioBuffer.sampleRate, left, right);
+    }
+
+    /**
+     * Helper to wrap loading the lamejs library.
+     *
+     * @returns {Promise<*>} access to the lamejs library.
+     */
+    async function getLameJs() {
+        return await import(M.cfg.wwwroot + '/question/type/recordrtc/js/lamejs@1.2.1a-7-g582bbba/lame.min.js');
+    }
+
+    /**
+     * Load Ogg data from a URL and return as an ArrayBuffer or a Blob.
+     *
+     * @param {string} sourceUrl URL from which to fetch the Ogg audio data.
+     * @param {XMLHttpRequestResponseType} responseType 'arraybuffer' or 'blob'.
+     * @returns {Promise<ArrayBuffer|Blob>} the audio data in the requested structure.
+     */
+    function fetchOggData(sourceUrl, responseType) {
+        return new Promise((resolve) => {
+            const fetchRequest = new XMLHttpRequest();
+            fetchRequest.open('GET', sourceUrl);
+            fetchRequest.responseType = responseType;
+            fetchRequest.addEventListener('load', () => {
+                resolve(fetchRequest.response);
+            });
+            fetchRequest.send();
+        });
+    }
+
+    /**
+     * Extract the raw sample data from an AudioBuffer.
+     *
+     * @param {AudioBuffer} audioIn an audio buffer, e.g. from a call to decodeAudioData.
+     * @returns {Int16Array[]} for each audio channel, a Int16Array of the samples.
+     */
+    function getRawAudioDataFromBuffer(audioIn) {
+        const channelData = [];
+
+        for (let channel = 0; channel < audioIn.numberOfChannels; channel++) {
+            const rawChannelData = audioIn.getChannelData(channel);
+            channelData[channel] = new Int16Array(audioIn.length);
+            for (let i = 0; i < audioIn.length; i++) {
+                // This is not the normal code given for this conversion (which can be
+                // found in git history) but this is 10x faster, and surely good enough.
+                channelData[channel][i] = rawChannelData[i] * 0x7FFF;
+            }
         }
 
-        // Blob is now the media that the audio/video tag's src pointed to.
-        const blob = fetchRequest.response;
+        return channelData;
+    }
+
+    /**
+     * Convert some audio data to MP3.
+     *
+     * @param {*} lamejs lamejs library from getLameJs().
+     * @param {int} channels number of audio channels (1 or 2 supported).
+     * @param {int} sampleRate sample rate of the audio to encode.
+     * @param {Int16Array} left audio data for the left or only channel.
+     * @param {Int16Array|null} right audio data for the right channel, if any.
+     * @returns {Blob} representing an MP3 file.
+     */
+    async function createMp3(lamejs, channels, sampleRate, left, right = null) {
+        const buffer = [];
+        const mp3enc = new lamejs.Mp3Encoder(channels, sampleRate, mediaSettings.bitRate / 1000);
+        let remaining = left.length;
+        const samplesPerFrame = 1152;
+        let mp3buf;
+
+        await setPreparingPercent(0, left.length);
+        for (let i = 0; remaining >= samplesPerFrame; i += samplesPerFrame) {
+            if (channels === 1) {
+                const mono = left.subarray(i, i + samplesPerFrame);
+                mp3buf = mp3enc.encodeBuffer(mono);
+            } else {
+                const leftChunk = left.subarray(i, i + samplesPerFrame);
+                const rightChunk = right.subarray(i, i + samplesPerFrame);
+                mp3buf = mp3enc.encodeBuffer(leftChunk, rightChunk);
+            }
+            if (mp3buf.length > 0) {
+                buffer.push(mp3buf);
+            }
+            remaining -= samplesPerFrame;
+            if (i % (10 * samplesPerFrame) === 0) {
+                await setPreparingPercent(i, left.length);
+            }
+        }
+        const d = mp3enc.flush();
+        if (d.length > 0) {
+            buffer.push(new Int8Array(d));
+        }
+        await setPreparingPercent(left.length, left.length);
+
+        return new Blob(buffer, {type: "audio/mp3"});
+    }
+
+    /**
+     * Set the label on the upload button to a progress message including a percentage.
+     *
+     * @param {number} current number done so far.
+     * @param {number} total number to do in total.
+     */
+    async function setPreparingPercent(current, total) {
+        setButtonLabel('uploadpreparingpercent', Math.round(100 * current / total));
+        // Next like is a hack to ensure the screen acutally updates.
+        await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+
+    /**
+     * Upload the audio file to the Moodle draft file repository.
+     *
+     * @param {Blob} blob data to upload.
+     * @param {string} recordingFilename the filename to use for the uplaod.
+     */
+    function uploadBlobToRepository(blob, recordingFilename) {
 
         // Create FormData to send to PHP filepicker-upload script.
         const formData = new FormData();
-        formData.append('repo_upload_file', blob, widget.dataset.recordingFilename);
+        formData.append('repo_upload_file', blob, recordingFilename);
         formData.append('sesskey', M.cfg.sesskey);
         formData.append('repo_id', uploadInfo.uploadRepositoryId);
         formData.append('itemid', uploadInfo.draftItemId);
@@ -528,6 +780,7 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         if (uploadRequest.status === 200) {
             // When request finished and successful.
             setButtonLabel('recordagainx');
+            button.classList.remove('btn-outline-danger');
             enableAllButtons();
         } else if (uploadRequest.status === 404) {
             setPlaceholderMessage('uploadfailed404');
@@ -560,13 +813,13 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
     }
 
     /**
-     * Display a progress message in the upload progress area.
+     * Change the label on the start/stop button.
      *
      * @param {string} langString
      * @param {string|null} [a] optional variable to populate placeholder with
      */
     function setButtonLabel(langString, a) {
-        if (!a) {
+        if (a === undefined) {
             // Seemingly unnecessary space inside the span is needed for screen-readers, and it must be a non-breaking space.
             a = '<span class="sr-only">&nbsp;' + widget.dataset.widgetName + '</span>';
         }
@@ -574,7 +827,7 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
     }
 
     /**
-     * Display a progress message in the upload progress area.
+     * Change the label on the pause button.
      *
      * @param {string} langString
      */
@@ -604,7 +857,7 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
         // Get the relevant bit rates from settings.
         if (mediaSettings.name === 'audio') {
             options.audioBitsPerSecond = mediaSettings.bitRate;
-        } else if (mediaSettings.name === 'video') {
+        } else if (mediaSettings.name === 'video' || mediaSettings.name === 'screen') {
             options.videoBitsPerSecond = mediaSettings.bitRate;
             options.videoWidth = mediaSettings.width;
             options.videoHeight = mediaSettings.height;
@@ -647,6 +900,14 @@ function Recorder(widget, mediaSettings, owner, uploadInfo) {
                 button.disabled = !enabled;
             }
         );
+    }
+
+    /**
+     * Pause/resume the progressbar state.
+     */
+    function toggleProgressbarState() {
+        const running = progressBar.style.animationPlayState || 'running';
+        progressBar.style.animationPlayState = running === 'running' ? 'paused' : 'running';
     }
 }
 
@@ -696,6 +957,40 @@ function VideoSettings(bitRate, width, height) {
 }
 
 /**
+ * Object that controls the settings for recording screen.
+ *
+ * @param {string} bitRate desired screen bitrate.
+ * @param {string} width desired width.
+ * @param {string} height desired height.
+ * @constructor
+ */
+function ScreenSettings(bitRate, width, height) {
+    this.name = 'screen';
+    this.bitRate = parseInt(bitRate, 10);
+    this.width = parseInt(width, 10);
+    this.height = parseInt(height, 10);
+    this.mediaConstraints = {
+        audio: true,
+        systemAudio: 'exclude',
+        video: {
+            displaySurface: 'monitor',
+            frameRate: {ideal: 24},
+            // Currently, Safari does not support ideal constraints for width and height with screen sharing feature.
+            // It may be supported in version 16.4.
+            width: {max: this.width},
+            height: {max: this.height},
+        }
+    };
+
+    // We use vp8 as the default codec. If it is not supported, we will switch to another codec.
+    this.mimeTypes = [
+        'video/webm;codecs=vp8,opus',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=h264,opus',
+    ];
+}
+
+/**
  * Represents one record audio or video question.
  *
  * @param {string} questionId id of the outer question div.
@@ -722,19 +1017,26 @@ function RecordRtcQuestion(questionId, settings) {
     const thisQuestion = this;
 
     // We may have more than one widget in a question.
-    questionDiv.querySelectorAll('.qtype_recordrtc-audio-widget, .qtype_recordrtc-video-widget').forEach(function(widget) {
-        // Get the appropriate options.
-        let typeInfo;
-        if (widget.dataset.mediaType === 'audio') {
-            typeInfo = new AudioSettings(settings.audioBitRate);
-        } else {
-            typeInfo = new VideoSettings(settings.videoBitRate, settings.videoWidth, settings.videoHeight);
-        }
+    questionDiv.querySelectorAll('.qtype_recordrtc-audio-widget, .qtype_recordrtc-video-widget, .qtype_recordrtc-screen-widget')
+        .forEach(function(widget) {
+            // Get the appropriate options.
+            let typeInfo;
+            switch (widget.dataset.mediaType) {
+                case 'audio':
+                    typeInfo = new AudioSettings(settings.audioBitRate);
+                    break;
+                case 'screen':
+                    typeInfo = new ScreenSettings(settings.screenBitRate, settings.screenWidth, settings.screenHeight);
+                    break;
+                default:
+                    typeInfo = new VideoSettings(settings.videoBitRate, settings.videoWidth, settings.videoHeight);
+                    break;
+            }
 
-        // Create the recorder.
-        new Recorder(widget, typeInfo, thisQuestion, settings);
-        return 'Not used';
-    });
+            // Create the recorder.
+            new Recorder(widget, typeInfo, thisQuestion, settings);
+            return 'Not used';
+        });
     setSubmitButtonState();
 
     /**
@@ -745,11 +1047,12 @@ function RecordRtcQuestion(questionId, settings) {
      */
     function setSubmitButtonState() {
         let anyRecorded = false;
-        questionDiv.querySelectorAll('.qtype_recordrtc-audio-widget, .qtype_recordrtc-video-widget').forEach(function(widget) {
-            if (widget.dataset.state === 'recorded') {
-                anyRecorded = true;
-            }
-        });
+        questionDiv.querySelectorAll('.qtype_recordrtc-audio-widget, .qtype_recordrtc-video-widget, .qtype_recordrtc-screen-widget')
+            .forEach(function(widget) {
+                if (widget.dataset.state === 'recorded') {
+                    anyRecorded = true;
+                }
+            });
         const submitButton = questionDiv.querySelector('input.submit[type=submit]');
         if (submitButton) {
             submitButton.disabled = !anyRecorded;

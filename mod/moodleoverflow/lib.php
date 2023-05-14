@@ -1426,15 +1426,16 @@ function moodleoverflow_grade_item_update($moodleoverflow, $grades=null) {
  * Map icons for font-awesome themes.
  */
 function moodleoverflow_get_fontawesome_icon_map() {
+    // ecastro ULPGC X to remove size larger
     return [
         'mod_moodleoverflow:i/commenting' => 'fa-commenting',
         'mod_moodleoverflow:i/pending-big' => 'fa-clock-o text-danger moodleoverflow-icon-2x',
-        'mod_moodleoverflow:i/status-helpful' => 'fa-thumbs-up moodleoverflow-icon-1_5x moodleoverflow-text-orange',
-        'mod_moodleoverflow:i/status-solved' => 'fa-check moodleoverflow-icon-1_5x moodleoverflow-text-green',
-        'mod_moodleoverflow:i/reply' => 'fa-reply',
-        'mod_moodleoverflow:i/subscribed' => 'fa-bell moodleoverflow-icon-1_5x',
-        'mod_moodleoverflow:i/unsubscribed' => 'fa-bell-slash-o moodleoverflow-icon-1_5x',
-        'mod_moodleoverflow:i/vote-up' => 'fa-chevron-up moodleoverflow-icon-2x moodleoverflow-icon-no-margin',
-        'mod_moodleoverflow:i/vote-down' => 'fa-chevron-down moodleoverflow-icon-2x moodleoverflow-icon-no-margin'
+        'mod_moodleoverflow:i/status-helpful' => 'fa-thumbs-up xmoodleoverflow-icon-1_5x moodleoverflow-text-orange',
+        'mod_moodleoverflow:i/status-solved' => 'fa-check xmoodleoverflow-icon-1_5x moodleoverflow-text-green',
+        'mod_moodleoverflow:i/reply' => 'fa-reply xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/subscribed' => 'fa-bell xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/unsubscribed' => 'fa-bell-slash-o xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/vote-up' => 'fa-chevron-up xmoodleoverflow-icon-2x moodleoverflow-icon-no-margin',
+        'mod_moodleoverflow:i/vote-down' => 'fa-chevron-down xmoodleoverflow-icon-2x moodleoverflow-icon-no-margin'
     ];
 }

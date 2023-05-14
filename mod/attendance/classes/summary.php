@@ -138,6 +138,7 @@ class mod_attendance_summary {
         }
 
         // ecastro ULPGC 
+        $seating = 0;
         if($seating)  {
             $usersummary->pointssessionscompleted = 'seat';
         } else {

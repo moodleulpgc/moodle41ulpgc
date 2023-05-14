@@ -4588,7 +4588,10 @@ class assign {
                                  'context'=>$this->get_context(),
                                  'markingworkflow'=>$markingworkflow,
                                  'markingallocation'=>$markingallocation);
-        $classoptions = array('class'=>'gradingbatchoperationsform');
+        $classoptions = [
+            'class' => 'gradingbatchoperationsform',
+            'data-double-submit-protection' => 'off',
+        ];
 
         $gradingbatchoperationsform = new mod_assign_grading_batch_operations_form(null,
                                                                                    $batchformparams,
@@ -5079,7 +5082,11 @@ class assign {
                                  'context'=>$this->get_context(),
                                  'markingworkflow'=>$this->get_instance()->markingworkflow,
                                  'markingallocation'=>$markingallocation);
-        $formclasses = array('class'=>'gradingbatchoperationsform');
+        $formclasses = [
+            'class' => 'gradingbatchoperationsform',
+            'data-double-submit-protection' => 'off'
+        ];
+
         $mform = new mod_assign_grading_batch_operations_form(null,
                                                               $batchformparams,
                                                               'post',
