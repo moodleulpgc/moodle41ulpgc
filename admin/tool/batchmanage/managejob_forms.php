@@ -268,10 +268,25 @@ class batchmanage_courses_selector_form extends batchmanageform {
                 $usedvals = $DB->get_records_sql($sql);
                 if($usedvals) {
                     foreach($usedvals as $key=>$value) {
-                        $options["{$value->ctype}"] = $value->ctype;
+                        $options["{$value->ctype}"] = get_string('ctype_'.$value->ctype, 'tool_batchmanage');
                     }
                     $mform->addElement('select', 'ctype', get_string('ctype', 'tool_batchmanage').': ', $options);
                     $mform->setDefault('ctype', 'all');
+                }
+            }
+            
+            if($dbmanager->field_exists('local_ulpgccore_course', 'cstatus')) {
+                $options = array();
+                $options['all'] = get_string('all');
+                $sql = "SELECT DISTINCT cstatus
+                                    FROM {local_ulpgccore_course} WHERE cstatus IS NOT NULL ORDER BY cstatus ASC";
+                $usedvals = $DB->get_records_sql($sql);
+                if($usedvals) {
+                    foreach($usedvals as $key=>$value) {
+                        $options["{$value->cstatus}"] = get_string('cstatus_'.$value->cstatus, 'tool_batchmanage');
+                    }
+                    $mform->addElement('select', 'cstatus', get_string('cstatus', 'tool_batchmanage').': ', $options);
+                    $mform->setDefault('cstatus', 'all');
                 }
             }
         }

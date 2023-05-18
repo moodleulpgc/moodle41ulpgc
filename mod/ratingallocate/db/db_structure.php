@@ -22,7 +22,10 @@
  * @copyright  2014 T Reischmann, M Schulze
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace ratingallocate\db;
+
+defined('MOODLE_INTERNAL') || die();
 class ratingallocate {
     const TABLE = 'ratingallocate';
     const ID = 'id';
@@ -43,6 +46,7 @@ class ratingallocate {
     const RUNALGORITHMBYCRON = 'runalgorithmbycron';
     const ALGORITHMSTATUS = 'algorithmstatus';
 }
+
 class ratingallocate_choices {
     const TABLE = 'ratingallocate_choices';
     const ID = 'id';
@@ -59,6 +63,22 @@ class ratingallocate_group_choices {
     const CHOICEID = 'choiceid';
     const GROUPID = 'groupid';
 }
+
+
+class ratingallocate_ch_gengroups {
+    const TABLE = 'ratingallocate_ch_gengroups';
+    const ID = 'id';
+    const  GROUPID = 'groupid';
+    const CHOICEID = 'choiceid';
+}
+
+class ratingallocate_groupings {
+    const TABLE = 'ratingallocate_groupings';
+    const ID = 'id';
+    const RATINGALLOCATEID = 'ratingallocateid';
+    const GROUPINGID = 'groupingid';
+}
+
 class ratingallocate_ratings {
     const TABLE = 'ratingallocate_ratings';
     const ID = 'id';
@@ -66,6 +86,7 @@ class ratingallocate_ratings {
     const USERID = 'userid';
     const RATING = 'rating';
 }
+
 class ratingallocate_allocations {
     const TABLE = 'ratingallocate_allocations';
     const ID = 'id';

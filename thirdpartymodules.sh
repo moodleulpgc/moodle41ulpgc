@@ -94,6 +94,7 @@ cd mod/tracker && git checkout MOODLE_39_WORKING && cd ../../
 #Fix dependencies 
 git submodule add https://github.com/turnitin/moodle-mod_turnitintooltwo.git            mod/turnitintooltwo
 git submodule add https://github.com/jcastello46/moodle-mod_unedtrivial.git             mod/unedtrivial
+git submodule add https://github.com/grabs/moodle-mod_unilabel.git                          mod/unilabel
 git submodule add https://github.com/jcrodriguez-dis/moodle-mod_vpl.git                 mod/vpl
 #branch v3.5.0
 #cd mod/vpl && git checkout V3.5.0 && cd ../../
@@ -129,8 +130,8 @@ git submodule add https://github.com/StudiUM/moodle-quiz_markspersection.git mod
 #Atto editor plugins
 git submodule add https://github.com/geoffrowland/moodle-editor_atto-chemistry.git  lib/editor/atto/plugins/chemistry
 git submodule add https://github.com/ucla/moodle-atto_chemrender.git                lib/editor/atto/plugins/chemrender
-git submodule add https://github.com/dthies/moodle-atto_cloze.git                   lib/editor/atto/plugins/cloze
-
+git submodule add https://github.com/dthies/moodle-atto_cloze.git                       lib/editor/atto/plugins/cloze
+git submodule add https://github.com/rogersegu/moodle-atto_c4l.git                      lib/editor/atto/plugins/c4l
 git submodule add https://github.com/damyon/moodle-atto_count.git                   lib/editor/atto/plugins/count
 git submodule add https://github.com/moodleou/moodle-atto_embedquestion.git         lib/editor/atto/plugins/embedquestion
 git submodule add https://github.com/andrewnicols/moodle-atto_fontsize              lib/editor/atto/plugins/fontsize
@@ -325,7 +326,6 @@ git submodule add https://github.com/jpahullo/moodle-repository_searchable.git  
 
 #Web Services
 git submodule add https://github.com/moodlehq/moodle-webservice_xmlrpc.git      webservice/xmlrpc
-
 #pumukit
 git submodule add https://github.com/teltek/moodle-atto_pumukitmedia.git            lib/editor/atto/plugins/pumukitmedia
 git submodule add https://github.com/teltek/moodle-filter_pumukitmedia.git          filter/pumukitmedia

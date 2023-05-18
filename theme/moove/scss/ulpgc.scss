@@ -185,14 +185,13 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   color: inherit;
 }
 
-#page-footer .moodle-footer a:not(.btn) {
-  color: red;
+#page-footer  a:not(.btn) {
+     color: $primary;
 }
 
 .moodle-footer {
   background-color: #f2f3f7 !important;
-  border-top: 4px solid #0067a2 ;
-  //color: red;
+  border-top: 4px solid $primary ;
   padding-bottom: 1.0rem;
 }
 
@@ -250,14 +249,22 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 #pie_info .columna_pie {
     float: left;
-    padding-left: 2.5%;
-    padding-right: 2.5%;
+    padding-left: 2.0%;
+    padding-right: 2.0%;
+    
+    p {
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
 }
 
 #pie_info .columna_pie.primera {
     border-left: 1px solid;
 }
 
+#page-footer .supportemail, #page-footer .logininfo, #page-footer .tool_dataprivacy {
+    margin: 0.5rem 0.1rem;
+}
 
 #page-footer {
     .btn-footer-popover {
@@ -267,6 +274,29 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     .btn-footer-popover.help {
         bottom: 7.5rem;
     }   
+}
+
+
+/*---------------------------------------
+ * rules: Dashboard page.
+ --------------------------------------*/
+.dashboard-card-deck .dashboard-card .dashboard-card-img {
+  height: unset;
+}
+
+.dashboard-card .dashboard-card-img {
+  padding: 0.1rem;
+  height: unset !important;
+}
+
+.dashboard-card .dashboard-card-img .course-category {
+  padding: 1px 8px;
+  margin-bottom: 0.15rem;
+  font-size: 75%;
+}
+
+.pagelayout-frontpage .dashboard-card .card-body, .pagelayout-coursecategory .dashboard-card .card-body {
+  padding: 0.25rem 0.8rem;
 }
 
 /*---------------------------------------

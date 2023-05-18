@@ -57,7 +57,7 @@
             $page->set_pagetype($info['pagetypepattern']);
             $layout = (substr($info['pagetypepattern'], 0, 3) ==  'my-') ? 'mydashboard' : 'course';
             $page->set_pagelayout($layout);
-            $bm = block_manager($page);
+            $bm = new \block_manager($page);
 
             $params = ['blockname' => $info['blockname'],
                         'pagetypepattern' => $info['pagetypepattern'],
