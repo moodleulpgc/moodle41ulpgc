@@ -15,17 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * report_attendancetools version information.
+ * Forum event handler definition.
  *
- * @package   report_attendancetools
- * @copyright 2023 Enrique Castro @ ULPGC
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package report_trackertools
+ * @category event
+ * @copyright 2017 Enrique Castro   @ULPGC
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
-$plugin->version   = 2023042400;
-$plugin->requires  = 2011120500;
-$plugin->component = 'report_attendancetools';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->dependencies = array('mod_attendance' => 2019110500);
+// List of observers.
+$observers = array(
+);
+/*
+    array(
+        'eventname' => '\core\event\course_module_updated',
+        'callback' => 'report_trackertools_observer::quiz_updated'
+    ),
+    
+);
+*/

@@ -25,6 +25,15 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+define('ATTENDANCETOOLS_OFFSET_NEAREST', 'nearest' );
+define('ATTENDANCETOOLS_OFFSET_NEXT', 'next' );
+define('ATTENDANCETOOLS_OFFSET_PREV', 'previous' );
+
+define('ATTENDANCETOOLS_START_WHOLE', 'whole' );
+define('ATTENDANCETOOLS_START_HALF', 'half' );
+define('ATTENDANCETOOLS_START_QUARTER', 'quarter' );
+
+
 /**
  * This function extends the navigation with the report items
  *
@@ -65,13 +74,16 @@ function report_attendancetools_extend_navigation_module(navigation_node $naviga
     */
     if ($cm->modname == 'attendance') {
         $context = context_module::instance($cm->id);
+
         // Do not add anything if not allowed to
         if(!has_any_capability(array('mod/attendance:manageattendances'), $context)) {
             return;
         }        
         
-        $url = new moodle_url('/report/attendancetools/index.php', array('id'=>$cm->id));
-
+        if(!get_config('report_attendancetools', 'enabled')) {
+            return;
+        }
+        
         if ($settingsnode = $navigation->find('roleassign', navigation_node::TYPE_SETTING)) {
                 //print_object("Estoy en settingsnode");
                 //print_object($navigation->get_children_key_list());
@@ -96,12 +108,12 @@ function report_attendancetools_extend_navigation_module(navigation_node $naviga
                 
                 $url = new moodle_url('https://www.milista.ulpgc.es/moodle.php', array('c'=>'profesor', 'shortname'=>$PAGE->course->shortname));
                 $navigation->add(get_string('milista', 'report_attendancetools').$icon, $url, navigation_node::TYPE_SETTING, null, 'milista');
-               
-                /*
-                $navigation->add(get_string('config', 'report_attendancetools'), clone $url, navigation_node::TYPE_SETTING, null, 'attendancetoolsconfig', new pix_icon('i/config', ''));
+
+                $url = new moodle_url('/report/attendancetools/index.php', array('id'=>$cm->id, 'action' => 'config' ));
+                $navigation->add(get_string('instantconfig', 'report_attendancetools'), $url, navigation_node::TYPE_SETTING, null, 'attendancetoolsconfig', new pix_icon('i/duration', 'core'));
                 $node = $navigation->find('attendancetoolsconfig', navigation_node::TYPE_SETTING);
                 $node->set_force_into_more_menu(true);             
-                */
+                
         }  
     }
 }

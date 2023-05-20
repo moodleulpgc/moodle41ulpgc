@@ -10,6 +10,7 @@
     require_once("../../config.php");
     require_once($CFG->libdir.'/adminlib.php');
     require_once($CFG->dirroot.'/local/ulpgccore/presetlib.php');
+    require_once($CFG->dirroot.'/my/lib.php');
     
     $action =  optional_param('action', '', PARAM_ALPHA); 
     $preset =  optional_param('preset', '', PARAM_FILE);
@@ -85,27 +86,12 @@
         }
 
         local_ulpgccore_save_xml_preset($preset, 'blocks', $block);
-        /*
-        //This function create a xml object with element PRESET as root.
-        $dom = new DOMDocument('1.0', 'UTF-8');
-        $dom->formatOutput = true;
-        $root = $dom->createElement('PRESET');
-        $root = $dom->appendChild($root);
-        unset($block->id);
-        foreach($block as $key => $value) {
-            $node = $dom->createElement($key);
-            $node = $root->appendChild($node);
-            $text = $dom->createTextNode($value);
-            $text = $node->appendChild($text);
-        }
-
-        $filename = $CFG->dirroot.'/local/ulpgccore/presets/blocks/'.$preset.'.xml';
-        if(file_put_contents($filename, $dom->saveXML(null, LIBXML_NOEMPTYTAG))) {
-            \core\notification::success(get_string('presetsaved', 'local_ulpgccore',$preset));
-        } else {
-            \core\notification::success(get_string('presetsaveerror', 'local_ulpgccore',$preset));
-        }
-        */
+    }
+    
+    if(($action == 'resetall') && confirm_sesskey()) {
+        \core\session\manager::write_close();
+        my_reset_page_for_all_users(MY_PAGE_PRIVATE, 'my-index');
+        core\notification::success(get_string('alldashboardswerereset', 'my'));        
     }
     
     //////// end actions
@@ -121,15 +107,28 @@
     $blockscount = count($blocks);
     $loadpresets = [];
     
-    echo $OUTPUT->header();
-
     $presetfiles = glob($CFG->dirroot.'/local/ulpgccore/presets/blocks/*.xml');
     $presetblocks = explode(',', get_config('local_ulpgccore', 'blockpresets'));
     if(is_array($presetblocks)) {
         $presetblocks = array_map('trim', $presetblocks);
     }
+    
+    $actionurl = new moodle_url('/local/ulpgccore/blockpresets.php', []);
 
+    echo $OUTPUT->header();    
     echo $OUTPUT->heading(get_string('presetblockstable', 'local_ulpgccore'));
+    
+    // Button to reset users my-pages, cleaning blocks
+    
+    $select = 'parentcontextid > 1 AND  pagetypepattern = :pagetype AND requiredbytheme = 0 ';
+    if( $DB->record_exists_select('block_instances', $select, ['pagetype' => 'my-index'])) {
+        $actionurl->params(['action'=> 'resetall', 'sesskey' => sesskey()]);
+        $button =  $OUTPUT->single_button($actionurl, get_string('reseteveryonesdashboard', 'my'));
+    } else {
+        $button = get_string('myindexcleaned', 'local_ulpgccore');
+    }
+    echo $OUTPUT->box($button, 'resetmyindex');
+    
     if($presetfiles) {
         $table = new html_table();
         $table->width = "90%";
@@ -143,7 +142,7 @@
                                 ];
         $table->align = array('left', 'left', 'left', 'left', 'left', 'center', 'center', 'center');
 
-        $actionurl = new moodle_url('/local/ulpgccore/blockpresets.php', []);
+        
         foreach($presetfiles as $presetlong) {
             $row = [];
             $info = local_ulpgccore_import_xml_preset($presetlong);
@@ -163,7 +162,8 @@
             }
 
             $row[] = $blockname;
-            $row[] = $info['pagetypepattern'];
+            $suffix = $info['subpagepattern'] ?  '<br />' . $info['subpagepattern'] : '';
+            $row[] = $info['pagetypepattern'] . $suffix;
             $row[] = $info['defaultregion'];
             if($blockid) {
                 $row[] = userdate($block->timecreated);

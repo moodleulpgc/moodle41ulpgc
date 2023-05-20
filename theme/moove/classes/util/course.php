@@ -115,7 +115,13 @@ class course {
             return '';
         }
 
-        return $cat->get_formatted_name();
+        // ecastro ULPGC, shorten
+        $name = $cat->get_formatted_name();
+        if($ulpgcshorten = get_config('local_ulpgccore','shortennavbar')) {
+            $name = local_ulpgccore_shorten_titles($name);        
+        }
+        return $name;
+        //return $cat->get_formatted_name();
     }
 
     /**

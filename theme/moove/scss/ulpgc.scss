@@ -198,7 +198,7 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 .site-footer {
   clear: both;
-  *zoom: 1;
+  /*zoom: 1; */
   width: 100%;
   display: block;
   position: relative;
@@ -383,7 +383,7 @@ span.unread {
 .breadcrumb .breadcrumb-item a.type20 {
   color: #f0ad4e; //to change afterwards XXX
   font-weight: bolder;
-  font-size: larger;
+  font-size: medium;
 }
 
 
@@ -574,6 +574,9 @@ span.unread {
     }
 }
 
+.block.list_block .card-text.content  div.icon {
+  float: left;
+}
 
 /*---------------------------------------
  * Activity modules: Attendance.

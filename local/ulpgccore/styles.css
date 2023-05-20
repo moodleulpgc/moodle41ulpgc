@@ -6,6 +6,29 @@
   padding-bottom: 3.0rem !important;
 }
 
+
+.path-admin-local-ulpgccore  .resetmyindex {
+  text-align: right;
+}
+
+
+.path-admin-local-ulpgccore table.rolecap tr.rolecap th {
+  text-align: left;
+  font-weight: normal;
+  max-width: 20.0rem;
+}
+
+.path-admin-local-ulpgccore table.rolecap th.rolename {
+  padding: 0 1.0rem;
+  
+}
+
+
+.path-admin-local-ulpgccore table.rolecap td.permission {
+  text-align: center;
+}
+
+
 /*
 .availabilityinfo {
     -webkit-border-radius: 6px;
@@ -111,7 +134,7 @@
 
 
 /* mod_forum styles
- ========================================================================= */
+ ========================================================================= *
 
 #page-mod-forum-view .forumaddnew {
     text-align: center;
@@ -142,24 +165,8 @@
 }
 
 /* mod_dialogue styles
- ========================================================================= */
+ ========================================================================= *
 
-
-.path-admin-local-ulpgccore table.rolecap tr.rolecap th {
-  text-align: left;
-  font-weight: normal;
-  max-width: 20.0rem;
-}
-
-.path-admin-local-ulpgccore table.rolecap th.rolename {
-  padding: 0 1.0rem;
-  
-}
-
-
-.path-admin-local-ulpgccore table.rolecap td.permission {
-  text-align: center;
-}
 
 
 .availability-dialogue ul button {
@@ -186,6 +193,8 @@ body.path-mod-dialogue #region-main  .btn.btn-small.disabled {
     font-weight: bold;
 }
 
+*/
+
 .chooser-container  .btn.btn-icon.icon-size-3 {
     height: 18px !important;
 }
@@ -201,80 +210,6 @@ body.path-mod-dialogue #region-main  .btn.btn-small.disabled {
 }
 .chooser-container .optionicon {
     margin-top: 0.25rem !important;
-}
-
-/* enforce activityindentationenabled  */
-@media (min-width: 576px) {
-  /* Creates a series of .mod-indent-# rule declarations based on indent size and number of indent levels. */
-  /* Also creates a series of .activity-indent-# rules based on same criteria. */
-  .mod-indent-1 {
-    width: 30px; }
-  .activity-indent-1 {
-    margin-left: 30px; }
-  .mod-indent-2 {
-    width: 60px; }
-  .activity-indent-2 {
-    margin-left: 60px; }
-  .mod-indent-3 {
-    width: 90px; }
-  .activity-indent-3 {
-    margin-left: 90px; }
-  .mod-indent-4 {
-    width: 120px; }
-  .activity-indent-4 {
-    margin-left: 120px; }
-  .mod-indent-5 {
-    width: 150px; }
-  .activity-indent-5 {
-    margin-left: 150px; }
-  .mod-indent-6 {
-    width: 180px; }
-  .activity-indent-6 {
-    margin-left: 180px; }
-  .mod-indent-7 {
-    width: 210px; }
-  .activity-indent-7 {
-    margin-left: 210px; }
-  .mod-indent-8 {
-    width: 240px; }
-  .activity-indent-8 {
-    margin-left: 240px; }
-  .mod-indent-9 {
-    width: 270px; }
-  .activity-indent-9 {
-    margin-left: 270px; }
-  .mod-indent-10 {
-    width: 300px; }
-  .activity-indent-10 {
-    margin-left: 300px; }
-  .mod-indent-11 {
-    width: 330px; }
-  .activity-indent-11 {
-    margin-left: 330px; }
-  .mod-indent-12 {
-    width: 360px; }
-  .activity-indent-12 {
-    margin-left: 360px; }
-  .mod-indent-13 {
-    width: 390px; }
-  .activity-indent-13 {
-    margin-left: 390px; }
-  .mod-indent-14 {
-    width: 420px; }
-  .activity-indent-14 {
-    margin-left: 420px; }
-  .mod-indent-15 {
-    width: 450px; }
-  .activity-indent-15 {
-    margin-left: 450px; }
-  .mod-indent-16 {
-    width: 480px; }
-  .activity-indent-16 {
-    margin-left: 480px; }
-  .mod-indent-huge {
-    width: 480px; } 
-   .activity-indent-huge {
-    margin-left: 480px; }
 }
    
 .popover-region-notifications.ulpgc .fa-bullhorn::before {

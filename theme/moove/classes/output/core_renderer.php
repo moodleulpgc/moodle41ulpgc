@@ -513,4 +513,24 @@ class core_renderer extends \theme_boost\output\core_renderer {
 
         return $output;
     }
+    
+    
+    /**
+     * This renders the navbar.
+     * Uses bootstrap compatible html.
+    */
+    public function navbar(): string {
+       
+        if($ulpgcshorten = get_config('local_ulpgccore','shortennavbar')) {
+        $items = $this->page->navbar->get_items();
+            foreach($items as $item) {
+                if(($item->type == 10 || $item->type == 11 || $item->type == 60) &&        
+                    ($ulpgcshorten)) { // ecastro ULPGC, to make breadcrumb easier
+                    $item->text = local_ulpgccore_shorten_titles($item->text);
+                }
+            }          
+        }
+        return parent::navbar();
+    }    
+    
 }
