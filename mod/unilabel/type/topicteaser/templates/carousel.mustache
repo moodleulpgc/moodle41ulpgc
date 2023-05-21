@@ -25,6 +25,8 @@
         "intro": "",
         "interval": "5",
         "height": 300,
+        "fontawesomeprev": "fa-solid fa-forward",
+        "fontawesomenext": "fa-solid fa-forward",
         "items": [
             {
                 "name": "Topic 1",
@@ -95,12 +97,14 @@
         </div>
 
         <!-- Left and right controls -->
-        <a class="carousel-control-prev" href="#{{plugin}}-{{cmid}}" data-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="#{{plugin}}-{{cmid}}" data-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </a>
+        {{< unilabeltype_topicteaser/carousel_control}}{{!
+            }} {{$direction}}next{{/direction}}{{!
+            }} {{$icon}}{{#fontawesomenext}}{{.}}{{/fontawesomenext}}{{^fontawesomenext}}d-none{{/fontawesomenext}}{{/icon}}{{!
+            }} {{/ unilabeltype_topicteaser/carousel_control}}
+        {{< unilabeltype_topicteaser/carousel_control}}{{!
+            }} {{$direction}}prev{{/direction}}{{!
+            }} {{$icon}}{{#fontawesomeprev}}{{.}}{{/fontawesomeprev}}{{^fontawesomeprev}}d-none{{/fontawesomeprev}}{{/icon}}{{!
+            }} {{/ unilabeltype_topicteaser/carousel_control}}
     </div>
 
     {{#openmodal}}

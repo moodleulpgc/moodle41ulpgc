@@ -38,17 +38,25 @@
 
 {{#useanimation}}
     <div class="unilabeltype-collapsed">
-        <a class="unilabel-title{{^openonstart}} collapsed{{/openonstart}}"
+        <a id="unilabel-button-{{uniqid}}-{{cmid}}" class="unilabel-title{{^openonstart}} collapsed{{/openonstart}}"
                 data-toggle="collapse"
-                href="#unilabeltype-collapsed-{{cmid}}"
+                data-target="#unilabeltype-collapsed-{{uniqid}}-{{cmid}}"
+                href="#unilabeltype-collapsed-{{uniqid}}-{{cmid}}"
                 role="button"
                 aria-expanded="false"
-                aria-controls="unilabeltype-collapsed-{{cmid}}"
+                aria-controls="unilabeltype-collapsed-{{uniqid}}-{{cmid}}"
         >
             <span class="unilabeltype-collapsed-caret"> </span> {{{title}}}
         </a>
-        <div class="collapse{{#openonstart}} show{{/openonstart}}" id="unilabeltype-collapsed-{{cmid}}">
+        <div class="collapse{{#openonstart}} show{{/openonstart}}" id="unilabeltype-collapsed-{{uniqid}}-{{cmid}}">
             {{{content}}}
         </div>
     </div>
 {{/useanimation}}
+{{#js}}
+{{#useanimation}}
+    require(['mod_unilabel/collapse_helper'], function(collapsehelper) {
+        collapsehelper.init("#unilabel-button-{{uniqid}}-{{cmid}}");
+    });
+{{/useanimation}}
+{{/js}}

@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Backup definition for this content type
  * @package     unilabeltype_accordion
@@ -33,7 +31,7 @@ class backup_unilabeltype_accordion_subplugin extends backup_subplugin {
         // XML nodes declaration.
         $subplugin = $this->get_subplugin_element();
         $subpluginwrapper = new backup_nested_element($this->get_recommended_name());
-        $subpluginaccordion = new backup_nested_element('unilabeltype_accordion', ['id'], ['showintro']);
+        $subpluginaccordion = new backup_nested_element('unilabeltype_accordion', ['id'], ['showintro', 'type']);
         $subpluginsegment = new backup_nested_element('unilabeltype_accordion_seg',
             ['id'],
             ['heading', 'content']

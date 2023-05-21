@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Restore definition for this content type
  * @package     unilabeltype_accordion
@@ -77,6 +75,22 @@ class restore_unilabeltype_accordion_subplugin extends restore_subplugin {
         // Restore files.
         $this->add_related_files('unilabeltype_accordion', 'heading', 'unilabeltype_accordion_segment');
         $this->add_related_files('unilabeltype_accordion', 'content', 'unilabeltype_accordion_segment');
+    }
+
+    /**
+     * Define the contents in the plugin that must be
+     * processed by the link decoder
+     */
+    public static function define_decode_contents() {
+        $contents = array();
+
+        $contents[] = new restore_decode_content(
+            'unilabeltype_accordion_seg',
+            array('heading', 'content'),
+            'unilabeltype_accordion_segment'
+        );
+
+        return $contents;
     }
 
 }
