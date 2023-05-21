@@ -336,13 +336,16 @@ $string['eventpresetexported'] = 'Preset exported to file';
 $string['customroles'] = 'Manage custom roles';
 $string['rolecapscheck'] = 'Check capabilities for custom roles';
 $string['presetrolestable'] = 'ULPGC preset roles';
+$string['myindexcleaned'] = 'My Index user pages cleaned (no custom blocks)';
 $string['presetblockstable'] = 'ULPGC preset blocks';
 $string['otherrolestable'] = 'Other custom roles';
 $string['otherblockstable'] = 'Other sticky blocks';
 $string['presetname'] = 'Preset file name';
 $string['presetdateload'] = 'Date loaded';
 $string['presetdatechanged'] = 'Date changed';
-
+$string['presetdel'] = 'Delete preset';
+$string['confirmpresetdelete'] = 'About to <strong>delete</strong> file containing item definition & settings from ULPGC preset "{$a}".
+<br />Confirm to proceed? ';
 $string['presetimport'] = 'Import preset';
 $string['presetreset'] = 'Reset item from preset';
 $string['confirmpresetimport'] = 'About to import item definition & settings from ULPGC preset "{$a}".
@@ -378,6 +381,8 @@ $string['presetloaded'] = 'Loaded {$a} preset file.';
 $string['presetloaderror'] = 'Error on loading {$a} preset file.';
 $string['presetsaved'] = 'Saved preset file "{$a}".';
 $string['presetsaveerror'] = 'Error on saving preset file "{$a}".';
+$string['presetremoved'] = 'Deleted preset file "{$a}".';
+$string['presetremoveerror'] = 'Error on deleting preset file "{$a}".  Preset file NOT removed.';
 $string['referencecourse'] = 'Reference course';
 $string['explainreferencecourse'] = 'The shortname of a course to use as template or reference
 (for looking for default course settings or modules).';
@@ -387,3 +392,7 @@ If configured and installed, the shortname of this course will be used as refere
 $string['archivereuse'] = 'Archive/Reuse';
 $string['rolepermissions'] = 'Permissions';
 $string['participants'] = 'Participants list';
+$string['blocksubpage'] = 'sub: {$a}';
+$string['blocknewregion'] = 'Here: {$a}';
+$string['blockregionchanged'] = 'Block Region in preset is NOT known: set to default region "{$a}".';
+

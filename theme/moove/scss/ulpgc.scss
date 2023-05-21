@@ -429,6 +429,11 @@ span.unread {
 }
 
 
+/*@media (min-width: 768px) */
+.path-admin #page-navbar.d-md-block {
+  max-width: 12.0rem;
+}
+
 /*---------------------------------------
  * rules: Course formats related.
  --------------------------------------*/
