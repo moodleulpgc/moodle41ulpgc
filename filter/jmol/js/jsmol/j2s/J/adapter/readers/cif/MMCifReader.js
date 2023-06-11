@@ -360,11 +360,11 @@ if (addNote) this.appendLoadNote (groupName + " = " + hetName);
 Clazz.defineMethod (c$, "processStructConfLoopBlock", 
  function () {
 if (this.ignoreStructure) {
-this.cifParser.skipLoop (false);
+this.skipLoop (false);
 return false;
 }this.parseLoopParametersFor ("_struct_conf", J.adapter.readers.cif.MMCifReader.structConfFields);
 if (!this.checkAllFieldsPresent (J.adapter.readers.cif.MMCifReader.structConfFields, -1, true)) {
-this.cifParser.skipLoop (true);
+this.skipLoop (true);
 return false;
 }while (this.cifParser.getData ()) {
 var structure =  new J.adapter.smarter.Structure (-1, J.c.STR.HELIX, J.c.STR.HELIX, null, 0, 0, null);
@@ -380,10 +380,10 @@ return true;
 });
 Clazz.defineMethod (c$, "addStructure", 
  function (structure) {
-structure.startChainID = this.vwr.getChainID (structure.startChainStr = this.getField (1), true);
+structure.startChainID = this.vwr.getChainID (this.getField (1), true);
 structure.startSequenceNumber = this.parseIntStr (this.getField (2));
 structure.startInsertionCode = this.getField (3).charAt (0);
-structure.endChainID = this.vwr.getChainID (structure.endChainStr = this.getField (4), true);
+structure.endChainID = this.vwr.getChainID (this.getField (4), true);
 structure.endSequenceNumber = this.parseIntStr (this.getField (5));
 structure.endInsertionCode = this.getField (6).charAt (0);
 this.asc.addStructure (structure);
@@ -391,11 +391,11 @@ this.asc.addStructure (structure);
 Clazz.defineMethod (c$, "processStructSheetRangeLoopBlock", 
  function () {
 if (this.ignoreStructure) {
-this.cifParser.skipLoop (false);
+this.skipLoop (false);
 return false;
 }this.parseLoopParametersFor ("_struct_sheet_range", J.adapter.readers.cif.MMCifReader.structSheetRangeFields);
 if (!this.checkAllFieldsPresent (J.adapter.readers.cif.MMCifReader.structSheetRangeFields, -1, true)) {
-this.cifParser.skipLoop (true);
+this.skipLoop (true);
 return false;
 }while (this.cifParser.getData ()) this.addStructure ( new J.adapter.smarter.Structure (-1, J.c.STR.SHEET, J.c.STR.SHEET, this.getField (0), this.parseIntStr (this.getField (7)), 1, null));
 
@@ -613,7 +613,7 @@ this.modelStrings += key;
 }}if (this.iHaveDesiredModel && this.asc.atomSetCount > 0 && !isAssembly) {
 this.done = true;
 if (this.cifParser != null) {
-this.cifParser.skipLoop (false);
+this.skipLoop (false);
 this.skipping = false;
 }this.continuing = true;
 return -2147483648;

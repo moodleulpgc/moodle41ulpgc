@@ -82,7 +82,8 @@ class course {
         $theme = \theme_config::load('moove');
 
         $contacts = [];
-        if ($this->course->has_course_contacts() && !($theme->settings->disableteacherspic)) {
+        //if ($this->course->has_course_contacts() && !($theme->settings->disableteacherspic)) { // ecastro ULPGC
+        if ($this->course->has_course_contacts()) {
             $instructors = $this->course->get_course_contacts();
 
             foreach ($instructors as $instructor) {
@@ -92,7 +93,7 @@ class course {
                 $contacts[] = [
                     'id' => $user->id,
                     'fullname' => fullname($user),
-                    'userpicture' => $userutil->get_user_picture(),
+                    'userpicture' => ($theme->settings->disableteacherspic) ? '' : $userutil->get_user_picture(), // ecastro ULPGC
                     'role' => $instructor['role']->displayname
                 ];
             }

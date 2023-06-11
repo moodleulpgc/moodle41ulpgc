@@ -277,12 +277,6 @@ body#page-question-type-mtf div[id^=fgroup_id_weightsarray] {
     min-width: 70px;
 }
 
-#page-mod-quiz-review .que.mtf table .optiontext,
-#page-mod-quiz-review .que.mtf table .mtfcorrectness,
-#page-mod-quiz-review .que.mtf table .mtfspecificfeedback {
-    width: 40%;
-}
-
 @supports (display:-ms-grid) {
     body#page-question-type-mtf #id_questiontexteditable,
     body#page-question-type-mtf #id_generalfeedbackeditable,

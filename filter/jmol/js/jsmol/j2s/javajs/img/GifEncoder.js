@@ -61,18 +61,15 @@ if (ic != null) this.backgroundColor = ic.intValue ();
 } else {
 this.backgroundColor = ic.intValue ();
 this.isTransparent = true;
+}if (this.backgroundColor == 0xFF000000) {
+for (var i = this.pixels.length; --i >= 0; ) this.pixels[i] = this.pixels[i] & -263173;
+
 }this.interlaced = (Boolean.TRUE === params.get ("interlaced"));
 if (params.containsKey ("captureRootExt") || !params.containsKey ("captureMode")) return;
 this.interlaced = false;
 this.capturing = true;
-try {
-this.byteCount = (params.get ("captureByteCount")).intValue ();
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-} else {
-throw e;
-}
-}
+var c = params.get ("captureByteCount");
+if (c != null) this.byteCount = c.intValue ();
 switch ("maec".indexOf ((params.get ("captureMode")).substring (0, 1))) {
 case 0:
 params.put ("captureMode", "add");

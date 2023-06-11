@@ -31,10 +31,10 @@ require_capability('tool/ulpgcqc:view', context_system::instance());
 $report = optional_param('report', '', PARAM_ALPHANUMEXT); // Show detailed info about one check only.
 $detail = optional_param('detail', '', PARAM_TEXT); // Show detailed info about one check only.
 
-$pagename =  'tool_ulpgcqc_report';
+$pagename =  'tool_ulpgcqc_summary';
 if($report) {
-    $pagename .= '_' . $report;
-}
+    $pagename =  'tool_ulpgcqc_report_' . $report;
+} 
 admin_externalpage_setup($pagename, '', null, '', ['pagelayout' => 'report']);
 
 $url = new moodle_url('/admin/tool/ulpgcqc/index.php', ['report' => $report]);
@@ -49,10 +49,10 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'tool_ulpgcqc'));
 
 // prepare tabs
-$tabs = []
-foreach(['summary', 'general', 'config', 'courses', 'users'] as $tab) {
+$tabs = [];
+foreach(['summary', 'config', 'courses', 'users'] as $tab) {
     $tabs[] = new tabobject($tab, new moodle_url('/admin/tool/ulpgcqc/index.php', ['report' => $tab]),
-                            get_string('tab'.$tab, 'tool_ulpgcqc'))
+                            get_string('qcreport_'.$tab, 'tool_ulpgcqc'));
 }
 echo $OUTPUT->tabtree($tabs, $report);
 

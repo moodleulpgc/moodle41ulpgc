@@ -18,7 +18,6 @@ this.isPhaseColored = false;
 this.isColorExplicit = false;
 this.scriptAppendix = "";
 this.sg = null;
-this.jvxlData = null;
 this.withinDistance2 = 0;
 this.isWithinNot = false;
 this.withinPoints = null;
@@ -184,12 +183,15 @@ this.sg.params.modelIndex = Math.abs (this.modelIndex);
 var info = value;
 if (!this.explicitID) {
 this.setPropertySuper ("thisID", null, null);
-}if (!this.sg.setProp ("lcaoCartoonCenter", info[2], null)) this.drawLcaoCartoon (info[0], info[1], info[3], ("lonePair" === propertyName ? 2 : "radical" === propertyName ? 1 : 0));
+}if (!this.sg.setProp ("lcaoCartoonCenter", info[2], null)) this.drawLcaoCartoon (info[0], info[1], info[3], ("lonePair" === propertyName ? 2 : "radical" === propertyName ? 1 : 0), this.thisMesh == null ? false : this.thisMesh.reverseColor);
 return;
 }if ("select" === propertyName) {
 if (this.iHaveBitSets) return;
 }if ("ignore" === propertyName) {
 if (this.iHaveBitSets) return;
+}if ("reversecolor" === propertyName) {
+if (this.thisMesh != null) this.thisMesh.reverseColor = (value === Boolean.TRUE);
+return;
 }if ("meshcolor" === propertyName) {
 var rgb = (value).intValue ();
 this.meshColix = JU.C.getColix (rgb);
@@ -217,7 +219,7 @@ this.displayWithinDistance2 = (o[0]).floatValue ();
 this.isDisplayWithinNot = (this.displayWithinDistance2 < 0);
 this.displayWithinDistance2 *= this.displayWithinDistance2;
 this.displayWithinPoints = o[3];
-if (this.displayWithinPoints.size () == 0) this.displayWithinPoints = this.vwr.ms.getAtomPointVector (o[2]);
+if (this.displayWithinPoints.size () == 0) this.displayWithinPoints = this.ms.getAtomPointVector (o[2]);
 return;
 }if ("finalize" === propertyName) {
 if (this.thisMesh != null) {
@@ -231,12 +233,9 @@ return;
 }if ("connections" === propertyName) {
 if (this.currentMesh != null) {
 this.connections = value;
-if (this.connections[0] >= 0 && this.connections[0] < this.vwr.ms.ac) this.currentMesh.connectedAtoms = this.connections;
+if (this.connections[0] >= 0 && this.connections[0] < this.ms.ac) this.currentMesh.connectedAtoms = this.connections;
  else this.connections = this.currentMesh.connectedAtoms = null;
 }return;
-}if ("cutoffRange" === propertyName) {
-this.cutoffRange = value;
-return;
 }if ("fixLattice" === propertyName) {
 if (this.thisMesh != null) this.thisMesh.fixLattice ();
 return;
@@ -295,7 +294,7 @@ if (this.thisMesh != null) this.thisMesh.atomIndex = this.atomIndex;
 this.center.setT (value);
 } else if ("colorRGB" === propertyName) {
 var rgb = (value).intValue ();
-if (rgb == 1296041986) {
+if (rgb == 1296041985) {
 this.colorType = rgb;
 } else {
 this.colorType = 0;
@@ -311,7 +310,7 @@ if (this.thisMesh != null) {
 var bsSets;
 if (Clazz.instanceOf (value, JU.BS)) {
 bsSets = (value);
-if (bsSets.cardinality () == 0) bsSets = null;
+if (bsSets.isEmpty ()) bsSets = null;
 } else {
 bsSets =  new JU.BS ();
 var a = value;
@@ -359,9 +358,11 @@ this.withinDistance2 = (o[0]).floatValue ();
 this.isWithinNot = (this.withinDistance2 < 0);
 this.withinDistance2 *= this.withinDistance2;
 this.withinPoints = o[3];
-if (this.withinPoints.size () == 0) this.withinPoints = this.vwr.ms.getAtomPointVector (o[2]);
+if (this.withinPoints.size () == 0) this.withinPoints = this.ms.getAtomPointVector (o[2]);
 } else if (("nci" === propertyName || "orbital" === propertyName) && this.sg != null) {
 this.sg.params.testFlags = (this.vwr.getBoolean (603979962) ? 2 : 0);
+} else if ("cutoffRange" === propertyName) {
+this.cutoffRange = value;
 }if (this.sg != null && this.sg.setProp (propertyName, value, bs)) {
 if (this.sg.isValid) {
 if ("molecularOrbital" === propertyName) {
@@ -457,7 +458,7 @@ var vertexColixes = this.thisMesh.vcs;
 var colix = (this.thisMesh.isColorSolid ? this.thisMesh.colix : 0);
 this.setProperty ("init", null, null);
 this.setProperty ("map", Boolean.FALSE, null);
-this.setProperty ("property",  Clazz.newFloatArray (this.vwr.ms.ac, 0), null);
+this.setProperty ("property",  Clazz.newFloatArray (this.ms.ac, 0), null);
 if (colix != 0) {
 this.thisMesh.colorCommand = "color isosurface " + JU.C.getHexCode (colix);
 this.setProperty ("color", Integer.$valueOf (JU.C.getArgb (colix)), null);
@@ -552,8 +553,10 @@ if (property === "message") {
 var s = "";
 if (!this.jvxlData.isValid) return "invalid! (no atoms selected?)";
 if (!Float.isNaN (this.jvxlData.integration)) s += "integration " + this.jvxlData.integration;
-if (this.shapeID == 24 || this.shapeID == 27 || this.shapeID == 28) s += " with cutoff=" + this.jvxlData.cutoff;
-if (this.shapeID == 27 || this.shapeID == 28) return s;
+if (this.shapeID == 24 || this.shapeID == 27 || this.shapeID == 28) {
+if (this.jvxlData.cutoffRange == null) s += " with cutoff=" + this.jvxlData.cutoff;
+ else s += " with cutoffRange=" + JU.Escape.eAF (this.jvxlData.cutoffRange);
+}if (this.shapeID == 27 || this.shapeID == 28) return s;
 if (this.jvxlData.dataMin != 3.4028235E38) s += " min=" + this.jvxlData.dataMin + " max=" + this.jvxlData.dataMax;
 s += "; " + JV.JC.shapeClassBases[this.shapeID].toLowerCase () + " count: " + this.getPropMC ("count", index);
 return s + this.getPropI ("dataRangeStr", index) + this.jvxlData.msg;
@@ -575,6 +578,7 @@ if (m == null) return null;
 if (property === "output") {
 return (m.jvxlData.sbOut == null && m.jvxlData.jvxlFileTitle == null ? null : m.jvxlData.jvxlFileTitle + "\n" + (m.jvxlData.sbOut == null ? "" : m.jvxlData.sbOut.toString ()));
 }if (property === "cutoff") return Float.$valueOf (this.jvxlData.cutoff);
+if (property === "cutoffRange") return this.jvxlData.cutoffRange;
 if (property === "minMaxInfo") return  Clazz.newFloatArray (-1, [this.jvxlData.dataMin, this.jvxlData.dataMax]);
 if (property === "plane") return this.jvxlData.jvxlPlane;
 if (property === "contours") return m.getContours ();
@@ -597,7 +601,7 @@ return J.jvxl.data.JvxlCoder.jvxlGetInfo (this.jvxlData);
 }if (property === "command") {
 var sb =  new JU.SB ();
 var list = this.getMeshList ((index < 0 ? this.previousMeshID : m.thisID), false);
-for (var i = list.size (); --i >= 0; ) this.getMeshCommand (sb, i);
+for (var i = list.size (); --i >= 0; ) this.getMeshCommand (sb, list.get (i).index);
 
 return sb.toString ();
 }if (property === "atoms") {
@@ -669,7 +673,7 @@ Clazz.defineMethod (c$, "getMeshCommand",
 var imesh = this.meshes[i];
 if (imesh == null || imesh.scriptCommand == null) return;
 var cmd = imesh.scriptCommand;
-var modelCount = this.vwr.ms.mc;
+var modelCount = this.ms.mc;
 if (modelCount > 1) J.shape.Shape.appendCmd (sb, "frame " + this.vwr.getModelNumberDotted (imesh.modelIndex));
 cmd = JU.PT.rep (cmd, ";; isosurface map", " map");
 cmd = JU.PT.rep (cmd, "; isosurface map", " map");
@@ -684,7 +688,7 @@ if (imesh.linkedMesh != null) cmd += " LINK";
 if (this.myType === "lcaoCartoon" && imesh.atomIndex >= 0) cmd += " ATOMINDEX " + imesh.atomIndex;
 J.shape.Shape.appendCmd (sb, cmd);
 var id = this.myType + " ID " + JU.PT.esc (imesh.thisID);
-if (imesh.jvxlData.thisSet != null && imesh.jvxlData.thisSet.cardinality () > 0) {
+if (imesh.jvxlData.thisSet != null && !imesh.jvxlData.thisSet.isEmpty ()) {
 J.shape.Shape.appendCmd (sb, id + (imesh.jvxlData.thisSet.cardinality () == 1 ? " set " + (imesh.jvxlData.thisSet.nextSetBit (0) + 1) : " subset " + imesh.jvxlData.thisSet));
 }if (imesh.mat4 != null && !imesh.isModelConnected) J.shape.Shape.appendCmd (sb, id + " move " + JU.Escape.matrixToScript (imesh.mat4));
 if (imesh.scale3d != 0) J.shape.Shape.appendCmd (sb, id + " scale3d " + imesh.scale3d);
@@ -735,7 +739,7 @@ if (bsCmd == null) this.sg.setProp ("ignore", bs, null);
 if ((i = script.indexOf ("/({", j)) == j + 2) {
 if ((j = script.indexOf ("})", i)) < 0) return false;
 bs = JU.BS.unescape (script.substring (i + 3, j + 1));
-if (bsCmd == null) this.vwr.ms.setTrajectoryBs (bs);
+if (bsCmd == null) this.ms.setTrajectoryBs (bs);
  else bsCmd[2] = bs;
 }return true;
 }, "~S,~A");
@@ -792,7 +796,7 @@ this.sg.initState ();
 Clazz.defineMethod (c$, "setMeshI", 
  function () {
 this.thisMesh.visible = true;
-if ((this.thisMesh.atomIndex = this.atomIndex) >= 0) this.thisMesh.modelIndex = this.vwr.ms.at[this.atomIndex].mi;
+if ((this.thisMesh.atomIndex = this.atomIndex) >= 0) this.thisMesh.modelIndex = this.ms.at[this.atomIndex].mi;
  else if (this.isFixed) this.thisMesh.modelIndex = -1;
  else if (this.modelIndex >= 0) this.thisMesh.modelIndex = this.modelIndex;
  else this.thisMesh.modelIndex = this.vwr.am.cmi;
@@ -815,12 +819,19 @@ var argb = (this.sg.params.cutoff >= 0 ? -11525984 : -6283184);
 return JU.C.getColix (argb);
 });
 Clazz.defineMethod (c$, "drawLcaoCartoon", 
- function (z, x, rotAxis, nElectrons) {
+ function (z, x, rotAxis, nElectrons, reverseColor) {
 var lcaoCartoon = this.sg.setLcao ();
-var rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
+var addAnti = (lcaoCartoon.indexOf ("anti-sp") >= 0);
+if (addAnti) {
+lcaoCartoon = lcaoCartoon.substring (5);
+}var rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
 this.defaultColix = JU.C.getColix (this.sg.params.colorPos);
 var colixNeg = JU.C.getColix (this.sg.params.colorNeg);
-var y =  new JU.V3 ();
+if (reverseColor) {
+var c = colixNeg;
+colixNeg = this.defaultColix;
+this.defaultColix = c;
+}var y =  new JU.V3 ();
 var isReverse = (lcaoCartoon.length > 0 && lcaoCartoon.charAt (0) == '-');
 if (isReverse) lcaoCartoon = lcaoCartoon.substring (1);
 var sense = (isReverse ? -1 : 1);
@@ -843,7 +854,7 @@ var meshA = this.thisMesh;
 this.createLcaoLobe (x, sense, nElectrons);
 if (nElectrons > 0) return;
 this.setProperty ("thisID", id + "b", null);
-this.createLcaoLobe (x, -sense, nElectrons);
+this.createLcaoLobe (x, -sense, 0);
 this.thisMesh.colix = colixNeg;
 this.linkedMesh = this.thisMesh.linkedMesh = meshA;
 return;
@@ -853,23 +864,29 @@ var meshA = this.thisMesh;
 this.createLcaoLobe (y, sense, nElectrons);
 if (nElectrons > 0) return;
 this.setProperty ("thisID", id + "b", null);
-this.createLcaoLobe (y, -sense, nElectrons);
+this.createLcaoLobe (y, -sense, 0);
 this.thisMesh.colix = colixNeg;
 this.linkedMesh = this.thisMesh.linkedMesh = meshA;
 return;
-}if (lcaoCartoon.equals ("pz")) {
-this.thisMesh.thisID += "a";
-var meshA = this.thisMesh;
+}var meshA = this.thisMesh;
+if (lcaoCartoon.equals ("pz")) {
+meshA.thisID += "a";
 this.createLcaoLobe (z, sense, nElectrons);
 if (nElectrons > 0) return;
 this.setProperty ("thisID", id + "b", null);
-this.createLcaoLobe (z, -sense, nElectrons);
+this.createLcaoLobe (z, -sense, 0);
 this.thisMesh.colix = colixNeg;
 this.linkedMesh = this.thisMesh.linkedMesh = meshA;
 return;
 }if (lcaoCartoon.equals ("pza") || lcaoCartoon.indexOf ("sp") == 0 || lcaoCartoon.indexOf ("d") == 0 || lcaoCartoon.indexOf ("lp") == 0) {
 this.createLcaoLobe (z, sense, nElectrons);
-return;
+if (addAnti && nElectrons == 0) {
+meshA.thisID += "a";
+this.setProperty ("thisID", id + "b", null);
+this.createLcaoLobe (z, -sense / 2, 0);
+this.thisMesh.colix = colixNeg;
+this.linkedMesh = this.thisMesh.linkedMesh = meshA;
+}return;
 }if (lcaoCartoon.equals ("pzb")) {
 this.createLcaoLobe (z, -sense, nElectrons);
 return;
@@ -886,11 +903,11 @@ return;
 this.createLcaoLobe (y, -sense, nElectrons);
 return;
 }if (lcaoCartoon.equals ("spacefill") || lcaoCartoon.equals ("cpk")) {
-this.createLcaoLobe (null, 2 * this.vwr.ms.at[this.atomIndex].getRadius (), nElectrons);
+this.createLcaoLobe (null, 2 * this.ms.at[this.atomIndex].getRadius (), nElectrons);
 return;
 }this.createLcaoLobe (null, 1, nElectrons);
 return;
-}, "JU.V3,JU.V3,JU.V3,~N");
+}, "JU.V3,JU.V3,JU.V3,~N,~B");
 Clazz.defineMethod (c$, "createLcaoLobe", 
  function (lobeAxis, factor, nElectrons) {
 this.initState ();
@@ -1129,10 +1146,7 @@ return true;
 }if (!this.vwr.getDrawHover ()) return false;
 var s = this.findValue (x, y, false, bsVisible);
 if (s == null) return false;
-if (this.vwr.gdata.antialiasEnabled) {
-x <<= 1;
-y <<= 1;
-}this.vwr.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
+this.vwr.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
 }, "~N,~N,JU.BS");
 Clazz.defineMethod (c$, "hoverKey", 
@@ -1155,9 +1169,6 @@ s = "" + (vContours[i].get (2)).floatValue ();
 var g = this.thisMesh.colorEncoder.quantize (f, true);
 f = this.thisMesh.colorEncoder.quantize (f, false);
 s = "" + g + " - " + f;
-}if (this.vwr.gdata.isAntialiased ()) {
-x <<= 1;
-y <<= 1;
 }this.vwr.hoverOnPt (x, y, s, null, null);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {

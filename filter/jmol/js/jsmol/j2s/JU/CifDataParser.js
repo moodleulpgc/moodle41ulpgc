@@ -21,6 +21,7 @@ this.isLoop = false;
 this.haveData = false;
 this.fileHeader = null;
 this.isHeader = true;
+this.skipToken = false;
 Clazz.instantialize (this, arguments);
 }, JU, "CifDataParser", null, javajs.api.GenericCifDataParser);
 Clazz.prepareFields (c$, function () {
@@ -147,9 +148,11 @@ try {
 this.line = (this.reader == null ? this.br.readLine () : this.reader.readNextLine ());
 if (this.line == null) return null;
 if (this.isHeader) {
-if (this.line.startsWith ("#")) this.fileHeader.append (this.line).appendC ('\n');
- else this.isHeader = false;
-}return this.line;
+if (this.line.startsWith ("#")) {
+this.fileHeader.append (this.line).appendC ('\n');
+} else if (this.line.length > 0) {
+this.isHeader = false;
+}}return this.line;
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 return null;
@@ -299,7 +302,8 @@ key = this.getTokenPeeked ();
 data = this.getNextToken ();
 }var iField = JU.CifDataParser.htFields.get (this.fixKey (key));
 i = (iField == null ? -1 : iField.intValue ());
-if ((col2key[pt] = i) != -1) this.columnData[key2col[i] = pt] = data;
+if ((col2key[pt] = i) == -1) this.columnData[pt] = "";
+ else this.columnData[key2col[i] = pt] = data;
 if ((o = this.peekToken ()) == null || !(Clazz.instanceOf (o, String)) || !(o).startsWith (str0)) break;
 key = null;
 }
@@ -336,8 +340,9 @@ while (this.readLine () != null) {
 if (this.line.startsWith (";")) {
 str = str.substring (0, str.length - 1) + '\1' + this.line.substring (1);
 break;
-}str += this.line + '\n';
-}
+} else if (!this.skipToken) {
+str += this.line + '\n';
+}}
 return str;
 });
 Clazz.defineMethod (c$, "strHasMoreTokens", 
@@ -439,6 +444,13 @@ str += value;
 this.cterm = cterm0;
 this.nullString = ns;
 return (this.asObject ? lst : "[" + str + "]");
+});
+Clazz.overrideMethod (c$, "skipNextToken", 
+function () {
+this.skipToken = true;
+this.getNextToken ();
+this.skipToken = false;
+return "<skipped>";
 });
 Clazz.defineStatics (c$,
 "KEY_MAX", 100);

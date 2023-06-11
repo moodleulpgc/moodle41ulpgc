@@ -395,4 +395,13 @@ $string['participants'] = 'Participants list';
 $string['blocksubpage'] = 'sub: {$a}';
 $string['blocknewregion'] = 'Here: {$a}';
 $string['blockregionchanged'] = 'Block Region in preset is NOT known: set to default region "{$a}".';
+$string['bsetounilabel'] = 'BSE to Unilabel';
+$string['bsetounilabel_desc'] = 'BSE to Unilabel adds a new Unilabel mod for each Bootstrapelements instance.';
+$string['unilabeladded'] = 'Unilabel added in course {$a->course} with name {$a->name}.';
+$string['unilabeladdederror'] = 'Unilabel adding error in course {$a->course} with name {$a->name}.';
 
+$string['check_customroles'] = 'Custom roles';
+$string['check_customroles_notset'] = 'Not defined custom roles setting';
+$string['check_customroles_missing'] = 'Some required custom role is missing';
+$string['check_customroles_missinglist'] = 
+$string['check_customroles_details'] = 'Review custom roles';

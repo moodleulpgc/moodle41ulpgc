@@ -206,9 +206,10 @@ function init(array $data): array {
     $PAGE->navbar->add($data['cm']->name, $returnurl);
     $PAGE->navbar->add($data['reportname']);
 
-    $PAGE->set_context(context_course::instance($data['courseid']));
+    //$PAGE->set_context(context_course::instance($data['courseid']));
+    $PAGE->set_context(context_module::instance($data['modid'])); // ecastro ULPGC
     $PAGE->requires->jquery();
-    $PAGE->requires->js_call_amd('report_advancedgrading/table_sort', 'init');
+    //$PAGE->requires->js_call_amd('report_advancedgrading/table_sort', 'init'); // ecastro ULPGC
     $PAGE->set_pagelayout('report');
     $PAGE->set_title($data['reportname']);
 

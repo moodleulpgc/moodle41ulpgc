@@ -99,7 +99,7 @@ Clazz.overrideMethod (c$, "disposeGraphics",
 function (gOffscreen) {
 }, "~O");
 Clazz.overrideMethod (c$, "grabPixels", 
-function (canvas, width, height, pixels, startRow, nRows) {
+function (canvas, width, height, pixels) {
 {
 if (canvas.image && (width != canvas.width || height != canvas.height))
 Jmol._setCanvasImage(canvas, width, height);
@@ -108,10 +108,10 @@ if (canvas.buf32) return canvas.buf32;
 {
 canvas.buf32 = buf;
 }return buf;
-}, "~O,~N,~N,~A,~N,~N");
+}, "~O,~N,~N,~A");
 Clazz.overrideMethod (c$, "drawImageToBuffer", 
 function (gOffscreen, imageOffscreen, canvas, width, height, bgcolor) {
-return this.grabPixels (canvas, width, height, null, 0, 0);
+return this.grabPixels (canvas, width, height, null);
 }, "~O,~O,~O,~N,~N,~N");
 Clazz.overrideMethod (c$, "getTextPixels", 
 function (text, font3d, context, image, width, height, ascent) {

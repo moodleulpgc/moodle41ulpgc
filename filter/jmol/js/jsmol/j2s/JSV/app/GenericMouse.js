@@ -107,6 +107,21 @@ Clazz.defineMethod (c$, "keyReleased",
 function (ke) {
 if (this.pd != null) this.pd.keyReleased (ke.getKeyCode ());
 }, "java.awt.event.KeyEvent");
+Clazz.overrideMethod (c$, "processKeyEvent", 
+function (event) {
+var e = event;
+switch (e.getID ()) {
+case 401:
+this.keyPressed (e);
+break;
+case 402:
+this.keyReleased (e);
+break;
+case 400:
+this.keyTyped (e);
+break;
+}
+}, "~O");
 Clazz.defineMethod (c$, "entered", 
 function (time, x, y) {
 if (this.pd != null) this.pd.mouseEnterExit (time, x, y, false);

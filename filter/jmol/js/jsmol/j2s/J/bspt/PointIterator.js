@@ -1,8 +1,8 @@
 Clazz.declarePackage ("J.bspt");
-Clazz.load (null, "J.bspt.PointIterator", ["java.lang.Float", "JU.Lst", "$.P3", "J.bspt.Bspt", "JU.BSUtil", "$.Point3fi"], function () {
+Clazz.load (null, "J.bspt.PointIterator", ["java.lang.Float", "JU.BS", "$.Lst", "$.P3", "J.bspt.Bspt", "JU.BSUtil", "$.Point3fi"], function () {
 c$ = Clazz.declareType (J.bspt, "PointIterator");
 c$.withinDistPoints = Clazz.defineMethod (c$, "withinDistPoints", 
-function (distance, pt, ap3, ap31, ret) {
+function (distance, pt, ap3, ap31, bsSelected, ret) {
 var pts =  new JU.Lst ();
 var bspt =  new J.bspt.Bspt (3, 0);
 var iter;
@@ -12,14 +12,31 @@ var p;
 for (var i = pt3.length; --i >= 0; ) {
 var p3 = ap3[i];
 if (p3 == null) return 0;
+if (bsSelected == null) {
 p =  new JU.Point3fi ();
 p.setT (p3);
 p.i = i;
 pt3[i] = p;
 bspt.addTuple (p);
-}
+} else {
+bspt.addTuple (p3);
+}}
 iter = bspt.allocateCubeIterator ();
-var bsp = JU.BSUtil.newBitSet2 (0, ap3.length);
+var bsp;
+if (bsSelected != null) {
+bsp = JU.BS.newN (ap31.length);
+for (var i = bsSelected.nextSetBit (0); i >= 0; i = bsSelected.nextSetBit (i + 1)) {
+iter.initialize (ap31[i], distance, false);
+var d2 = distance * distance;
+while (iter.hasMoreElements ()) {
+if (iter.nextElement ().distanceSquared (ap31[i]) <= d2) {
+bsp.set (i);
+break;
+}}
+}
+ret[0] = bsp;
+return 10;
+}bsp = JU.BSUtil.newBitSet2 (0, ap3.length);
 for (var i = pt3.length; --i >= 0; ) {
 iter.initialize (p = pt3[i], distance, false);
 var d2 = distance * distance;
@@ -74,5 +91,5 @@ if (pt2.distanceSquared (pt) <= d2) pts.addLast (pt2);
 iter.release ();
 ret[0] = pts;
 return 1073742001;
-}, "~N,JU.P3,~A,~A,~A");
+}, "~N,JU.P3,~A,~A,JU.BS,~A");
 });

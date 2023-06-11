@@ -204,9 +204,10 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             $item->url = $CFG->wwwroot.'/my/courses.php';
             $item->sort = $sort;
             $menuitems[] = clone $item;
+            $sort++;
         }
         
-        // if there are regular courses & remote courses, add separator 
+        // if there are regular courses & remote courses, add separator  and title
         if(!empty($menuitems) && !empty($remotes)) {
             $item->moremenuid = uniqid(); 
             $item->text = '###';
@@ -216,6 +217,11 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             $menuitems[] = clone $item;
             $sort++;
             $item->divider = null ;
+            $item->moremenuid = uniqid(); 
+            $item->sort = $sort;
+            $item->text = html_writer::span($block->blockname, 'myremotecourses title');  
+            $menuitems[] = clone $item;
+            $sort++;
         }
 
         foreach ($remotes as $course) {

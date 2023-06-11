@@ -161,9 +161,7 @@ break;
 }
 if (points == null) {
 if (bs == null) bs = this.vwr.getAllAtoms ();
-points =  new Array (bs.cardinality ());
-for (var i = bs.nextSetBit (0), pt = 0; i >= 0; i = bs.nextSetBit (i + 1)) points[pt++] = this.vwr.ms.at[i];
-
+points = this.bsToArray (bs);
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -173,4 +171,11 @@ throw e;
 if (points == null || points.length < nmin) this.invArg ();
 return points;
 }, "~N,~N");
+Clazz.defineMethod (c$, "bsToArray", 
+function (bs) {
+var p =  new Array (bs.cardinality ());
+for (var i = bs.nextSetBit (0), pt = 0; i >= 0; i = bs.nextSetBit (i + 1)) p[pt++] = this.vwr.ms.at[i];
+
+return p;
+}, "JU.BS");
 });

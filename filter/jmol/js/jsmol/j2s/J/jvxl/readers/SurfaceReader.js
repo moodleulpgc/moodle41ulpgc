@@ -55,6 +55,7 @@ this.jvxlDataIsPrecisionColor = false;
 this.jvxlDataIs2dContour = false;
 this.jvxlDataIsColorDensity = false;
 this.jvxlCutoff = 0;
+this.jvxlCutoffRange = null;
 this.jvxlNSurfaceInts = 0;
 this.cJvxlEdgeNaN = '\0';
 this.contourVertexCount = 0;
@@ -126,6 +127,7 @@ function (justForPlane) {
 this.resetIsosurface ();
 if (this.params.showTiming) JU.Logger.startTimer ("isosurface creation");
 this.jvxlData.cutoff = NaN;
+this.jvxlData.cutoffRange = null;
 if (!this.readAndSetVolumeParameters (justForPlane)) return false;
 if (!justForPlane && !Float.isNaN (this.params.sigma) && !this.allowSigma) {
 if (this.params.sigma > 0) JU.Logger.error ("Reader does not support SIGMA option -- using cutoff 1.6");
@@ -153,10 +155,13 @@ if (!this.readVolumeData (false)) return false;
 this.generateSurfaceData ();
 }if (this.jvxlFileHeaderBuffer == null) {
 this.jvxlData.jvxlFileTitle = "";
+this.jvxlData.jvxlFileSource = null;
+this.jvxlData.jvxlFileMessage = null;
 } else {
 var s = this.jvxlFileHeaderBuffer.toString ();
 var i = s.indexOf ('\n', s.indexOf ('\n', s.indexOf ('\n') + 1) + 1) + 1;
 this.jvxlData.jvxlFileTitle = s.substring (0, i);
+this.jvxlData.jvxlFileSource = this.params.fileName;
 }if (this.params.contactPair == null) this.setBBoxAll ();
 this.jvxlData.isValid = (this.xyzMin.x != 3.4028235E38);
 if (!this.params.isSilent) {
@@ -165,7 +170,8 @@ if (!this.jvxlData.isValid) JU.Logger.error ("no isosurface points were found!")
 }this.jvxlData.boundingBox =  Clazz.newArray (-1, [this.xyzMin, this.xyzMax]);
 this.jvxlData.dataMin = this.dataMin;
 this.jvxlData.dataMax = this.dataMax;
-this.jvxlData.cutoff = (this.isJvxl ? this.jvxlCutoff : this.params.cutoff);
+this.jvxlData.cutoffRange = (this.isJvxl ? this.jvxlCutoffRange : this.params.cutoffRange);
+this.jvxlData.cutoff = (this.jvxlCutoffRange != null ? this.jvxlData.cutoffRange[0] : this.isJvxl ? this.jvxlCutoff : this.params.cutoff);
 this.jvxlData.isCutoffAbsolute = this.params.isCutoffAbsolute;
 this.jvxlData.isModelConnected = this.params.isModelConnected;
 this.jvxlData.pointsPerAngstrom = 1 / this.volumeData.volumetricVectorLengths[0];

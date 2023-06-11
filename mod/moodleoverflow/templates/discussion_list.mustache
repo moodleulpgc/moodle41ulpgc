@@ -120,10 +120,20 @@
                     {{/ questionunderreview }}
                     {{^ questionunderreview }}
                         {{#statusboth}}
+                        {{#markedsolution}}
+                            <a href="{{teacherlink}}">
+                                {{# pix}} status/c_outline, moodleoverflow, {{#str}}teacherrating, moodleoverflow{{/str}} {{/ pix}}
+                            </a>
+                        {{/markedsolution}}
+                        {{^markedsolution}}
+                            {{# pix}} status/c_blank, moodleoverflow, {{#str}}marknotsolved, moodleoverflow{{/str}}{{/ pix}}
+                        {{/markedsolution}}
+                        {{#markedhelpful}}
                             <a href="{{starterlink}}">
                                 {{# pix}} status/c_circle, moodleoverflow, {{#str}}teacherrating, moodleoverflow{{/str}}{{/ pix}}
                                 {{# pix}} status/b_box, moodleoverflow, {{#str}}starterrating, moodleoverflow{{/str}}{{/ pix}}
                             </a>
+                        {{/markedhelpful}}
                         {{/statusboth}}
                         {{^statusboth}}
                             {{^statusstarter}}
@@ -158,6 +168,9 @@
                         {{#locked}}
                             {{# pix}} t/locked, core,  {{#str}}discussionlocked, moodleoverflow{{/str}} {{/ pix}}
                         {{/locked}}
+                        {{#markedhelpful}}
+                            {{# pix}} status/b_blank, moodleoverflow, {{#str}}marknothelpful, moodleoverflow{{/str}} {{/ pix}}
+                        {{/markedhelpful}}
                     {{/ questionunderreview }}
                 </td>
 

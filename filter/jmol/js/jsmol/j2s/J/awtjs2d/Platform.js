@@ -103,7 +103,7 @@ J.awtjs2d.Platform.Jmol ().setCursor ((this.vwr).html5Applet, c);
 Clazz.overrideMethod (c$, "allocateRgbImage", 
 function (windowWidth, windowHeight, pBuffer, windowSize, backgroundTransparent, isImageWrite) {
 if (pBuffer == null) {
-pBuffer = this.grabPixels (null, 0, 0, null, 0, 0);
+pBuffer = this.grabPixels (null, 0, 0, null);
 {
 windowWidth = this.canvas.width;
 windowHeight = this.canvas.height;
@@ -116,7 +116,7 @@ Clazz.overrideMethod (c$, "disposeGraphics",
 function (gOffscreen) {
 }, "~O");
 Clazz.overrideMethod (c$, "grabPixels", 
-function (canvas, width, height, pixels, startRow, nRows) {
+function (canvas, width, height, pixels) {
 var context2d = null;
 var isWebGL = (canvas == null);
 {
@@ -136,10 +136,10 @@ canvas.buf32 = buf;
 }if (isWebGL) for (var i = buf.length; --i >= 0; ) if (buf[i] == 0) buf[i] = -1;
 
 return buf;
-}, "~O,~N,~N,~A,~N,~N");
+}, "~O,~N,~N,~A");
 Clazz.overrideMethod (c$, "drawImageToBuffer", 
 function (gOffscreen, imageOffscreen, canvas, width, height, bgcolor) {
-return this.grabPixels (canvas, width, height, null, 0, 0);
+return this.grabPixels (canvas, width, height, null);
 }, "~O,~O,~O,~N,~N,~N");
 Clazz.overrideMethod (c$, "getTextPixels", 
 function (text, font3d, context, image, width, height, ascent) {

@@ -159,6 +159,7 @@ git submodule add https://github.com/simoncoggins/moodle-tool_capexplorer.git   
 git submodule add https://github.com/moodleuulm/moodle-tool_coursefields.git            admin/tool/coursefields
 git submodule add https://github.com/central-queensland-uni/moodle-tool_crawler.git     admin/tool/crawler
 git submodule add https://github.com/moodleou/moodle-tool_editrolesbycap.git            admin/tool/editrolesbycap
+git submodule add https://github.com/catalyst/moodle-tool_excimer.git                           admin/tool/excimer
 #git submodule add https://github.com/moodlehq/moodle-tool_migratehvp2h5p.git            admin/tool/migratehvp2h5p
 git submodule add https://github.com/catalyst/moodle-tool_lockstats.git                 admin/tool/lockstats
 #Fix install.xml 
@@ -280,6 +281,7 @@ git submodule add https://github.com/jmvedrine/moodle-qtype_algebra.git     ques
 git submodule add https://github.com/trampgeek/moodle-qtype_coderunner.git  question/type/coderunner
 git submodule add https://github.com/moodleou/moodle-qtype_combined.git     question/type/combined
 git submodule add https://github.com/villalon/qtype_conceptmap.git          question/type/conceptmap
+git submodule add https://github.com/moodleou/moodle-qtype_crossword.git    question/type/crossword
 git submodule add https://github.com/ethz-let/moodle-qtype_drawing          question/type/drawing
 git submodule add https://github.com/cleblond/moodle-qtype_easyofischer     question/type/easyofischer
 git submodule add https://github.com/cleblond/moodle-qtype_easyonewman.git  question/type/easyonewman
@@ -338,3 +340,15 @@ git submodule add https://github.com/willianmano/moodle-theme_moove.git         
 git submodule add https://github.com/dbnschools/moodle-theme_learnr.git             theme/learnr
 git submodule add https://github.com/moodle-an-hochschulen/moodle-theme_boost_union.git     theme/boost_union
 #git submodule add 
+
+# Testing, temporal
+#git submodule add https://gitlab.com/adapta/moodle-tool_bulkchangeprofilefields.git            admin/tool/bulkchangeprofilefields
+#git submodule add https://github.com/moodlehq/moodle-tool_health.git                               admin/tool/health
+#git submodule add https://github.com/learnweb/moodle-tool_lifecycle.git                              admin/tool/lifecycle   
+#git submodule add https://github.com/brickfield/moodle-gradereport_markingguide.git            grade/report/markingguide
+#git submodule add https://github.com/brickfield/moodle-gradereport_rubrics.git                     grade/report/rubrics
+#git submodule add https://github.com/catalyst/moodle-assignsubmission_automaticextension.git 
+#git submodule add https://gricad-gitlab.univ-grenoble-alpes.fr/moodle-plugins/moodle-atto_code.git             lib/editor/atto/plugins/code
+#git submodule add https://gitlab.com/dne-elearning/moodle-magistere/moodle-atto_fontawesomepicker.git   lib/editor/atto/plugins/fontawesomepicker
+
+#git submodule add https://github.com/UNIMOODLE/moodle-mod_hybridteaching.git               mod/hybridteaching

@@ -63,7 +63,7 @@ Clazz.overrideMethod (c$, "isPositiveTorsion",
 function (a, b, c, d) {
 var center = this.findCumulativeCenter (b, c);
 if (center == null) return 0;
-var jn = center.stereo.getAlleneAtoms (center, b.atom);
+var jn = center.stereo.getAlleneAtoms (false, null, center, b.atom);
 if (jn == null) return 0;
 center.stereo.setTopoCoordinates (center, null, null, jn, false);
 var angle = JU.Measure.computeTorsion (jn[0].getXYZ (), jn[1].getXYZ (), jn[2].getXYZ (), jn[3].getXYZ (), true);

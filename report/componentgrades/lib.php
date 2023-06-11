@@ -40,17 +40,17 @@ function report_componentgrades_extend_navigation_module(navigation_node $naviga
             case 'rubric':
                 $url = new moodle_url('/report/componentgrades/rubric.php', array('id' => $cm->course, 'modid' => $cm->id));
                 $navigation->add(get_string('rubricgrades', 'report_componentgrades'), $url, navigation_node::TYPE_SETTING, null,
-                        'rubricgrades');
+                        'cgrubricgrades'); // ecastro ULPGC cg
                 break;
             case 'guide':
                 $url = new moodle_url('/report/componentgrades/guide.php', array('id' => $cm->course, 'modid' => $cm->id));
                 $navigation->add(get_string('guidegrades', 'report_componentgrades'), $url, navigation_node::TYPE_SETTING, null,
-                        'guidegrades');
+                        'cgguidegrades'); // ecastro ULPGC cg
                 break;
             case 'btec':
                 $url = new moodle_url('/report/componentgrades/btec.php', array('id' => $cm->course, 'modid' => $cm->id));
                 $navigation->add(get_string('btecgrades', 'report_componentgrades'), $url,
-                        navigation_node::TYPE_SETTING, null, 'btecgrades');
+                        navigation_node::TYPE_SETTING, null, 'cgbtecgrades'); // ecastro ULPGC cg
             break;
         }
     }

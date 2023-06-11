@@ -4,6 +4,10 @@ moodle-theme_boost_union
 Changes
 -------
 
+### Unreleased
+
+* 2023-05-11 - Feature: Allow the admin to upload custom icons for activities and resources, solves #175.
+
 ### v4.1-r7
 
 * 2023-04-20 - Feature: Course category breadcrumbs in course header, solves #284.

@@ -141,7 +141,7 @@ switch ($action) {
 
             foreach($groupmemberroles as $roleid=>$roledata) {
                 $shortroledata = new stdClass();
-                $shortroledata->name = $roledata->name;
+                $shortroledata->name = html_entity_decode($roledata->name, ENT_QUOTES, 'UTF-8');
                 $shortroledata->users = array();
                 foreach($roledata->users as $member) {
                     $shortmember = new stdClass();
@@ -247,7 +247,7 @@ if ($groups) {
     foreach ($groups as $group) {
         $selected = false;
         $usercount = $DB->count_records('groups_members', array('groupid' => $group->id));
-        $groupname = format_string($group->name) . ' (' . $usercount . ')';
+        $groupname = format_string($group->name, true, ['context' => $context, 'escape' => false]) . ' (' . $usercount . ')';
         $style = !$ulpgcgroups ? '': local_ulpgcgroups_group_style($group, $groupingid, $exclusive, $conflictgroups, $colorrestricted, $controlledgroups);
         if (in_array($group->id, $groupids)) {
             $selected = true;
@@ -302,8 +302,9 @@ if ($singlegroup) {
 
                 $users[] = $shortmember;
             }
+
             $members[] = (object)[
-                'role' => s($roledata->name),
+                'role' => html_entity_decode($roledata->name, ENT_QUOTES, 'UTF-8'),
                 'rolemembers' => $users
             ];
         }

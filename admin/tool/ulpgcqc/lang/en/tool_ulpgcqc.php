@@ -40,7 +40,10 @@ $string['enablecheck1_desc'] = 'To do later XXX';
 $string['enablecheck2'] = 'Enable check 2';
 $string['enablecheck2_desc'] = 'To do later XXX';
 
-$string['qcreport'] = 'Check report';
-$string['qcreport_config'] = 'Config';
-$string['qcreport_courses'] = 'Courses';
-$string['qcreport_users'] = 'Users';
+$string['qcreport'] = 'Check summary';
+$string['qcreport_summary'] = 'Checks summary';
+$string['qcreport_config'] = 'Configuration checks';
+$string['qcreport_courses'] = 'Courses checks';
+$string['qcreport_users'] = 'Users checks';
+
+

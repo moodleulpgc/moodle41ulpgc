@@ -1,6 +1,7 @@
 Clazz.declarePackage ("J.shape");
 Clazz.load (["J.shape.Shape"], "J.shape.MeshCollection", ["java.util.Hashtable", "JU.AU", "$.Lst", "$.P3", "$.PT", "$.SB", "JS.T", "J.shape.Mesh", "JU.C", "$.Escape", "$.Logger", "JV.StateManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
+this.jvxlData = null;
 this.meshCount = 0;
 this.meshes = null;
 this.currentMesh = null;
@@ -106,24 +107,8 @@ this.setMesh (id);
 this.checkExplicit (id);
 return;
 }if ("title" === propertyName) {
-if (value == null) {
-this.title = null;
-} else if (Clazz.instanceOf (value, String)) {
-var nLine = 1;
-var lines = value;
-for (var i = lines.length; --i >= 0; ) if (lines.charAt (i) == '|') nLine++;
-
-this.title =  new Array (nLine);
-nLine = 0;
-var i0 = -1;
-for (var i = 0; i < lines.length; i++) if (lines.charAt (i) == '|') {
-this.title[nLine++] = lines.substring (i0 + 1, i);
-i0 = i;
-}
-this.title[nLine] = lines.substring (i0 + 1);
-} else {
-this.title = value;
-}return;
+this.setTitle (value);
+return;
 }if ("delete" === propertyName) {
 this.deleteMesh ();
 return;
@@ -210,6 +195,26 @@ if (tok2 != 0) this.setTokenProperty (tok2, test, true);
 return;
 }this.setPropS (propertyName, value, bs);
 }, "~S,~O,JU.BS");
+Clazz.defineMethod (c$, "setTitle", 
+function (value) {
+if (Clazz.instanceOf (value, String)) {
+var nLine = 1;
+var lines = value;
+if (lines.length > 0) {
+for (var i = lines.length; --i >= 0; ) if (lines.charAt (i) == '|') nLine++;
+
+this.title =  new Array (nLine);
+nLine = 0;
+var i0 = -1;
+for (var i = 0; i < lines.length; i++) if (lines.charAt (i) == '|') {
+this.title[nLine++] = lines.substring (i0 + 1, i);
+i0 = i;
+}
+this.title[nLine] = lines.substring (i0 + 1);
+return this.title;
+}value = null;
+}return (this.title = (value == null ? null : value));
+}, "~O");
 Clazz.defineMethod (c$, "checkExplicit", 
 function (id) {
 if (this.explicitID) return;
@@ -343,8 +348,18 @@ if (info != null) sb.append (info).appendC ('\n');
 return sb.toString ();
 }if (property === "values") return this.getValues (m);
 if (property === "vertices") return this.getVertices (m);
-if (property === "info") return (m == null ? null : m.getInfo (false));
-if (property === "data") return (m == null ? null : m.getInfo (true));
+if (property === "info") {
+if (m == null) return null;
+var info = m.getInfo (false);
+if (info != null && this.jvxlData != null) {
+var ss = this.jvxlData.jvxlFileTitle;
+if (ss != null) info.put ("jvxlFileTitle", ss.trim ());
+ss = this.jvxlData.jvxlFileSource;
+if (ss != null) info.put ("jvxlFileSource", ss);
+ss = this.jvxlData.jvxlFileMessage;
+if (ss != null) info.put ("jvxlFileMessage", ss.trim ());
+}return info;
+}if (property === "data") return (m == null ? null : m.getInfo (true));
 return null;
 }, "~S,~N");
 Clazz.defineMethod (c$, "getValues", 

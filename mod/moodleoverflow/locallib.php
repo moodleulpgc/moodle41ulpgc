@@ -143,11 +143,8 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
     // Check some capabilities.
     $canstartdiscussion = moodleoverflow_user_can_post_discussion($moodleoverflow, $cm, $context);
     $canviewdiscussions = has_capability('mod/moodleoverflow:viewdiscussion', $context);
-    
-    $canreviewposts = 0;
-    if($moodleoverflow->needsreview) {
-        $canreviewposts = has_capability('mod/moodleoverflow:reviewpost', $context);
-    }
+    $canreviewposts = has_capability('mod/moodleoverflow:reviewpost', $context);
+    $canseeuserstats = has_capability('mod/moodleoverflow:viewanyrating', $context);
 
     // Print a button if the user is capable of starting
     // a new discussion or if the selfenrol is aviable.
@@ -159,6 +156,33 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
         $button->formid = 'newdiscussionform';
         echo $OUTPUT->render($button);
     }
+
+    // Print a button if the user is capable of seeing the user stats.
+    if ($canseeuserstats && get_config('moodleoverflow', 'showuserstats')) {
+        $userstatsbuttontext = get_string('seeuserstats', 'moodleoverflow');
+        $userstatsbuttonurl = new moodle_url('/mod/moodleoverflow/userstats.php', ['id' => $cm->id,
+                                                                           'courseid' => $moodleoverflow->course,
+                                                                           'mid' => $moodleoverflow->id]);
+        $userstatsbutton = new single_button($userstatsbuttonurl, $userstatsbuttontext, 'get');
+        $userstatsbutton->class = 'singlebutton align-middle m-2';
+        echo $OUTPUT->render($userstatsbutton);
+    }
+
+    // Get all the recent discussions the user is allowed to see.
+    $discussions = moodleoverflow_get_discussions($cm, $page, $perpage);
+
+    // If we want paging.
+    if ($page != -1) {
+
+        // Get the number of discussions.
+        $numberofdiscussions = moodleoverflow_get_discussions_count($cm);
+
+        // Show the paging bar.
+        echo $OUTPUT->paging_bar($numberofdiscussions, $page, $perpage, "view.php?id=$cm->id");
+    }
+
+    // Get the number of replies for each discussion.
+    $replies = moodleoverflow_count_discussion_replies($cm);
 
     // Check whether the moodleoverflow instance can be tracked and is tracked.
     if ($cantrack = \mod_moodleoverflow\readtracking::moodleoverflow_can_track_moodleoverflows($moodleoverflow)) {
@@ -248,27 +272,31 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
         }
 
         // Check if the question owner marked the question as helpful.
-        $statusstarter = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_solved($discussion->discussion, false);
+        $markedhelpful = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_solved($discussion->discussion, false);
         $preparedarray[$i]['starterlink'] = null;
-        if ($statusstarter) {
+        if ($markedhelpful) {
             $link = '/mod/moodleoverflow/discussion.php?d=';
+            //$markedhelpful = $markedhelpful[array_key_first($markedhelpful)]; // ecastro ULPGC already done by reset in discussion_is_solved
+
             $preparedarray[$i]['starterlink'] = new moodle_url($link .
-                $statusstarter->discussionid . '#p' . $statusstarter->postid);
+                $markedhelpful->discussionid . '#p' . $markedhelpful->postid);
         }
 
         // Check if a teacher marked a post as solved.
-        $statusteacher = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_solved($discussion->discussion, true);
+        $markedsolution = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_solved($discussion->discussion, true);
         $preparedarray[$i]['teacherlink'] = null;
-        if ($statusteacher) {
+        if ($markedsolution) {
             $link = '/mod/moodleoverflow/discussion.php?d=';
+            //$markedsolution = $markedsolution[array_key_first($markedsolution)]; // ecastro ULPGC already done by reset in discussion_is_solved
+
             $preparedarray[$i]['teacherlink'] = new moodle_url($link .
-                $statusteacher->discussionid . '#p' . $statusteacher->postid);
+                $markedsolution->discussionid . '#p' . $markedsolution->postid);
         }
 
         // Check if a single post was marked by the question owner and a teacher.
         $statusboth = false;
-        if ($statusstarter  && $statusteacher) {
-            if ($statusstarter->postid == $statusteacher->postid) {
+        if ($markedhelpful  && $markedsolution) {
+            if ($markedhelpful->postid == $markedsolution->postid) {
                 $statusboth = true;
             }
         }
@@ -311,7 +339,8 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
             }
         } else {
             // Get his picture, his name and the link to his profile.
-            $preparedarray[$i]['picture'] = $OUTPUT->user_picture($startuser, array('courseid' => $moodleoverflow->course, 'link' => false));
+            $preparedarray[$i]['picture'] = $OUTPUT->user_picture($startuser, array('courseid' => $moodleoverflow->course,
+                                                                                    'link' => false));
             $preparedarray[$i]['username'] = fullname($startuser, has_capability('moodle/site:viewfullnames', $context));
             $preparedarray[$i]['userlink'] = $CFG->wwwroot . '/user/view.php?id=' .
                 $discussion->userid . '&course=' . $moodleoverflow->course;
@@ -379,8 +408,8 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
         $preparedarray[$i]['linktopopup'] = $linktopopup;
 
         // Add all created data to an array.
-        $preparedarray[$i]['statusstarter'] = $statusstarter;
-        $preparedarray[$i]['statusteacher'] = $statusteacher;
+        $preparedarray[$i]['markedhelpful'] = $markedhelpful;
+        $preparedarray[$i]['markedsolution'] = $markedsolution;
         $preparedarray[$i]['statusboth'] = $statusboth;
         $preparedarray[$i]['votes'] = $votes;
         
@@ -435,6 +464,10 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
 /**
  * Prints a popup with a menu of other moodleoverflow in the course.
  * Menu to move a topic to another moodleoverflow forum.
+ *
+ * @param object $course
+ * @param object $cm
+ * @param int $movetopopup forum where forum list is being printed.
  */
 function moodleoverflow_print_forum_list($course, $cm, $movetopopup) {
     global $CFG, $DB, $PAGE;
@@ -471,6 +504,7 @@ function moodleoverflow_print_forum_list($course, $cm, $movetopopup) {
     $mustachedata->currentdiscussion = $currentdiscussion->name;
     echo $renderer->render_forum_list($mustachedata);
 }
+
 
 /**
  * Returns an array of counts of replies for each discussion.
@@ -920,8 +954,10 @@ function moodleoverflow_user_can_post($modulecontext, $posttoreplyto, $considerr
  * @param stdClass $discussion     The discussion object
  * @param stdClass $post           The post object
  * @param boolean  $canreply       Whether the user can reply in this discussion
+ * @param bool     $multiplemarks  The setting of multiplemarks (default: multiplemarks are not allowed)
  */
-function moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discussion, $post, $canreply) { // ecastro ULPGC canreply
+
+function moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discussion, $post, $canreply, $multiplemarks = false) { // ecastro ULPGC canreply
     global $USER, $OUTPUT;
 
     // Check if the current is the starter of the discussion.
@@ -992,7 +1028,7 @@ function moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discuss
 
     // Print the starting post.
     echo moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $course,
-        $ownpost, $canreply, false, '', '', $postread, true, $istracked, 0, $usermapping); // ecastro ULPGC canreply
+        $ownpost, $canreply, false, '', '', $postread, true, $istracked, 0, $usermapping, $multiplemarks); // ecastro ULPGC canreply
 
     // Print answer divider.
     if ($answercount == 1) {
@@ -1005,7 +1041,8 @@ function moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discuss
     echo '<div id="moodleoverflow-posts">';
 
     // Print the other posts.
-    echo moodleoverflow_print_posts_nested($course, $cm, $moodleoverflow, $discussion, $post, $canreply, $istracked, $posts, null, $usermapping);  // ecastro ULPGC canreply
+    echo moodleoverflow_print_posts_nested($course, $cm, $moodleoverflow, $discussion, $post, 
+                                           $canreply, $istracked, $posts, null, $usermapping, $multiplemarks);  // ecastro ULPGC canreply
 
     echo '</div>';
 }
@@ -1074,8 +1111,9 @@ function moodleoverflow_get_all_discussion_posts($discussionid, $tracking, $modc
         // Assign the ratings to the matching posts.
         $posts[$postid]->upvotes = $discussionratings[$post->id]->upvotes;
         $posts[$postid]->downvotes = $discussionratings[$post->id]->downvotes;
-        $posts[$postid]->statusstarter = $discussionratings[$post->id]->ishelpful;
-        $posts[$postid]->statusteacher = $discussionratings[$post->id]->issolved;
+        $posts[$postid]->votesdifference = $posts[$postid]->upvotes - $posts[$postid]->downvotes;
+        $posts[$postid]->markedhelpful = $discussionratings[$post->id]->ishelpful;
+        $posts[$postid]->markedsolution = $discussionratings[$post->id]->issolved;
     }
 
     // Order the answers by their ratings.
@@ -1134,6 +1172,7 @@ function moodleoverflow_get_all_discussion_posts($discussionid, $tracking, $modc
  * @param bool $iscomment
  * @param array $usermapping
  * @param int $level
+ * @param bool $multiplemarks setting of multiplemarks
  * @return void|null
  * @throws coding_exception
  * @throws dml_exception
@@ -1143,7 +1182,7 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
                                    $ownpost = false, $canreply = false, $link = false,
                                    $footer = '', $highlight = '', $postisread = null,
                                    $dummyifcantsee = true, $istracked = false,
-                                   $iscomment = false, $usermapping = [], $level = 0) {  // ecastro ULPGC canreply
+                                   $iscomment = false, $usermapping = [], $level = 0, $multiplemarks = false) {  // ecastro ULPGC canreply
     global $USER, $CFG, $OUTPUT, $PAGE;
 
     // Require the filelib.
@@ -1200,8 +1239,10 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
         $str->markread = get_string('markread', 'moodleoverflow');
         $str->markunread = get_string('markunread', 'moodleoverflow');
         $str->marksolved = get_string('marksolved', 'moodleoverflow');
+        $str->alsomarksolved = get_string('alsomarksolved', 'moodleoverflow');
         $str->marknotsolved = get_string('marknotsolved', 'moodleoverflow');
         $str->markhelpful = get_string('markhelpful', 'moodleoverflow');
+        $str->alsomarkhelpful = get_string('alsomarkhelpful', 'moodleoverflow');
         $str->marknothelpful = get_string('marknothelpful', 'moodleoverflow');
     }
 
@@ -1240,6 +1281,14 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
     $permalink = new moodle_url($discussionlink);
     $permalink->set_anchor('p' . $post->id);
 
+    // Check if multiplemarks are allowed, if so, check if there are already marked posts.
+    $helpfulposts = false;
+    $solvedposts = false;
+    if ($multiplemarks) {
+        $helpfulposts = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_solved($discussion->id, false);
+        $solvedposts = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_solved($discussion->id, true);
+    }
+
     // If the user has started the discussion, he can mark the answer as helpful.
     /* // ecastro ULPGC removed checking for parent comment
     $canmarkhelpful = (($USER->id == $discussion->userid) && ($USER->id != $post->userid) &&
@@ -1249,21 +1298,30 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
         !empty($post->parent));
     
     if ($canmarkhelpful) {
-
         // When the post is already marked, remove the mark instead.
         $link = '/mod/moodleoverflow/discussion.php';
-        if ($post->statusstarter) {
+        if ($post->markedhelpful) {
             $commands[] = html_writer::tag('a', $str->marknothelpful,
                     array('class' => 'markhelpful onlyifreviewed', 'role' => 'button', 'data-moodleoverflow-action' => 'helpful'));
         } else {
-            $commands[] = html_writer::tag('a', $str->markhelpful,
+            // If there are already marked posts, change the string of the button.
+            if ($helpfulposts) {
+                $commands[] = html_writer::tag('a', $str->alsomarkhelpful,
                     array('class' => 'markhelpful onlyifreviewed', 'role' => 'button', 'data-moodleoverflow-action' => 'helpful'));
+            } else {
+                $commands[] = html_writer::tag('a', $str->markhelpful,
+                    array('class' => 'markhelpful onlyifreviewed', 'role' => 'button', 'data-moodleoverflow-action' => 'helpful'));
+            }
         }
     }
 
     // A teacher can mark an answer as solved.
     /*
     $canmarksolved = (($iscomment != $post->parent) AND !empty($post->parent) AND capabilities::has(capabilities::MARK_SOLVED, $modulecontext));
+=======
+    $canmarksolved = (($iscomment != $post->parent) && !empty($post->parent)
+                                                    && capabilities::has(capabilities::MARK_SOLVED, $modulecontext));
+
     if ($canmarksolved) {
     */
     $canmarksolved = (!empty($post->parent) AND capabilities::has(capabilities::MARK_SOLVED, $modulecontext));
@@ -1271,12 +1329,18 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
 
         // When the post is already marked, remove the mark instead.
         $link = '/mod/moodleoverflow/discussion.php';
-        if ($post->statusteacher) {
+        if ($post->markedsolution) {
             $commands[] = html_writer::tag('a', $str->marknotsolved,
                     array('class' => 'marksolved onlyifreviewed', 'role' => 'button', 'data-moodleoverflow-action' => 'solved'));
         } else {
-            $commands[] = html_writer::tag('a', $str->marksolved,
+            // If there are already marked posts, change the string of the button.
+            if ($solvedposts) {
+                $commands[] = html_writer::tag('a', $str->alsomarksolved,
                     array('class' => 'marksolved onlyifreviewed', 'role' => 'button', 'data-moodleoverflow-action' => 'solved'));
+            } else {
+                $commands[] = html_writer::tag('a', $str->marksolved,
+                    array('class' => 'marksolved onlyifreviewed', 'role' => 'button', 'data-moodleoverflow-action' => 'solved'));
+            }
         }
     }
 
@@ -1332,15 +1396,15 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
     $mustachedata->isread = false;
     $mustachedata->isfirstunread = false;
     $mustachedata->isfirstpost = false;
-    $mustachedata->iscomment = (!empty($post->parent) AND ($iscomment == $post->parent));
+    $mustachedata->iscomment = (!empty($post->parent) && ($iscomment == $post->parent));
     $mustachedata->permalink = $permalink;
 
     // Get the ratings.
     $mustachedata->votes = $post->upvotes - $post->downvotes;
 
     // Check if the post is marked.
-    $mustachedata->statusstarter = $post->statusstarter;
-    $mustachedata->statusteacher = $post->statusteacher;
+    $mustachedata->markedhelpful = $post->markedhelpful;
+    $mustachedata->markedsolution = $post->markedsolution;
 
     // Did the user rated this post?
     $rating = \mod_moodleoverflow\ratings::moodleoverflow_user_rated($post->id);
@@ -1383,10 +1447,13 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
     }
     
     if ($post->statusstarter) {
-        $postclass .= ' statusstarter';
+        $postclass .= ' statusstarter'; // ecastro ULPGC ??? still needed???
     }
-    if ($post->statusteacher) {
-        $postclass .= ' statusteacher';
+    if ($post->markedhelpful) {
+        $postclass .= ' markedhelpful';
+    }
+    if ($post->markedsolution) {
+        $postclass .= ' markedsolution';
     }
     $mustachedata->postclass = $postclass;
 
@@ -1500,13 +1567,14 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
  * @param array  $posts          Array of posts within the discussion
  * @param bool   $iscomment      Whether the current post is a comment
  * @param array $usermapping
+ * @param bool  $multiplemarks
  * @return string
  * @throws coding_exception
  * @throws dml_exception
  * @throws moodle_exception
  */
 function moodleoverflow_print_posts_nested($course, &$cm, $moodleoverflow, $discussion, $parent,
-                                           $canreply, $istracked, $posts, $iscomment = null, $usermapping = []) { // ecastro ULPGC canreply
+                                           $canreply, $istracked, $posts, $iscomment = null, $usermapping = [], $multiplemarks = false) { // ecastro ULPGC canreply
     global $USER;
 
     // Prepare the output.
@@ -1548,11 +1616,11 @@ function moodleoverflow_print_posts_nested($course, &$cm, $moodleoverflow, $disc
 
             // Print the answer.
             $output .= moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $course,
-                $ownpost, $canreply, false, '', '', $postread, true, $istracked, $parentid, $usermapping, $level);
+                $ownpost, $canreply, false, '', '', $postread, true, $istracked, $parentid, $usermapping, $level, $multiplemarks);
 
             // Print its children.
             $output .= moodleoverflow_print_posts_nested($course, $cm, $moodleoverflow,
-                $discussion, $post, $canreply, $istracked, $posts, $parentid, $usermapping);
+                $discussion, $post, $canreply, $istracked, $posts, $parentid, $usermapping, $multiplemarks);
 
             // End the div.
             $output .= "</div>\n";

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Moove';
 $string['configtitle'] = 'Moove';
 $string['choosereadme'] = 'Moove is a modern highly-customisable theme. This theme is intended to be used directly, or as a parent theme when creating new themes utilising Bootstrap 4.';
-
+$string['dontchange'] = 'Do not change anything';
 $string['currentinparentheses'] = '(current)';
 $string['region-side-pre'] = 'Right';
 $string['prev_section'] = 'Previous section';
@@ -228,6 +228,12 @@ $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can 
 $string['mycoursesremotessetting'] = 'My remote courses';
 $string['mycoursesremotessetting_desc'] = 'If specified a value, then those remote courses retrieved by an existing instance of Remote course blocks will be added to My courses list. 
 This option allows to select which instance of Remote courses to use, or none at all (no remote course list adedd to My courses list). ';
+// ... Section: Breadcrumbs.
+$string['breadcrumbsheading'] = 'Breadcrumbs';
+// ... ... Setting: Course category breadcrumb.
+$string['categorybreadcrumbs'] = 'Display the category breadcrumbs in the course header';
+$string['categorybreadcrumbs_desc'] = 'By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.<br/><br/>
+Please note: The "Do not change anything" option does not change anything about the course category breadcrumbs like they are presented by Moodle core. Whereas the "No" option takes care that course category breadcrumbs are never shown at all. This might be a difference as Boost in Moodle core might indeed show course category breadcrumbs beginning on deeper nested course category levels (which the Boost Union developers assess to be a glitch).';
 
 // ... Section: Navigation.
 $string['navigationheading'] = 'Navigation';

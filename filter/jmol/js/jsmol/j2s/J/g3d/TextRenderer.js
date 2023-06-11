@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.g3d");
-Clazz.load (["java.util.Hashtable"], "J.g3d.TextRenderer", ["JU.CU"], function () {
+Clazz.load (["java.util.Hashtable"], "J.g3d.TextRenderer", ["JU.CU", "J.g3d.Graphics3D"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.height = 0;
 this.ascent = 0;
@@ -24,9 +24,8 @@ var offset = font3d.getAscent ();
 y -= offset;
 var text3d = J.g3d.TextRenderer.getPlotText3D (x, y, g3d, text, font3d, antialias);
 if (text3d.isInvalid) return text3d.width;
-if (antialias && (argb & 0xC0C0C0) == 0) {
-argb = argb | 0x040404;
-}var textHeight = text3d.height;
+if (antialias) argb = J.g3d.Graphics3D.fixTextImageRGB (argb);
+var textHeight = text3d.height;
 var textWidth = text3d.width;
 var tmap = text3d.tmap;
 var g = g3d;

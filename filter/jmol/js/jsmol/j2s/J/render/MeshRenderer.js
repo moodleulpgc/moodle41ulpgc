@@ -12,6 +12,7 @@ this.imageFontScaling = 0;
 this.scalePixelsPerMicron = 0;
 this.diameter = 0;
 this.width = 0;
+this.allowDashed = false;
 this.isTranslucent = false;
 this.frontOnly = false;
 this.isShell = false;
@@ -57,9 +58,13 @@ this.latticeOffset.set (0, 0, 0);
 if (mesh.modelIndex < 0 || mesh.lattice == null && mesh.symops == null) {
 for (var i = this.vertexCount; --i >= 0; ) if (this.vertices[i] != null) this.tm.transformPtScr (this.vertices[i], this.screens[i]);
 
+if (mesh.haveXyPoints) {
+for (var i = this.vertexCount; --i >= 0; ) if (this.vertices[i] != null) this.tm.transformPtScrT32D (this.vertices[i], this.p3Screens[i]);
+
+} else {
 for (var i = this.vertexCount; --i >= 0; ) if (this.vertices[i] != null) this.tm.transformPtScrT3 (this.vertices[i], this.p3Screens[i]);
 
-this.render2 (this.isExport);
+}this.render2 (this.isExport);
 } else {
 var vTemp =  new JU.P3 ();
 var unitcell = mesh.getUnitCell ();
@@ -72,7 +77,7 @@ var c = mesh.colix;
 for (var j = max; --j >= 0; ) {
 var m = mesh.symops[j];
 if (m == null) continue;
-if (mesh.colorType == 1296041986) mesh.colix = mesh.symopColixes[j];
+if (mesh.colorType == 1296041985) mesh.colix = mesh.symopColixes[j];
 var normals = mesh.symopNormixes[j];
 var needNormals = (normals == null);
 verticesTemp = (needNormals ?  new Array (this.vertexCount) : null);
@@ -317,13 +322,22 @@ return;
 }} else {
 this.pt1f.ave (vA, vB);
 this.tm.transformPtScr (this.pt1f, this.pt1i);
+if (this.width < 0 && this.allowDashed) {
+this.diameter = -1;
+} else {
 var mad = Clazz.doubleToInt (Math.floor (Math.abs (this.width) * 1000));
 this.diameter = Clazz.floatToInt (this.vwr.tm.scaleToScreen (this.pt1i.z, mad));
-}if (this.diameter == 0) this.diameter = 1;
-this.tm.transformPt3f (vA, this.pt1f);
-this.tm.transformPt3f (vB, this.pt2f);
+}}if (this.diameter == 0) this.diameter = 1;
+this.tm.transformPt2Df (vA, this.pt1f);
+this.tm.transformPt2Df (vB, this.pt2f);
+if (this.diameter == -1) {
+this.g3d.drawLineAB (this.pt1f, this.pt2f);
+} else if (this.diameter < 0) {
+var idash = -this.diameter;
+this.g3d.drawDashedLineBits (idash << 1, idash, this.pt1f, this.pt2f);
+} else {
 this.g3d.fillCylinderBits (endCap, this.diameter, this.pt1f, this.pt2f);
-}, "~N,~N,~B,JU.T3,JU.T3,JU.P3i,JU.P3i");
+}}, "~N,~N,~B,JU.T3,JU.T3,JU.P3i,JU.P3i");
 Clazz.defineMethod (c$, "exportSurface", 
 function (colix) {
 this.mesh.normals = this.mesh.getNormals (this.vertices, null);

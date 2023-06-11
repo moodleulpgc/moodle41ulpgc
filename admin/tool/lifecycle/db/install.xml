@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/lifecycle/db" VERSION="20211122" COMMENT="XMLDB file for Moodle tool/lifecycle"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_lifecycle_process" COMMENT="table containing the state of all courses currently within a lifecycle process">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true" COMMENT="id of the process"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="course id"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the workflow"/>
+        <FIELD NAME="stepindex" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="sortindex of the step within the workflow"/>
+        <FIELD NAME="waiting" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="tells if the process is in status waiting"/>
+        <FIELD NAME="timestepchanged" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="unix timestamp - time the step instance of the process was changed last."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Foreign key on course table"/>
+        <KEY NAME="workflowid_fk" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_lifecycle_workflow" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_delayed" COMMENT="List of courses, for which the next check is delayed until a certain timestamp.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course"/>
+        <FIELD NAME="delayeduntil" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="The timestamp till when the course is delayed"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Foreign key on course table"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_trigger" COMMENT="Trigger subplugins for the life cycle">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instancename" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="instancename of the trigger"/>
+        <FIELD NAME="subpluginname" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="name of the subplugin"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the workflow"/>
+        <FIELD NAME="sortindex" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="Order in which the triggers are checked for the workflow."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="workflowid_fk" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_lifecycle_workflow" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_step" COMMENT="Step subplugins for the life cycle">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instancename" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="instancename of the step"/>
+        <FIELD NAME="subpluginname" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="name of the subplugin"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the workflow"/>
+        <FIELD NAME="sortindex" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="Order within the workflow in which the steps are executed"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="workflowid_fk" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_lifecycle_workflow" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_settings" COMMENT="Settings for step instances">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="instanceid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the step instance"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="7" NOTNULL="true" SEQUENCE="false" COMMENT="Type of the settings instance 'step' or 'trigger'"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="name of the settings field"/>
+        <FIELD NAME="value" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="value of the setting"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="instanceid_fk" TYPE="foreign" FIELDS="instanceid" REFTABLE="tool_lifecycle_step" REFFIELDS="id" COMMENT="Foreignkey for step instance"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_procdata" COMMENT="Stores the process data in a key/value-store">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="processid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="id of the process"/>
+        <FIELD NAME="stepid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="id of the step"/>
+        <FIELD NAME="subpluginname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="name of the subplugin"/>
+        <FIELD NAME="keyname" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="key of the key/value-pair"/>
+        <FIELD NAME="value" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false" COMMENT="value of the key/value-pair"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="processid_fk" TYPE="foreign" FIELDS="processid" REFTABLE="tool_lifecycle_process" REFFIELDS="id" COMMENT="Foreign key on process table"/>
+        <KEY NAME="stepid_fk" TYPE="foreign" FIELDS="stepid" REFTABLE="tool_lifecycle_step" REFFIELDS="id" COMMENT="Foreign key on step table"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_backups" COMMENT="Saves the location of course backups and the relevant information of the course.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="id of the course the backup belongs to"/>
+        <FIELD NAME="fullname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The fullname of the course"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Shortname of the course"/>
+        <FIELD NAME="backupfile" TYPE="char" LENGTH="120" NOTNULL="false" SEQUENCE="false" COMMENT="Name of the backup file"/>
+        <FIELD NAME="backupcreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="timestamp the backup was created"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_workflow" COMMENT="Workflow definitions for processes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Title of a workflow"/>
+        <FIELD NAME="timeactive" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="timestamp the workflow was set active"/>
+        <FIELD NAME="timedeactive" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="timestamp the workflow was deactivated"/>
+        <FIELD NAME="sortindex" TYPE="int" LENGTH="3" NOTNULL="false" SEQUENCE="false" COMMENT="Sortindex for active workflows"/>
+        <FIELD NAME="manual" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Specifies for active workflows if the workflow is manually or automatically triggered. True, if manual. False, if automatic."/>
+        <FIELD NAME="displaytitle" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="rollbackdelay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="finishdelay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="delayforallworkflows" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_delayed_workf" COMMENT="List of courses and workflows, for which the next check is delayed until a certain timestamp.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="delayeduntil" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="The timestamp till when the course is delayed with the workflow"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="workflowid_fk" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_lifecycle_workflow" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_action_log" COMMENT="Logs for interactions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="processid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="stepindex" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="time" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="processid_fk" TYPE="foreign" FIELDS="processid" REFTABLE="tool_lifecycle_process" REFFIELDS="id"/>
+        <KEY NAME="workflowid_fk" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_lifecycle_workflow" REFFIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_lifecycle_proc_error" COMMENT="table containing all errored lifecycle processes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="true" COMMENT="id of the process"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="course id"/>
+        <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="id of the workflow"/>
+        <FIELD NAME="stepindex" TYPE="int" LENGTH="5" NOTNULL="true" SEQUENCE="false" COMMENT="sortindex of the step within the workflow"/>
+        <FIELD NAME="waiting" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="tells if the process is in status waiting"/>
+        <FIELD NAME="timestepchanged" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="unix timestamp - time the step instance of the process was changed last."/>
+        <FIELD NAME="errormessage" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Message of the error"/>
+        <FIELD NAME="errortrace" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="errorhash" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Where the error occured in the form 'path/to/filename.php:line'"/>
+        <FIELD NAME="errortimecreated" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" COMMENT="unix timestamp - time the error occured"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Foreign key on course table"/>
+        <KEY NAME="workflowid_fk" TYPE="foreign" FIELDS="workflowid" REFTABLE="tool_lifecycle_workflow" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

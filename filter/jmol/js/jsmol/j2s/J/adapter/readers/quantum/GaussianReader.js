@@ -387,10 +387,12 @@ JU.Logger.info ("Mulliken charges found for Model " + this.asc.atomSetCount);
 Clazz.defineMethod (c$, "readCSATensors", 
  function () {
 this.rd ();
-while (this.rd () != null && this.line.indexOf ("Isotropic") >= 0) {
+this.rd ();
+while (this.line != null && this.line.indexOf ("Isotropic") >= 0) {
 var iatom = this.parseIntAt (this.line, 0);
 var data = (this.rd () + this.rd () + this.rd ()).$plit ("=");
 this.addTensor (iatom, data);
+if (this.rd () != null && this.line.indexOf ("Eigen") >= 0) this.rd ();
 }
 this.appendLoadNote ("NMR shift tensors are available for model=" + (this.asc.iSet + 1) + "\n using \"ellipsoids set 'csa'.");
 });
@@ -410,7 +412,6 @@ System.out.println ("calc Tensor " + t + "calc isotropy=" + t.getInfo ("isotropy
 Clazz.defineMethod (c$, "readCouplings", 
  function () {
 var type = (this.line.indexOf (" K ") >= 0 ? "K" : "J");
-var i0 = this.asc.getLastAtomSetAtomIndex ();
 var n = this.asc.getLastAtomSetAtomCount ();
 var data =  Clazz.newFloatArray (n, n, 0);
 var k0 = 0;

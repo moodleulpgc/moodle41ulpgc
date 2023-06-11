@@ -48,7 +48,9 @@
         <div class="course-contacts">
             {{#contacts}}
                 <a href="{{config.wwwroot}}/user/profile.php?id={{{id}}}" class="contact" data-toggle="tooltip" title="{{{fullname}}}">
+                    {{#userpicture}} {{! ecastro disablepic}}
                     <img src="{{{userpicture}}}" class="rounded-circle" alt="{{{fullname}}}">
+                    {{/userpicture}}
                     <div class="info">
                         <p class="name">{{{fullname}}}</p>
                         <p class="role">{{{role}}}</p>

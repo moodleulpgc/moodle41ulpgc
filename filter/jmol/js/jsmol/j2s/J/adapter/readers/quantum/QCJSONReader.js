@@ -1,10 +1,9 @@
 Clazz.declarePackage ("J.adapter.readers.quantum");
-Clazz.load (["J.adapter.readers.quantum.MoldenReader"], "J.adapter.readers.quantum.QCJSONReader", ["java.lang.Double", "$.Float", "java.util.Arrays", "$.Hashtable", "JU.AU", "$.Lst", "$.SB", "J.adapter.readers.quantum.BasisFunctionReader", "J.api.JmolAdapter", "JU.Logger", "org.qcschema.QCSchemaUnits"], function () {
+Clazz.load (["J.adapter.readers.quantum.MoldenReader"], "J.adapter.readers.quantum.QCJSONReader", ["java.lang.Double", "$.Float", "java.util.Hashtable", "JU.AU", "$.Lst", "$.SB", "J.api.JmolAdapter", "JU.Logger", "org.qcschema.QCSchemaUnits"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.job = null;
 this.jobCount = 0;
 this.modelCount = 0;
-this.$haveEnergy = true;
 this.lastBasisID = null;
 Clazz.instantialize (this, arguments);
 }, J.adapter.readers.quantum, "QCJSONReader", J.adapter.readers.quantum.MoldenReader);
@@ -81,19 +80,15 @@ atom.atomName = (atom_names == null ? sym : atom_names[i]);
 atom.elementNumber = (atomNumbers == null ? J.api.JmolAdapter.getElementNumber (sym) : atomNumbers[i]);
 }
 if (this.doReadMolecularOrbitals) {
-this.readMolecularOrbitals (J.adapter.readers.quantum.QCJSONReader.getMapSafely (step, "molecular_orbitals"));
+this.readMolecularOrbitalsQC (J.adapter.readers.quantum.QCJSONReader.getMapSafely (step, "molecular_orbitals"));
 this.clearOrbitals ();
 }this.applySymmetryAndSetTrajectory ();
 if (this.loadVibrations) {
-this.readFreqsAndModes (org.qcschema.QCSchemaUnits.getList (step, "vibrations"));
+this.readFreqsAndModesQC (org.qcschema.QCSchemaUnits.getList (step, "vibrations"));
 }}
 });
-Clazz.defineMethod (c$, "readFreqsAndModes", 
+Clazz.defineMethod (c$, "readFreqsAndModesQC", 
  function (vibrations) {
-var $private = Clazz.checkPrivateMethod (arguments);
-if ($private != null) {
-return $private.apply (this, arguments);
-}
 if (vibrations != null) {
 var n = vibrations.size ();
 for (var i = 0; i < n; i++) {
@@ -110,15 +105,11 @@ this.asc.addVibrationVector (j + i0, (vectors[pt++] * 0.5291772), (vectors[pt++]
 }
 }return true;
 }, "java.util.ArrayList");
-Clazz.defineMethod (c$, "readMolecularOrbitals", 
+Clazz.defineMethod (c$, "readMolecularOrbitalsQC", 
  function (molecular_orbitals) {
-var $private = Clazz.checkPrivateMethod (arguments);
-if ($private != null) {
-return $private.apply (this, arguments);
-}
 if (molecular_orbitals == null) return false;
 var moBasisID = molecular_orbitals.get ("basis_id").toString ();
-if (!this.readBasis (moBasisID)) return false;
+if (!this.readBasisQC (moBasisID)) return false;
 var isNormalized = molecular_orbitals.get ("__jmol_normalized");
 if (isNormalized != null && isNormalized.booleanValue ()) this.moData.put ("isNormalized", isNormalized);
 this.calculationType = molecular_orbitals.get ("__jmol_calculation_type");
@@ -141,7 +132,7 @@ if (this.filterMO ()) {
 var mo =  new java.util.Hashtable ();
 mo.put ("coefficients", coefs);
 if (Double.isNaN (energy)) {
-this.$haveEnergy = false;
+this.haveEnergy = false;
 } else {
 mo.put ("energy", Float.$valueOf (energy));
 }if (!Double.isNaN (occupancy)) mo.put ("occupancy", Float.$valueOf (occupancy));
@@ -155,7 +146,7 @@ if (this.debugging) JU.Logger.debug ("read " + this.orbitals.size () + " MOs");
 var units = org.qcschema.QCSchemaUnits.getList (molecular_orbitals, "orbitals_energy_units");
 var sunits = (units == null ? null : units.get (0).toString ());
 this.setMOs (sunits == null || sunits.equals ("?") ? "?" : sunits);
-if (this.$haveEnergy && this.doSort) this.sortMOs ();
+if (this.haveEnergy && this.doSort) this.sortMOs ();
 return false;
 }, "java.util.Map");
 Clazz.defineMethod (c$, "toFloatArray", 
@@ -165,7 +156,7 @@ for (var j = da.length; --j >= 0; ) fa[j] = da[j];
 
 return fa;
 }, "~A");
-Clazz.defineMethod (c$, "readBasis", 
+Clazz.defineMethod (c$, "readBasisQC", 
  function (moBasisID) {
 var moBasisData = J.adapter.readers.quantum.QCJSONReader.getMapSafely (this.job, "mo_bases");
 var moBasis = J.adapter.readers.quantum.QCJSONReader.getMapSafely (moBasisData, moBasisID);
@@ -182,12 +173,12 @@ listG = listS = org.qcschema.QCSchemaUnits.getList (moBasis, "slaters");
 JU.Logger.error ("gaussians/shells or slaters missing");
 return false;
 }if (listG === listS) {
-this.readSlaterBasis (listS);
+this.readSlaterBasisQC (listS);
 } else {
-this.readGaussianBasis (listG, listS);
+this.readGaussianBasisQC (listG, listS);
 }return true;
 }, "~S");
-Clazz.defineMethod (c$, "readSlaterBasis", 
+Clazz.defineMethod (c$, "readSlaterBasisQC", 
 function (listS) {
 this.nCoef = listS.size ();
 for (var i = 0; i < this.nCoef; i++) {
@@ -198,12 +189,8 @@ this.scaleSlaters = false;
 this.setSlaters (false);
 return true;
 }, "java.util.ArrayList");
-Clazz.defineMethod (c$, "readGaussianBasis", 
+Clazz.defineMethod (c$, "readGaussianBasisQC", 
  function (listG, listS) {
-var $private = Clazz.checkPrivateMethod (arguments);
-if ($private != null) {
-return $private.apply (this, arguments);
-}
 this.shells =  new JU.Lst ();
 for (var i = 0; i < listS.size (); i++) this.shells.addLast (org.qcschema.QCSchemaUnits.getIntArray (listS.get (i), null));
 
@@ -218,18 +205,6 @@ JU.Logger.info (garray.length + " gaussian primitives read");
 this.asc.setCurrentModelInfo ("moData", this.moData);
 return false;
 }, "java.util.ArrayList,java.util.ArrayList");
-Clazz.defineMethod (c$, "sortMOs", 
- function () {
-var $private = Clazz.checkPrivateMethod (arguments);
-if ($private != null) {
-return $private.apply (this, arguments);
-}
-var list = this.orbitals.toArray ( new Array (this.orbitals.size ()));
-java.util.Arrays.sort (list, Clazz.innerTypeInstance (J.adapter.readers.quantum.BasisFunctionReader.MOEnergySorter, this, null));
-this.orbitals.clear ();
-for (var i = 0; i < list.length; i++) this.orbitals.addLast (list[i]);
-
-});
 c$.getMapSafely = Clazz.defineMethod (c$, "getMapSafely", 
  function (map, key) {
 return (map == null ? null : map.get (key));

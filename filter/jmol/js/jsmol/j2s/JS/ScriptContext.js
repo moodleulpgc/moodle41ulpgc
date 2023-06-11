@@ -12,6 +12,8 @@ this.errorMessageUntranslated = null;
 this.errorType = null;
 this.executionPaused = false;
 this.executionStepping = false;
+this.isEditor = false;
+this.isEditorScript = false;
 this.functionName = null;
 this.iCommandError = -1;
 this.id = 0;
@@ -45,6 +47,7 @@ this.theToken = null;
 this.theTok = 0;
 this.pointers = null;
 this.why = null;
+this.privateFuncs = null;
 Clazz.instantialize (this, arguments);
 }, JS, "ScriptContext");
 Clazz.makeConstructor (c$, 

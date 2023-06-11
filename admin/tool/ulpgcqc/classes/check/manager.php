@@ -46,25 +46,29 @@ class manager {
      * @return array of check objects
      */
     public static function get_checks(string $type): array {
-        gloabl $CFG;
+        global $CFG;
 
         if (!in_array($type, self::TYPES)) {
             throw new \moodle_exception("Invalid check type '$type'");
         }
 
         $checks = [];
-        $checkfiles = get_directory_list($CFG->dirroot.'/admin/tool/ulpgcqc/classes/check/'.$type, '', false); )
+        $checkfiles = get_directory_list($CFG->dirroot.'/admin/tool/ulpgcqc/classes/check/'.$type, '', false); 
         foreach($checkfiles as $file) {
             $pathinfo = pathinfo($file);
             if(($pathinfo['extension'] == 'php') && (strpos($pathinfo['filename'], '_result') === false)) {
                 $checkclass = $type.'\\'.$pathinfo['filename'];
-                $checks[] = new $checkclass();
+                print_object("type: $type   |     ");
+                print_object($pathinfo);
+                print_object("class: $checkclass"); 
+                
+                //$checks[] = new $checkclass();
             }
         }
 
         // Any plugin can add status checks to this report by implementing a callback
         // <component>_status_checks() which returns a check object.
-        $morechecks = get_plugins_with_function($type'_checks', 'lib.php');
+        $morechecks = get_plugins_with_function($type.'_checks', 'lib.php');
         foreach ($morechecks as $plugintype => $plugins) {
             foreach ($plugins as $plugin => $pluginfunction) {
                 $result = $pluginfunction();

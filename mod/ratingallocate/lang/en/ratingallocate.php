@@ -47,10 +47,16 @@ $string['crontask'] = 'Automated allocation for Fair Allocation';
 $string['algorithmtimeout'] = 'Algorithm timeout';
 $string['configalgorithmtimeout'] = 'The time in seconds after which the algorithm is assumed to be stuck.
 The current run is terminated and marked as failed.';
+$string['algorithmforcebackground'] = 'Force calculation as background task';
+$string['configalgorithmforcebackground'] = 'Even if triggered manually by the user the distribution will always be calculated in the background.';
 $string['downloaduserfields'] = 'Additional user fields for download';
 $string['configdownloaduserfields'] =
         'When downloading a table with users in it, these fields may be shown in addition to the users\' first and last name.';
 $string['userid'] = 'User ID';
+$string['calendarstart'] = '{$a} opens';
+$string['calendarstop'] = '{$a} closes';
+$string['openafterclose'] = 'This activity must start before it ends.';
+$string['closebeforeopen'] = 'This activity must end after it begins.';
 // </editor-fold>
 // <editor-fold defaultstate="collapsed" desc="Rating Form for Users">
 $string['choicestatusheading'] = 'Status';
@@ -113,18 +119,21 @@ $string['algorithm_already_running'] =
         'Another instance of the allocation algorithm is already running. Please wait a few minutes and refresh the page.';
 $string['algorithm_scheduled_for_cron'] =
         'The allocation algorithm run is scheduled for immediate execution by the cron job. Please wait a few minutes and refresh the page.';
+$string['algorithm_now_scheduled_for_cron'] =
+        'The allocation algorithm run has now been scheduled for execution by the cron job. Please wait a few minutes and refresh the page.';
 $string['start_distribution'] = 'Run Allocation Algorithm';
 $string['confirm_start_distribution'] =
         'Running the algorithm will delete all existing allocations, if any. Are you sure to continue?';
 $string['delete_all_ratings'] = 'Delete all student ratings';
 $string['delete_all_ratings_explanation'] = 'Deletes all ratings that students have submitted so far and all allocations
         that may have been created based on these ratings. Use with caution.';
+$string['distribution_unallocated_already_running'] = 'The distribution of unallocated users is currently being processed. Please wait some time and reload the page to check if it has been finished.';
+$string['distributing_unallocated_users_started'] = 'The distribution of unallocated users has been started. Please wait some time and have a look at the distribution table.';
 $string['confirm_delete_all_ratings'] = 'Are you sure you want to delete all ratings students have submitted so far?';
 $string['error_deleting_all_insufficient_permission'] = 'You don\'t have the permission to do that';
 $string['error_deleting_all_no_rating_possible'] = 'You can\'t delete the ratings when the rating phase is already over';
 $string['success_deleting_all'] = 'Deleted all ratings';
 $string['unassigned_users'] = 'Unassigned Users';
-$string['unassigned_users_assigned'] = 'Unassigned users have been assigned as good as possible.';
 $string['invalid_dates'] = 'Dates are invalid. Starting date must be before ending date.';
 $string['invalid_publishdate'] = 'Publication date is invalid. Publication date must be after the end of rating.';
 $string['rated'] = 'rated {$a}';

@@ -6,7 +6,8 @@ function (out, level, txt, e) {
 if (out === System.err) System.out.flush ();
 if ((out != null) && ((txt != null) || (e != null))) {
 txt = (txt != null ? txt : "");
-out.println ((JU.Logger.logLevel () ? "[" + JU.Logger.getLevel (level) + "] " : "") + txt + (e != null ? ": " + e.toString () : ""));
+txt = (JU.Logger.logLevel () ? "[" + JU.Logger.getLevel (level) + "] " : "") + txt + (e != null ? ": " + e.toString () : "");
+out.println (txt);
 if (e != null) {
 var elements = e.getStackTrace ();
 if (elements != null) {
@@ -14,6 +15,7 @@ for (var i = 0; i < elements.length; i++) {
 out.println (elements[i].getClassName () + " - " + elements[i].getLineNumber () + " - " + elements[i].getMethodName ());
 }
 }}}if (out === System.err) System.err.flush ();
+return txt;
 }, "java.io.PrintStream,~N,~S,Throwable");
 Clazz.overrideMethod (c$, "debug", 
 function (txt) {

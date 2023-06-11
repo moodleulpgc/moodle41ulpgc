@@ -6,7 +6,7 @@
 }
 
 /*
-.badge-warning {
+// .badge-warning {
 	background-color: #000066;
 }
 */
@@ -123,6 +123,10 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     float: right;     
 }
 
+body:not(.format-site.course.path-site) .secondary-navigation .dropdown.dropdownmoremenu  {
+  display: none;  
+}
+
 .secondary-navigation .moremenu-toggles .menupanel {
   float: right;
   padding: 0.5rem 0.2rem;
@@ -193,6 +197,7 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   background-color: #f2f3f7 !important;
   border-top: 4px solid $primary ;
   padding-bottom: 1.0rem;
+  padding-top: 0.5rem;
 }
 
 
@@ -263,7 +268,7 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 }
 
 #page-footer .supportemail, #page-footer .logininfo, #page-footer .tool_dataprivacy {
-    margin: 0.5rem 0.1rem;
+    margin: 0 0.1rem;
 }
 
 #page-footer {
@@ -299,9 +304,55 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   padding: 0.25rem 0.8rem;
 }
 
+
+.dashboard-card .course-contacts .info {
+  display: flex;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .info {
+  line-height: 1.0;
+}
+
+.pagelayout-standard .dashboard-card .course-contacts .contact p {
+  margin-left: 0.4rem;
+  margin-bottom: 0;
+}
+
+.pagelayout-standard .dashboard-card .course-contacts .contact p.role {
+  color: #212529;
+  font-size: 80%;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .contact img, 
+.pagelayout-standard .dashboard-card .course-contacts .contact img {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dee2e6;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .contact, 
+.pagelayout-standard .dashboard-card .course-contacts .contact {
+  display: flex;
+  align-items: center;
+}
+
+
 /*---------------------------------------
  * rules: Course page.
  --------------------------------------*/
+
+#page-header {
+  margin: 0.75rem auto;
+}
+
+#page.drawers .main-inner {
+  padding-top: 0.2rem;
+}
+
+.course-content .single-section.general-section {
+  margin-top: 0;
+}
+
 .activity-instance.d-flex {
   min-width: 25%;
 }
@@ -337,6 +388,9 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   text-align: left;
 }
 
+.course-content  #section-0 {
+  padding-top: 0.2rem;
+}
 
 .activity-item .moove .activity-info {
   align-self: center;
@@ -437,6 +491,10 @@ span.unread {
 /*---------------------------------------
  * rules: Course formats related.
  --------------------------------------*/
+
+.format-onetopic .header-actions-container .bulkEnable {
+  //display: none;
+}
 
 .format-onetopic .hastopictabs .nav-tabs .nav-link.active {
     background-color: #edf9ed;
@@ -605,4 +663,38 @@ span.unread {
   white-space: pre-wrap;
 }
 
+/*---------------------------------------
+ * Activity modules: Unilabel.
+ --------------------------------------*/
 
+.unilabeltype-collapsed .unilabel-title  {
+  font-size: $h3-font-size;
+  font-weight: 500;
+}
+
+.unilabeltype-collapsed-dialog-button a {
+  display: inline-block;
+  font-family: $btn-font-family;
+  font-weight: $btn-font-weight;
+  color: #fff;
+  text-align: center;
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: $btn-white-space;
+  vertical-align: middle;
+  user-select: none;
+  background-color: #0f47ad;
+  border: 1px solid transparent;
+  border-color: #0f47ad;
+  padding: 0.5rem 1rem;
+  font-size: $btn-font-size-lg;
+  line-height: $btn-line-height-lg;
+  border-radius: 0.3rem;
+  transition: $btn-transition;
+}
+
+.unilabel-content .accordion .card-header {
+  padding: 0.15rem 1.25rem;
+}
+.unilabel-content .accordion .card-header  button.btn-link.btn-block p {
+ margin-bottom: 0;
+}

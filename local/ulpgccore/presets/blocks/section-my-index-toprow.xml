@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PRESET>
+  <blockname>section</blockname>
+  <parentcontextid>1</parentcontextid>
+  <showinsubcontexts>1</showinsubcontexts>
+  <requiredbytheme>0</requiredbytheme>
+  <pagetypepattern>my-index</pagetypepattern>
+  <subpagepattern></subpagepattern>
+  <defaultregion>toprow</defaultregion>
+  <defaultweight>-10</defaultweight>
+  <configdata>Tzo4OiJzdGRDbGFzcyI6Mzp7czo3OiJzZWN0aW9uIjtpOjE7czo1OiJ0aXRsZSI7czoyNDoiUmVjdXJzb3MgKFNlY3Rpb24gYmxvY2spIjtzOjY6ImNvdXJzZSI7aToxO30=</configdata>
+  <timecreated>1579193689</timecreated>
+  <timemodified>1579193883</timemodified>
+</PRESET>

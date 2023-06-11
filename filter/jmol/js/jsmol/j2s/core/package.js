@@ -147,7 +147,7 @@ if (!window["java.registered"])
 		"J.adapter.readers.pdb.PdbReader",
 		"J.adapter.smarter.Structure",
 		"J.api.JmolBioResolver",
-		"JM.Resolver",
+		"JM.BioResolver",
 		"$.BioModel"
  ]);
 
