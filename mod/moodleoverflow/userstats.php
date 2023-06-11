@@ -65,7 +65,7 @@ if (has_capability('mod/moodleoverflow:viewanyrating', $context) && get_config('
     echo $OUTPUT->header();
     echo $OUTPUT->heading('');
     $table = new userstats_table('statisticstable' , $course->id, $moodleoverflow->id, $PAGE->url);
-    $table->out();
+    echo $table->out();
     echo $OUTPUT->footer();
 } else {
     redirect(new moodle_url('/'));
