@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JS");
-Clazz.load (["javajs.api.JSONEncodable", "JS.T", "JU.P3"], "JS.SV", ["java.lang.Boolean", "$.Float", "java.util.Arrays", "$.Collections", "$.Hashtable", "$.Map", "JU.AU", "$.BArray", "$.BS", "$.Base64", "$.Lst", "$.M3", "$.M34", "$.M4", "$.Measure", "$.P4", "$.PT", "$.Quat", "$.SB", "$.T3", "$.V3", "JM.BondSet", "JS.ScriptContext", "JU.BSUtil", "$.Escape", "JV.Viewer"], function () {
+Clazz.load (["javajs.api.JSONEncodable", "JS.T", "java.lang.Float", "JU.P3"], "JS.SV", ["java.lang.Boolean", "java.util.Arrays", "$.Collections", "$.Hashtable", "$.Map", "JU.AU", "$.BArray", "$.BS", "$.Base64", "$.Lst", "$.M3", "$.M34", "$.M4", "$.Measure", "$.P4", "$.PT", "$.Quat", "$.SB", "$.T3", "$.V3", "JM.BondSet", "JS.ScriptContext", "JU.BSUtil", "$.Escape", "JV.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = 2147483647;
 this.myName = null;
@@ -24,6 +24,7 @@ return sv;
 }, "~N");
 c$.newF = Clazz.defineMethod (c$, "newF", 
 function (f) {
+if (f != f) return JS.SV.vNaN;
 var sv =  new JS.SV ();
 sv.tok = 3;
 sv.value = Float.$valueOf (f);
@@ -56,6 +57,16 @@ function (x) {
 switch (x == null ? 0 : x.tok) {
 case 10:
 return JS.SV.bsSelectToken (x).cardinality ();
+case 15:
+return (x.value).data.length;
+case 4:
+return (x.value).length;
+case 7:
+return x.intValue == 2147483647 ? (x).getList ().size () : JS.SV.sizeOf (JS.SV.selectItemTok (x, -2147483648));
+case 6:
+return (x.value).size ();
+case 14:
+return (x.value).getFullMap ().size ();
 case 1073742335:
 case 1073742334:
 return -1;
@@ -71,16 +82,6 @@ case 11:
 return -32;
 case 12:
 return -64;
-case 15:
-return (x.value).data.length;
-case 4:
-return (x.value).length;
-case 7:
-return x.intValue == 2147483647 ? (x).getList ().size () : JS.SV.sizeOf (JS.SV.selectItemTok (x, -2147483648));
-case 6:
-return (x.value).size ();
-case 14:
-return (x.value).getFullMap ().size ();
 default:
 return 0;
 }
@@ -1016,6 +1017,7 @@ return bs;
 c$.areEqual = Clazz.defineMethod (c$, "areEqual", 
 function (x1, x2) {
 if (x1 == null || x2 == null) return false;
+if (x1.value != null && x1.value === x2.value) return true;
 if (x1.tok == x2.tok) {
 switch (x1.tok) {
 case 2:
@@ -1039,7 +1041,7 @@ return (x1.value).equals (x2.value);
 case 12:
 return (x1.value).equals (x2.value);
 }
-}return (Math.abs (JS.SV.fValue (x1) - JS.SV.fValue (x2)) < 0.000001);
+}return (x1.isNaN () ? x2.isNaN () : Math.abs (JS.SV.fValue (x1) - JS.SV.fValue (x2)) < 0.000001);
 }, "JS.SV,JS.SV");
 c$.isLike = Clazz.defineMethod (c$, "isLike", 
 function (x1, x2) {
@@ -1342,6 +1344,10 @@ c$.safeJSON = Clazz.defineMethod (c$, "safeJSON",
 function (key, property) {
 return "{" + (Clazz.instanceOf (property, JS.SV) ? JU.PT.esc (key) + " : " + JS.SV.format ( Clazz.newArray (-1, [null, property]), 0) : JU.PT.toJSON (key, property)) + "}";
 }, "~S,~O");
+Clazz.defineMethod (c$, "isNaN", 
+function () {
+return (this.value === "NaN" || this === JS.SV.vNaN);
+});
 c$.$SV$Sort$ = function () {
 Clazz.pu$h(self.c$);
 c$ = Clazz.decorateAsClass (function () {
@@ -1389,5 +1395,6 @@ c$ = Clazz.p0p ();
 };
 c$.vT = c$.prototype.vT = JS.SV.newSV (1073742335, 1, "true");
 c$.vF = c$.prototype.vF = JS.SV.newSV (1073742334, 0, "false");
+c$.vNaN = c$.prototype.vNaN = JS.SV.newSV (3, 2147483647, Float.$valueOf (NaN));
 c$.pt0 = c$.prototype.pt0 =  new JU.P3 ();
 });

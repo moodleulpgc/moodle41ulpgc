@@ -62,7 +62,8 @@ function studentquiz_supports($feature) {
             return true;
         case FEATURE_GROUPINGS:
             return true;
-
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_COLLABORATION;
         default:
             return null;
     }
@@ -607,4 +608,15 @@ function mod_studentquiz_core_calendar_provide_event_action(calendar_event $even
         1,
         true
     );
+}
+
+/**
+ * Standard callback used by questions_in_use.
+ *
+ * @param array $questionids array of question ids.
+ * @return bool whether any of these questions are attempted in this studentquiz instance.
+ */
+function studentquiz_questions_in_use(array $questionids): bool {
+    return question_engine::questions_in_use($questionids,
+        new qubaid_join('{studentquiz_attempt} sa', 'sa.questionusageid'));
 }

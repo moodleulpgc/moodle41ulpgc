@@ -70,7 +70,7 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
         }
 
         $listItemRun = $section->addListItemRun($depth, 'questionnumbering');
-        $listItemRun->addText(htmlspecialchars(html_entity_decode($itemstring)), $style, , $paragraphstyle); // ecastro
+        $listItemRun->addText(htmlspecialchars(html_entity_decode($itemstring)), $style, $paragraphstyle); // ecastro
         // We also skip the first sequential newline because we got a newline with addListItem.
         if (!empty($blocks) && $blocks[0]['type'] == 'newline') {
             array_shift($blocks);
@@ -467,9 +467,12 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
         $correctanswer = false;
         $parstyle = 'respuesta';
         if ($correction) {
-            // ecastro ULPGC reduce print load for revision. Only correct, right, options graded.
+            // ecastro ULPGC reduce print/read load for revision. Only correct, right, options graded.
             if($question->options->answers[$answer]->fraction != 0) {
-                $answertext .= "  (".round($question->options->answers[$answer]->fraction * 100)."%)©";
+                $answertext .= "  (".round($question->options->answers[$answer]->fraction * 100)."%)";
+                if($question->options->answers[$answer]->fraction > 0) {
+                    $answertext .= " ©";
+                }
                 $parstyle = $correction;
             }
         }        
@@ -692,20 +695,6 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         $table->addCell($width*7, array('valign' => 'bottom') + $cellstyle)->addText($text, 'subStyle');
         $table->addCell(null, array('vMerge' => 'continue'));
         
-        /* removed ecastro ULPGC
-        $section->addText(offlinequiz_str_html_docx(get_string('questionsheet', 'offlinequiz') . ' - ' . get_string('group', 'offlinequiz') .
-                                                    " $groupletter"), 'hStyle', 'cStyle');
-        $section->addTextBreak(2);
-
-        $table = $section->addTable('tableStyle');
-        $table->addRow();
-        $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('name')) . ':  ', 'brStyle');
-
-        $table->addRow();
-        $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('idnumber', 'offlinequiz')) .
-                                                          ':  ', 'brStyle');
-        */
-
         if ($offlinequiz->printstudycodefield) {
             $table->addRow($height);
             $text = offlinequiz_str_html_docx(get_string('studycode', 'offlinequiz'));

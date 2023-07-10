@@ -113,6 +113,9 @@ if (!isloggedin() || isguestuser()) {
     $PAGE->set_title($course->shortname);
     $PAGE->set_heading($course->fullname);
 
+    // The page should not be large, only pages containing broad tables are usually.
+    $PAGE->add_body_class('limitedwidth');
+
     // The guest needs to login.
     echo $OUTPUT->header();
     $strlogin = get_string('noguestpost', 'forum') . '<br /><br />' . get_string('liketologin');
@@ -424,6 +427,9 @@ if (!empty($moodleoverflow)) {
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
 
+        // The page should not be large, only pages containing broad tables are usually.
+        $PAGE->add_body_class('limitedwidth');
+
         // Check if there are replies for the post.
         if ($replycount) {
 
@@ -436,7 +442,6 @@ if (!empty($moodleoverflow)) {
 
             // Request a confirmation to delete the post.
             echo $OUTPUT->header();
-            echo $OUTPUT->heading(format_string($moodleoverflow->name), 2);
             echo $OUTPUT->confirm(get_string("deletesureplural", "moodleoverflow", $replycount + 1),
                 "post.php?delete=$delete&confirm=$delete", $CFG->wwwroot . '/mod/moodleoverflow/discussion.php?d=' .
                 $post->discussion . '#p' . $post->id);
@@ -446,7 +451,6 @@ if (!empty($moodleoverflow)) {
 
             // Print a confirmation message.
             echo $OUTPUT->header();
-            echo $OUTPUT->heading(format_string($moodleoverflow->name), 2);
             echo $OUTPUT->confirm(get_string("deletesure", "moodleoverflow", $replycount),
                 "post.php?delete=$delete&confirm=$delete",
                 $CFG->wwwroot . '/mod/moodleoverflow/discussion.php?d=' . $post->discussion . '#p' . $post->id);
@@ -796,8 +800,12 @@ $toppost->subject = get_string("addanewdiscussion", "moodleoverflow");
 $PAGE->set_title("$course->shortname: $moodleoverflow->name " . format_string($toppost->subject));
 $PAGE->set_heading($course->fullname);
 
+// The page should not be large, only pages containing broad tables are usually.
+$PAGE->add_body_class('limitedwidth');
+
 // Display the header.
 echo $OUTPUT->header();
+
 echo $OUTPUT->heading(format_string($moodleoverflow->name), 2);
 
 if(!$reply || ($reply && $parent->parent == 0)) { 

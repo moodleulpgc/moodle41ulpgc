@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JU");
-Clazz.load (["java.lang.Enum", "JU.SimpleEdge"], "JU.Edge", null, function () {
+Clazz.load (["java.lang.Enum", "JU.SimpleEdge"], "JU.Edge", ["JU.PT"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.index = -1;
 this.order = 0;
@@ -12,7 +12,7 @@ return JU.Edge.argbsHbondType[argbIndex];
 }, "~N");
 c$.getBondOrderNumberFromOrder = Clazz.defineMethod (c$, "getBondOrderNumberFromOrder", 
 function (order) {
-order &= -131073;
+order &= 131071;
 switch (order) {
 case 131071:
 case 65535:
@@ -46,7 +46,7 @@ return null;
 }, "~N");
 c$.getBondOrderNameFromOrder = Clazz.defineMethod (c$, "getBondOrderNameFromOrder", 
 function (order) {
-order &= -131073;
+order &= 131071;
 switch (order) {
 case 65535:
 case 131071:
@@ -101,12 +101,13 @@ return (order & 0x1F);
 }, "~N");
 c$.getPartialBondOrder = Clazz.defineMethod (c$, "getPartialBondOrder", 
 function (order) {
-return ((order & -131073) >> 5);
+return ((order & 131071) >> 5);
 }, "~N");
 c$.getCovalentBondOrder = Clazz.defineMethod (c$, "getCovalentBondOrder", 
 function (order) {
+if ((order & 1024) != 0) return 1;
 if ((order & 1023) == 0) return 0;
-order &= -131073;
+order &= 131071;
 if ((order & 224) != 0) return JU.Edge.getPartialBondOrder (order);
 if ((order & 256) != 0) order &= -257;
 if ((order & 0xF8) != 0) order = 1;
@@ -138,10 +139,17 @@ return 4;
 return 131071;
 }, "~N");
 c$.getBondOrderFromString = Clazz.defineMethod (c$, "getBondOrderFromString", 
-function (name) {
-var order = JU.Edge.EnumBondOrder.getCodeFromName (name);
+function (s) {
+if (s.indexOf (' ') < 0) {
+if (s.indexOf (".") >= 0) {
+s = "partial " + s;
+} else {
+if (JU.PT.isOneOf (s, ";1;2;3;4;5;6;")) {
+return s.charCodeAt (0) - 48;
+}var order = JU.Edge.EnumBondOrder.getCodeFromName (s);
+if (order != 131071 || !s.toLowerCase ().startsWith ("atropisomer_") || s.length != 14) return order;
 try {
-if (order == 131071 && name.length == 14 && name.toLowerCase ().startsWith ("atropisomer_")) order = JU.Edge.getAtropismOrder (Integer.parseInt (name.substring (12, 13)), Integer.parseInt (name.substring (13, 14)));
+order = JU.Edge.getAtropismOrder (Integer.parseInt (s.substring (12, 13)), Integer.parseInt (s.substring (13, 14)));
 } catch (e) {
 if (Clazz.exceptionOf (e, NumberFormatException)) {
 } else {
@@ -149,10 +157,45 @@ throw e;
 }
 }
 return order;
+}}if (s.toLowerCase ().indexOf ("partial ") != 0) return 131071;
+s = s.substring (8).trim ();
+return JU.Edge.getPartialBondOrderFromFloatEncodedInt (JU.Edge.getFloatEncodedInt (s));
+}, "~S");
+c$.getPartialBondOrderFromFloatEncodedInt = Clazz.defineMethod (c$, "getPartialBondOrderFromFloatEncodedInt", 
+function (bondOrderInteger) {
+return (((Clazz.doubleToInt (bondOrderInteger / 1000000)) % 7) << 5) + ((bondOrderInteger % 1000000) & 0x1F);
+}, "~N");
+c$.getFloatEncodedInt = Clazz.defineMethod (c$, "getFloatEncodedInt", 
+function (strDecimal) {
+var pt = strDecimal.indexOf (".");
+if (pt < 1 || strDecimal.charAt (0) == '-' || strDecimal.endsWith (".") || strDecimal.contains (".0")) return 2147483647;
+var i = 0;
+var j = 0;
+if (pt > 0) {
+try {
+i = Integer.parseInt (strDecimal.substring (0, pt));
+if (i < 0) i = -i;
+} catch (e) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
+i = -1;
+} else {
+throw e;
+}
+}
+}if (pt < strDecimal.length - 1) try {
+j = Integer.parseInt (strDecimal.substring (pt + 1));
+} catch (e) {
+if (Clazz.exceptionOf (e, NumberFormatException)) {
+} else {
+throw e;
+}
+}
+i = i * 1000000 + j;
+return (i < 0 || i > 2147483647 ? 2147483647 : i);
 }, "~S");
 Clazz.overrideMethod (c$, "getBondType", 
 function () {
-return this.order;
+return this.order & 131071;
 });
 Clazz.defineMethod (c$, "setCIPChirality", 
 function (c) {
@@ -211,6 +254,7 @@ Clazz.defineEnumConstant (c$, "ATROPISOMER", 15, [65537, "1", "atropisomer"]);
 Clazz.defineEnumConstant (c$, "UNSPECIFIED", 16, [17, "1", "unspecified"]);
 c$ = Clazz.p0p ();
 Clazz.defineStatics (c$,
+"BOND_RENDER_MASK", 0x1FFFF,
 "BOND_RENDER_SINGLE", 0x10000,
 "TYPE_ATROPISOMER", 0x10001,
 "TYPE_ATROPISOMER_REV", 0x10002,
@@ -218,6 +262,7 @@ Clazz.defineStatics (c$,
 "BOND_STEREO_MASK", 0x400,
 "BOND_STEREO_NEAR", 0x401,
 "BOND_STEREO_FAR", 0x411,
+"BOND_STEREO_EITHER", 0x421,
 "BOND_AROMATIC_MASK", 0x200,
 "BOND_AROMATIC_SINGLE", 0x201,
 "BOND_AROMATIC_DOUBLE", 0x202,

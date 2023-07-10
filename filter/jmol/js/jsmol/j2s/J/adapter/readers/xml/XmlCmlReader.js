@@ -559,7 +559,8 @@ function () {
 if (this.moduleNestingLevel > 0 || !this.haveMolecule || this.localSpaceGroupName == null) return;
 this.parent.setSpaceGroupName (this.localSpaceGroupName);
 this.parent.iHaveSymmetryOperators = this.iHaveSymmetryOperators;
-this.parent.applySymmetryAndSetTrajectory ();
+if (this.parent === this) Clazz.superCall (this, J.adapter.readers.xml.XmlCmlReader, "applySymmetryAndSetTrajectory", []);
+ else this.parent.applySymmetryAndSetTrajectory ();
 });
 Clazz.overrideMethod (c$, "endDocument", 
 function () {

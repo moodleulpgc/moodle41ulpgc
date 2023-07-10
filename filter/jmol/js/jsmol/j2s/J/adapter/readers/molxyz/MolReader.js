@@ -1,19 +1,24 @@
 Clazz.declarePackage ("J.adapter.readers.molxyz");
 Clazz.load (["J.adapter.smarter.AtomSetCollectionReader"], "J.adapter.readers.molxyz.MolReader", ["java.lang.Exception", "java.util.Hashtable", "JU.BS", "$.Lst", "$.PT", "J.adapter.smarter.Atom", "J.api.JmolAdapter", "JU.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
-this.optimize2D = false;
 this.haveAtomSerials = false;
 this.allow2D = true;
 this.iatom0 = 0;
 this.vr = null;
 this.atomCount = 0;
 this.atomData = null;
-this.is2D = false;
+this.bsDeleted = null;
+this.haveNonzeroZ = false;
+this.fixN = false;
+this.is3D = false;
+this.nDouble = 0;
+this.nH = 0;
+this.nC = 0;
 Clazz.instantialize (this, arguments);
 }, J.adapter.readers.molxyz, "MolReader", J.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
-this.optimize2D = this.checkFilterKey ("2D");
+this.fixN = this.checkFilterKey ("FIXN");
 });
 Clazz.overrideMethod (c$, "checkLine", 
 function () {
@@ -44,20 +49,27 @@ this.finalizeReaderMR ();
 });
 Clazz.defineMethod (c$, "finalizeReaderMR", 
 function () {
-if (this.is2D && !this.optimize2D) this.appendLoadNote ("This model is 2D. Its 3D structure has not been generated; use LOAD \"\" FILTER \"2D\" to optimize 3D.");
-if (this.optimize2D) {
-this.set2D ();
-if (this.asc.bsAtoms == null) {
-this.asc.bsAtoms =  new JU.BS ();
-this.asc.bsAtoms.setBits (0, this.asc.ac);
-}for (var i = this.asc.bondCount; --i >= 0; ) {
-var b = this.asc.bonds[i];
-if (this.asc.atoms[b.atomIndex2].elementSymbol.equals ("H") && b.order != 1025 && b.order != 1041) {
-this.asc.bsAtoms.clear (b.atomIndex2);
-}}
+if (this.fixN) {
+this.addJmolScript ("{search('[Nv4+0,nv4+0]')}.formalCharge=1;{search('{[Ov1-0]}[Nv4+1,nv4+1]')}.formalCharge=-1;");
+}this.check2D3D ();
+if (this.bsDeleted != null) {
+this.asc.getBSAtoms (-1).andNot (this.bsDeleted);
 }this.isTrajectory = false;
 this.finalizeReaderASCR ();
 });
+Clazz.defineMethod (c$, "check2D3D", 
+ function () {
+if (this.haveNonzeroZ) {
+if (this.is2D) {
+this.is2D = this.optimize2D = false;
+}} else if (!this.is2D && !this.is3D) {
+if (this.nC > 0 && this.nH == 0 && this.nDouble != 0) {
+this.is2D = true;
+}}if (this.is2D) {
+if (!this.allow2D) {
+throw  new Exception ("File is 2D, not 3D");
+}this.set2D ();
+}});
 Clazz.defineMethod (c$, "processMolSdHeader", 
  function () {
 var header = "";
@@ -67,10 +79,10 @@ header += this.line + "\n";
 this.rd ();
 if (this.line == null) return;
 header += this.line + "\n";
-this.is2D = (this.line.length >= 22 && this.line.substring (20, 22).equals ("2D"));
-if (this.is2D) {
-if (!this.allow2D) throw  new Exception ("File is 2D, not 3D");
-}this.rd ();
+var dim = (this.line.length >= 22 ? this.line.substring (20, 22) : null);
+this.is2D = "2D".equals (dim);
+this.is3D = "3D".equals (dim);
+this.rd ();
 if (this.line == null) return;
 this.line = this.line.trim ();
 header += this.line + "\n";
@@ -84,7 +96,7 @@ Clazz.defineMethod (c$, "processCtab",
 if (isMDL) this.discardLinesUntilStartsWith ("$CTAB");
 if (this.rd () == null) return;
 if (this.line.indexOf ("V3000") >= 0) {
-this.optimize2D = this.is2D;
+this.optimize2D = this.is2D && !this.noHydrogens;
 this.vr = (this.getInterface ("J.adapter.readers.molxyz.V3000Rdr")).set (this);
 this.discardLinesUntilContains ("COUNTS");
 this.vr.readAtomsAndBonds (this.getTokens ());
@@ -108,7 +120,6 @@ var iAtom = -2147483648;
 x = this.parseFloatRange (this.line, 0, 10);
 y = this.parseFloatRange (this.line, 10, 20);
 z = this.parseFloatRange (this.line, 20, 30);
-if (this.is2D && z != 0) this.is2D = this.optimize2D = false;
 if (len < 34) {
 elementSymbol = this.line.substring (31).trim ();
 } else {
@@ -138,7 +149,8 @@ var stereo = 0;
 iAtom1 = this.line.substring (0, 3).trim ();
 iAtom2 = this.line.substring (3, 6).trim ();
 var order = this.parseIntRange (this.line, 6, 9);
-if (this.is2D && order == 1 && this.line.length >= 12) stereo = this.parseIntRange (this.line, 9, 12);
+if ((this.is2D || !this.is3D) && order == 1 && this.line.length >= 12) stereo = this.parseIntRange (this.line, 9, 12);
+if (stereo != 0 && !this.is3D) this.is2D = true;
 order = this.fixOrder (order, stereo);
 if (this.haveAtomSerials) this.asc.addNewBondFromNames (iAtom1, iAtom2, order);
  else this.asc.addNewBondWithOrder (this.iatom0 + this.parseIntStr (iAtom1) - 1, this.iatom0 + this.parseIntStr (iAtom2) - 1, order);
@@ -187,12 +199,23 @@ var ipt = this.parseIntAt (this.line, pt);
 var atom = this.asc.atoms[ipt + i0 - 1];
 var iso = this.parseIntAt (this.line, pt + 4);
 pt += 8;
-atom.elementSymbol = "" + iso + JU.PT.replaceAllCharacters (atom.elementSymbol, "0123456789", "");
-}
+var sym = JU.PT.replaceAllCharacters (atom.elementSymbol, "0123456789", "");
+if (iso == 17 && sym.equals ("C")) {
+atom.elementSymbol = "N";
+} else if (iso == 5 && sym.equals ("H")) {
+this.deleteAtom (atom);
+} else {
+atom.elementSymbol = "" + iso + sym;
+}}
 } catch (e) {
 }
 this.rd ();
 });
+Clazz.defineMethod (c$, "deleteAtom", 
+function (atom) {
+if (this.bsDeleted == null) this.bsDeleted =  new JU.BS ();
+this.bsDeleted.set (atom.index);
+}, "J.adapter.smarter.Atom");
 Clazz.defineMethod (c$, "readMolData", 
  function (molData, _keyList) {
 var atoms = this.asc.atoms;
@@ -245,6 +268,9 @@ JU.Logger.info (ndata + " atom names read");
 }}, "java.util.Map,JU.Lst");
 Clazz.defineMethod (c$, "addMolAtom", 
 function (iAtom, isotope, elementSymbol, charge, x, y, z) {
+if ("H".equals (elementSymbol)) this.nH++;
+ else if ("C".equals (elementSymbol)) this.nC++;
+this.haveNonzeroZ = new Boolean (this.haveNonzeroZ | (z != 0)).valueOf ();
 switch (isotope) {
 case 0:
 break;
@@ -260,7 +286,6 @@ break;
 default:
 elementSymbol = isotope + elementSymbol;
 }
-if (this.optimize2D && z != 0) this.optimize2D = false;
 var atom =  new J.adapter.smarter.Atom ();
 atom.elementSymbol = elementSymbol;
 atom.formalCharge = charge;
@@ -271,7 +296,8 @@ this.asc.addAtom (atom);
 this.haveAtomSerials = true;
 atom.atomSerial = iAtom;
 this.asc.addAtomWithMappedSerialNumber (atom);
-}}, "~N,~N,~S,~N,~N,~N,~N");
+}return atom;
+}, "~N,~N,~S,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "fixOrder", 
 function (order, stereo) {
 switch (order) {
@@ -282,14 +308,21 @@ return 1;
 case 1:
 switch (stereo) {
 case 1:
+this.is2D = true;
 return 1025;
 case 3:
 case 6:
+this.is2D = true;
 return 1041;
+case 2:
+case 4:
+this.is2D = true;
+return 1057;
 }
 break;
 case 2:
 case 3:
+this.nDouble++;
 break;
 case 4:
 return 515;
@@ -314,7 +347,7 @@ return order;
 Clazz.defineMethod (c$, "addMolBond", 
 function (iAtom1, iAtom2, order, stereo) {
 order = this.fixOrder (order, stereo);
-if (this.haveAtomSerials) this.asc.addNewBondFromNames (iAtom1, iAtom2, order);
- else this.asc.addNewBondWithOrder (this.iatom0 + this.parseIntStr (iAtom1) - 1, this.iatom0 + this.parseIntStr (iAtom2) - 1, order);
+if (this.haveAtomSerials) return this.asc.addNewBondFromNames (iAtom1, iAtom2, order);
+return this.asc.addNewBondWithOrder (this.iatom0 + this.parseIntStr (iAtom1) - 1, this.iatom0 + this.parseIntStr (iAtom2) - 1, order);
 }, "~S,~S,~N,~N");
 });

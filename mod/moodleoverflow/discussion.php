@@ -35,6 +35,9 @@ $ratedpost = optional_param('rp', 0, PARAM_INT);
 // Set the URL that should be used to return to this page.
 $PAGE->set_url('/mod/moodleoverflow/discussion.php', array('d' => $d));
 
+// The page should not be large, only pages containing broad tables are usually.
+$PAGE->add_body_class('limitedwidth');
+
 // Check if the discussion is valid.
 if (!$discussion = $DB->get_record('moodleoverflow_discussions', array('id' => $d))) {
     throw new moodle_exception('invaliddiscussionid', 'moodleoverflow');
@@ -48,6 +51,13 @@ if (!$moodleoverflow = $DB->get_record('moodleoverflow', array('id' => $discussi
 // Check if the related moodleoverflow instance is valid.
 if (!$course = $DB->get_record('course', array('id' => $discussion->course))) {
     throw new moodle_exception('invalidcourseid');
+}
+
+// Save the allowmultiplemarks setting.
+$marksetting = $DB->get_record('moodleoverflow', array('id' => $moodleoverflow->id), 'allowmultiplemarks');
+$multiplemarks = false;
+if ($marksetting->allowmultiplemarks == 1) {
+    $multiplemarks = true;
 }
 
 // Get the related coursemodule and its context.
@@ -128,7 +138,7 @@ if ($node && ($post->id != $discussion->firstpost)) {
 
 $PAGE->requires->js_call_amd('mod_moodleoverflow/reviewing', 'init');
 
-$PAGE->requires->js_call_amd('mod_moodleoverflow/rating', 'init', [$USER->id]);
+$PAGE->requires->js_call_amd('mod_moodleoverflow/rating', 'init', [$USER->id, $multiplemarks]);
 
 // Initiate the page.
 $PAGE->set_title($course->shortname . ': ' . format_string($discussion->name));
@@ -160,7 +170,7 @@ echo "<br>";
 
 echo '<div id="moodleoverflow-posts"><div id="moodleoverflow-root">';
 
-moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discussion, $post, $canreply);
+moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discussion, $post, $canreply, $multiplemarks); // ecastro ULPGC canreply
 
 echo '</div></div>';
 

@@ -29,8 +29,9 @@ require_once($CFG->dirroot . '/question/type/recordrtc/question.php');
  * Unit tests for the widget_info class.
  *
  * @package   qtype_recordrtc
- * @copyright  2021 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2021 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \qtype_recordrtc\widget_info
  */
 class widget_info_test extends \advanced_testcase {
 
@@ -88,7 +89,7 @@ class widget_info_test extends \advanced_testcase {
         $this->assertEquals(FORMAT_HTML, $widget->feedbackformat);
     }
 
-    public function test_constructor_enforces_admin_time_limits() {
+    public function test_constructor_enforces_admin_time_limits_for_audio() {
         $this->resetAfterTest();
 
         set_config('audiotimelimit', 123, 'qtype_recordrtc');
@@ -98,6 +99,10 @@ class widget_info_test extends \advanced_testcase {
 
         $widget = new widget_info('welcome', 'audio', 45);
         $this->assertEquals(45, $widget->maxduration);
+    }
+
+    public function test_constructor_enforces_admin_time_limits_for_video() {
+        $this->resetAfterTest();
 
         set_config('videotimelimit', 67, 'qtype_recordrtc');
 
@@ -105,6 +110,18 @@ class widget_info_test extends \advanced_testcase {
         $this->assertEquals(67, $widget->maxduration);
 
         $widget = new widget_info('welcome', 'video', 45);
+        $this->assertEquals(45, $widget->maxduration);
+    }
+
+    public function test_constructor_enforces_admin_time_limits_for_screen() {
+        $this->resetAfterTest();
+
+        set_config('screentimelimit', 67, 'qtype_recordrtc');
+
+        $widget = new widget_info('welcome', 'screen', 89);
+        $this->assertEquals(67, $widget->maxduration);
+
+        $widget = new widget_info('welcome', 'screen', 45);
         $this->assertEquals(45, $widget->maxduration);
     }
 }

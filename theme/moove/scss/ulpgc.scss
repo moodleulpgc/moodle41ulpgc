@@ -6,7 +6,7 @@
 }
 
 /*
-.badge-warning {
+// .badge-warning {
 	background-color: #000066;
 }
 */
@@ -22,7 +22,7 @@
       width: 236px;
       height: 40px;
       margin: 0;
-      display: block;
+      display: inline;
       /* @media (max-device-width: 1366px) and (orientation : "landscape"){
           @content;
       }*/ }
@@ -64,9 +64,28 @@
   display: inline-block;
 }
 .ulpgcds-icon-user::before, .icon-user::before {
-  font-family: "FontAwesome" !important;
+  font-family: "Fontawesome" !important;
   font-weight: 400;
   content: "\f007";
+}
+
+
+.icon.fa, 
+.dropdown-toggle::after,
+.dropdown-toggle::before {
+  /* font-family: 'Fontawesome'; */
+  font-family: 'Font Awesome 6 Free';
+}
+
+.dropdown-item span.currentcourse::before {
+  font-family: 'fontawesome';
+  content: "\f115";  
+margin-left: -1.2rem;
+padding-right: 0.2rem;
+}
+
+.primary-navigation  .dropdown-item[aria-current="true"] {
+  background-color: #f0ad4e;
 }
 
 
@@ -90,10 +109,27 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     height: 6px;
 }
 
-
+.secondary-navigation .moremenu.navigation {
+  float: left;
+}
 
 .secondary-navigation > .moove-container-fluid,  .secondary-navigation .moremenu,  .moremenu .nav-link{
      height: 36px;
+}
+
+.secondary-navigation .moremenu-toggles{
+    height: 36px;
+    margin-left: auto;
+    float: right;     
+}
+
+body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
+  display: none;  
+}
+
+.secondary-navigation .moremenu-toggles .menupanel {
+  float: right;
+  padding: 0.5rem 0.2rem;
 }
 
 .navigation.inactivitysettings,
@@ -116,21 +152,30 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 }
 
 
-
+.dropdown-toggle::after {
+    @extend .fa-solid;
+    font-family: 'Fontawesome';
+    content: fa-content($fa-var-chevron-down);
+    margin-right: 0;
+    margin-left: 2px;
+    font-size: 12px;
+    width: 9px;
+    border: 0; 
+}
 
 /* Change the block column width on the Dashboard if setting 'blockcolumnwidthdashboard' is different from setting 'blockcolumnwidth'. */
 @if variable-exists(blockwidthdashboard) {
     @if $blocks-width-dashboard {
-  .path-my #lateral-side-blocks {
-    max-width: $blocks-width-dashboard;
-    float: left;
-  }
+    .path-my #lateral-side-blocks {
+      max-width: $blocks-width-dashboard;
+      float: left;
+    }
 
-  .path-my #region-main .main-content {
-    //float: right;
-    //max-width: calc(100% - 4px - #{$blocks-width-dashboard});
+    .path-my #region-main .main-content {
+      //float: right;
+      //max-width: calc(100% - 4px - #{$blocks-width-dashboard});
+    }
   }
-}
 }
 
 
@@ -144,21 +189,21 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   color: inherit;
 }
 
-#page-footer .moodle-footer a:not(.btn) {
-  color: red;
+#page-footer  a:not(.btn) {
+     color: $primary;
 }
 
 .moodle-footer {
   background-color: #f2f3f7 !important;
-  border-top: 4px solid #0067a2 ;
-  //color: red;
+  border-top: 4px solid $primary ;
   padding-bottom: 1.0rem;
+  padding-top: 0.5rem;
 }
 
 
 .site-footer {
   clear: both;
-  *zoom: 1;
+  /*zoom: 1; */
   width: 100%;
   display: block;
   position: relative;
@@ -209,14 +254,22 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 #pie_info .columna_pie {
     float: left;
-    padding-left: 2.5%;
-    padding-right: 2.5%;
+    padding-left: 2.0%;
+    padding-right: 2.0%;
+    
+    p {
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
 }
 
 #pie_info .columna_pie.primera {
     border-left: 1px solid;
 }
 
+#page-footer .supportemail, #page-footer .logininfo, #page-footer .tool_dataprivacy {
+    margin: 0 0.1rem;
+}
 
 #page-footer {
     .btn-footer-popover {
@@ -228,9 +281,78 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     }   
 }
 
+
+/*---------------------------------------
+ * rules: Dashboard page.
+ --------------------------------------*/
+.dashboard-card-deck .dashboard-card .dashboard-card-img {
+  height: unset;
+}
+
+.dashboard-card .dashboard-card-img {
+  padding: 0.1rem;
+  height: unset !important;
+}
+
+.dashboard-card .dashboard-card-img .course-category {
+  padding: 1px 8px;
+  margin-bottom: 0.15rem;
+  font-size: 75%;
+}
+
+.pagelayout-frontpage .dashboard-card .card-body, .pagelayout-coursecategory .dashboard-card .card-body {
+  padding: 0.25rem 0.8rem;
+}
+
+
+.dashboard-card .course-contacts .info {
+  display: flex;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .info {
+  line-height: 1.0;
+}
+
+.pagelayout-standard .dashboard-card .course-contacts .contact p {
+  margin-left: 0.4rem;
+  margin-bottom: 0;
+}
+
+.pagelayout-standard .dashboard-card .course-contacts .contact p.role {
+  color: #212529;
+  font-size: 80%;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .contact img, 
+.pagelayout-standard .dashboard-card .course-contacts .contact img {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dee2e6;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .contact, 
+.pagelayout-standard .dashboard-card .course-contacts .contact {
+  display: flex;
+  align-items: center;
+}
+
+
 /*---------------------------------------
  * rules: Course page.
  --------------------------------------*/
+
+#page-header {
+  margin: 0.75rem auto;
+}
+
+#page.drawers .main-inner {
+  padding-top: 0.2rem;
+}
+
+.course-content .single-section.general-section {
+  margin-top: 0;
+}
+
 .activity-instance.d-flex {
   min-width: 25%;
 }
@@ -262,10 +384,54 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 .section_availability .availabilityinfo.isrestricted.isfullinfo,
 .activity-restrictions .availabilityinfo.isrestricted.isfullinfo {
+  min-width: 200px;
+  max-width: 50%;
+  top: -10px;
+  left: 50%;
+  transform: translate(-30%,-100%);
+  padding:10px 20px;
+  background-color: #ffd;
+  border-radius: 8px;
+  position: absolute;
+  z-index: 99999999;
+  box-sizing: border-box;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.5);
   display: none;
   text-align: left;
 }
 
+
+.hasconditions .activity-basis:hover .activity-restrictions .availabilityinfo.isrestricted.isfullinfo {
+  display: block;
+  opacity: 1;
+}
+
+.course-section:hover .section_availability .availabilityinfo.isrestricted.isfullinfo {
+  display: block;
+  top: unset;
+  opacity: 1;
+}
+
+
+.hasconditions .activity-restrictions .availabilityinfo.isrestricted.isfullinfo::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -15px;
+  border-width: 15px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.section_availability.withrestrictions  .availabilityinfo.isrestricted.isfullinfo .description-inner {
+  text-align: left;
+}
+
+
+.course-content  #section-0 {
+  padding-top: 0.2rem;
+}
 
 .activity-item .moove .activity-info {
   align-self: center;
@@ -312,7 +478,7 @@ span.unread {
 .breadcrumb .breadcrumb-item a.type20 {
   color: #f0ad4e; //to change afterwards XXX
   font-weight: bolder;
-  font-size: larger;
+  font-size: medium;
 }
 
 
@@ -358,9 +524,18 @@ span.unread {
 }
 
 
+/*@media (min-width: 768px) */
+.path-admin #page-navbar.d-md-block {
+  max-width: 12.0rem;
+}
+
 /*---------------------------------------
  * rules: Course formats related.
  --------------------------------------*/
+
+.format-onetopic .header-actions-container .bulkEnable {
+  //display: none;
+}
 
 .format-onetopic .hastopictabs .nav-tabs .nav-link.active {
     background-color: #edf9ed;
@@ -503,6 +678,19 @@ span.unread {
     }
 }
 
+.block.list_block .card-text.content  div.icon {
+  float: left;
+}
+
+/*---------------------------------------
+ * Activity modules: Attendance.
+ --------------------------------------*/
+
+#page-mod-attendance-report .attendancereporttable {
+  margin-left: 0;
+}
+
+
 /*---------------------------------------
  * Activity modules: Forum.
  --------------------------------------*/
@@ -514,4 +702,40 @@ span.unread {
 
 #page-mod-forum-view .discussion-list .text-truncate {
   white-space: pre-wrap;
+}
+
+/*---------------------------------------
+ * Activity modules: Unilabel.
+ --------------------------------------*/
+
+.unilabeltype-collapsed .unilabel-title  {
+  font-size: $h3-font-size;
+  font-weight: 500;
+}
+
+.unilabeltype-collapsed-dialog-button a {
+  display: inline-block;
+  font-family: $btn-font-family;
+  font-weight: $btn-font-weight;
+  color: #fff;
+  text-align: center;
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: $btn-white-space;
+  vertical-align: middle;
+  user-select: none;
+  background-color: #0f47ad;
+  border: 1px solid transparent;
+  border-color: #0f47ad;
+  padding: 0.5rem 1rem;
+  font-size: $btn-font-size-lg;
+  line-height: $btn-line-height-lg;
+  border-radius: 0.3rem;
+  transition: $btn-transition;
+}
+
+.unilabel-content .accordion .card-header {
+  padding: 0.15rem 1.25rem;
+}
+.unilabel-content .accordion .card-header  button.btn-link.btn-block p {
+ margin-bottom: 0;
 }

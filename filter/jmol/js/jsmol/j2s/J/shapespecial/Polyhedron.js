@@ -278,9 +278,9 @@ this.info = null;
 var sm = vwr.getSmilesMatcher ();
 try {
 var details = (this.distanceRef <= 0 ? null : "r=" + this.distanceRef);
+this.polySmiles = sm.polyhedronToSmiles (this.centralAtom, this.faces, this.nVertices, this.vertices, 1 | 65536 | (JU.Logger.debugging ? 131072 : 0), details);
 this.smarts = sm.polyhedronToSmiles (this.centralAtom, this.faces, this.nVertices, null, 16384, null);
 this.smiles = sm.polyhedronToSmiles (this.centralAtom, this.faces, this.nVertices, this.vertices, 1, null);
-this.polySmiles = sm.polyhedronToSmiles (this.centralAtom, this.faces, this.nVertices, this.vertices, 1 | 65536 | (JU.Logger.debugging ? 131072 : 0), details);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 } else {
@@ -292,10 +292,10 @@ if (this.pointGroup == null) {
 var pts =  new Array (this.nVertices);
 for (var i = pts.length; --i >= 0; ) pts[i] = this.vertices[i];
 
-this.pointGroup = vwr.getSymTemp ().setPointGroup (null, null, pts, null, false, vwr.getFloat (570425382), vwr.getFloat (570425384), true);
+this.pointGroup = vwr.getSymTemp ().setPointGroup (null, null, pts, null, false, vwr.getFloat (570425382), vwr.getFloat (570425384), pts.length, true);
 for (var i = pts.length; --i >= 0; ) pts[i] = JU.P3.newP (this.vertices[i]);
 
-this.pointGroupFamily = vwr.getSymTemp ().setPointGroup (null, null, pts, null, false, vwr.getFloat (570425382), vwr.getFloat (570425384), true);
+this.pointGroupFamily = vwr.getSymTemp ().setPointGroup (null, null, pts, null, false, vwr.getFloat (570425382), vwr.getFloat (570425384), pts.length, true);
 }return (this.center == null ? this.centralAtom : this.center) + "    \t" + this.pointGroup.getPointGroupName () + "\t" + this.pointGroupFamily.getPointGroupName ();
 }, "JV.Viewer,~B");
 Clazz.defineMethod (c$, "getVolume", 

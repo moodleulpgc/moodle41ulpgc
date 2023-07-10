@@ -130,12 +130,12 @@ class grade_edit_tree {
 
         $moveaction = '';
         $actions = $this->gtree->get_cell_action_menu($element, 'setup', $this->gpr);
-/*  // ecastro ULPGC duplicated 
+
         if ($element['type'] == 'item' or ($element['type'] == 'category' and $element['depth'] > 1)) {
             $aurl = new moodle_url('index.php', array('id' => $COURSE->id, 'action' => 'moveselect', 'eid' => $eid, 'sesskey' => sesskey()));
             $moveaction .= $OUTPUT->action_icon($aurl, new pix_icon('t/move', get_string('move')));
         }
-*/
+
         if (!($this->gradebooklocked && ($element['type'] == 'category' && !$this->element_deletable($element)))) { // ecastro ULPGC only move if deletable
             $aurl = new moodle_url('index.php', array('id' => $COURSE->id, 'action' => 'moveselect', 'eid' => $eid, 'sesskey' => sesskey()));
             $moveaction .= $OUTPUT->action_icon($aurl, new pix_icon('t/move', get_string('move')));

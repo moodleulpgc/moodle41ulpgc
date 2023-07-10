@@ -577,6 +577,16 @@ class mod_attendance_structure {
         if (!isset($sess->seatblocking)) {
             $sess->seatblocking = '';
         }
+        
+        if (!isset($sess->seatrows)) {
+            $sess->seatrows = 0;
+        }
+        if (!isset($sess->seatcols)) {
+            $sess->seatcols = 0;
+        }
+        if (!isset($sess->seatblocking)) {
+            $sess->seatblocking = '';
+        }
         // ecastro ULPGC
         $event->add_record_snapshot('attendance_sessions', $sess);
         $event->trigger();

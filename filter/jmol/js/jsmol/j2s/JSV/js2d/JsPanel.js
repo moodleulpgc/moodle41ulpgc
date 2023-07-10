@@ -9,10 +9,6 @@ this.name = null;
 this.bgcolor = null;
 Clazz.instantialize (this, arguments);
 }, JSV.js2d, "JsPanel", null, JSV.api.JSVPanel);
-Clazz.overrideMethod (c$, "finalize", 
-function () {
-JU.Logger.info ("JSVPanel " + this + " finalized");
-});
 Clazz.overrideMethod (c$, "getApiPlatform", 
 function () {
 return this.apiPlatform;
@@ -190,6 +186,10 @@ Clazz.overrideMethod (c$, "processTwoPointGesture",
 function (touches) {
 if (this.mouse != null) this.mouse.processTwoPointGesture (touches);
 }, "~A");
+Clazz.overrideMethod (c$, "processKeyEvent", 
+function (event) {
+if (this.mouse != null) this.mouse.processKeyEvent (event);
+}, "~O");
 Clazz.overrideMethod (c$, "showMenu", 
 function (x, y) {
 this.vwr.showMenu (x, y);

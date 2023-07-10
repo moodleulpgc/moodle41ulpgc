@@ -2,6 +2,7 @@ Clazz.declarePackage ("JM");
 Clazz.load (["J.api.JmolMeasurementClient"], "JM.MeasurementData", ["java.lang.Float", "JU.BS", "$.Lst", "JM.Measurement", "JU.BSUtil"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.client = null;
+this.bsSelected = null;
 this.measurementStrings = null;
 this.measurements = null;
 this.points = null;
@@ -47,12 +48,13 @@ this.ms = m;
 return this;
 }, "JM.ModelSet");
 Clazz.defineMethod (c$, "set", 
-function (tokAction, htMin, radiusData, property, strFormat, units, tickInfo, mustBeConnected, mustNotBeConnected, intramolecular, isAll, mad, colix, text, value) {
+function (tokAction, htMin, radiusData, property, strFormat, units, tickInfo, mustBeConnected, mustNotBeConnected, intramolecular, isAll, mad, colix, text, value, bsSelected) {
 this.ms = this.vwr.ms;
 this.tokAction = tokAction;
 if (this.points.size () >= 2 && Clazz.instanceOf (this.points.get (0), JU.BS) && Clazz.instanceOf (this.points.get (1), JU.BS)) {
 this.justOneModel = JU.BSUtil.haveCommon (this.vwr.ms.getModelBS (this.points.get (0), false), this.vwr.ms.getModelBS (this.points.get (1), false));
-}this.htMin = htMin;
+}this.bsSelected = bsSelected;
+this.htMin = htMin;
 this.radiusData = radiusData;
 this.property = property;
 this.strFormat = strFormat;
@@ -67,9 +69,9 @@ this.colix = colix;
 this.text = text;
 this.fixedValue = value;
 return this;
-}, "~N,java.util.Map,J.atomdata.RadiusData,~S,~S,~S,JM.TickInfo,~B,~B,Boolean,~B,~N,~N,JM.Text,~N");
+}, "~N,java.util.Map,J.atomdata.RadiusData,~S,~S,~S,JM.TickInfo,~B,~B,Boolean,~B,~N,~N,JM.Text,~N,JU.BS");
 Clazz.defineMethod (c$, "processNextMeasure", 
-function (m) {
+function (md, m) {
 var value = m.getMeasurement (null);
 if (this.htMin != null && !m.isMin (this.htMin) || this.radiusData != null && !m.isInRange (this.radiusData, value)) return;
 if (this.measurementStrings == null && this.measurements == null) {
@@ -80,7 +82,7 @@ this.minArray[this.iFirstAtom] = (1 / f == -Infinity ? value : Math.min (f, valu
 return;
 }if (this.measurementStrings != null) this.measurementStrings.addLast (m.getStringUsing (this.vwr, this.strFormat, this.units));
  else this.measurements.addLast (Float.$valueOf (m.getMeasurement (null)));
-}, "JM.Measurement");
+}, "JM.MeasurementData,JM.Measurement");
 Clazz.defineMethod (c$, "getMeasurements", 
 function (asFloatArray, asMinArray) {
 if (asMinArray) {
@@ -133,7 +135,7 @@ this.nextMeasure (0, ptLastAtom, m, modelIndex);
 Clazz.defineMethod (c$, "nextMeasure", 
  function (thispt, ptLastAtom, m, thisModel) {
 if (thispt > ptLastAtom) {
-if ((this.allowSelf && !this.mustBeConnected && !this.mustNotBeConnected || m.isValid ()) && (!this.mustBeConnected || m.isConnected (this.atoms, thispt)) && (!this.mustNotBeConnected || !m.isConnected (this.atoms, thispt)) && (this.intramolecular == null || m.isIntramolecular (this.atoms, thispt) == this.intramolecular.booleanValue ())) this.client.processNextMeasure (m);
+if ((this.allowSelf && !this.mustBeConnected && !this.mustNotBeConnected || m.isValid ()) && (!this.mustBeConnected || m.isConnected (this.atoms, thispt)) && (!this.mustNotBeConnected || !m.isConnected (this.atoms, thispt)) && (this.intramolecular == null || m.isIntramolecular (this.atoms, thispt) == this.intramolecular.booleanValue ())) this.client.processNextMeasure (this, m);
 return;
 }var bs = this.points.get (thispt);
 var indices = m.countPlusIndices;

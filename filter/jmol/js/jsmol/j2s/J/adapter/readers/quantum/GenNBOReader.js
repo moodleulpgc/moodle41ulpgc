@@ -104,11 +104,10 @@ return structures;
 });
 Clazz.defineMethod (c$, "getFileData", 
  function (ext) {
-var fileName = this.htParams.get ("fullPathName");
+var fileName = this.filePath;
 var pt = fileName.lastIndexOf (".");
 if (pt < 0) pt = fileName.length;
 fileName = fileName.substring (0, pt);
-if (fileName.startsWith ("GenNBO::")) fileName = fileName.substring (8);
 this.moData.put ("nboRoot", fileName);
 if (ext.startsWith (".")) {
 fileName += ext;

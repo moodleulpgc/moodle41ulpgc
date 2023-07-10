@@ -40,13 +40,17 @@ class format_board extends format_topics {
      */
     public function course_format_options($foreditform = false) {
         global $PAGE;
-        static $courseformatoptions = false;
+        //static $courseformatoptions = false; 
+        static $courseformatoptions = []; // ecastro ULPGC PHP8.1  Automatic conversion of false to array is deprecated 
+        $courseformatoptionsedit = [];
         $courseconfig = get_config('moodlecourse');
         $max = $courseconfig->maxsections;
         if (!isset($max) || !is_numeric($max)) {
             $max = 52;
         }
-        if ($courseformatoptions === false) {
+        //if ($courseformatoptions === false) {
+        if ($courseformatoptions === []) {
+            
             $courseformatoptions['numsections'] = array(
                 'default' => $courseconfig->numsections,
                 'type' => PARAM_INT,

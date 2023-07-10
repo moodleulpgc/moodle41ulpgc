@@ -180,7 +180,7 @@ class core_course_renderer extends plugin_renderer_base {
             $chooserconfig->groups = (object) $groups;
             //$chooserconfig->names = (object) $names;
         }
-        
+
         $this->page->requires->js_call_amd('core_course/activitychooser', 'init', [$courseid, $chooserconfig]);
 
         return '';
@@ -1255,7 +1255,7 @@ class core_course_renderer extends plugin_renderer_base {
                     html_writer::tag('span', $file->get_filename(), ['class' => 'fp-filename']);
                 $contentfiles .= html_writer::tag('span',
                     html_writer::link($url, $filename),
-                    ['class' => 'coursefile fp-filename-icon']);
+                    ['class' => 'coursefile fp-filename-icon text-break']);
             }
         }
         return $contentimages . $contentfiles;

@@ -353,6 +353,7 @@ Clazz_declarePackage ("JS");
 Clazz_load (null, "JS.ButtonGroup", ["JS.Component"], function () {
 c$ = Clazz_decorateAsClass (function () {
 this.id = null;
+this.count = 0;
 Clazz_instantialize (this, arguments);
 }, JS, "ButtonGroup");
 Clazz_makeConstructor (c$, 
@@ -361,8 +362,13 @@ this.id = JS.Component.newID ("bg");
 });
 Clazz_defineMethod (c$, "add", 
 function (item) {
+this.count++;
 (item).htmlName = this.id;
 }, "J.api.SC");
+Clazz_defineMethod (c$, "getButtonCount", 
+function () {
+return this.count;
+});
 });
 Clazz_declarePackage ("JS");
 c$ = Clazz_decorateAsClass (function () {

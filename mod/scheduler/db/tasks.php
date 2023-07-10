@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 $tasks = array(
             array(
                 'classname' => 'mod_scheduler\task\send_reminders',
-                'minute' => '35',
-                'hour' => '1',
+                'minute' => 'R',
+                'hour' => '*',
                 'day' => '*',
                 'dayofweek' => '*',
                 'month' => '*'

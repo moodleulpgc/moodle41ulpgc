@@ -1093,7 +1093,29 @@ class block_manager {
      */
     protected function create_block_instances($birecords) {
         $results = array();
+        
+        // ecastro ULPGC to avoid my-index * blocks in content regio my courses
+        $mycoursespage = null;
+        if($this->page->pagelayout == 'mycourses') {
+                global $DB;
+                $select = 'name = :name AND private = 0 AND userid IS NULL ';
+                $cpage = $DB->get_record_select('my_pages', $select, ['name' => '__courses']);
+                $mycoursespage = $cpage->id;
+        }
+        // ecastro ULPGC
+        
         foreach ($birecords as $record) {
+            
+            // ecastro ULPGC
+            if(!empty($mycoursespage)) {
+                if($this->page->subpage == $mycoursespage) {
+                    if( ($record->subpagepattern != $mycoursespage)  && ($record->region == 'content' ) ) {
+                        continue;
+                    }
+                }
+            }
+            // ecastro ULPGC
+            
             if ($blockobject = block_instance($record->blockname, $record, $this->page)) {
                 $results[] = $blockobject;
             }

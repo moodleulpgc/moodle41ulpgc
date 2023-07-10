@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.jvxl.readers");
-Clazz.load (["J.jvxl.readers.VolumeFileReader"], "J.jvxl.readers.JvxlXmlReader", ["java.lang.Float", "$.NullPointerException", "java.util.Hashtable", "JU.AU", "$.BS", "$.CU", "$.Lst", "$.P3", "$.P4", "$.PT", "$.SB", "J.jvxl.data.JvxlCoder", "$.MeshData", "J.jvxl.readers.XmlReader", "J.shapesurface.IsosurfaceMesh", "JU.C", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
+Clazz.load (["J.jvxl.readers.VolumeFileReader"], "J.jvxl.readers.JvxlXmlReader", ["java.lang.Double", "$.Float", "$.NullPointerException", "java.util.Hashtable", "JU.AU", "$.BS", "$.CU", "$.Lst", "$.P3", "$.P4", "$.PT", "$.SB", "J.jvxl.data.JvxlCoder", "$.MeshData", "J.jvxl.readers.XmlReader", "J.shapesurface.IsosurfaceMesh", "JU.C", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.JVXL_VERSION = "2.3";
 this.surfaceDataCount = 0;
@@ -106,6 +106,10 @@ JU.Logger.info ("using default edge fraction base and range");
 JU.Logger.info ("using default color fraction base and range");
 this.cJvxlEdgeNaN = String.fromCharCode (this.edgeFractionBase + this.edgeFractionRange);
 });
+Clazz.overrideMethod (c$, "getJVXLCutoff", 
+function () {
+return this.params.cutoff;
+});
 Clazz.defineMethod (c$, "readVector", 
 function (voxelVectorIndex) {
 var data = this.xr.getXmlData ("jvxlVolumeVector", this.tempDataXml, true, true);
@@ -133,11 +137,17 @@ this.xr.skipTag ("jvxlSurface");
 }, "~N,~B");
 Clazz.defineMethod (c$, "jvxlReadSurfaceInfo", 
 function () {
-var s;
 var data = this.xr.getXmlData ("jvxlSurfaceInfo", null, true, true);
 this.isXLowToHigh = J.jvxl.readers.XmlReader.getXmlAttrib (data, "isXLowToHigh").equals ("true");
-this.jvxlCutoff = this.parseFloatStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "cutoff"));
-if (!Float.isNaN (this.jvxlCutoff)) JU.Logger.info ("JVXL read: cutoff " + this.jvxlCutoff);
+var s = J.jvxl.readers.XmlReader.getXmlAttrib (data, "cutoff");
+if (s.indexOf (" ") < 0) {
+this.jvxlCutoff = this.parseFloatStr (s);
+if (!Double.isNaN (this.jvxlCutoff)) JU.Logger.info ("JVXL read: cutoff " + this.jvxlCutoff);
+} else {
+this.jvxlCutoffRange = this.parseFloatArrayStr (s);
+this.jvxlCutoff = this.jvxlCutoffRange[0];
+JU.Logger.info ("JVXL read: cutoff " + JU.Escape.eAF (this.jvxlCutoffRange));
+}this.params.cutoff = this.jvxlCutoff;
 var nContourData = this.parseIntStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "nContourData"));
 this.haveContourData = (nContourData > 0);
 this.params.isContoured = this.jvxlData.isModelConnected = J.jvxl.readers.XmlReader.getXmlAttrib (data, "contoured").equals ("true");

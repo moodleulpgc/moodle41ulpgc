@@ -1723,7 +1723,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
         $indentlimits->min = 0;
         // Legacy indentation could continue using a limit of 16,
         // but components based formats will be forced to use one level indentation only.
-        $indentlimits->max = ($usecomponents) ? 1 : 16;
+        $indentlimits->max = ($usecomponents) ? 4 : 16; // ecastro ULPGC up to 4 indents
         if (right_to_left()) {   // Exchange arrows on RTL
             $rightarrow = 't/left';
             $leftarrow  = 't/right';

@@ -130,7 +130,7 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
      * @return array
      */
     protected function get_courses_menu(renderer_base $output): array {
-        global $CFG, $OUTPUT;
+        global $CFG, $OUTPUT, $PAGE;
 
         $courses = enrol_get_my_courses();
         
@@ -147,56 +147,107 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             return [];
         }
 
-        $icon = $OUTPUT->pix_icon('i/course', get_string('course'));
-
-        $menuitems = [];
+        $currentcourseid = $PAGE->course->id;
+        if($currentcourseid == SITEID) {
+            $currentcourseid = 0;
+        }
+        
         $faicon = get_config('theme_moove', 'iconmycourses');
-        $attributes['class'] = "iwcon fa $faicon fa-lg";
+        $attributes['class'] = "ircon fa $faicon fa-lg";
         $attributes['title'] = get_string('mycourses');
         $attributes['aria-label'] = $attributes['title'];
         $attributes['role'] = 'img';
-        $menuitems[] = html_writer::tag('i', '', $attributes);
+        //$menuitems[] = html_writer::tag('i', '', $attributes);
 
+        $item = new \stdclass();
+        $item->moremenuid = uniqid();
+        $item->url = '';
+        $item->title = '';
+        $item->sort = 1;
+        $item->children  = [];
+        $item->haschildren  = false ;   !(empty($courses) && empty($remotes));
+        
+        $menuitems = [];
+        $sort = 2;
         foreach ($courses as $course) {
-            $coursecontext = \context_course::instance($course->id);
-            $linkcss = $course->visible ? "" : " class=\"dimmed\" ";
-            $menuitems[] = '-'.$icon.format_string(get_course_display_name_for_list($course)) .
-                            '|'.$CFG->wwwroot.'/course/view.php?id='.$course->id;
-            /*
-            "<a $linkcss title=\"" . format_string($course->shortname, true, array('context' => $coursecontext)) . "\" ".
-                        "href=\"$CFG->wwwroot/course/view.php?id=$course->id\">".$icon.format_string(get_course_display_name_for_list($course)). "</a>";
-                        */
+            $item->moremenuid = 'localown-'.uniqid(); 
+            $item->text = format_string(get_course_display_name_for_list($course));
+            $linkcss = $course->visible ? '' : 'dimmed';
+            if($course->id == $currentcourseid) {
+                $linkcss .= ' currentcourse'; 
+                $item->isactive = 1;
+            }
+            if($linkcss) {
+                $item->text = html_writer::span($item->text, $linkcss);
+            }
+            $item->url = $CFG->wwwroot.'/course/view.php?id='.$course->id;
+            $item->title = '';
+            $item->sort = $sort;
+            $item->children  = [];
+            $item->haschildren  = false ;  
+            $menuitems[] = clone $item;
+            $item->isactive = 0;
+            $sort++;
         }
         
         if(!empty($menuitems)) {
-            $menuitems[] = '-###';            
-            $menuitems[] = '-'.get_string('mycourses').'|'.$CFG->wwwroot.'/my/courses.php';
+            $item->moremenuid = uniqid(); 
+            $item->text = '###';
+            $item->url = '';
+            $item->divider = 1;
+            $item->sort = $sort;
+            $menuitems[] = clone $item;
+            $sort++;
+            $item->divider = null ;
+            $item->moremenuid = uniqid(); 
+            $item->text =get_string('mycourses');
+            $item->url = $CFG->wwwroot.'/my/courses.php';
+            $item->sort = $sort;
+            $menuitems[] = clone $item;
+            $sort++;
         }
         
-        // if there are regular courses & remote courses, add separator 
+        // if there are regular courses & remote courses, add separator  and title
         if(!empty($menuitems) && !empty($remotes)) {
-            $menuitems[] = '-###';            
+            $item->moremenuid = uniqid(); 
+            $item->text = '###';
+            $item->url = '';
+            $item->divider = 1;
+            $item->sort = $sort;
+            $menuitems[] = clone $item;
+            $sort++;
+            $item->divider = null ;
+            $item->moremenuid = uniqid(); 
+            $item->sort = $sort;
+            $item->text = html_writer::span($block->blockname, 'myremotecourses title');  
+            $menuitems[] = clone $item;
+            $sort++;
         }
 
         foreach ($remotes as $course) {
-            $menuitems[] = '-'.$icon.format_string(get_course_display_name_for_list($course)) . 
-                            '|'.$remotecourseurl.$course->id;
+            $item->moremenuid = 'remoteown-'.uniqid(); 
+            $item->text = format_string(get_course_display_name_for_list($course));
+            $item->url = $remotecourseurl.$course->id;
+            $item->title = '';
+            $item->sort = $sort;
+            $item->children  = [];
+            $item->haschildren  = false ;  
+            $menuitems[] = clone $item;
+            $sort++;
         }
         
-        $menuitems = implode("\n", $menuitems);
-
-        $currentlang = current_language();
-        $custommenunodes = custom_menu::convert_text_to_menu_nodes($menuitems, $currentlang);
-        //print_object($menuitems);
-        //print_object($custommenunodes[0]);
-
+        $item->moremenuid = uniqid();
+        $item->text = html_writer::tag('i', '', $attributes);
+        $item->url = '';
+        $item->title = '';
+        $item->classes = ' mycourseslist ';
+        $item->sort = 1;
+        $item->divider = null ;
+        $item->children  = $menuitems;
+        $item->haschildren  =!(empty($menuitems));        
+        
         $nodes = [];
-        foreach ($custommenunodes as $node) {
-            $nodes[] = $node->export_for_template($output);
-        }
-
-        $nodes[0]->text = html_writer::tag('i', '', $attributes);
-
+        $nodes[] = $item;
         return $nodes;
     }
 

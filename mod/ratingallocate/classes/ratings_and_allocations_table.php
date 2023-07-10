@@ -19,12 +19,13 @@
  * @copyright  2016 Janek Lasocki-Biczysko <j.lasocki-biczysko@intrallect.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace mod_ratingallocate;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/tablelib.php');
 
 class ratings_and_allocations_table extends \table_sql {
 
@@ -39,6 +40,21 @@ class ratings_and_allocations_table extends \table_sql {
     private $titles;
 
     private $shownames;
+
+    /**
+     * @var array Array of all groups being used in the restriction settings of the choices of this ratingallocate instance.
+     */
+    private $groupsofallchoices;
+
+    /**
+     * @var array Array of all group names assigned to the choices, with choice id as key.
+     */
+    private $groupnamesofchoices;
+
+    /**
+     * @var bool if true the table should show a column with the groups in this ratingallocate instance which the user belongs to.
+     */
+    private $showgroups;
 
     /**
      * @var bool if true the cells are rendered as radio buttons
@@ -56,21 +72,29 @@ class ratings_and_allocations_table extends \table_sql {
     private $renderer;
 
     public function __construct(\mod_ratingallocate_renderer $renderer, $titles, $ratingallocate,
-                                $action = ACTION_SHOW_RATINGS_AND_ALLOCATION_TABLE, $uniqueid = 'mod_ratingallocate_table', $downloadable = true) {
+            $action = ACTION_SHOW_RATINGS_AND_ALLOCATION_TABLE, $uniqueid = 'mod_ratingallocate_table', $downloadable = true) {
         parent::__construct($uniqueid);
         global $PAGE;
         $url = $PAGE->url;
         $url->params(array("action" => $action));
         $PAGE->set_url($url);
         $this->renderer = $renderer;
-        $this->titles   = $titles;
+        $this->titles = $titles;
         $this->ratingallocate = $ratingallocate;
+        $allgroupsofchoices = $this->ratingallocate->get_all_groups_of_choices();
+        $this->groupsofallchoices = array_map(function($groupid) {
+            return groups_get_group($groupid);
+        }, $allgroupsofchoices);
         if ($downloadable && has_capability('mod/ratingallocate:export_ratings', $ratingallocate->get_context())) {
             $download = optional_param('download', '', PARAM_ALPHA);
-            $this->is_downloading($download, 'Test', 'Testsheet');
+            $this->is_downloading($download,
+                $ratingallocate->ratingallocate->name . '-ratings_and_allocations',
+                'ratings_and_allocations');
         }
 
         $this->shownames = true;
+        // We only show the group column if at least one group is being used in at least one active restriction setting of a choice.
+        $this->showgroups = !empty($allgroupsofchoices);
     }
 
     /**
@@ -80,7 +104,7 @@ class ratings_and_allocations_table extends \table_sql {
      * @param $hidenorating
      * @param $showallocnecessary
      */
-    public function setup_table($choices, $hidenorating = null, $showallocnecessary = null) {
+    public function setup_table($choices, $hidenorating = null, $showallocnecessary = null, $groupselect = 0) {
 
         if (empty($this->baseurl)) {
             global $PAGE;
@@ -124,6 +148,14 @@ class ratings_and_allocations_table extends \table_sql {
                     $columns[] = 'idnumber';
                     $headers[] = get_string('idnumber');
                 }
+                if (in_array('department', $additionalfields)) {
+                    $columns[] = 'department';
+                    $headers[] = get_string('department');
+                }
+                if (in_array('institution', $additionalfields)) {
+                    $columns[] = 'institution';
+                    $headers[] = get_string('institution');
+                }
                 $columns[] = 'firstname';
                 $headers[] = get_string('firstname');
                 $columns[] = 'lastname';
@@ -136,18 +168,42 @@ class ratings_and_allocations_table extends \table_sql {
                 }
             } else {
                 $columns[] = 'fullname';
-                $headers[] = get_string('ratings_table_user', ratingallocate_MOD_NAME);
+                $headers[] = get_string('ratings_table_user', RATINGALLOCATE_MOD_NAME);
+            }
+            // We only want to add a group column, if at least one choice has an active group restriction.
+            if ($this->showgroups) {
+                $columns[] = 'groups';
+                $headers[] = get_string('groups');
+                // Prepare group names of choices.
+                $this->groupnamesofchoices = [];
+                foreach ($choices as $choice) {
+                    $this->groupnamesofchoices[$choice->id] = array_map(fn($group) => groups_get_group_name($group->id),
+                            $this->ratingallocate->get_choice_groups($choice->id));
+                }
             }
         }
 
-        foreach ($this->choicenames as $choiceid => $choicetitle) {
+        // Setup filter.
+        $this->setup_filter($hidenorating, $showallocnecessary, $groupselect);
+
+        $filteredchoices = $this->filter_choiceids(array_keys($this->choicenames));
+        foreach ($filteredchoices as $choiceid) {
+
             $columns[] = self::CHOICE_COL . $choiceid;
-            $headers[] = $choicetitle;
+            $choice = $this->ratingallocate->get_choices()[$choiceid];
+            if ($this->showgroups) {
+                $choicegroups = $this->groupnamesofchoices[$choiceid];
+                if (!$this->is_downloading() && !empty($choice->usegroups) && !empty($choicegroups)) {
+                    $this->choicenames[$choiceid] .= ' <br/>' . \html_writer::span('(' . implode(';', $choicegroups) . ')',
+                            'groupsinchoiceheadings');
+                }
+            }
+            $headers[] = $this->choicenames[$choiceid];
             if ($this->is_downloading()) {
                 $columns[] = self::CHOICE_COL . $choiceid . self::EXPORT_CHOICE_TEXT_SUFFIX;
-                $headers[] = $choicetitle . get_string('export_choice_text_suffix', ratingallocate_MOD_NAME);
+                $headers[] = $this->choicenames[$choiceid] . get_string('export_choice_text_suffix', RATINGALLOCATE_MOD_NAME);
                 $columns[] = self::CHOICE_COL . $choiceid . self::EXPORT_CHOICE_ALLOC_SUFFIX;
-                $headers[] = $choicetitle . get_string('export_choice_alloc_suffix', ratingallocate_MOD_NAME);
+                $headers[] = $this->choicenames[$choiceid] . get_string('export_choice_alloc_suffix', RATINGALLOCATE_MOD_NAME);
             }
         }
 
@@ -156,23 +212,27 @@ class ratings_and_allocations_table extends \table_sql {
 
         // Set additional table settings.
         $this->sortable(true, 'lastname');
-        $this->set_attribute('class', 'ratingallocate_ratings_table');
+        $tableclasses = 'ratingallocate_ratings_table';
+        if ($this->showgroups) {
+            $tableclasses .= ' includegroups';
+            $this->no_sorting('groups');
+        }
+        $this->set_attribute('class', $tableclasses);
 
         $this->initialbars(true);
-
-        // Setup filter.
-        $this->setup_filter($hidenorating, $showallocnecessary);
 
         // Perform the rest of the flextable setup.
         parent::setup();
 
         $this->init_sql();
+
+        $this->add_group_row();
     }
 
     /**
      * Should be called after setup_choices
      *
-     * @param array $ratings     an array of ratings -- the data for this table
+     * @param array $ratings an array of ratings -- the data for this table
      * @param array $allocations an array of allocations
      * @param bool $writeable if true the cells are rendered as radio buttons
      */
@@ -202,8 +262,8 @@ class ratings_and_allocations_table extends \table_sql {
 
         // Add rating rows for each user.
         foreach ($users as $user) {
-            $userratings        = isset($ratingsbyuser[$user->id]) ? $ratingsbyuser[$user->id] : array();
-            $userallocations    = isset($allocationsbyuser[$user->id]) ? $allocationsbyuser[$user->id] : array();
+            $userratings = isset($ratingsbyuser[$user->id]) ? $ratingsbyuser[$user->id] : array();
+            $userallocations = isset($allocationsbyuser[$user->id]) ? $allocationsbyuser[$user->id] : array();
             $this->add_user_ratings_row($user, $userratings, $userallocations);
         }
 
@@ -213,6 +273,35 @@ class ratings_and_allocations_table extends \table_sql {
         }
 
         $this->finish_output();
+    }
+
+    /**
+     * Add a row containing the group names of the groups assigned to the choices to the export table.
+     *
+     * @return void
+     */
+    private function add_group_row(): void {
+        if ($this->is_downloading()) {
+            $choiceids = array_map(
+                function ($c) {
+                    return $c->id;
+                },
+                $this->ratingallocate->get_choices()
+            );
+            $choices = $this->ratingallocate->get_choices_by_id($this->filter_choiceids($choiceids));
+            $row = [];
+            foreach ($choices as $choice) {
+                $choicegroups = $this->groupnamesofchoices[$choice->id];
+                if (empty($choice->usegroups) || empty($choicegroups)) {
+                    continue;
+                }
+                $groupnames = implode(';', $this->groupnamesofchoices[$choice->id]);
+                $row[self::CHOICE_COL . $choice->id] = $groupnames;
+                $row[self::CHOICE_COL . $choice->id . self::EXPORT_CHOICE_TEXT_SUFFIX] = $groupnames;
+                $row[self::CHOICE_COL . $choice->id . self::EXPORT_CHOICE_ALLOC_SUFFIX] = $groupnames;
+            }
+            $this->add_data_keyed($row);
+        }
     }
 
     /**
@@ -228,12 +317,22 @@ class ratings_and_allocations_table extends \table_sql {
 
         if ($this->shownames) {
             $row['fullname'] = $user;
+            // We only can add groups if at least one choice has an active group restriction.
+            if ($this->showgroups) {
+                $groupsofuser = array_filter($this->groupsofallchoices, function($group) use ($user) {
+                    return groups_is_member($group->id, $user->id);
+                });
+                $groupnames = array_map(function($group) {
+                    return $group->name;
+                }, $groupsofuser);
+                $row['groups'] = implode(';', $groupnames);
+            }
         }
 
         foreach ($userratings as $choiceid => $userrating) {
             $row[self::CHOICE_COL . $choiceid] = array(
-                'rating' => $userrating,
-                'hasallocation' => false // May be overridden later.
+                    'rating' => $userrating,
+                    'hasallocation' => false // May be overridden later.
             );
         }
 
@@ -249,8 +348,8 @@ class ratings_and_allocations_table extends \table_sql {
             if (!isset($row[$rowkey])) {
                 // User has not rated this choice, but it was assigned to him/her.
                 $row[$rowkey] = array(
-                    'rating' => null,
-                    'hasallocation' => true
+                        'rating' => null,
+                        'hasallocation' => true
                 );
             } else {
                 // User has rated this choice.
@@ -269,15 +368,21 @@ class ratings_and_allocations_table extends \table_sql {
         $row = array();
 
         if ($this->shownames) {
-            $row[] = get_string('ratings_table_sum_allocations', ratingallocate_MOD_NAME);
+            $row[] = get_string('ratings_table_sum_allocations', RATINGALLOCATE_MOD_NAME);
+            if ($this->showgroups) {
+                // In case we are showing groups, the second column is the group column and needs to be skipped in summary row.
+                $row[] = '';
+            }
         }
 
         foreach ($this->choicesum as $choiceid => $sum) {
-            $row[] = get_string(
-                'ratings_table_sum_allocations_value',
-                ratingallocate_MOD_NAME,
-                array('sum' => $sum, 'max' => $this->choicemax[$choiceid])
-            );
+            if (in_array($choiceid, $this->filter_choiceids(array_keys($this->choicenames)))) {
+                $row[] = get_string(
+                    'ratings_table_sum_allocations_value',
+                    RATINGALLOCATE_MOD_NAME,
+                    array('sum' => $sum, 'max' => $this->choicemax[$choiceid])
+                );
+            }
         }
 
         $this->add_data($row, 'ratingallocate_summary');
@@ -314,7 +419,7 @@ class ratings_and_allocations_table extends \table_sql {
             if ($celldata['rating'] != null) {
                 $ratingtext = $this->titles[$celldata['rating']];
             } else {
-                $ratingtext = get_string('no_rating_given', ratingallocate_MOD_NAME);
+                $ratingtext = get_string('no_rating_given', RATINGALLOCATE_MOD_NAME);
             }
             $hasallocation = $celldata['hasallocation'] ? 'checked' : '';
             $ratingclass = $celldata['hasallocation'] ? 'ratingallocate_member' : '';
@@ -334,10 +439,10 @@ class ratings_and_allocations_table extends \table_sql {
             }
 
             return $this->render_cell($row->id, substr($column, 7),
-                $ratingtext, $hasallocation, $ratingclass);
+                    $ratingtext, $hasallocation, $ratingclass);
         } else {
 
-            $ratingtext = get_string('no_rating_given', ratingallocate_MOD_NAME);
+            $ratingtext = get_string('no_rating_given', RATINGALLOCATE_MOD_NAME);
 
             if ($this->is_downloading()) {
                 if ($suffix === self::EXPORT_CHOICE_TEXT_SUFFIX) {
@@ -369,15 +474,15 @@ class ratings_and_allocations_table extends \table_sql {
         if ($this->writeable) {
             $result = \html_writer::start_span();
             $result .= \html_writer::tag('input', '',
-                array('class' => 'ratingallocate_checkbox_label',
-                    'type' => 'radio',
-                    'name' => 'allocdata[' . $userid . ']',
-                    'id' => 'user_' . $userid . '_alloc_' . $choiceid,
-                    'value' => $choiceid,
-                     $checked => ''));
+                    array('class' => 'ratingallocate_checkbox_label',
+                            'type' => 'radio',
+                            'name' => 'allocdata[' . $userid . ']',
+                            'id' => 'user_' . $userid . '_alloc_' . $choiceid,
+                            'value' => $choiceid,
+                            $checked => ''));
             $result .= \html_writer::label(
-                \html_writer::span('', 'ratingallocate_checkbox') . $text,
-                'user_' . $userid . '_alloc_' . $choiceid
+                    \html_writer::span('', 'ratingallocate_checkbox') . $text,
+                    'user_' . $userid . '_alloc_' . $choiceid
             );
             return $result;
         } else {
@@ -395,11 +500,11 @@ class ratings_and_allocations_table extends \table_sql {
             echo \html_writer::start_span();
             foreach ($users as $user) {
                 echo \html_writer::tag('input', '',
-                    array(
-                        'name' => 'userdata[' . $user->id . ']',
-                        'value' => $user->id,
-                        'type' => 'hidden',
-                    ));
+                        array(
+                                'name' => 'userdata[' . $user->id . ']',
+                                'value' => $user->id,
+                                'type' => 'hidden',
+                        ));
             }
             echo \html_writer::end_span();
         }
@@ -409,6 +514,8 @@ class ratings_and_allocations_table extends \table_sql {
     private $hidenorating = true;
     /** @var bool Defines if only users with no allocation should be displayed. */
     private $showallocnecessary = false;
+    /** @var int Defines the group the displayed users are in */
+    private $groupselect = 0;
 
     /**
      * Setup for filtering the table.
@@ -416,14 +523,16 @@ class ratings_and_allocations_table extends \table_sql {
      * @param $hidenorating bool if true it shows also users with no rating.
      * @param $showallocnecessary bool if true it shows only users without allocations.
      */
-    private function setup_filter($hidenorating = null, $showallocnecessary = null) {
+    private function setup_filter($hidenorating = null, $showallocnecessary = null, $groupselect = null) {
         // Get the filter settings.
-        $filter = json_decode(get_user_preferences('flextable_'.$this->uniqueid.'_filter'), true);
+        $settings = get_user_preferences('flextable_' . $this->uniqueid . '_filter');
+        $filter = $settings ? json_decode($settings, true) : null;
 
         if (!$filter) {
             $filter = array(
-                'hidenorating' => $this->hidenorating,
-                'showallocnecessary' => $this->showallocnecessary,
+                    'hidenorating' => $this->hidenorating,
+                    'showallocnecessary' => $this->showallocnecessary,
+                    'groupselect' => $this->groupselect
             );
         }
         if (!is_null($hidenorating)) {
@@ -432,9 +541,13 @@ class ratings_and_allocations_table extends \table_sql {
         if (!is_null($showallocnecessary)) {
             $filter['showallocnecessary'] = $showallocnecessary;
         }
-        set_user_preference('flextable_'.$this->uniqueid.'_filter', json_encode($filter));
+        if (!is_null($groupselect)) {
+            $filter['groupselect'] = $groupselect;
+        }
+        set_user_preference('flextable_' . $this->uniqueid . '_filter', json_encode($filter));
         $this->hidenorating = $filter['hidenorating'];
         $this->showallocnecessary = $filter['showallocnecessary'];
+        $this->groupselect = $filter['groupselect'];
     }
 
     /**
@@ -443,14 +556,16 @@ class ratings_and_allocations_table extends \table_sql {
      */
     public function get_filter() {
         $filter = array(
-            'hidenorating' => $this->hidenorating,
-            'showallocnecessary' => $this->showallocnecessary,
+                'hidenorating' => $this->hidenorating,
+                'showallocnecessary' => $this->showallocnecessary,
+                'groupselect' => $this->groupselect
         );
         return $filter;
     }
 
     /**
      * Filters a set of given userids in accordance of the two filter variables $hidenorating and $showallocnecessary
+     * and the selected group
      * @param $userids array ids, which should be filtered.
      * @return array of filtered user ids.
      */
@@ -459,51 +574,106 @@ class ratings_and_allocations_table extends \table_sql {
         if (!$userids) {
             return $userids;
         }
-        if (!$this->hidenorating && !$this->showallocnecessary) {
+        if (!$this->hidenorating && !$this->showallocnecessary && $this->groupselect == 0) {
             return $userids;
         }
         $sql = "SELECT distinct u.id FROM {user} u ";
+
         if ($this->hidenorating) {
             $sql .= "JOIN {ratingallocate_ratings} r ON u.id=r.userid " .
-                "JOIN {ratingallocate_choices} c ON r.choiceid = c.id ".
-                "AND c.ratingallocateid = :ratingallocateid ".
+                "JOIN {ratingallocate_choices} c ON r.choiceid = c.id " .
+                "AND c.ratingallocateid = :ratingallocateid " .
                 "AND c.active=1 ";
         }
         if ($this->showallocnecessary) {
             $sql .= "LEFT JOIN ({ratingallocate_allocations} a " .
-                "JOIN {ratingallocate_choices} c2 ON c2.id = a.choiceid AND c2.active=1 ".
+                "JOIN {ratingallocate_choices} c2 ON c2.id = a.choiceid AND c2.active=1 " .
                 "AND a.ratingallocateid = :ratingallocateid2 )" .
-                "ON u.id=a.userid ".
-                "WHERE a.id is null AND u.id in (".implode(",", $userids).") ";
+                "ON u.id=a.userid " .
+                "WHERE a.id is null AND u.id in (" . implode(",", $userids) . ") ";
         } else {
-            $sql .= "WHERE u.id in (".implode(",", $userids).") ";
+            $sql .= "WHERE u.id in (" . implode(",", $userids) . ") ";
+        }
+        if ($this->groupselect == -1) {
+            $sql .= "AND u.id not in ( SELECT distinct gm.userid FROM {groups_members} gm WHERE gm.groupid in (null";
+            if (!empty($gmgroupid = implode(",",
+                array_map(
+                    function($o) {
+                        return $o->id;
+                    },
+                    $this->groupsofallchoices)))) {
+                $sql .= "," . $gmgroupid . ") ) ";
+            }
+        } else if ($this->groupselect != 0) {
+            $sql .= "AND u.id in ( SELECT gm.userid FROM {groups_members} gm WHERE gm.groupid= :groupselect ) ";
         }
         return array_map(
-            function($u) {
-                return $u->id;
+                function($u) {
+                    return $u->id;
+                },
+                $DB->get_records_sql($sql,
+                        array(
+                                'ratingallocateid' => $this->ratingallocate->ratingallocate->id,
+                                'ratingallocateid2' => $this->ratingallocate->ratingallocate->id,
+                                'groupselect' => $this->groupselect
+                        )
+                )
+        );
+    }
+
+    private function filter_choiceids($choiceids) {
+        global $DB;
+        if (!$choiceids) {
+            return $choiceids;
+        }
+
+        if ($this->groupselect == 0) {
+            return $choiceids;
+        }
+
+        $sql = "SELECT distinct c.id FROM {ratingallocate_choices} c ";
+
+        if ($this->groupselect == -1) {
+            $sql .= "WHERE c.usegroups=0 " .
+                "AND c.ratingallocateid= :ratingallocateid " .
+                "AND c.active=1 " .
+                "AND c.id IN (" . implode(",", $choiceids) . ") ";
+        } else {
+            $sql .= "LEFT JOIN {ratingallocate_group_choices} gc ON c.id=gc.choiceid " .
+                "AND c.ratingallocateid= :ratingallocateid " .
+                "AND c.active=1 " .
+                "WHERE c.id IN (" . implode(",", $choiceids) . ") " .
+                "AND ( gc.groupid= :groupselect OR c.usegroups=0) ";
+        }
+
+        return array_map(
+            function($c) {
+                return $c->id;
             },
             $DB->get_records_sql($sql,
                 array(
                     'ratingallocateid' => $this->ratingallocate->ratingallocate->id,
-                    'ratingallocateid2' => $this->ratingallocate->ratingallocate->id
+                    'groupselect' => $this->groupselect
                 )
             )
         );
+
     }
 
     /**
      * Sets up the sql statement for querying the table data.
      */
     public function init_sql() {
-        $userids = array_map(function($c){return $c->id;
+        $userids = array_map(function($c) {
+            return $c->id;
         },
-            $this->ratingallocate->get_raters_in_course());
+                $this->ratingallocate->get_raters_in_course());
         $userids = $this->filter_userids($userids);
 
         $sortfields = $this->get_sort_columns();
         $fields = "u.*";
         if ($userids) {
-            $where = "u.id in (".implode(",", $userids).")";
+            $where = "u.id in (" . implode(",", $userids) . ")";
         } else {
             $where = "u.id is null";
         }

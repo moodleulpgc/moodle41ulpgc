@@ -49,7 +49,7 @@ return this.atom.atomName;
 });
 Clazz.overrideMethod (c$, "getFormalCharge", 
 function () {
-return this.atom.formalCharge;
+return (this.atom.formalCharge == -2147483648 ? 0 : this.atom.formalCharge);
 });
 Clazz.overrideMethod (c$, "getPartialCharge", 
 function () {
@@ -62,6 +62,10 @@ return this.atom.tensors;
 Clazz.overrideMethod (c$, "getRadius", 
 function () {
 return this.atom.radius;
+});
+Clazz.overrideMethod (c$, "getBondRadius", 
+function () {
+return this.atom.bondingRadius;
 });
 Clazz.overrideMethod (c$, "getVib", 
 function () {
@@ -110,5 +114,13 @@ return J.api.JmolAdapter.canonizeInsertionCode (this.atom.insertionCode);
 Clazz.overrideMethod (c$, "getXYZ", 
 function () {
 return this.atom;
+});
+Clazz.overrideMethod (c$, "getElement", 
+function () {
+return this.getElementNumber () & 0x7F;
+});
+Clazz.overrideMethod (c$, "getIsotope", 
+function () {
+return this.getElementNumber () >> 7;
 });
 });

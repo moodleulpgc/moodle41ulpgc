@@ -47,7 +47,7 @@ Clazz.defineMethod (c$, "isStereo",
 function () {
 return (this.order & 1024) != 0;
 });
-Clazz.defineMethod (c$, "isPartial", 
+Clazz.overrideMethod (c$, "isPartial", 
 function () {
 return (this.order & 224) != 0;
 });
@@ -61,7 +61,7 @@ return 0;
 });
 Clazz.defineMethod (c$, "getValence", 
 function () {
-return (!this.isCovalent () ? 0 : this.isPartial () || this.is (515) ? 1 : this.order & 7);
+return (!this.isCovalent () || this.order == 33 ? 0 : this.is (515) ? 1 : this.order & 7);
 });
 Clazz.defineMethod (c$, "deleteAtomReferences", 
 function () {
@@ -97,17 +97,14 @@ return (this.atom1 === thisAtom ? this.atom2 : this.atom2 === thisAtom ? this.at
 }, "JM.Atom");
 Clazz.defineMethod (c$, "is", 
 function (bondType) {
-return (this.order & -131073) == bondType;
+return (this.order & 131071) == bondType;
 }, "~N");
 Clazz.overrideMethod (c$, "getOtherNode", 
 function (thisAtom) {
 return (this.atom1 === thisAtom ? this.atom2 : this.atom2 === thisAtom || thisAtom == null ? this.atom1 : null);
 }, "JU.SimpleNode");
 Clazz.defineMethod (c$, "setAtropisomerOptions", 
-function (bsA, bsB) {
-var isBA = bsB.get (this.atom1.i);
-var bs1 = (isBA ? bsB : bsA);
-var bs2 = (isBA ? bsA : bsB);
+function () {
 var i1;
 var i2 = 2147483647;
 var bonds = this.atom1.bonds;
@@ -122,7 +119,7 @@ var a = bonds[i2].getOtherAtom (this.atom2);
 if (a !== this.atom1) break;
 }
 }this.order = (i1 > 2 || i2 >= bonds.length || i2 > 2 ? 1 : JU.Edge.getAtropismOrder (i1 + 1, i2 + 1));
-}, "JU.BS,JU.BS");
+});
 Clazz.overrideMethod (c$, "getCIPChirality", 
 function (doCalculate) {
 return "";
@@ -138,5 +135,9 @@ Clazz.overrideMethod (c$, "getAtom",
 function (i) {
 return (i == 1 ? this.atom2 : this.atom1);
 }, "~N");
+Clazz.defineMethod (c$, "isCovalentNotPartial0", 
+function () {
+return ((this.order & 1023) != 0 && this.order != 33);
+});
 c$.myVisibilityFlag = c$.prototype.myVisibilityFlag = JV.JC.getShapeVisibilityFlag (1);
 });

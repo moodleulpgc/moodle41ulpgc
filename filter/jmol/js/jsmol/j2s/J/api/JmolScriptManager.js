@@ -5,4 +5,6 @@ Clazz.defineStatics (c$,
 "NO_SCRIPT", 2,
 "IS_APPEND", 4,
 "NO_AUTOPLAY", 8,
-"FILE_DROPPED", 16);
+"FILE_DROPPED", 16,
+"SCRIPT_ONLY", 32,
+"CHECK_DIMS", 64);

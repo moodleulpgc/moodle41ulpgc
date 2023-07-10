@@ -26,3 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['addresourceoractivityhere'] = 'Añadir una actividad o recurso aquí';
+$string['actionsmenucourse'] = 'Panel de acciones del Curso';
+$string['actionsmenuactivity'] = 'Panel de acciones de la Actividad';

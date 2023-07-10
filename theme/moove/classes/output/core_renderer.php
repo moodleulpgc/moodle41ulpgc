@@ -513,4 +513,16 @@ class core_renderer extends \theme_boost\output\core_renderer {
 
         return $output;
     }
+    
+    
+    /**
+     * This renders the navbar.
+     * Uses bootstrap compatible html.
+    */
+    public function navbar(): string {
+        $newnav = new \theme_moove\boostnavbar($this->page);
+        return $this->render_from_template('core/navbar', $newnav);        
+        //return parent::navbar();
+    }    
+    
 }

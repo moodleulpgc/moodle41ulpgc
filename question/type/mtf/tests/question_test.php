@@ -24,6 +24,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_mtf;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -36,26 +38,26 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group       qtype_mtf
  */
-class qtype_mtf_question_test extends advanced_testcase {
+class question_test extends \advanced_testcase {
 
     /**
      * Makes a qtype_mtf question.
      * @return qtype_mtf
      */
     public function make_a_mtf_question() {
-        question_bank::load_question_definition_classes('mtf');
-        $mtf = new qtype_mtf_question();
-        test_question_maker::initialise_a_question($mtf);
+        \question_bank::load_question_definition_classes('mtf');
+        $mtf = new \qtype_mtf_question();
+        \test_question_maker::initialise_a_question($mtf);
         $mtf->name = "MTF Question";
         $mtf->idnumber = 1;
         $mtf->status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
         $mtf->questiontext = 'the right choices are option 1 and option 2';
         $mtf->generalfeedback = 'You should do this and that';
-        $mtf->qtype = question_bank::get_qtype('mtf');
+        $mtf->qtype = \question_bank::get_qtype('mtf');
         $mtf->answernumbering = 'abc';
         $mtf->deduction = 0.0;
         $mtf->scoringmethod = "subpoints";
-        $mtf->options = new stdClass();
+        $mtf->options = new \stdClass();
         $mtf->shuffleanswers = 0;
         $mtf->numberofrows = 2;
         $mtf->numberofcolumns = 2;
@@ -154,6 +156,8 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test get_expected_data
+     *
+     * @covers ::get_expected_data
      */
     public function test_get_expected_data() {
         $question = $this->make_a_mtf_question();
@@ -163,6 +167,8 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test is_complete_response
+     *
+     * @covers ::is_complete_response
      */
     public function test_is_complete_response() {
         $question = $this->make_a_mtf_question();
@@ -173,6 +179,8 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test is_gradable_response
+     *
+     * @covers ::is_gradable_response
      */
     public function test_is_gradable_response() {
         $question = $this->make_a_mtf_question();
@@ -188,20 +196,24 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test get_order
+     *
+     * @covers ::get_order
      */
     public function test_get_order() {
         $question = $this->make_a_mtf_question();
         $question->shuffleanswers = 1;
-        $question->start_attempt(new question_attempt_step(), 1);
-        $this->assertEquals( $question->order, $question->get_order(test_question_maker::get_a_qa($question)));
+        $question->start_attempt(new \question_attempt_step(), 1);
+        $this->assertEquals( $question->order, $question->get_order(\test_question_maker::get_a_qa($question)));
         unset($question);
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
-        $this->assertEquals( array(0 => 5, 1 => 6), $question->get_order(test_question_maker::get_a_qa($question)));
+        $question->start_attempt(new \question_attempt_step(), 1);
+        $this->assertEquals( array(0 => 5, 1 => 6), $question->get_order(\test_question_maker::get_a_qa($question)));
     }
 
     /**
      * Test is_correct
+     *
+     * @covers ::is_correct
      */
     public function test_is_correct() {
         $question = $this->make_a_mtf_question();
@@ -213,10 +225,12 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test is_same_response
+     *
+     * @covers ::is_same_response
      */
     public function test_is_same_response() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertTrue($question->is_same_response(
             array(),
             array()));
@@ -242,43 +256,51 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test grading
+     *
+     * @covers ::get_correct_response
      */
     public function test_grading() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertEquals(array('option0' => '1', 'option1' => '2'),
         $question->get_correct_response());
     }
 
     /**
      * Test summarise_response
+     *
+     * @covers ::summarise_response
      */
     public function test_summarise_response() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $summary = $question->summarise_response(array('option0' => '1', 'option1' => '2'),
-        test_question_maker::get_a_qa($question));
+        \test_question_maker::get_a_qa($question));
         $this->assertEquals('option text 1: True; option text 2: False', $summary);
     }
 
     /**
      * Test classify_response
+     *
+     * @covers ::classify_response
      */
     public function test_classify_response() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertEquals(array(
-            '5' => new question_classified_response(3, 'True', 0.5),
-            '6' => new question_classified_response(4, 'False', 0.5)),
+            '5' => new \question_classified_response(3, 'True', 0.5),
+            '6' => new \question_classified_response(4, 'False', 0.5)),
             $question->classify_response(array('option0' => '1', 'option1' => '2')));
         $this->assertEquals(
-            array('5' => question_classified_response::no_response(),
-            '6' => question_classified_response::no_response()),
+            array('5' => \question_classified_response::no_response(),
+            '6' => \question_classified_response::no_response()),
             $question->classify_response(array()));
     }
 
     /**
      * Test make_html_inline
+     *
+     * @covers ::make_html_inline
      */
     public function test_make_html_inline() {
         $question = $this->make_a_mtf_question();
@@ -294,20 +316,24 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test get_hint
+     *
+     * @covers ::get_hint
      */
     public function test_get_hint() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
-        $this->assertEquals('This is the 1st hint', $question->get_hint(0, test_question_maker::get_a_qa($question))->hint);
-        $this->assertEquals('This is the 2nd hint', $question->get_hint(1, test_question_maker::get_a_qa($question))->hint);
+        $question->start_attempt(new \question_attempt_step(), 1);
+        $this->assertEquals('This is the 1st hint', $question->get_hint(0, \test_question_maker::get_a_qa($question))->hint);
+        $this->assertEquals('This is the 2nd hint', $question->get_hint(1, \test_question_maker::get_a_qa($question))->hint);
     }
 
     /**
      * Test compute_final_grade_subpoints
+     *
+     * @covers ::compute_final_grade
      */
     public function test_compute_final_grade_subpoints() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertEquals('1.0', $question->compute_final_grade(array(
             0 => array('option0' => '1', 'option1' => '2')),
             1));
@@ -337,11 +363,13 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test compute_final_grade_mtfonezero
+     *
+     * @covers ::compute_final_grade
      */
     public function test_compute_final_grade_mtfonezero() {
         $question = $this->make_a_mtf_question();
         $question->scoringmethod = 'mtfonezero';
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertEquals('1.0', $question->compute_final_grade(array(
             0 => array('option0' => '1', 'option1' => '2')),
             1));
@@ -380,10 +408,12 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test grade_response_subpoints
+     *
+     * @covers ::grade_response
      */
     public function test_grade_response_subpoints() {
         $question = $this->make_a_mtf_question();
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertEquals(
             "1.0", $question->grade_response(array('option0' => '1', 'option1' => '2'))[0]);
         $this->assertEquals(
@@ -396,11 +426,13 @@ class qtype_mtf_question_test extends advanced_testcase {
 
     /**
      * Test grade_response_mtfonezero
+     *
+     * @covers ::grade_response
      */
     public function test_grade_response_mtfonezero() {
         $question = $this->make_a_mtf_question();
         $question->scoringmethod = 'mtfonezero';
-        $question->start_attempt(new question_attempt_step(), 1);
+        $question->start_attempt(new \question_attempt_step(), 1);
         $this->assertEquals(
             "1.0", $question->grade_response(array('option0' => '1', 'option1' => '2'))[0]);
         $this->assertEquals(

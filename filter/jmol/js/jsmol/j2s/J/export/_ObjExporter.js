@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.export");
-Clazz.load (["J.export.__CartesianExporter", "java.util.HashSet", "JU.P3"], "J.export._ObjExporter", ["java.lang.Short", "java.util.Hashtable", "JU.AU", "$.BS", "$.CU", "$.Lst", "$.M4", "$.PT", "$.Quat", "$.SB", "$.V3", "J.export.MeshData", "JM.Atom", "JU.Escape", "$.Logger", "$.MeshSurface", "JV.Viewer"], function () {
+Clazz.load (["J.export.__CartesianExporter", "java.util.HashSet", "JU.P3"], "J.export._ObjExporter", ["java.lang.NullPointerException", "$.Short", "java.util.Hashtable", "JU.AU", "$.BS", "$.CU", "$.Lst", "$.M4", "$.PT", "$.Quat", "$.SB", "$.V3", "J.export.MeshData", "JM.Atom", "JU.Escape", "$.Logger", "$.MeshSurface", "JV.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.surfacesOnly = false;
 this.normalizeUV = true;
@@ -207,6 +207,8 @@ var retVal = this.initOutput (vwr, privateKey, gdata, params);
 if (!retVal) {
 this.debugPrint ("End initializeOutput (error in super):");
 return false;
+}if (this.fileName == null) {
+throw  new NullPointerException ("Cannot output two files (OBJ and MTL) to string");
 }var dot = this.fileName.lastIndexOf (".");
 if (dot < 0) {
 this.debugPrint ("End initializeOutput (Error creating .mtl file):");

@@ -291,3 +291,4 @@ Si este campo queda vacío solo los profesores podrán ver la imagen. ';
 $string['archivereuse'] = 'Archivo/Reuso';
 $string['rolepermissions'] = 'Permisos';
 $string['participants'] = 'Lista de Participantes matriculados';
+$string['myindexcleaned'] = 'Páginas My Index de usuario sin bloques adicionales';

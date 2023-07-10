@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.g3d");
-Clazz.load (["J.api.JmolRendererInterface", "JU.GData", "JU.P3i", "$.V3"], "J.g3d.Graphics3D", ["java.lang.NullPointerException", "java.util.Arrays", "JU.AU", "J.api.Interface", "J.c.STER", "J.g3d.CylinderRenderer", "$.LineRenderer", "$.Pixelator", "$.PixelatorScreened", "$.PixelatorShaded", "$.PixelatorT", "$.Platform3D", "$.SphereRenderer", "$.TextRenderer", "$.TextString", "JU.C", "$.Font", "$.Normix"], function () {
+Clazz.load (["J.api.JmolRendererInterface", "JU.GData", "JU.P3i", "$.V3"], "J.g3d.Graphics3D", ["java.lang.NullPointerException", "java.util.Arrays", "JU.AU", "J.api.Interface", "J.c.STER", "J.g3d.CylinderRenderer", "$.LineRenderer", "$.Pixelator", "$.PixelatorScreened", "$.PixelatorShaded", "$.PixelatorT", "$.Platform3D", "$.SphereRenderer", "$.TextRenderer", "$.TextString", "JU.C", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.platform = null;
 this.line3d = null;
@@ -103,7 +103,7 @@ switch (tok) {
 case 1073741880:
 if (this.circle3d == null) this.circle3d = this.getRenderer ("Circle");
 break;
-case 553648145:
+case 553648143:
 if (this.hermite3d == null) this.hermite3d = this.getRenderer ("Hermite");
 case 1073742182:
 if (this.triangle3d == null) {
@@ -548,6 +548,7 @@ if (heightFill <= 0) return;
 y = 0;
 }if (y + heightFill > this.height) heightFill = this.height - y;
 var c = this.argbCurrent;
+if (this.isAntialiased ()) c = J.g3d.Graphics3D.fixTextImageRGB (c);
 var zb = this.zbuf;
 var p = this.pixel;
 while (--heightFill >= 0) this.plotPixelsUnclippedCount (c, widthFill, x, y++, z, w, zb, p);
@@ -629,10 +630,6 @@ if ((b & 0xFF000000) == (-16777216)) jmolRenderer.plotImagePixel (b, x + j, y + 
 }
 
 }}, "~N,~N,~N,~O,J.api.JmolRendererInterface,~N,~N,~N");
-Clazz.overrideMethod (c$, "setFontFid", 
-function (fid) {
-this.currentFont = JU.Font.getFont3D (fid);
-}, "~N");
 Clazz.overrideMethod (c$, "setFont", 
 function (font3d) {
 this.currentFont = font3d;
@@ -662,17 +659,20 @@ run += run;
 rise += rise;
 }this.setScreeni (pointA, this.sA);
 this.setScreeni (pointB, this.sB);
-this.line3d.plotLineBits (this.argbCurrent, this.argbCurrent, this.sA, this.sB, run, rise, true);
-if (this.isAntialiased ()) {
-if (Math.abs (pointA.x - pointB.x) < Math.abs (pointA.y - pointB.y)) {
+this.drawLineABBits (run, rise, true);
+}, "~N,~N,JU.P3,JU.P3");
+Clazz.defineMethod (c$, "drawLineABBits", 
+function (run, rise, andClip) {
+this.line3d.plotLineBits (this.argbCurrent, this.argbCurrent, this.sA, this.sB, run, rise, andClip);
+if (Math.abs (this.sA.x - this.sB.x) < Math.abs (this.sA.y - this.sB.y)) {
 this.sA.x += 1;
 this.sB.x += 1;
-this.line3d.plotLineBits (this.argbCurrent, this.argbCurrent, this.sA, this.sB, run, rise, true);
+this.line3d.plotLineBits (this.argbCurrent, this.argbCurrent, this.sA, this.sB, run, rise, andClip);
 } else {
 this.sA.y += 1;
 this.sB.y += 1;
-this.line3d.plotLineBits (this.argbCurrent, this.argbCurrent, this.sA, this.sB, run, rise, true);
-}}}, "~N,~N,JU.P3,JU.P3");
+this.line3d.plotLineBits (this.argbCurrent, this.argbCurrent, this.sA, this.sB, run, rise, andClip);
+}}, "~N,~N,~B");
 Clazz.defineMethod (c$, "setScreeni", 
  function (pt, p) {
 p.x = Math.round (pt.x);
@@ -700,6 +700,16 @@ this.setScreeni (pointA, this.sA);
 this.setScreeni (pointB, this.sB);
 this.line3d.plotLineBits (argbA, this.argbCurrent, this.sA, this.sB, 0, 0, false);
 }}, "~N,~N,JU.P3,JU.P3");
+Clazz.overrideMethod (c$, "drawLinePixels", 
+function (a, b, z, zslab) {
+this.sA.setT (a);
+this.sB.setT (b);
+this.sA.z = this.sB.z = z;
+var slab0 = this.slab;
+if (zslab == -2147483648) this.slab = 0;
+this.drawLineABBits (0, 0, false);
+this.slab = slab0;
+}, "JU.P3i,JU.P3i,~N,~N");
 Clazz.overrideMethod (c$, "drawLineAB", 
 function (pointA, pointB) {
 this.setScreeni (pointA, this.sA);
@@ -1185,6 +1195,10 @@ Clazz.overrideMethod (c$, "initializeOutput",
 function (vwr, privateKey, params) {
 return false;
 }, "JV.Viewer,~N,java.util.Map");
+c$.fixTextImageRGB = Clazz.defineMethod (c$, "fixTextImageRGB", 
+function (argb) {
+return ((argb & 0xC0C0C0) == 0 ? argb | 0x040404 : argb);
+}, "~N");
 Clazz.defineStatics (c$,
 "sort", null,
 "nullShadeIndex", 50);

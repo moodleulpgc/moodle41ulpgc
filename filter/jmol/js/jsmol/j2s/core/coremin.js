@@ -65,7 +65,7 @@
 var $t$;
 //var c$;
 Clazz_declarePackage ("JM");
-Clazz_load (null, "JM.Minimizer", ["java.lang.Float", "java.util.Hashtable", "JU.AU", "$.BS", "$.Lst", "J.i18n.GT", "JM.MMConstraint", "$.MinAngle", "$.MinAtom", "$.MinBond", "$.MinTorsion", "$.MinimizationThread", "JM.FF.ForceFieldMMFF", "$.ForceFieldUFF", "JU.BSUtil", "$.Escape", "$.Logger"], function () {
+Clazz_load (["JU.P3"], "JM.Minimizer", ["java.lang.Float", "java.util.Hashtable", "JU.AU", "$.BS", "$.Lst", "J.i18n.GT", "JM.MMConstraint", "$.MinAngle", "$.MinAtom", "$.MinBond", "$.MinTorsion", "$.MinimizationThread", "JM.FF.ForceFieldMMFF", "$.ForceFieldUFF", "JU.BSUtil", "$.Escape", "$.Logger"], function () {
 c$ = Clazz_decorateAsClass (function () {
 this.vwr = null;
 this.atoms = null;
@@ -92,15 +92,21 @@ this.bsAtoms = null;
 this.bsFixedDefault = null;
 this.bsFixed = null;
 this.constraints = null;
+this.bsBasis = null;
 this.isSilent = false;
 this.constraintMap = null;
 this.elemnoMax = 0;
 this.isQuick = false;
 this.$minimizationOn = false;
 this.minimizationThread = null;
+this.trustRadius = 0.3;
 this.coordSaved = null;
+this.p = null;
 Clazz_instantialize (this, arguments);
 }, JM, "Minimizer");
+Clazz_prepareFields (c$, function () {
+this.p =  new JU.P3 ();
+});
 Clazz_makeConstructor (c$, 
 function () {
 });
@@ -135,6 +141,77 @@ break;
 }
 return this;
 }, "~S,~O");
+Clazz_defineMethod (c$, "minimize", 
+function (steps, crit, bsSelected, bsFixed, bsBasis, flags, ff) {
+this.bsBasis = bsBasis;
+this.trustRadius = (bsBasis == null ? 0.3 : 0.03);
+this.isSilent = ((flags & 1) == 1);
+this.isQuick = (ff.indexOf ("2D") >= 0 || (flags & 4) == 4);
+var haveFixed = ((flags & 2) == 2);
+var bsXx = ((flags & 32) == 32 ?  new JU.BS () : null);
+var val;
+if (crit <= 0) {
+val = this.vwr.getP ("minimizationCriterion");
+if (val != null && Clazz_instanceOf (val, Float)) crit = (val).floatValue ();
+}this.crit = Math.max (crit, 0.0001);
+if (steps == 2147483647) {
+val = this.vwr.getP ("minimizationSteps");
+if (val != null && Clazz_instanceOf (val, Integer)) steps = (val).intValue ();
+}this.steps = steps;
+try {
+this.setEnergyUnits ();
+if (!haveFixed && this.bsFixedDefault != null) bsFixed.and (this.bsFixedDefault);
+if (this.$minimizationOn) return false;
+var pFF0 = this.pFF;
+this.getForceField (ff);
+if (this.pFF == null) {
+JU.Logger.error (J.i18n.GT.o (J.i18n.GT.$ ("Could not get class for force field {0}"), ff));
+return false;
+}JU.Logger.info ("minimize: initializing " + this.pFF.name + " (steps = " + steps + " criterion = " + crit + ")" + " silent=" + this.isSilent + " quick=" + this.isQuick + " fixed=" + haveFixed + " Xx=" + (bsXx != null) + " ...");
+if (bsSelected.nextSetBit (0) < 0) {
+JU.Logger.error (J.i18n.GT.$ ("No atoms selected -- nothing to do!"));
+return false;
+}this.atoms = this.vwr.ms.at;
+this.bsAtoms = JU.BSUtil.copy (bsSelected);
+for (var i = this.bsAtoms.nextSetBit (0); i >= 0; i = this.bsAtoms.nextSetBit (i + 1)) {
+if (this.atoms[i].getElementNumber () == 0) {
+if (bsXx == null) {
+this.bsAtoms.clear (i);
+JU.Logger.info ("minimize: Ignoring Xx for atomIndex=" + i);
+} else {
+bsXx.set (i);
+JU.Logger.info ("minimize: Setting Xx to fluorine for atomIndex=" + i);
+this.atoms[i].setAtomicAndIsotopeNumber (9);
+}}}
+if (bsFixed != null) this.bsAtoms.or (bsFixed);
+this.ac = this.bsAtoms.cardinality ();
+var sameAtoms = JU.BSUtil.areEqual (bsSelected, this.bsSelected);
+this.bsSelected = bsSelected;
+if (pFF0 != null && this.pFF !== pFF0) sameAtoms = false;
+if (!sameAtoms) this.pFF.clear ();
+if ((!sameAtoms || !JU.BSUtil.areEqual (bsFixed, this.bsFixed)) && !this.setupMinimization ()) {
+this.clear ();
+return false;
+}if (steps > 0) {
+this.bsTaint = JU.BSUtil.copy (this.bsAtoms);
+JU.BSUtil.andNot (this.bsTaint, bsFixed);
+this.vwr.ms.setTaintedAtoms (this.bsTaint, 2);
+}if (bsFixed != null) this.bsFixed = bsFixed;
+this.setAtomPositions ();
+if (this.constraints != null) for (var i = this.constraints.size (); --i >= 0; ) this.constraints.get (i).set (steps, this.bsAtoms, this.atomMap);
+
+this.pFF.setConstraints (this);
+if (steps <= 0) this.getEnergyOnly ();
+ else if (this.isSilent || !this.vwr.useMinimizationThread ()) this.minimizeWithoutThread ();
+ else this.setMinimizationOn (true);
+} finally {
+if (bsXx != null && !bsXx.isEmpty ()) {
+for (var i = bsXx.nextSetBit (0); i >= 0; i = bsXx.nextSetBit (i + 1)) {
+this.atoms[i].setAtomicAndIsotopeNumber (0);
+}
+}}
+return true;
+}, "~N,~N,JU.BS,JU.BS,JU.BS,~N,~S");
 Clazz_defineMethod (c$, "getProperty", 
 function (propertyName, param) {
 if (propertyName.equals ("log")) {
@@ -191,59 +268,6 @@ this.constraints = null;
 this.constraintMap = null;
 this.pFF = null;
 });
-Clazz_defineMethod (c$, "minimize", 
-function (steps, crit, bsSelected, bsFixed, flags, ff) {
-this.isSilent = ((flags & 1) == 1);
-this.isQuick = (ff.indexOf ("2D") >= 0 || (flags & 4) == 4);
-var haveFixed = ((flags & 2) == 2);
-var val;
-this.setEnergyUnits ();
-if (steps == 2147483647) {
-val = this.vwr.getP ("minimizationSteps");
-if (val != null && Clazz_instanceOf (val, Integer)) steps = (val).intValue ();
-}this.steps = steps;
-if (!haveFixed && this.bsFixedDefault != null) bsFixed.and (this.bsFixedDefault);
-if (crit <= 0) {
-val = this.vwr.getP ("minimizationCriterion");
-if (val != null && Clazz_instanceOf (val, Float)) crit = (val).floatValue ();
-}this.crit = Math.max (crit, 0.0001);
-if (this.$minimizationOn) return false;
-var pFF0 = this.pFF;
-this.getForceField (ff);
-if (this.pFF == null) {
-JU.Logger.error (J.i18n.GT.o (J.i18n.GT.$ ("Could not get class for force field {0}"), ff));
-return false;
-}JU.Logger.info ("minimize: initializing " + this.pFF.name + " (steps = " + steps + " criterion = " + crit + ") ...");
-if (bsSelected.nextSetBit (0) < 0) {
-JU.Logger.error (J.i18n.GT.$ ("No atoms selected -- nothing to do!"));
-return false;
-}this.atoms = this.vwr.ms.at;
-this.bsAtoms = JU.BSUtil.copy (bsSelected);
-for (var i = this.bsAtoms.nextSetBit (0); i >= 0; i = this.bsAtoms.nextSetBit (i + 1)) if (this.atoms[i].getElementNumber () == 0) this.bsAtoms.clear (i);
-
-if (bsFixed != null) this.bsAtoms.or (bsFixed);
-this.ac = this.bsAtoms.cardinality ();
-var sameAtoms = JU.BSUtil.areEqual (bsSelected, this.bsSelected);
-this.bsSelected = bsSelected;
-if (pFF0 != null && this.pFF !== pFF0) sameAtoms = false;
-if (!sameAtoms) this.pFF.clear ();
-if ((!sameAtoms || !JU.BSUtil.areEqual (bsFixed, this.bsFixed)) && !this.setupMinimization ()) {
-this.clear ();
-return false;
-}if (steps > 0) {
-this.bsTaint = JU.BSUtil.copy (this.bsAtoms);
-JU.BSUtil.andNot (this.bsTaint, bsFixed);
-this.vwr.ms.setTaintedAtoms (this.bsTaint, 2);
-}if (bsFixed != null) this.bsFixed = bsFixed;
-this.setAtomPositions ();
-if (this.constraints != null) for (var i = this.constraints.size (); --i >= 0; ) this.constraints.get (i).set (steps, this.bsAtoms, this.atomMap);
-
-this.pFF.setConstraints (this);
-if (steps <= 0) this.getEnergyOnly ();
- else if (this.isSilent || !this.vwr.useMinimizationThread ()) this.minimizeWithoutThread ();
- else this.setMinimizationOn (true);
-return true;
-}, "~N,~N,JU.BS,JU.BS,~N,~S");
 Clazz_defineMethod (c$, "setEnergyUnits", 
  function () {
 var s = this.vwr.g.energyUnits;
@@ -309,7 +333,7 @@ if (i2 < i1) {
 var ii = i1;
 i1 = i2;
 i2 = ii;
-}var bondOrder = bond.getCovalentOrder ();
+}var bondOrder = (bond.isPartial () ? 0 : bond.getCovalentOrder ());
 switch (bondOrder) {
 case 0:
 continue;
@@ -427,7 +451,7 @@ this.minimizationThread.start ();
 Clazz_defineMethod (c$, "getEnergyOnly", 
  function () {
 if (this.pFF == null || this.vwr == null) return;
-this.pFF.steepestDescentInitialize (this.steps, this.crit);
+this.pFF.steepestDescentInitialize (this.steps, this.crit, this.trustRadius);
 this.vwr.setFloatProperty ("_minimizationEnergyDiff", 0);
 this.reportEnergy ();
 this.vwr.setStringProperty ("_minimizationStatus", "calculate");
@@ -440,14 +464,14 @@ this.vwr.setFloatProperty ("_minimizationEnergy", this.pFF.toUserUnits (this.pFF
 Clazz_defineMethod (c$, "startMinimization", 
 function () {
 try {
-JU.Logger.info ("minimizer: startMinimization");
+JU.Logger.info ("minimize: startMinimization");
 this.vwr.setIntProperty ("_minimizationStep", 0);
 this.vwr.setStringProperty ("_minimizationStatus", "starting");
 this.vwr.setFloatProperty ("_minimizationEnergy", 0);
 this.vwr.setFloatProperty ("_minimizationEnergyDiff", 0);
 this.vwr.notifyMinimizationStatus ();
 this.vwr.stm.saveCoordinates ("minimize", this.bsTaint);
-this.pFF.steepestDescentInitialize (this.steps, this.crit);
+this.pFF.steepestDescentInitialize (this.steps, this.crit, this.trustRadius);
 this.reportEnergy ();
 this.saveCoordinates ();
 } catch (e) {
@@ -490,8 +514,8 @@ this.vwr.setIntProperty ("_minimizationStep", this.pFF.getCurrentStep ());
 this.reportEnergy ();
 this.vwr.setStringProperty ("_minimizationStatus", (failed ? "failed" : "done"));
 this.vwr.notifyMinimizationStatus ();
-this.vwr.refresh (3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
-}JU.Logger.info ("minimizer: endMinimization");
+this.vwr.refresh (3, "minimize:done" + (failed ? " EXPLODED" : "OK"));
+}JU.Logger.info ("minimize: endMinimization");
 });
 Clazz_defineMethod (c$, "saveCoordinates", 
  function () {
@@ -518,14 +542,27 @@ if (coordAreOK) this.endMinimization ();
 Clazz_defineMethod (c$, "updateAtomXYZ", 
 function () {
 if (this.steps <= 0) return;
+if (this.bsBasis == null) {
 for (var i = 0; i < this.ac; i++) {
 var minAtom = this.minAtoms[i];
-var atom = minAtom.atom;
-atom.x = minAtom.coord[0];
-atom.y = minAtom.coord[1];
-atom.z = minAtom.coord[2];
+minAtom.atom.set (minAtom.coord[0], minAtom.coord[1], minAtom.coord[2]);
 }
-this.vwr.refreshMeasures (false);
+} else {
+var a;
+for (var i = 0; i < this.ac; i++) {
+if (this.bsFixed != null && this.bsFixed.get (i)) continue;
+var minAtom = this.minAtoms[i];
+if (this.bsBasis.get ((a = minAtom.atom).i)) {
+this.p.set (minAtom.coord[0], minAtom.coord[1], minAtom.coord[2]);
+this.vwr.getModelkit (false).moveConstrained (a.i, this.p, true, true);
+}}
+for (var i = 0; i < this.ac; i++) {
+var minAtom = this.minAtoms[i];
+minAtom.coord[0] = (a = minAtom.atom).x;
+minAtom.coord[1] = a.y;
+minAtom.coord[2] = a.z;
+}
+}this.vwr.refreshMeasures (false);
 });
 Clazz_defineMethod (c$, "minimizeWithoutThread", 
  function () {
@@ -547,6 +584,10 @@ ff.setArrays (ms.at, bsAtoms, ms.bo, ms.bondCount, true, true);
 this.vwr.setAtomProperty (bsAtoms, 1086326785, 0, 0, null, null, ff.getAtomTypeDescriptions ());
 this.vwr.setAtomProperty (bsReport == null ? bsAtoms : bsReport, 1111492619, 0, 0, null, ff.getPartialCharges (), null);
 }, "JM.ModelSet,JU.BS,JU.BS");
+Clazz_defineMethod (c$, "getForceFieldUsed", 
+function () {
+return (this.pFF == null ? null : this.pFF.name);
+});
 });
 Clazz_declarePackage ("JM");
 c$ = Clazz_decorateAsClass (function () {
@@ -1033,6 +1074,7 @@ this.minAngles = null;
 this.minTorsions = null;
 this.minPositions = null;
 this.bsFixed = null;
+this.trustRadius = 0.3;
 this.minimizer = null;
 Clazz_instantialize (this, arguments);
 }, JM.FF, "ForceField");
@@ -1053,9 +1095,10 @@ this.calc.setConstraints (m.constraints);
 this.coordSaved = null;
 }, "JM.Minimizer");
 Clazz_defineMethod (c$, "steepestDescentInitialize", 
-function (stepMax, criterion) {
+function (stepMax, criterion, trustRadius) {
 this.stepMax = stepMax;
 this.criterion = criterion / this.toUserUnits (1);
+this.trustRadius = trustRadius;
 this.currentStep = 0;
 this.clearForces ();
 this.calc.setLoggingEnabled (true);
@@ -1071,7 +1114,7 @@ this.e0 = this.energyFull (false, false);
 s = JU.PT.sprintf (" Initial " + this.name + " E = %10.3f " + this.minimizer.units + "/mol criterion = %8.6f max steps = " + stepMax, "ff",  Clazz_newArray (-1, [Float.$valueOf (this.toUserUnits (this.e0)), Float.$valueOf (this.toUserUnits (criterion))]));
 this.minimizer.report (s, false);
 this.calc.appendLogData (s);
-}, "~N,~N");
+}, "~N,~N,~N");
 Clazz_defineMethod (c$, "clearForces", 
  function () {
 for (var i = 0; i < this.minAtomCount; i++) this.minAtoms[i].force[0] = this.minAtoms[i].force[1] = this.minAtoms[i].force[2] = 0;
@@ -1177,29 +1220,29 @@ return this.calc.energyES (gradients);
 }, "~B");
 Clazz_defineMethod (c$, "linearSearch", 
  function () {
-var step = 0.23;
-var trustRadius = 0.3;
-var trustRadius2 = trustRadius * trustRadius;
+var step = 0.75 * this.trustRadius;
+var trustRadius2 = this.trustRadius * this.trustRadius;
 var e1 = this.energyFull (false, true);
 for (var iStep = 0; iStep < 10; iStep++) {
 this.saveCoordinates ();
-for (var i = 0; i < this.minAtomCount; ++i) if (this.bsFixed == null || !this.bsFixed.get (i)) {
+for (var i = 0; i < this.minAtomCount; ++i) {
+if (this.bsFixed == null || !this.bsFixed.get (i)) {
 var force = this.minAtoms[i].force;
 var coord = this.minAtoms[i].coord;
 var f2 = (force[0] * force[0] + force[1] * force[1] + force[2] * force[2]);
 if (f2 > trustRadius2 / step / step) {
-f2 = trustRadius / Math.sqrt (f2) / step;
+f2 = this.trustRadius / Math.sqrt (f2) / step;
 force[0] *= f2;
 force[1] *= f2;
 force[2] *= f2;
 }for (var j = 0; j < 3; ++j) {
 if (JM.Util.isFinite (force[j])) {
 var tempStep = force[j] * step;
-if (tempStep > trustRadius) coord[j] += trustRadius;
- else if (tempStep < -trustRadius) coord[j] -= trustRadius;
+if (tempStep > this.trustRadius) coord[j] += this.trustRadius;
+ else if (tempStep < -this.trustRadius) coord[j] -= this.trustRadius;
  else coord[j] += tempStep;
 }}
-}
+}}
 var e2 = this.energyFull (false, true);
 if (JM.Util.isNear3 (e2, e1, 1.0e-3)) break;
 if (e2 > e1) {
@@ -1358,7 +1401,7 @@ return true;
 Clazz_defineMethod (c$, "getParameters", 
 function (isQuick) {
 this.getAtomTypes ();
-var resourceName = (isQuick ? "mmff94.par.txt" : "mmff94_2d.par.txt");
+var resourceName = (isQuick ? "mmff94_2d.par.txt" : "mmff94.par.txt");
 var data =  new java.util.Hashtable ();
 if (JU.Logger.debugging) JU.Logger.debug ("reading data from " + resourceName);
 var br = null;
@@ -1717,20 +1760,23 @@ var type1 = (it < 0 ? -it : at1.mmType);
 it = aTypes[a2.i];
 var at2 = JM.FF.ForceFieldMMFF.atomTypes.get (Math.max (0, it));
 var type2 = (it < 0 ? -it : at2.mmType);
-var dq;
+var dq = NaN;
 try {
 var bondType = bTypes[i];
 var bFactor = (type1 < type2 ? -1 : 1);
 var key = JM.MinObject.getKey (bondType, bFactor == 1 ? type2 : type1, bFactor == 1 ? type1 : type2, 127, 124);
 var bciValue = this.ffParams.get (key);
-var bci;
+var bci = NaN;
 var msg = (JU.Logger.debugging ? a1 + "/" + a2 + " mmTypes=" + type1 + "/" + type2 + " formalCharges=" + at1.formalCharge + "/" + at2.formalCharge + " bci = " : null);
 if (bciValue == null) {
-var pa = (this.ffParams.get (JM.MinObject.getKey (0, type1, 127, 127, 127))).floatValue ();
-var pb = (this.ffParams.get (JM.MinObject.getKey (0, type2, 127, 127, 127))).floatValue ();
+var a;
+var b;
+if ((a = this.ffParams.get (JM.MinObject.getKey (0, type1, 127, 127, 127))) != null && (b = this.ffParams.get (JM.MinObject.getKey (0, type2, 127, 127, 127))) != null) {
+var pa = a.floatValue ();
+var pb = b.floatValue ();
 bci = pa - pb;
 if (JU.Logger.debugging) msg += pa + " - " + pb + " = ";
-} else {
+}} else {
 bci = bFactor * bciValue.floatValue ();
 }if (JU.Logger.debugging) {
 msg += bci;
@@ -1791,7 +1837,7 @@ var bsConnected = JU.BSUtil.copy (bsAtoms);
 for (var i = bsAtoms.nextSetBit (0); i >= 0; i = bsAtoms.nextSetBit (i + 1)) {
 var a = atoms[i];
 var bonds = a.bonds;
-if (bonds != null) for (var j = bonds.length; --j >= 0; ) if (bonds[j].isCovalent ()) bsConnected.set (bonds[j].getOtherAtom (a).i);
+if (bonds != null) for (var j = bonds.length; --j >= 0; ) if (bonds[j].isCovalentNotPartial0 ()) bsConnected.set (bonds[j].getOtherAtom (a).i);
 
 }
 for (var i = bsConnected.nextSetBit (0); i >= 0; i = bsConnected.nextSetBit (i + 1)) {
@@ -3994,12 +4040,23 @@ this.a = this.calcs.minAtoms[ia];
 this.b = this.calcs.minAtoms[ib];
 var parA = this.calcs.getParameter (this.a.sType);
 var parB = this.calcs.getParameter (this.b.sType);
-var Xa = parA.dVal[2];
-var Da = parA.dVal[3];
-if (parB == null || parB.dVal == null) System.out.println ("OHOH");
-var Xb = parB.dVal[2];
-var Db = parB.dVal[3];
-var Dab = 4.1868 * Math.sqrt (Da * Db);
+var Xa;
+var Da;
+var Xb;
+var Db;
+if (parA == null || parA.dVal == null) {
+System.out.println ("OHOH");
+Xa = Da = 0;
+} else {
+Xa = parA.dVal[2];
+Da = parA.dVal[3];
+}if (parB == null || parB.dVal == null) {
+System.out.println ("OHOH");
+Xb = Db = 0;
+} else {
+Xb = parB.dVal[2];
+Db = parB.dVal[3];
+}var Dab = 4.1868 * Math.sqrt (Da * Db);
 var Xab = Math.sqrt (Xa * Xb);
 calc.addLast ( Clazz_newArray (-1, [ Clazz_newIntArray (-1, [ia, ib]),  Clazz_newDoubleArray (-1, [Xab, Dab])]));
 }, "JU.Lst,~N,~N,~N");

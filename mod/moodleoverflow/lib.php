@@ -489,47 +489,49 @@ function moodleoverflow_get_file_info($browser, $areas, $course, $cm, $context, 
  * @param bool     $forcedownload whether or not force download
  * @param array    $options       additional options affecting the file serving
  */
-function moodleoverflow_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array()) {
-    global $DB;
-
+function moodleoverflow_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $DB, $CFG;
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
-
     require_course_login($course, true, $cm);
 
     $areas = moodleoverflow_get_file_areas($course, $cm, $context);
-
     // Filearea must contain a real area.
     if (!isset($areas[$filearea])) {
         return false;
     }
 
-    $postid = (int) array_shift($args);
+    $filename = array_pop($args);
+    $itemid = array_pop($args);
 
-    if (!$post = $DB->get_record('moodleoverflow_posts', array('id' => $postid))) {
+    // Check if post, discussion or moodleoverflow still exists.
+    if (!$post = $DB->get_record('moodleoverflow_posts', array('id' => $itemid))) {
         return false;
     }
-
     if (!$discussion = $DB->get_record('moodleoverflow_discussions', array('id' => $post->discussion))) {
         return false;
     }
-
     if (!$moodleoverflow = $DB->get_record('moodleoverflow', array('id' => $cm->instance))) {
         return false;
     }
 
-    $fs = get_file_storage();
-    $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/mod_moodleoverflow/$filearea/$postid/$relativepath";
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath))||$file->is_directory()) {
-        return false;
+    if (!$args) {
+        // Empty path, use root.
+        $filepath = '/';
+    } else {
+        // Assemble filepath.
+        $filepath = '/' . implode('/', $args) . '/';
     }
+    $fs = get_file_storage();
+
+    $file = $fs->get_file($context->id, 'mod_moodleoverflow', $filearea, $itemid, $filepath, $filename);
 
     // Make sure groups allow this user to see this file.
     if ($discussion->groupid > 0) {
         $groupmode = groups_get_activity_groupmode($cm, $course);
         if ($groupmode == SEPARATEGROUPS) {
+
             if (!groups_is_member($discussion->groupid) && !has_capability('moodle/site:accessallgroups', $context)) {
                 return false;
             }
@@ -542,7 +544,7 @@ function moodleoverflow_pluginfile($course, $cm, $context, $filearea, array $arg
     }
 
     // Finally send the file.
-    send_stored_file($file, 0, 0, true, $options); // Download MUST be forced - security!
+    send_stored_file($file, 86400, 0, true, $options); // Download MUST be forced - security!
 }
 
 /* Navigation API */
@@ -829,7 +831,12 @@ function moodleoverflow_send_mails() {
             $userto->markposts = array();
 
             // Cache the capabilities of the user.
-            cron_setup_user($userto);
+            // Check for moodle version. Version 401 supported until 8 December 2025.
+            if ($CFG->branch >= 402) {
+                \core\cron::setup_user($userto);
+            } else {
+                cron_setup_user($userto);
+            }
 
             // Reset the caches.
             foreach ($coursemodules as $moodleoverflowid => $unused) {
@@ -918,7 +925,12 @@ function moodleoverflow_send_mails() {
                 }
 
                 // Setup roles and languages.
-                cron_setup_user($userto, $course);
+                // Check for moodle version. Version 401 supported until 8 December 2025.
+                if ($CFG->branch >= 402) {
+                    \core\cron::setup_user($userto, $course);
+                } else {
+                    cron_setup_user($userto, $course);
+                }
 
                 // Cache the users capability to view full names.
                 if (!isset($userto->viewfullnames[$moodleoverflow->id])) {
@@ -1426,15 +1438,16 @@ function moodleoverflow_grade_item_update($moodleoverflow, $grades=null) {
  * Map icons for font-awesome themes.
  */
 function moodleoverflow_get_fontawesome_icon_map() {
+    // ecastro ULPGC X to remove size larger
     return [
         'mod_moodleoverflow:i/commenting' => 'fa-commenting',
         'mod_moodleoverflow:i/pending-big' => 'fa-clock-o text-danger moodleoverflow-icon-2x',
-        'mod_moodleoverflow:i/status-helpful' => 'fa-thumbs-up moodleoverflow-icon-1_5x moodleoverflow-text-orange',
-        'mod_moodleoverflow:i/status-solved' => 'fa-check moodleoverflow-icon-1_5x moodleoverflow-text-green',
-        'mod_moodleoverflow:i/reply' => 'fa-reply',
-        'mod_moodleoverflow:i/subscribed' => 'fa-bell moodleoverflow-icon-1_5x',
-        'mod_moodleoverflow:i/unsubscribed' => 'fa-bell-slash-o moodleoverflow-icon-1_5x',
-        'mod_moodleoverflow:i/vote-up' => 'fa-chevron-up moodleoverflow-icon-2x moodleoverflow-icon-no-margin',
-        'mod_moodleoverflow:i/vote-down' => 'fa-chevron-down moodleoverflow-icon-2x moodleoverflow-icon-no-margin'
+        'mod_moodleoverflow:i/status-helpful' => 'fa-thumbs-up xmoodleoverflow-icon-1_5x moodleoverflow-text-orange',
+        'mod_moodleoverflow:i/status-solved' => 'fa-check xmoodleoverflow-icon-1_5x moodleoverflow-text-green',
+        'mod_moodleoverflow:i/reply' => 'fa-reply xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/subscribed' => 'fa-bell xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/unsubscribed' => 'fa-bell-slash-o xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/vote-up' => 'fa-chevron-up xmoodleoverflow-icon-2x moodleoverflow-icon-no-margin',
+        'mod_moodleoverflow:i/vote-down' => 'fa-chevron-down xmoodleoverflow-icon-2x moodleoverflow-icon-no-margin'
     ];
 }

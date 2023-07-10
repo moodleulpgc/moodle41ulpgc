@@ -366,8 +366,7 @@ class Soap extends \SoapClient
      * @return mixed|string
      * @throws TurnitinSDKException
      */
-    public function __doRequest($request, $location, $action, $version, $one_way = null)
-    {
+    public function __doRequest($request, $location, $action, $version, $one_way = 0): string  { // ecastro ULPGC compatibility PHP8.1 
 
         $http_headers = array(
             'Content-type: text/xml;charset="utf-8"',

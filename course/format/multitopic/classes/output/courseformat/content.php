@@ -27,6 +27,7 @@
 namespace format_multitopic\output\courseformat;
 
 use core_courseformat\output\local\content as content_base;
+use \renderer_base;
 
 /**
  * Base class to render a course format.
@@ -46,7 +47,11 @@ class content extends content_base {
      * @return stdClass data context for a mustache template
      */
     public function export_for_template(\renderer_base $output) {
+        global $CFG;
+        global $PAGE;
         global $USER;                               // INCLUDED from course/format/classes/output/local/content/section/cmlist.php .
+
+        $PAGE->requires->js_call_amd('format_multitopic/courseformat/courseeditor/mutations', 'init');
 
         $format = $this->format;
 
@@ -225,6 +230,20 @@ class content extends content_base {
         $tabseft = (new \tabtree($tabs,
             "tab_id_{$displaysection->id}_l{$displaysection->pagedepthdirect}",
             $inactivetabs))->export_for_template($output);
+        foreach ($tabseft->tabs as $tabeft) {
+            if (preg_match('/^tab_id_(\d+)_l(\d+)$/', $tabeft->id, $matches)) {
+                $tabeft->sectionid = $matches[1];
+                $tabeft->level = $matches[2];
+            }
+        }
+        if ($tabseft->secondrow) {
+            foreach ($tabseft->secondrow->tabs as $tabeft) {
+                if (preg_match('/^tab_id_(\d+)_l(\d+)$/', $tabeft->id, $matches)) {
+                    $tabeft->sectionid = $matches[1];
+                    $tabeft->level = $matches[2];
+                }
+            }
+        }
 
         // END INCLUDED.
 
@@ -261,6 +280,12 @@ class content extends content_base {
         // Allow next and back navigation between pages.
         $sectionnav = new \format_multitopic\output\courseformat\content\sectionnavigation($format, $displaysection);
         $data->sectionnavigation = $sectionnav->export_for_template($output);
+
+        if ($CFG->version >= 2023020300.01 && $format->show_editor()) {
+            $data->hasbulkedittools = true;
+            $bulkedittools = new $this->bulkedittoolsclass($format);
+            $data->bulkedittools = $bulkedittools->export_for_template($output);
+        }
 
         return $data;
     }

@@ -26,7 +26,7 @@
         <FIELD NAME="director" TYPE="char" LENGTH="15" NOTNULL="true" SEQUENCE="false" COMMENT="Director user idnumber"/>
         <FIELD NAME="secretary" TYPE="char" LENGTH="15" NOTNULL="true" SEQUENCE="false" COMMENT="Secretary user idnumber"/>
         <FIELD NAME="coord" TYPE="char" LENGTH="15" NOTNULL="true" SEQUENCE="false" COMMENT="Coordinator user idnumber"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp of when the unit was last modified."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when the unit was last modified."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" />
@@ -47,7 +47,7 @@
         <FIELD NAME="groupto" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="useidnumber" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>        
         <FIELD NAME="enabled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp of when the unit was last modified."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when the unit was last modified."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

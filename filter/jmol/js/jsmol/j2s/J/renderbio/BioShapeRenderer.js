@@ -70,7 +70,7 @@ Clazz.defineMethod (c$, "setGlobals",
  function () {
 this.invalidateMesh = false;
 this.needTranslucent = false;
-this.g3d.addRenderer (553648145);
+this.g3d.addRenderer (553648143);
 var TF = (!this.isExport && !this.vwr.checkMotionRendering (1112152066));
 if (TF != this.wireframeOnly) this.invalidateMesh = true;
 this.wireframeOnly = TF;
@@ -96,7 +96,7 @@ if (this.aspectRatio > 0) {
 if (this.meshRenderer == null) {
 this.meshRenderer = javajs.api.Interface.getInterface ("J.renderbio.BioMeshRenderer");
 this.meshRenderer.setViewerG3dShapeID (this.vwr, this.shape.shapeID);
-}this.meshRenderer.setup (this.g3d, this.vwr.ms, this.shape);
+}this.meshRenderer.setup (this.g3d, this.ms, this.shape);
 }TF = this.vwr.getBoolean (603979966);
 if (TF != this.isTraceAlpha) this.invalidateMesh = true;
 this.isTraceAlpha = TF;
@@ -135,7 +135,7 @@ this.vwr.freeTempEnum (this.structureTypes);
 Clazz.defineMethod (c$, "initializePolymer", 
  function (bioShape) {
 var bsDeleted = this.vwr.slm.bsDeleted;
-if (this.vwr.ms.isJmolDataFrameForModel (bioShape.modelIndex)) {
+if (this.ms.isJmolDataFrameForModel (bioShape.modelIndex)) {
 this.controlPoints = bioShape.bioPolymer.getControlPoints (true, 0, false);
 } else {
 this.controlPoints = bioShape.bioPolymer.getControlPoints (this.isTraceAlpha, this.sheetSmoothing, this.invalidateSheets);

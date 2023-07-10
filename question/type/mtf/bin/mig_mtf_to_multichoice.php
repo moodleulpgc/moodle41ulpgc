@@ -23,7 +23,7 @@
  * @copyright   2016 ETHZ {@link http://ethz.ch/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+// phpcs:disable
 require_once(dirname(__FILE__) . '/../../../../config.php');
 require_once($CFG->dirroot . '/lib/moodlelib.php');
 require_once($CFG->libdir . '/questionlib.php');
@@ -153,7 +153,12 @@ if ($courseid > 0) {
     if (!empty($catids)) {
         echo "Migration of MTF Questions within courseid " . $courseid . " <br/>\n";
         list($csql, $params) = $DB->get_in_or_equal($catids);
-        $sql .= " AND category $csql ";
+        $sql = "
+        SELECT q.* FROM {question} q WHERE q.qtype = 'mtf' AND q.parent = 0
+        AND q.id in (SELECT qv.questionid
+                                  FROM {question_versions} qv
+                                  JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+                                 WHERE qbe.questioncategoryid $csql)";
     } else {
         echo "<br/>[<font color='red'>ERR</font>] No question categories for course found.<br/>\n";
         die();
@@ -183,7 +188,12 @@ if ($categoryid > 0) {
         }
 
         list($csql, $params) = $DB->get_in_or_equal($catids);
-        $sql .= " AND category $csql ";
+        $sql = "
+        SELECT q.* FROM {question} q WHERE q.qtype = 'mtf' AND q.parent = 0
+        AND q.id in (SELECT qv.questionid
+                                  FROM {question_versions} qv
+                                  JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+                                 WHERE qbe.questioncategoryid $csql)";
     } else {
         echo "<br/>[<font color='red'>ERR</font>] Question category with ID " . $categoryid . " not found<br/>\n";
         die();
@@ -233,7 +243,7 @@ foreach ($questions as $question) {
     // and continue; with the next iteration.
     if ($questionweights["error"]) {
         echo '[<font style="color:#ff0909;">ERR</font>] - question <i>"' . $question->oldname .
-            '"</i> (ID: <a href="' . $CFG->wwwroot . '/question/preview.php?id=' . $question->oldid .
+            '"</i> (ID: <a href="' . $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' . $question->oldid .
             '" target="_blank">' . $question->oldid . '</a>) is not migratable: ' . $questionweights["message"];
         echo count($questionweights["notices"]) > 0 ? " ::: <b>Notices:</b> " . implode(" | ", $questionweights["notices"]) : null;
         echo "<br/>\n";
@@ -242,8 +252,14 @@ foreach ($questions as $question) {
     }
 
     // Get contextid from question category.
-    $contextid = $DB->get_field('question_categories', 'contextid', array('id' => $question->category));
-
+    $bankentry = $DB->get_record_sql("
+    SELECT DISTINCT qbe.id, qbe.questioncategoryid
+                              FROM {question_versions} qv
+                              JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+                             WHERE qv.questionid = ?", ['id' => $question->id]);
+    if($bankentry){
+      $contextid = $DB->get_field('question_categories', 'contextid', array('id' => $bankentry->questioncategoryid));
+    }
     if (!isset($contextid) || $contextid == false) {
         echo "<br/>[<font color='red'>ERR</font>] No context id found for this question.";
         continue;
@@ -316,6 +332,16 @@ foreach ($questions as $question) {
 
             unset($transaction);
             $transaction = $DB->start_delegated_transaction();
+            // Only create a new bank entry if the question is not a new version (New question or duplicating a question).
+            require_once($CFG->dirroot . '/question/engine/lib.php');
+            require_once($CFG->libdir . '/questionlib.php');
+            $questionbankentry = null;
+            $qbankentry = null;
+            $qbankentry = get_question_bank_entry($question->id);
+
+            // Get the question status.
+            $getqversionstatus = $DB->get_record('question_versions', ['questionid' => $question->id, 'questionbankentryid' => $qbankentry->id]);
+            $oldqstatus = $getqversionstatus->status;
 
             // Duplicating  mdl_question -> mdl_question.
             unset($question->id);
@@ -330,7 +356,32 @@ foreach ($questions as $question) {
             $question->modifiedby = $USER->id;
             $question->createdby = $USER->id;
             $question->idnumber = null;
+
+            // Create the question.
             $question->id = $DB->insert_record('question', $question);
+
+            // Create a record for question_bank_entries, question_versions and question_references.
+            $questionbankentry = new \stdClass();
+            $questionbankentry->questioncategoryid = $qbankentry->questioncategoryid;
+            $questionbankentry->idnumber = null;
+            $questionbankentry->ownerid = $USER->id;
+            $questionbankentry->id = $DB->insert_record('question_bank_entries', $questionbankentry);
+
+            // Create question_versions records.
+            $questionversion = new \stdClass();
+            $questionversion->questionbankentryid = $questionbankentry->id;
+            $questionversion->questionid = $question->id;
+            // Get the version and status from the parent question if parent is set.
+            // Get the status field. It comes from the form, but for testing we can.
+            if($oldqstatus) {
+              $status = $oldqstatus;
+            } else {
+              $status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
+            }
+            $questionversion->version = get_next_version($questionbankentry->id);
+            $questionversion->status = $status;
+
+            $questionversion->id = $DB->insert_record('question_versions', $questionversion);
 
             // Tansferring  md_qtype_mtf_rows + mdl_qtype_mtf_weights -> mdl_question_answers.
             foreach ($mtfrows as $key => $row) {
@@ -452,11 +503,11 @@ foreach ($questions as $question) {
     // Output: Question Migration Success.
     echo $success ? '[<font style="color:#228d00;">OK </font>]' : '[<font color="red">ERR</font>]';
     echo ' - question <i>"' . $question->oldname . '"</i> ' .
-    '(ID: <a href="' . $CFG->wwwroot . '/question/preview.php?id=' .  $question->oldid .
+    '(ID: <a href="' . $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' .  $question->oldid .
     '" target="_blank">' .  $question->oldid . '</a>) ';
     if ($dryrun == 0) {
         echo ($success) ? ' > <i>"' . $question->name . '"</i> ' .
-        '(ID: <a href="' . $CFG->wwwroot . '/question/preview.php?id=' . $question->id .
+        '(ID: <a href="' . $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' . $question->id .
         '" target="_blank">' . $question->id . '</a>)' : '';
     }
     if ($dryrun == 1) {
@@ -472,8 +523,8 @@ echo "<br/>\n";
 echo "=========================================================================================<br/>\n";
 echo count($questionsnotmigrated) > 0 ? "Not Migrated: <br/>" : null;
 foreach ($questionsnotmigrated as $entry) {
-    echo '<a href="' . $CFG->wwwroot . '/question/preview.php?id=' . $entry["id"] . '" target="_blank">' .
-    $CFG->wwwroot . '/question/preview.php?id=' . $entry["id"] . "</a> - " . $entry["name"] . "<br/>\n";
+    echo '<a href="' . $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' . $entry["id"] . '" target="_blank">' .
+    $CFG->wwwroot . '/question/bank/previewquestion/preview.php?id=' . $entry["id"] . "</a> - " . $entry["name"] . "<br/>\n";
 }
 echo "=========================================================================================<br/>\n";
 echo "SCRIPT DONE: Time needed: " . round(microtime(1) - $starttime, 4) . " seconds.<br/>\n";

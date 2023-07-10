@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Moove';
 $string['configtitle'] = 'Moove';
 $string['choosereadme'] = 'Moove is a modern highly-customisable theme. This theme is intended to be used directly, or as a parent theme when creating new themes utilising Bootstrap 4.';
-
+$string['dontchange'] = 'Do not change anything';
 $string['currentinparentheses'] = '(current)';
 $string['region-side-pre'] = 'Right';
 $string['prev_section'] = 'Previous section';
@@ -72,6 +72,40 @@ $string['rawscss'] = 'Raw SCSS';
 $string['rawscss_desc'] = 'Use this field to provide SCSS or CSS code which will be injected at the end of the style sheet.';
 $string['googleanalytics'] = 'Google Analytics V4 Code';
 $string['googleanalyticsdesc'] = 'Please enter your Google Analytics V4 code to enable analytics on your website. The code format shold be like [G-XXXXXXXXXX]';
+
+// Settings: Activity branding tab.
+$string['activitybrandingtab'] = 'Activity branding';
+// ... Section: Activity icon colors.
+$string['activityiconcolorsheading'] = 'Activity icon colors';
+// ... ... Setting: Activity icon color for 'Administration'.
+$string['activityiconcoloradministrationsetting'] = 'Activity icon color for "Administration"';
+$string['activityiconcoloradministrationsetting_desc'] = 'The activity icon color for "Administration"';
+// ... ... Setting: Activity icon color for 'Assessment'.
+$string['activityiconcolorassessmentsetting'] = 'Activity icon color for "Assessment"';
+$string['activityiconcolorassessmentsetting_desc'] = 'The activity icon color for "Assessment"';
+// ... ... Setting: Activity icon color for 'Collaboration'.
+$string['activityiconcolorcollaborationsetting'] = 'Activity icon color for "Collaboration"';
+$string['activityiconcolorcollaborationsetting_desc'] = 'The activity icon color for "Collaboration"';
+// ... ... Setting: Activity icon color for 'Communication'.
+$string['activityiconcolorcommunicationsetting'] = 'Activity icon color for "Communication"';
+$string['activityiconcolorcommunicationsetting_desc'] = 'The activity icon color for "Communication"';
+// ... ... Setting: Activity icon color for 'Content'.
+$string['activityiconcolorcontentsetting'] = 'Activity icon color for "Content"';
+$string['activityiconcolorcontentsetting_desc'] = 'The activity icon color for "Content"';
+// ... ... Setting: Activity icon color for 'Interface'.
+$string['activityiconcolorinterfacesetting'] = 'Activity icon color for "Interface"';
+$string['activityiconcolorinterfacesetting_desc'] = 'The activity icon color for "Interface"';
+// ... Section: Activity icon purposes.
+$string['activitypurposeheading'] = 'Activity icon purposes';
+$string['activitypurposeheading_desc'] = 'With these settings, you can override the activity icon background color which is defined by the activity\'s purpose (and which is a hardcoded plugin feature in each activity).';
+$string['activitypurposeadministration'] = 'Administration';
+$string['activitypurposeassessment'] = 'Assessment';
+$string['activitypurposecollaboration'] = 'Collaboration';
+$string['activitypurposecommunication'] = 'Communication';
+$string['activitypurposecontent'] = 'Content';
+$string['activitypurposeinterface'] = 'Interface';
+$string['activitypurposeother'] = 'Other';
+
 
 // Frontpage settings tab.
 $string['frontpagesettings'] = 'Frontpage';
@@ -228,6 +262,12 @@ $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can 
 $string['mycoursesremotessetting'] = 'My remote courses';
 $string['mycoursesremotessetting_desc'] = 'If specified a value, then those remote courses retrieved by an existing instance of Remote course blocks will be added to My courses list. 
 This option allows to select which instance of Remote courses to use, or none at all (no remote course list adedd to My courses list). ';
+// ... Section: Breadcrumbs.
+$string['breadcrumbsheading'] = 'Breadcrumbs';
+// ... ... Setting: Course category breadcrumb.
+$string['categorybreadcrumbs'] = 'Display the category breadcrumbs in the course header';
+$string['categorybreadcrumbs_desc'] = 'By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.<br/><br/>
+Please note: The "Do not change anything" option does not change anything about the course category breadcrumbs like they are presented by Moodle core. Whereas the "No" option takes care that course category breadcrumbs are never shown at all. This might be a difference as Boost in Moodle core might indeed show course category breadcrumbs beginning on deeper nested course category levels (which the Boost Union developers assess to be a glitch).';
 
 // ... Section: Navigation.
 $string['navigationheading'] = 'Navigation';

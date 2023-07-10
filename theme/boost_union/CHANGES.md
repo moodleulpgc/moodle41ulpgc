@@ -4,8 +4,22 @@ moodle-theme_boost_union
 Changes
 -------
 
-### Unreleased
+### v4.1-r8
 
+* 2023-06-18 - Improvement: Split "Branding" tab into "Site branding" and "Activity branding", solves #315.
+* 2023-06-17 - Bugfix: Hide nodes in primary navigation had no effect on site administration menu item, solves #312.
+* 2023-06-14 - Feature: Add admin option to configure block size in footer, solves first part of #253.
+* 2023-06-03 - Bugfix: Help fixing PHPUnit runs with Boost Union, solves #305.
+* 2023-06-14 - Bugfix: Fix footer and footnote placement, solves #269.
+* 2023-06-13 - Feature: Add admin option to mark external links, solves #307.
+* 2023-06-13 - Feature: Allow the admin to overwrite the modules purpose, solves #288.
+* 2023-05-17 - Improvement: Improve SCSS for dark navbar and primary color navbar, solves #273.
+* 2023-05-11 - Feature: Allow the admin to upload custom icons for activities and resources, solves #175.
+
+### v4.1-r7
+
+* 2023-04-20 - Feature: Course category breadcrumbs in course header, solves #284.
+* 2023-04-02 - Improvement: Add SCSS code to improve the block regions presentation in our companion plugin Dash Pro, solves #291.
 * 2023-04-17 - Bugfix: Setting activityiconcolorcommunication was not processed anymore, solves #279.
 * 2023-04-13 - Bugfix: When there is no edit switch, as on the assignment grading page, scrollfix should not kick in, solves #276.
 * 2023-04-12 - Feature: Allow right-side blocks drawer of site home to be extended by default #169.

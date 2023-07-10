@@ -56,7 +56,7 @@ class presetprofilefields extends check {
         global $CFG;
         return new \action_link(
             new \moodle_url('/local/ulpgccore/profilefieldspresets.php'),
-            get_string('presetprofilefields', 'local_ulpgccore'));
+            get_string('profilefieldpresets', 'local_ulpgccore'));
     }
 
     /**
@@ -99,7 +99,7 @@ class presetprofilefields extends check {
         
         $status = result::OK;
         $summary = get_string('presetprofilefieldstable', 'local_ulpgccore');
-        $details = get_string('check_presetprofilefields_details', 'report_security');
+        $details = get_string('check_presetprofilefields_details', 'local_ulpgccore');
         return new result($status, $summary, $details);
     }
 }

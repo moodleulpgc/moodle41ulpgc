@@ -93,7 +93,7 @@ class form extends \moodleform {
     protected function definition_select_category(\MoodleQuickForm $mform, $context) {
         $mform->addElement('header', 'header', get_string('selectcategoryheader', 'local_questionbulkupdate'));
 
-        $qcontexts = new \question_edit_contexts($context);
+        $qcontexts = new \core_question\local\bank\question_edit_contexts($context);
         $contexts = $qcontexts->having_one_cap([
             'moodle/question:editall',
             'moodle/question:editmine'
@@ -237,7 +237,7 @@ class form extends \moodleform {
         $mform->addElement(
             'select',
             'answerfraction',
-            get_string('grade'),
+            get_string('grade', 'grades'),
             \question_bank::fraction_options_full()
         );
         $mform->disabledIf('answerfraction', 'answergrade', 'neq', 'fixed');

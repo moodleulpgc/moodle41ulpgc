@@ -94,7 +94,7 @@ class vpl_jailserver_manager {
             curl_close( $ch );
             $error = '';
             if ($rawresponse[0] == '{') {
-                $response = json_decode( $rawresponse );
+                $response = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
                 if (json_last_error() != JSON_ERROR_NONE) {
                     $error = 'JSONRPC response is fault: ' . json_last_error_msg();
                 } else {
@@ -219,13 +219,13 @@ class vpl_jailserver_manager {
             $plugincfg->use_xmlrpc = false;
         }
         $xmlrpcencoderequest = 'xmlrpc_encode_request';
-        if ($plugincfg->use_xmlrpc && function_exists(xmlrpcencoderequest)) {
+        if ($plugincfg->use_xmlrpc && function_exists($xmlrpcencoderequest)) {
             $outputoptions = [
                 'escaping' => 'markup',
                 'encoding' => 'UTF-8',
                 'verbosity' => 'newlines_only'
             ];
-            return xmlrpcencoderequest( $action, $data, $outputoptions);
+            return $xmlrpcencoderequest( $action, $data, $outputoptions);
         } else {
             return self::jsonrpc_encode( $action, $data);
         }

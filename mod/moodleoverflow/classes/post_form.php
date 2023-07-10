@@ -121,7 +121,6 @@ class mod_moodleoverflow_post_form extends moodleform {
         // Is it a reply?
         $modform->addElement('hidden', 'reply');
         $modform->setType('reply', PARAM_INT);
-
     }
 
     /**
@@ -163,29 +162,6 @@ class mod_moodleoverflow_post_form extends moodleform {
             'return_types' => FILE_INTERNAL | FILE_CONTROLLED_LINK
         );
     }
-
-    /**
-     * Returns the options array to use in filemanager for moodleoverflow attachments
-     *
-     * @param stdClass $moodleoverflow
-     *
-     * @return array
-     */
-    public static function editor_options($moodleoverflow) {
-        global $COURSE, $PAGE, $CFG;
-        $maxbytes = get_user_max_upload_file_size($PAGE->context, $CFG->maxbytes, $COURSE->maxbytes, $moodleoverflow->maxbytes);
-
-        return array(
-            'subdirs'        => 0,
-            'maxbytes'       => $maxbytes,
-            'maxfiles'       => 5,
-            'accepted_types' => '*',
-            'trusttext'=> false,
-            'context' => $PAGE->context,
-            'return_types'   => FILE_INTERNAL | FILE_CONTROLLED_LINK
-        );
-    }    
-    
 }
 
 

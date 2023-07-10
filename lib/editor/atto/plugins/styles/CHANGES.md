@@ -4,6 +4,11 @@ moodle-atto_styles
 Changes
 -------
 
+### v4.1-r2
+
+* 2023-05-02 - Bugfix: Get rid of debug message if no styles are configured
+* 2023-04-30 - Tests: Updated Moodle Plugin CI to use PHP 8.1 and Postgres 13 from Moodle 4.1 on.
+
 ### v4.1-r1
 
 * 2023-01-21 - Prepare compatibility for Moodle 4.1.

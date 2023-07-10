@@ -210,7 +210,8 @@ class utils {
      */
     public static function get_o365_upn($userid) {
         $o365user = o365user::instance_from_muserid($userid);
-        return (!empty($o365user)) ? $o365user->upn : null;
+        return (!empty($o365user)) ? $o365user->upn : ''; // ecastro ULPGC when used upn must be a string in PHP8.1
+        //return (!empty($o365user)) ? $o365user->upn : null;
     }
 
     /**

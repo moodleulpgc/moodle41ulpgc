@@ -236,7 +236,7 @@ var i0 = (isAll ? this.bondCount - 1 : bsBonds.nextSetBit (0));
 for (var i = i0; i >= 0; i = (isAll ? i - 1 : bsBonds.nextSetBit (i + 1))) {
 var bond = this.bo[i];
 if (this.bsAromatic.get (i)) bond.setOrder (515);
-switch (bond.order & -131073) {
+switch (bond.order & 131071) {
 case 515:
 if (!this.assignAromaticMustBeSingle (bond.atom1) && !this.assignAromaticMustBeSingle (bond.atom2)) {
 this.bsAromatic.set (i);
@@ -479,7 +479,7 @@ if (isBonds) return bsResult;
 var nonbonded = (min == 0);
 for (i = this.ac; --i >= 0; ) {
 var n = nBonded[i];
-if (n < min || n > max) bsResult.clear (i);
+if (this.at[i] == null || n < min || n > max) bsResult.clear (i);
  else if (nonbonded && n == 0) bsResult.set (i);
 }
 return bsResult;

@@ -37,6 +37,7 @@ define('THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_MYHOME', 'myhome');
 define('THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_MYCOURSES', 'courses');
 define('THEME_MOOVE_SETTING_HIDENODESPRIMARYNAVIGATION_SITEADMIN', 'siteadmin');
 
+define('THEME_MOOVE_SETTING_COURSEBREADCRUMBS_DONTCHANGE', 'dontchange');
 
 /**
  * Returns the main SCSS content.
@@ -92,6 +93,10 @@ function theme_moove_get_main_scss_content($theme) {
  * @return string
  */
 function theme_moove_get_extra_scss($theme) {
+    global $CFG;
+    // Require the necessary libraries.
+    require_once($CFG->dirroot . '/course/lib.php');
+
     $content = '';
 
     // Sets the login background image.
@@ -100,6 +105,36 @@ function theme_moove_get_extra_scss($theme) {
         $content .= 'body.pagelayout-login #page { ';
         $content .= "background-image: url('$loginbgimgurl'); background-size: cover;";
         $content .= ' }';
+    }
+
+    // Setting: Activity icon purpose.
+    // Get installed activity modules.
+    $installedactivities = get_module_types_names();
+    // Iterate over all existing activities.
+    foreach ($installedactivities as $modname => $modinfo) {
+        // Get default purpose of activity module.
+        $defaultpurpose = plugin_supports('mod', $modname, FEATURE_MOD_PURPOSE, MOD_PURPOSE_OTHER);
+        // If the plugin does not have any default purpose.
+        if (!$defaultpurpose) {
+            // Fallback to "other" purpose.
+            $defaultpurpose = MOD_PURPOSE_OTHER;
+        }
+        // If the activity purpose setting is set and differs from the activity's default purpose.
+        $configname = 'activitypurpose'.$modname;
+        if (isset($theme->settings->{$configname}) && $theme->settings->{$configname} != $defaultpurpose) {
+            // Add CSS to modify the activity purpose color in the activity chooser and the activity icon.
+            $content .= '.activity.modtype_'.$modname.' .activityiconcontainer.courseicon,';
+            $content .= '.modchoosercontainer .modicon_'.$modname.'.activityiconcontainer { ';
+            $content .= 'background-color: var(--activity'.$theme->settings->{$configname}.') !important;';
+            $content .= '}';
+            // If the default purpose originally was 'other' and now is overridden, make the icon white.
+            if ($defaultpurpose == MOD_PURPOSE_OTHER) {
+                $content .= '.activity.modtype_'.$modname.' .activityiconcontainer.courseicon .activityicon,';
+                $content .= '.modchoosercontainer .modicon_'.$modname.'.activityiconcontainer .activityicon { ';
+                $content .= 'filter: brightness(0) invert(1);';
+                $content .= '}';
+            }
+        }
     }
 
     // Always return the background image with the scss when we have it.

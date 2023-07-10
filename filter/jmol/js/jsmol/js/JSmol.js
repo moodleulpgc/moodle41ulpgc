@@ -2,6 +2,7 @@
 // author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 // author: Takanori Nakane biochem_fan 6/12/2012
 
+// BH 2022.12.16 adds key press listener for ModelKit
 // BH 2021.04.09 fix _cover(false) script in getAppletHtml() to be img onerror
 // BH 12/17/2015 4:43:05 PM adding Jmol._requestRepaint to allow for MSIE9 not having 3imationFrame
 // BH 12/13/2015 11:44:39 AM using requestAnimationFrame instead of setTimeout (fixes Chrome slowness)
@@ -247,7 +248,10 @@
 			var w = Math.round(container.width());
 			var h = Math.round(container.height());
 			var canvas = document.createElement( 'canvas' );
+			canvas.tabIndex = 1;
+			canvas.outline = "none";
 			canvas.applet = this;
+			
 			this._canvas = canvas;
 			canvas.style.width = "100%";
 			canvas.style.height = "100%";
@@ -399,6 +403,13 @@
 			this._appletPanel.processMouseEvent(type,xym[0],xym[1],xym[2],System.currentTimeMillis());
 		}
 
+		proto._processKeyEvent = function(type, xym, ev) {
+			this._appletPanel.processKeyEvent({ getID: function() { return type; },
+							getKeyCode: function(){ return ev.keyCode; },
+							getModifiers: function() { return xym[2]; },
+							consume: function(){}});
+		}
+		
 		proto._resize = function() {
 			var s = "__resizeTimeout_" + this._id;
 			// only at end

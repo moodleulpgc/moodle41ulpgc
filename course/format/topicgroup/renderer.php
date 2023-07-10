@@ -199,9 +199,6 @@ class format_topicgroup_renderer extends format_topics_renderer {
         $modinfo = get_fast_modinfo($course);
         $course = course_get_format($course)->get_course();
         
-        
-        
-
         $context = context_course::instance($course->id);
         // Title with completion help icon.
         $completioninfo = new completion_info($course);

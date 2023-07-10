@@ -122,6 +122,7 @@ if ($ADMIN->fulltree) {
 
     $fontsarr = [
         'Roboto' => 'Roboto',
+        'Rubik' => 'Rubik',
         'Poppins' => 'Poppins',
         'Montserrat' => 'Montserrat',
         'Open Sans' => 'Open Sans',
@@ -183,6 +184,112 @@ if ($ADMIN->fulltree) {
     $page->add($setting);
 
     $settings->add($page);
+
+
+
+
+    // Create activity branding tab.
+    // Require the necessary libraries.
+    require_once($CFG->dirroot . '/course/lib.php');
+
+    $tab = new admin_settingpage('theme_moove_activitybranding',
+            get_string('activitybrandingtab', 'theme_moove', null, true));
+
+    // Create activity icon colors heading.
+    $name = 'theme_moove/activityiconcolorsheading';
+    $title = get_string('activityiconcolorsheading', 'theme_moove', null, true);
+    $setting = new admin_setting_heading($name, $title, null);
+    $tab->add($setting);
+
+    // Setting: Activity icon color for 'administration'.
+    $name = 'theme_moove/activityiconcoloradministration';
+    $title = get_string('activityiconcoloradministrationsetting', 'theme_moove', null, true);
+    $description = get_string('activityiconcoloradministrationsetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $tab->add($setting);
+
+    // Setting: Activity icon color for 'assessment'.
+    $name = 'theme_moove/activityiconcolorassessment';
+    $title = get_string('activityiconcolorassessmentsetting', 'theme_moove', null, true);
+    $description = get_string('activityiconcolorassessmentsetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $tab->add($setting);
+
+    // Setting: Activity icon color for 'collaboration'.
+    $name = 'theme_moove/activityiconcolorcollaboration';
+    $title = get_string('activityiconcolorcollaborationsetting', 'theme_moove', null, true);
+    $description = get_string('activityiconcolorcollaborationsetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $tab->add($setting);
+
+    // Setting: Activity icon color for 'communication'.
+    $name = 'theme_moove/activityiconcolorcommunication';
+    $title = get_string('activityiconcolorcommunicationsetting', 'theme_moove', null, true);
+    $description = get_string('activityiconcolorcommunicationsetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $tab->add($setting);
+
+    // Setting: Activity icon color for 'content'.
+    $name = 'theme_moove/activityiconcolorcontent';
+    $title = get_string('activityiconcolorcontentsetting', 'theme_moove', null, true);
+    $description = get_string('activityiconcolorcontentsetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $tab->add($setting);
+
+    // Setting: Activity icon color for 'interface'.
+    $name = 'theme_moove/activityiconcolorinterface';
+    $title = get_string('activityiconcolorinterfacesetting', 'theme_moove', null, true);
+    $description = get_string('activityiconcolorinterfacesetting_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $tab->add($setting);
+
+    // Create activity icons purpose heading.
+    $name = 'theme_moove/activitypurposeheading';
+    $title = get_string('activitypurposeheading', 'theme_moove', null, true);
+    $description = get_string('activitypurposeheading_desc', 'theme_moove', null, true);
+    $setting = new admin_setting_heading($name, $title, $description);
+    $tab->add($setting);
+
+    // Prepare activity purposes.
+    $purposesoptions = array(
+            MOD_PURPOSE_ADMINISTRATION => get_string('activitypurposeadministration', 'theme_moove'),
+            MOD_PURPOSE_ASSESSMENT => get_string('activitypurposeassessment', 'theme_moove'),
+            MOD_PURPOSE_COLLABORATION => get_string('activitypurposecollaboration', 'theme_moove'),
+            MOD_PURPOSE_COMMUNICATION => get_string('activitypurposecommunication', 'theme_moove'),
+            MOD_PURPOSE_CONTENT => get_string('activitypurposecontent', 'theme_moove'),
+            MOD_PURPOSE_INTERFACE => get_string('activitypurposeinterface', 'theme_moove'),
+            MOD_PURPOSE_OTHER => get_string('activitypurposeother', 'theme_moove')
+    );
+    // Get installed activity modules.
+    $installedactivities = get_module_types_names();
+    // Iterate over all existing activities.
+    foreach ($installedactivities as $modname => $modinfo) {
+        // Get default purpose of activity module.
+        $defaultpurpose = plugin_supports('mod', $modname, FEATURE_MOD_PURPOSE, MOD_PURPOSE_OTHER);
+        // If the plugin does not have any default purpose.
+        if (!$defaultpurpose) {
+            // Fallback to "other" purpose.
+            $defaultpurpose = MOD_PURPOSE_OTHER;
+        }
+
+        // Create the setting.
+        $name = 'theme_moove/activitypurpose'.$modname;
+        $title = get_string('modulename', $modname, null, true);
+        $description = '';
+        $setting = new admin_setting_configselect($name, $title, $description, $defaultpurpose, $purposesoptions);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+    }
+
+    // Add tab to settings page.
+    $settings->add($tab);
+
 
     /*
     * -----------------------
@@ -501,6 +608,28 @@ if ($ADMIN->fulltree) {
         $setting = new admin_setting_configselect($name, $title, $description, 0, $blocksmenu);
         $page->add($setting);
 
+        // Create breadcrumbs heading.
+        $name = 'theme_moove/breadcrumbsheading';
+        $title = get_string('breadcrumbsheading', 'theme_moove', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $page->add($setting);
+
+        // Setting: Display the category breadcrumb in the course header.
+        $categorybreadcrumbsoptions = array(
+            // Don't use string lazy loading (= false) because the string will be directly used and would produce a
+            // PHP warning otherwise.
+                THEME_MOOVE_SETTING_COURSEBREADCRUMBS_DONTCHANGE =>
+                        get_string('dontchange', 'theme_moove', null, false),
+                THEME_MOOVE_SETTING_SELECT_YES => get_string('yes'),
+                THEME_MOOVE_SETTING_SELECT_NO => get_string('no')
+        );
+        $name = 'theme_moove/categorybreadcrumbs';
+        $title = get_string('categorybreadcrumbs', 'theme_moove', null, true);
+        $description = get_string('categorybreadcrumbs_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_MOOVE_SETTING_COURSEBREADCRUMBS_DONTCHANGE, $categorybreadcrumbsoptions);
+        $page->add($setting);
+        
         // Create navigation heading.
         $name = 'theme_moove/navigationheading';
         $title = get_string('navigationheading', 'theme_moove', null, true);

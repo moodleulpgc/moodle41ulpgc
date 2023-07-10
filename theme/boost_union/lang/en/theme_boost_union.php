@@ -29,6 +29,9 @@ $string['pluginname'] = 'Boost Union';
 $string['choosereadme'] = '<p>Theme Boost Union is an enhanced child theme of Boost which is intended, on the one hand, to make Boost simply more configurable and, on the other hand, to provide helpful additional features for the daily Moodle operation of admins, teachers and students.</p><p>Boost Union is maintained by<br />Moodle an Hochschulen e.V.,</p><p>in cooperation with<br />lern.link GmbH</p><p>together with<br />bdecent GmbH</p>';
 $string['configtitle'] = 'Boost Union';
 
+// Settings: General strings.
+$string['dontchange'] = 'Do not change anything';
+
 // Settings: Look page.
 $string['configtitlelook'] = 'Look';
 
@@ -52,8 +55,8 @@ $string['coursecontentmaxwidthsetting_desc'] = 'With this setting, you can overr
 $string['mediumcontentmaxwidthsetting'] = 'Medium content max width';
 $string['mediumcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s medium content width without manual SCSS modifications. This page width is used in certain activities like the database activity. By default, Moodle uses a medium content max width of 1120px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
 
-// Settings: Branding tab.
-$string['brandingtab'] = 'Branding';
+// Settings: Site branding tab.
+$string['sitebrandingtab'] = 'Site branding';
 // ... Section: Logos.
 $string['logosheading'] = 'Logos';
 $string['logosheading_desc'] = 'Please note: Boost Union has its own logo upload and does not use the logo from <a href="{$a}">Moodle core\'s logo setting</a>.<br />Boost Union especially allows you to upload more image formats that Moodle core allows and allows you to override the uploaded logos within its flavours.';
@@ -90,6 +93,18 @@ $string['bootstrapcolorwarningsetting_desc'] = 'The Bootstrap color for "Warning
 // ... ... Setting: Bootstrap color for 'Danger'.
 $string['bootstrapcolordangersetting'] = 'Bootstrap color for "Danger"';
 $string['bootstrapcolordangersetting_desc'] = 'The Bootstrap color for "Danger"';
+// ... Section: Navbar.
+$string['navbarheading'] = 'Navbar';
+// ... ... Setting: Navbar color.
+$string['navbarcolorsetting'] = 'Navbar color';
+$string['navbarcolorsetting_desc'] = 'With this setting, you can change the navbar color from the default light navbar to a dark one or a colored one.';
+$string['navbarcolorsetting_light'] = 'Light navbar with dark font color (unchanged as presented by Moodle core)';
+$string['navbarcolorsetting_dark'] = 'Dark navbar with light font color';
+$string['navbarcolorsetting_primarydark'] = 'Primary color navbar with light font color';
+$string['navbarcolorsetting_primarylight'] = 'Primary color navbar with dark font color';
+
+// Settings: Activity branding tab.
+$string['activitybrandingtab'] = 'Activity branding';
 // ... Section: Activity icon colors.
 $string['activityiconcolorsheading'] = 'Activity icon colors';
 // ... ... Setting: Activity icon color for 'Administration'.
@@ -110,15 +125,39 @@ $string['activityiconcolorcontentsetting_desc'] = 'The activity icon color for "
 // ... ... Setting: Activity icon color for 'Interface'.
 $string['activityiconcolorinterfacesetting'] = 'Activity icon color for "Interface"';
 $string['activityiconcolorinterfacesetting_desc'] = 'The activity icon color for "Interface"';
-// ... Section: Navbar.
-$string['navbarheading'] = 'Navbar';
-// ... ... Setting: Navbar color.
-$string['navbarcolorsetting'] = 'Navbar color';
-$string['navbarcolorsetting_desc'] = 'With this setting, you can change the navbar color from the default light navbar to a dark one or a colored one.';
-$string['navbarcolorsetting_light'] = 'Light navbar with dark font color (unchanged as presented by Moodle core)';
-$string['navbarcolorsetting_dark'] = 'Dark navbar with light font color';
-$string['navbarcolorsetting_primarydark'] = 'Primary color navbar with light font color';
-$string['navbarcolorsetting_primarylight'] = 'Primary color navbar with dark font color';
+// ... Section: Activity icon purposes.
+$string['activitypurposeheading'] = 'Activity icon purposes';
+$string['activitypurposeheading_desc'] = 'With these settings, you can override the activity icon background color which is defined by the activity\'s purpose (and which is a hardcoded plugin feature in each activity).';
+$string['activitypurposeadministration'] = 'Administration';
+$string['activitypurposeassessment'] = 'Assessment';
+$string['activitypurposecollaboration'] = 'Collaboration';
+$string['activitypurposecommunication'] = 'Communication';
+$string['activitypurposecontent'] = 'Content';
+$string['activitypurposeinterface'] = 'Interface';
+$string['activitypurposeother'] = 'Other';
+// ... Section: Activity icons.
+$string['modiconsheading'] = 'Activity icons';
+// ... ... Setting: Enable custom icons for activities and resources.
+$string['modiconsenablesetting'] = 'Enable custom icons for activities and resources';
+$string['modiconsenablesetting_desc'] = 'With this setting, you can modify the icons for activities and resources which are used by Moodle on the course pages and in the activity chooser.';
+// ... ... Setting: Custom icon files.
+$string['modiconsfiles'] = 'Custom icons files';
+$string['modiconsfiles_desc'] = 'Here, you can upload custom icons for all or only some activity modules installed in this Moodle instance.';
+$string['modiconsfileshowto'] = 'To upload a particular custom activity icon, start by creating a folder with the internal name of the activity, e.g. <em>assign</em> for the assigment activity. In this folder, you upload the icon as SVG file called monologo.svg and, if possible, as fallback PNG file called monologo.png. If you want to customize the colored icons which have been in use up to Moodle 3 and which may still be used by older plugins, you can also upload them as icon.svg and icon.png files. However, please stick to monochromatic SVG icons if possible for best results. Then, please save the settings page. As soon as you have save the setting with at least one file, a file list will appear below which helps you to check if the custom icons have been uploaded correctly.';
+$string['modiconsfilestech'] = 'Technical note: After saving the setting, the uploaded folder structure and icon files will be copied to the pix_plugins/mod folder in your Moodledata directory. This is where Moodle core searches for custom activity icons. All icon files which may already exist in this place will be overwritten when you save this setting.';
+$string['modiconserrorcreatingpath'] = 'The pix_plugins/mod folder could not be created in your Moodledata directory.<br />The exception message was:{$a}.';
+// ... ... Information: Custom icons files list.
+$string['modiconlistsetting'] = 'Custom icons files list';
+$string['modiconlistsetting_desc'] = 'This is the list of custom icon files which you have uploaded to the custom icon files filearea above. All valid icon files are listed here. In addition to that, other files you may have uploaded as well but which are not valid icon files are also shown as broken files.';
+$string['modiconsuccess4x'] = 'This icon will be used for the <em>{$a}</em> activity as Moodle 4 icon.';
+$string['modiconsuccess3x'] = 'This icon will be used for the <em>{$a}</em> activity as Moodle 3 legacy icon.';
+$string['modiconnamefail'] = 'This file was uploaded into the correct folder for the <em>{$a}</em> activity, but the filename is not valid. Please change the filename to either <em>monologo.svg</em> / <em>monologo.png</em> (for Moodle 4 icons) or to <em>icon.svg</em> / <em>icon.png</em> (for Moodle 3 legacy icons).';
+$string['modiconnotexist'] = 'This file was upload to an unsuitable location as it’s impossible to deduce a particular activity from the file path <em>{$a}</em>.';
+$string['modiconactivity'] = 'Activity';
+$string['modiconactivityunknown'] = 'Unknown';
+$string['modiconversion'] = 'Icon version';
+$string['modicongtmoodle4'] = 'Moodle 4 icon';
+$string['modiconltmoodle311'] = 'Moodle 3 legacy icon';
 
 // Settings: Login page tab.
 $string['loginpagetab'] = 'Login page';
@@ -313,6 +352,12 @@ $string['primarynavigationheading'] = 'Primary navigation';
 // ... ... Settings: Hide nodes in primary navigation.
 $string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
 $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.';
+// ... Section: Breadcrumbs.
+$string['breadcrumbsheading'] = 'Breadcrumbs';
+// ... ... Setting: Course category breadcrumb.
+$string['categorybreadcrumbs'] = 'Display the category breadcrumbs in the course header';
+$string['categorybreadcrumbs_desc'] = 'By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.<br/><br/>
+Please note: The "Do not change anything" option does not change anything about the course category breadcrumbs like they are presented by Moodle core. Whereas the "No" option takes care that course category breadcrumbs are never shown at all. This might be a difference as Boost in Moodle core might indeed show course category breadcrumbs beginning on deeper nested course category levels (which the Boost Union developers assess to be a glitch).';
 // ... Section: Navigation.
 $string['navigationheading'] = 'Navigation';
 // ... ... Setting: Back to top button.
@@ -382,11 +427,22 @@ $string['outsideregionswidthherowidth'] = 'Hero width';
 // ... ... Setting: Block region width for Outside (bottom) region.
 $string['blockregionoutsidebottomwidth'] = 'Block region width for \'Outside (bottom)\' region';
 $string['blockregionoutsidebottomwidth_desc'] = 'With this setting, you can set the width of the \'Outside (bottom)\' block region which is shown below the main content. You can choose between full width, course content width and hero width.';
+// ... ... Setting: Block region width for Footer region.
+$string['blockregionfooterwidth'] = 'Block region width for \'Footer\' region';
+$string['blockregionfooterwidth_desc'] = 'With this setting, you can set the width of the \'Footer\' block region. You can choose between full width, course content width and hero width.';
 // ... ... Setting: Outside regions horizontal placement.
 $string['outsideregionsplacement'] = 'Outside regions horizontal placement';
 $string['outsideregionsplacement_desc'] = 'With this setting, you can control if, on larger screens, the \'Outside (left)\' and \'Outside (right)\' block regions should be placed near the main content area or rather near the window edges.';
 $string['outsideregionsplacementnextmaincontent'] = 'Display \'Outside (left)\' and \'Outside (right)\' regions next to the main content area';
 $string['outsideregionsplacementnearwindowedges'] = 'Display \'Outside (left)\' and \'Outside (right)\' regions near the window edges';
+
+// Settings: Links tab.
+$string['linkstab'] = 'Links';
+// ... Section: Special links markup.
+$string['speciallinksmarkupheading'] = 'Special links markup';
+// ... ... Setting: Mark external links.
+$string['markexternallinkssetting'] = 'Mark external links';
+$string['markexternallinkssetting_desc'] = 'Adds an "external link" icon after external links (which lead the user to a target outside Moodle).';
 
 // Settings: Misc tab.
 $string['misctab'] = 'Miscellaneous';
@@ -645,13 +701,13 @@ $string['tiletitlesetting_desc'] = 'Here, you enter the title which should be di
 
 // ... Section: Site home right-hand block drawer behaviour.
 $string['sitehomerighthandblockdrawerbehaviour'] = 'Site home right-hand block drawer';
-// ... ... Setting: Show site home right-hand blocks drawer on visit setting.
+// ... ... Setting: Show right-hand block drawer of site home on visit.
 $string['showsitehomerighthandblockdraweronvisitsetting'] = 'Show right-hand block drawer of site home on visit';
 $string['showsitehomerighthandblockdraweronvisitsetting_desc'] = 'With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who are not logged in and does not overwrite the toggle state of each individual user.';
-// ... ... Setting: Show site home right-hand block drawer on first login setting.
+// ... ... Setting: Show right-hand block drawer of site home on first login.
 $string['showsitehomerighthandblockdraweronfirstloginsetting'] = 'Show right-hand block drawer of site home on first login';
 $string['showsitehomerighthandblockdraweronfirstloginsetting_desc'] = 'With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in for the very first time and does not overwrite the toggle state of each individual user.';
-// ... ... Setting: Show site home right-hand block drawer on guest login setting.
+// ... ... Setting: Show right-hand block drawer of site home on guest login.
 $string['showsitehomerighthandblockdraweronguestloginsetting'] = 'Show right-hand block drawer of site home on guest login';
 $string['showsitehomerighthandblockdraweronguestloginsetting_desc'] = 'With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in as a guest.';
 

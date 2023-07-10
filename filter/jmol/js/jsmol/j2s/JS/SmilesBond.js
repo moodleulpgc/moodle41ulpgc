@@ -179,7 +179,7 @@ return this.atom2.index;
 });
 Clazz.overrideMethod (c$, "getCovalentOrder", 
 function () {
-return this.order;
+return this.order & 131071;
 });
 Clazz.overrideMethod (c$, "getOtherNode", 
 function (atom) {
@@ -188,6 +188,10 @@ return (atom === this.atom1 ? this.atom2 : atom === this.atom2 || atom == null ?
 Clazz.overrideMethod (c$, "isCovalent", 
 function () {
 return this.order != 112;
+});
+Clazz.overrideMethod (c$, "isPartial", 
+function () {
+return false;
 });
 Clazz.overrideMethod (c$, "isHydrogen", 
 function () {
@@ -198,7 +202,7 @@ function () {
 var a = this.atom1;
 this.atom1 = this.atom2;
 this.atom2 = a;
-switch (this.order) {
+switch (this.order & 131071) {
 case 65537:
 this.order = 65538;
 break;
@@ -215,14 +219,14 @@ break;
 });
 Clazz.defineMethod (c$, "getRealCovalentOrder", 
 function () {
-switch (this.order) {
+switch (this.order & 131071) {
 case 65537:
 case 65538:
 case 1025:
 case 1041:
 return 1;
 }
-return this.order;
+return this.order & 131071;
 });
 Clazz.defineMethod (c$, "getMatchingBond", 
 function () {

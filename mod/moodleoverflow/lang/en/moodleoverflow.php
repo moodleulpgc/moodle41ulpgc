@@ -60,9 +60,11 @@ $string['moodleoverflow:movetopic'] = 'Move Topic to another Moddleoverflow Foru
 
 // Strings for the view.php.
 $string['noviewdiscussionspermission'] = 'You do not have the permission to view discussions in this forum';
+$string['lastpost'] = 'Last post';
 
 // Strings for the locallib.php.
 $string['addanewdiscussion'] = 'Add a new discussion topic';
+$string['seeuserstats'] = 'View user statistics';
 $string['nodiscussions'] = 'There are no discussion topics yet in this forum.';
 $string['headerdiscussion'] = 'Discussion';
 $string['headerstartedby'] = 'Started by';
@@ -195,8 +197,10 @@ $string['addanewreply'] = 'Add a new answer';
 $string['ratingfailed'] = 'Rating failed. Try again.';
 $string['rateownpost'] = 'You cannot rate your own post.';
 $string['marksolved'] = 'Mark as solution';
+$string['alsomarksolved'] = "Also mark as solution";
 $string['marknotsolved'] = 'Remove solution mark';
-$string['markhelpful'] = 'Mark as Helpful';
+$string['markhelpful'] = 'Mark as helpful';
+$string['alsomarkhelpful'] = "Also mark as helpful";
 $string['marknothelpful'] = 'Not Helpful';
 $string['answer'] = '{$a} Answer';
 $string['answers'] = '{$a} Answers';
@@ -206,6 +210,17 @@ $string['markreadfailed'] = 'A post of the discussion could not be marked as rea
 $string['markdiscussionreadsuccessful'] = 'The discussion has been marked as read.';
 $string['markmoodleoverflowreadsuccessful'] = 'All posts have been marked as read.';
 $string['noguesttracking'] = 'Sorry, guests are not allowed to set tracking options.';
+
+// Strings for the userstats feature.
+$string['userstatsupvotes'] = 'Received upvotes';
+$string['userstatsdownvotes'] = 'Received downvotes';
+$string['userstatsforumactivity'] = 'Activity (this forum)';
+$string['userstatsforumreputation'] = 'Reputation (this forum)';
+$string['userstatscourseactivity'] = 'Activity (coursewide)';
+$string['userstatscoursereputation'] = 'Reputation (coursewide)';
+$string['helpamountofactivity'] = 'Each activity like writing a post, starting a discussion or giving a rating gives 1 point';
+$string['showuserstats'] = 'Show cumulative user statistics';
+$string['configshowuserstats'] = 'Allow teachers in courses to see statistics summarizing the activity of users in Moodleoverflows.';
 
 // OTHER.
 $string['messageprovider:posts'] = 'Notification of new posts';
@@ -334,6 +349,8 @@ $string['clicktosubscribe'] = 'You are not subscribed to this discussion. Click 
 $string['attachment'] = 'Attachment';
 $string['attachments'] = 'Attachments';
 $string['attachment_help'] = 'You can optionally attach one or more files to a forum post. If you attach an image, it will be displayed after the message.';
+$string['allowmultiplemarks'] = 'Multiple marks?';
+$string['allowmultiplemarks_help'] = 'A post can be marked as helpful or solved. Within a discussion, only one post can be marked as helpful/solved. Click the checkbox to mark multiple posts as helpful/solved.';
 
 // Templates.
 $string['helpfulanswer'] = 'The question owner accepted this as the best answer.';

@@ -128,7 +128,7 @@ class main {
      * @return bool|int The new ID of the calidmap record.
      */
     public function create_event_raw($muserid, $eventid, $subject, $body, $timestart, $timeend, $attendees, array $other = array(),
-        $calid) {
+        $calid = '') { // ecastro ULPGC to avoid warnin PHP8.1, calid has a value
         global $DB;
         $apiclient = $this->construct_calendar_api($muserid, true);
         $o365upn = utils::get_o365_upn($muserid);

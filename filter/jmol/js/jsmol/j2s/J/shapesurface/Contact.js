@@ -84,8 +84,8 @@ colorDensity = false;
 break;
 }
 }var bs;
-this.ac = this.vwr.ms.ac;
-this.atoms = this.vwr.ms.at;
+this.ac = this.ms.ac;
+this.atoms = this.ms.at;
 var intramolecularMode = Clazz.floatToInt (parameters == null || parameters.length < 2 ? 0 : parameters[1]);
 var ptSize = (colorDensity && parameters != null && parameters[0] < 0 ? Math.abs (parameters[0]) : 0.15);
 if (JU.Logger.debugging) {

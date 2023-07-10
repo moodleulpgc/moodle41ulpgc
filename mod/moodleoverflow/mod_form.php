@@ -238,6 +238,11 @@ class mod_moodleoverflow_mod_form extends moodleform_mod {
         $mform->addHelpButton('repcountvotes', 'repcountvotes', 'moodleoverflow');
         $mform->setDefault('repcountvotes', MOODLEOVERFLOW_RATING_ALLOW);
 
+        // Allow multiple marks of helpful/solved.
+        $mform->addElement('advcheckbox', 'allowmultiplemarks', get_string('allowmultiplemarks', 'moodleoverflow'));
+        $mform->addHelpButton('allowmultiplemarks', 'allowmultiplemarks', 'moodleoverflow');
+        $mform->setDefault('allowmultiplemarks', 0);
+
         $mform->addElement('advcheckbox', 'repcountposts', get_string('repcountposts', 'moodleoverflow'));
         $mform->addHelpButton('repcountposts', 'repcountposts', 'moodleoverflow');
         $mform->setDefault('repcountposts', MOODLEOVERFLOW_RATING_ALLOW);

@@ -65,7 +65,7 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
             //$url = new moodle_url('/report/loglive/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
             //$coursenode->add(get_string('pluginname', 'report_loglive'), $url, navigation_node::TYPE_SETTING, null, 'courseloglive', new pix_icon('i/report', ''));
 
-            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin'];
+            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin', 'contextlocking'];
             $name = get_string('archivereuse', 'local_ulpgccore');
             local_ulpgccore_regroup_nav_nodes($coursenode, $links, $name, 'course_archive_reuse');
         }
@@ -109,20 +109,21 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
         }
         
         if($modnode =  $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {    
-            $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
-            $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
-
-
+            //print_object($modnode->get_children_key_list());
+            //$url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
+            //$modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
+            //print_object($modnode->get_children_key_list());
+            
             if(has_any_capability(['moodle/role:assign', 'moodle/grade:edit'], $context)) {
-            $links = ['roleoverride', 'roleassign', 'rolecheck'];
-            $name = get_string('rolepermissions', 'local_ulpgccore');
-            local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
+                $links = ['roleoverride', 'roleassign', 'rolecheck', 'contextlocking'];
+                $name = get_string('rolepermissions', 'local_ulpgccore');
+                local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
 
             }
             if(has_any_capability(['moodle/backup:backupcourse', 'moodle/grade:edit'], $context)) {
-            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
-            $name = get_string('archivereuse', 'local_ulpgccore');
-            local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
+                $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
+                $name = get_string('archivereuse', 'local_ulpgccore');
+                local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
             }
 
 /*

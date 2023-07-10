@@ -93,7 +93,7 @@ abstract class batchmanage_managejob_plugin  {
 
     public function process_courses_selector($formdata) {
         $usable = array('coursecategories', 'visible', 'format', 'coursetoshortnames', 'excludeshortnames', 'idnumber', 'fullname', 
-                            'term', 'credit', 'department', 'ctype');
+                            'term', 'credit', 'department', 'ctype', 'cstatus');
         $data = new stdClass();
         foreach($formdata as $key => $value) {
             if(in_array($key, $usable)) {
@@ -360,6 +360,11 @@ abstract class batchmanage_managejob_plugin  {
                 $wherecourse .= " AND cu.ctype = ? ";
                 $params[] = $formdata->ctype;
             }
+            if(isset($formdata->cstatus) &&  $formdata->cstatus !='all') {
+                $wherecourse .= " AND cu.cstatus = ? ";
+                $params[] = $formdata->cstatus;
+            }
+            
         }
     
         return array($wherecourse, $join, $params);

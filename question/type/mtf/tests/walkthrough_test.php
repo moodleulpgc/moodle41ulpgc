@@ -24,7 +24,10 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_mtf;
+
 defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/type/mtf/tests/helper.php');
@@ -37,7 +40,7 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group       qtype_mtf
  */
-class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
+class walkthrough_test extends \qbehaviour_walkthrough_test_base {
 
     /**
      * (non-PHPdoc)
@@ -59,10 +62,10 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
      * @return qtype_mtf
      */
     public function make_a_mtf_question() {
-        question_bank::load_question_definition_classes('mtf');
-        $mtf = new qtype_mtf_question();
-        test_question_maker::initialise_a_question($mtf);
-        $mtf->qtype = question_bank::get_qtype('mtf');
+        \question_bank::load_question_definition_classes('mtf');
+        $mtf = new \qtype_mtf_question();
+        \test_question_maker::initialise_a_question($mtf);
+        $mtf->qtype = \question_bank::get_qtype('mtf');
         $mtf->name = "MTF Question";
         $mtf->idnumber = 1;
         $mtf->status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
@@ -71,7 +74,7 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
         $mtf->answernumbering = 'abc';
         $mtf->deduction = 0.0;
         $mtf->scoringmethod = "subpoints";
-        $mtf->options = new stdClass();
+        $mtf->options = new \stdClass();
         $mtf->shuffleanswers = 0;
         $mtf->numberofrows = 2;
         $mtf->numberofcolumns = 2;
@@ -150,12 +153,14 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
 
     /**
      * Test deferredfeedback_feedback_mtf
+     *
+     * @covers ::process_submission
      */
     public function test_deferredfeedback_feedback_mtf() {
         $mtf = $this->make_a_mtf_question();
         $this->start_attempt_at_question($mtf, 'deferredfeedback', 1);
         $this->process_submission(array("option0" => 1, "option1" => 2));
-        $this->check_current_state(question_state::$complete);
+        $this->check_current_state(\question_state::$complete);
         $this->check_current_mark(null);
         $this->check_current_output(
             $this->get_contains_mtf_radio_expectation(0, 1, true, true),
@@ -165,19 +170,21 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
             $this->get_does_not_contain_correctness_expectation(),
             $this->get_does_not_contain_feedback_expectation());
         $this->quba->finish_all_questions();
-        $this->check_current_state(question_state::$gradedright);
+        $this->check_current_state(\question_state::$gradedright);
         $this->check_current_mark(1);
         $this->check_current_output(
             $this->get_contains_mtf_radio_expectation(0, 1, false, true),
             $this->get_contains_mtf_radio_expectation(1, 2, false, true),
             $this->get_contains_correct_expectation(),
-            new question_pattern_expectation('/name=\".*1_option0\".*value=\"1\".*checked=\"checked\"/'),
-            new question_pattern_expectation('/name=\".*1_option1\".*value=\"2\".*checked=\"checked\"/')
+            new \question_pattern_expectation('/name=\".*1_option0\".*value=\"1\".*checked=\"checked\"/'),
+            new \question_pattern_expectation('/name=\".*1_option1\".*value=\"2\".*checked=\"checked\"/')
         );
     }
 
     /**
      * Test deduction for wrong answers
+     *
+     * @covers ::regrade_all_questions
      */
     public function test_deduction_mtf() {
         $mtf = $this->make_a_mtf_question();
@@ -186,20 +193,22 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->start_attempt_at_question($mtf, 'immediatefeedback', 1);
         $this->process_submission(array('option0' => 1, 'option1' => '1'));
         $this->quba->finish_all_questions();
-        $this->check_current_state(question_state::$gradedpartial);
+        $this->check_current_state(\question_state::$gradedpartial);
         // One right, one wrong should give +0.5 -0.25 = 0.25.
         $this->check_current_mark(0.25);
 
         $this->start_attempt_at_question($mtf, 'immediatefeedback', 1);
         $this->process_submission(array('option0' => 1, 'option1' => ''));
         $this->quba->finish_all_questions();
-        $this->check_current_state(question_state::$gradedpartial);
+        $this->check_current_state(\question_state::$gradedpartial);
         // One right, one empty should give +0.5 -0 = 0.5.
         $this->check_current_mark(0.5);
     }
 
     /**
      * Test regrading of questions with deduction
+     *
+     * @covers ::regrade_all_questions
      */
     public function test_deduction_mtf_regrading() {
         $mtf = $this->make_a_mtf_question();
@@ -209,7 +218,7 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
         // Correct answer would be 1 and 2, so we have one correct and one wrong.
         $this->process_submission(array('option0' => 1, 'option1' => 1));
         $this->quba->finish_all_questions();
-        $this->check_current_state(question_state::$gradedpartial);
+        $this->check_current_state(\question_state::$gradedpartial);
         $this->check_current_mark(0.25);
 
         // Changing to "subpoints" grading method, so there should be no deduction anymore.

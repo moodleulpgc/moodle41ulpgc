@@ -27,13 +27,10 @@ namespace mod_ratingallocate\privacy;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
-use core_privacy\local\request\deletion_criteria;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\writer;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Implementation of the privacy subsystem plugin provider for the ratingallocate activity module.
@@ -42,15 +39,15 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    // This plugin stores personal data.
-    \core_privacy\local\metadata\provider,
+        // This plugin stores personal data.
+        \core_privacy\local\metadata\provider,
 
-    // This plugin is capable of determining which users have data within it.
-    \core_privacy\local\request\core_userlist_provider,
+        // This plugin is capable of determining which users have data within it.
+        \core_privacy\local\request\core_userlist_provider,
 
-    // This plugin is a core_user_data_provider.
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\user_preference_provider {
+        // This plugin is a core_user_data_provider.
+        \core_privacy\local\request\plugin\provider,
+        \core_privacy\local\request\user_preference_provider {
 
     /**
      * Return the fields which contain personal data.
@@ -59,24 +56,24 @@ class provider implements
      *
      * @return collection the updated collection of metadata items.
      */
-    public static function get_metadata(collection $items) : collection {
+    public static function get_metadata(collection $items): collection {
         $items->add_database_table('ratingallocate_ratings', [
-            'choiceid' => 'privacy:metadata:ratingallocate_ratings:choiceid',
-            'userid'   => 'privacy:metadata:ratingallocate_ratings:userid',
-            'rating'   => 'privacy:metadata:ratingallocate_ratings:rating'
+                'choiceid' => 'privacy:metadata:ratingallocate_ratings:choiceid',
+                'userid' => 'privacy:metadata:ratingallocate_ratings:userid',
+                'rating' => 'privacy:metadata:ratingallocate_ratings:rating'
         ],
-            'privacy:metadata:ratingallocate_ratings');
+                'privacy:metadata:ratingallocate_ratings');
 
         $items->add_database_table('ratingallocate_allocations', [
-            'userid'           => 'privacy:metadata:ratingallocate_allocations:userid',
-            'ratingallocateid' => 'privacy:metadata:ratingallocate_allocations:ratingallocateid',
-            'choiceid'         => 'privacy:metadata:ratingallocate_allocations:choiceid'
+                'userid' => 'privacy:metadata:ratingallocate_allocations:userid',
+                'ratingallocateid' => 'privacy:metadata:ratingallocate_allocations:ratingallocateid',
+                'choiceid' => 'privacy:metadata:ratingallocate_allocations:choiceid'
         ], 'privacy:metadata:ratingallocate_allocations');
 
         $items->add_user_preference('flextable_mod_ratingallocate_table_filter',
-            'privacy:metadata:preference:flextable_filter');
+                'privacy:metadata:preference:flextable_filter');
         $items->add_user_preference('flextable_mod_ratingallocate_manual_allocation_filter',
-            'privacy:metadata:preference:flextable_manual_filter');
+                'privacy:metadata:preference:flextable_manual_filter');
 
         return $items;
     }
@@ -88,7 +85,7 @@ class provider implements
      *
      * @return contextlist the list of contexts containing user info for the user.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         // Fetch all allocations.
         $sql = "SELECT c.id
                   FROM {context} c
@@ -101,10 +98,10 @@ class provider implements
                  WHERE alloc.userid = :aluserid OR ratings.userid = :userid";
 
         $params = [
-            'modname'      => 'ratingallocate',
-            'contextlevel' => CONTEXT_MODULE,
-            'aluserid'     => $userid,
-            'userid'       => $userid,
+                'modname' => 'ratingallocate',
+                'contextlevel' => CONTEXT_MODULE,
+                'aluserid' => $userid,
+                'userid' => $userid,
         ];
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
@@ -165,7 +162,7 @@ class provider implements
             $contextdata = helper::get_context_data($context, $user);
 
             // Merge with choice data and write it.
-            $contextdata = (object)array_merge((array)$contextdata, (array)$value);
+            $contextdata = (object) array_merge((array) $contextdata, (array) $value);
             writer::with_context($context)->export_data($area, $contextdata);
 
             // Write generic module intro files.
@@ -207,7 +204,7 @@ class provider implements
             $contextdata = helper::get_context_data($context, $user);
 
             // Merge with choice data and write it.
-            $contextdata = (object)array_merge((array)$contextdata, (array)$value);
+            $contextdata = (object) array_merge((array) $contextdata, (array) $value);
             writer::with_context($context)->export_data($area, $contextdata);
 
             // Write generic module intro files.
@@ -220,14 +217,14 @@ class provider implements
         if (null !== $filtertable) {
             $filtertabledesc = get_string('filtertabledesc', 'mod_ratingallocate');
             writer::export_user_preference('mod_ratingallocate',
-                'flextable_mod_ratingallocate_table_filter', $filtertable, $filtertabledesc);
+                    'flextable_mod_ratingallocate_table_filter', $filtertable, $filtertabledesc);
         }
 
         $filtermanualtable = get_user_preferences('flextable_mod_ratingallocate_manual_allocation_filter', null, $userid);
         if (null !== $filtermanualtable) {
             $filtermanualtabledesc = get_string('filtermanualtabledesc', 'mod_ratingallocate');
             writer::export_user_preference('mod_ratingallocate',
-                'flextable_mod_ratingallocate_manual_allocation_filter', $filtermanualtable, $filtermanualtabledesc);
+                    'flextable_mod_ratingallocate_manual_allocation_filter', $filtermanualtable, $filtermanualtabledesc);
         }
     }
 
@@ -256,11 +253,11 @@ class provider implements
         $DB->delete_records('ratingallocate_allocations', ['ratingallocateid' => $cm->instance]);
         // Delete Choices.
         $DB->delete_records_select(
-            'ratingallocate_ratings',
-            "choiceid IN (SELECT id FROM {ratingallocate_choices} WHERE ratingallocateid = :instanceid)",
-            [
-                'instanceid' => $cm->instance,
-            ]
+                'ratingallocate_ratings',
+                "choiceid IN (SELECT id FROM {ratingallocate_choices} WHERE ratingallocateid = :instanceid)",
+                [
+                        'instanceid' => $cm->instance,
+                ]
         );
     }
 
@@ -288,12 +285,13 @@ class provider implements
             $DB->delete_records('ratingallocate_allocations', ['ratingallocateid' => $instanceid, 'userid' => $userid]);
             // Delete Choices.
             $DB->delete_records_select(
-                'ratingallocate_ratings',
-                "choiceid IN (SELECT id FROM {ratingallocate_choices} WHERE ratingallocateid = :instanceid) AND userid = :userid",
-                [
-                    'instanceid' => $instanceid,
-                    'userid'     => $userid
-                ]
+                    'ratingallocate_ratings',
+                    "choiceid IN (SELECT id FROM {ratingallocate_choices}
+                        WHERE ratingallocateid = :instanceid) AND userid = :userid",
+                    [
+                            'instanceid' => $instanceid,
+                            'userid' => $userid
+                    ]
             );
         }
     }
@@ -301,7 +299,7 @@ class provider implements
     /**
      * Get the list of users who have data within a context.
      *
-     * @param   userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      */
     public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
@@ -310,8 +308,8 @@ class provider implements
             return;
         }
         $params = [
-            'instanceid'    => $context->instanceid,
-            'modulename'    => 'ratingallocate',
+                'instanceid' => $context->instanceid,
+                'modulename' => 'ratingallocate',
         ];
         // From ratings.
         $sql = "SELECT ra.userid
@@ -326,7 +324,7 @@ class provider implements
         $sql = "SELECT a.userid
                   FROM {course_modules} cm
                   JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
-                  JOIN {ratingallocate} r ON r.id = cm.instance                  
+                  JOIN {ratingallocate} r ON r.id = cm.instance
                   JOIN {ratingallocate_allocations} a ON a.ratingallocateid = r.id
                  WHERE cm.id = :instanceid";
         $userlist->add_from_sql('userid', $sql, $params);
@@ -336,7 +334,7 @@ class provider implements
     /**
      * Delete multiple users within a single context.
      *
-     * @param   approved_userlist $userlist The approved context and user information to delete information for.
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
@@ -350,11 +348,11 @@ class provider implements
 
         // Delete Allocations.
         $DB->delete_records_select('ratingallocate_allocations',
-            "ratingallocateid = :ratingallocateid AND userid {$userinsql}", $params);
+                "ratingallocateid = :ratingallocateid AND userid {$userinsql}", $params);
         // Delete Ratings.
         $DB->delete_records_select(
-            'ratingallocate_ratings',
-            "choiceid IN (SELECT id FROM {ratingallocate_choices} ".
-                    "WHERE ratingallocateid = :ratingallocateid) AND userid {$userinsql}", $params);
+                'ratingallocate_ratings',
+                "choiceid IN (SELECT id FROM {ratingallocate_choices} " .
+                "WHERE ratingallocateid = :ratingallocateid) AND userid {$userinsql}", $params);
     }
 }

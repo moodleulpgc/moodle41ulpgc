@@ -15,6 +15,7 @@ this.symopNormixes = null;
 this.visible = true;
 this.lighting = 1073741958;
 this.colorType = 0;
+this.reverseColor = false;
 this.haveXyPoints = false;
 this.diameter = 0;
 this.width = 0;

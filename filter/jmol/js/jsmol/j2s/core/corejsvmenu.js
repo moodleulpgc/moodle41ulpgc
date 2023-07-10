@@ -81,7 +81,7 @@ var $t$;
 * Includes: jquery.ui.core.js, jquery.ui.widget.js, jquery.ui.mouse.js, jquery.ui.position.js, jquery.ui.menu.js
 * Copyright (c) 2012 jQuery Foundation and other contributors Licensed MIT */
 
-(function(jQuery) {
+;(function(jQuery) {
 
 if (!jQuery.ui)
 try{
@@ -335,10 +335,10 @@ function (viewer, bundle, title) {
 this.vwr = viewer;
 this.initSwing (title, bundle, viewer.getApplet (), JSV.common.JSViewer.isJS, viewer.isSigned, false);
 }, "JSV.common.JSViewer,J.popup.PopupResource,~S");
-Clazz_overrideMethod (c$, "jpiDispose", 
+Clazz_defineMethod (c$, "jpiDispose", 
 function () {
-this.helper.menuClearListeners (this.popupMenu);
-this.popupMenu = this.thisPopup = null;
+this.vwr = null;
+Clazz_superCall (this, JSV.popup.JSVGenericPopup, "jpiDispose", []);
 });
 Clazz_overrideMethod (c$, "jpiGetMenuAsObject", 
 function () {

@@ -45,7 +45,7 @@ $verbose = false;
 $update = false;
 
 $casulpgcauth = get_auth_plugin('casulpgc');
-$removeuser = $casulpgcauth->config->removeuser
+$removeuser = $casulpgcauth->config->removeuser;
 
     /**
      * Sincroniza los usuarios de la BBDD de moodle con los de la BBDD

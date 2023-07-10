@@ -4,6 +4,7 @@ c$ = Clazz.decorateAsClass (function () {
 this.msg = "";
 this.wasJvxl = false;
 this.wasCubic = false;
+this.jvxlFileSource = null;
 this.jvxlFileTitle = null;
 this.jvxlFileMessage = null;
 this.jvxlSurfaceData = null;
@@ -36,6 +37,7 @@ this.mappedDataMax = 0;
 this.valueMappedToRed = 0;
 this.valueMappedToBlue = 0;
 this.cutoff = 0;
+this.cutoffRange = null;
 this.pointsPerAngstrom = 0;
 this.nPointsX = 0;
 this.nPointsY = 0;
@@ -130,7 +132,6 @@ this.voxelVolume = 0;
 Clazz.defineMethod (c$, "setSurfaceInfo", 
 function (thePlane, mapLattice, nSurfaceInts, surfaceData) {
 this.jvxlSurfaceData = surfaceData;
-if (this.jvxlSurfaceData.indexOf ("--") == 0) this.jvxlSurfaceData = this.jvxlSurfaceData.substring (2);
 this.jvxlPlane = thePlane;
 this.mapLattice = mapLattice;
 this.nSurfaceInts = nSurfaceInts;

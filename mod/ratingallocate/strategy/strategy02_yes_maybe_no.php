@@ -25,8 +25,8 @@
  * @copyright based on code by M Schulze copyright (C) 2014 M Schulze
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-// namespace is mandatory!
 
+// Namespace is mandatory!
 namespace ratingallocate\strategy_yesmaybeno;
 
 defined('MOODLE_INTERNAL') || die();
@@ -45,19 +45,19 @@ class strategy extends \strategytemplate_options {
 
     public function get_static_settingfields() {
         $output = array(
-            self::MAXNO => array(// maximale Anzahl 'kannnicht'
-                'int',
-                get_string(self::STRATEGYID . '_setting_maxno', ratingallocate_MOD_NAME),
-                $this->get_settings_value(self::MAXNO),
-                null
-            )
+                self::MAXNO => array(// Maximum count of 'No'.
+                        'int',
+                        get_string(self::STRATEGYID . '_setting_maxno', RATINGALLOCATE_MOD_NAME),
+                        $this->get_settings_value(self::MAXNO),
+                        null
+                )
         );
         foreach (array_keys($this->get_choiceoptions()) as $id) {
             $output[$id] = array(
-                            'text',
-                            get_string('strategy_settings_label', ratingallocate_MOD_NAME, $this->get_settings_default_value($id)),
-                            null,
-                            $this->get_settings_default_value($id)
+                    'text',
+                    get_string('strategy_settings_label', RATINGALLOCATE_MOD_NAME, $this->get_settings_default_value($id)),
+                    null,
+                    $this->get_settings_default_value($id)
             );
         }
         $output += $this->get_default_strategy_option();
@@ -70,32 +70,33 @@ class strategy extends \strategytemplate_options {
 
     public function get_choiceoptions() {
         $options = array(
-            0 => $this->get_settings_value(0),
-            3 => $this->get_settings_value(3),
-            5 => $this->get_settings_value(5)
+                0 => $this->get_settings_value(0),
+                3 => $this->get_settings_value(3),
+                5 => $this->get_settings_value(5)
         );
         return $options;
     }
 
     public function get_default_settings() {
         return array(
-                        self::MAXNO => 3,
-                        0 => get_string(self::STRATEGYID . '_rating_no', ratingallocate_MOD_NAME),
-                        3 => get_string(self::STRATEGYID . '_rating_maybe', ratingallocate_MOD_NAME),
-                        5 => get_string(self::STRATEGYID . '_rating_yes', ratingallocate_MOD_NAME),
-                        'default' => 3,
+                self::MAXNO => 3,
+                0 => get_string(self::STRATEGYID . '_rating_no', RATINGALLOCATE_MOD_NAME),
+                3 => get_string(self::STRATEGYID . '_rating_maybe', RATINGALLOCATE_MOD_NAME),
+                5 => get_string(self::STRATEGYID . '_rating_yes', RATINGALLOCATE_MOD_NAME),
+                'default' => 3,
         );
     }
-    protected function getValidationInfo() {
-        return array(self::MAXNO => array(true,0));
+
+    protected function getvalidationinfo() {
+        return array(self::MAXNO => array(true, 0));
     }
 }
 
-// register with the strategymanager
+// Register with the strategymanager.
 \strategymanager::add_strategy(strategy::STRATEGYID);
 
 class mod_ratingallocate_view_form extends \ratingallocate_options_strategyform {
-    // Already specified by parent class
+    // Already specified by parent class.
 
     protected function construct_strategy($strategyoptions) {
         return new strategy($strategyoptions);

@@ -61,6 +61,7 @@ if ((! isset($unidades)) or (count($unidades) == 0)) {
     // Tratamiento de cada registro
     foreach ($unidades as $unidad) {
         $unidad->type = $unidad->tipo;
+        $unidad->timemodified = time();
         // Registro a insertar
         if ($unidad->estado == 'I') {
 

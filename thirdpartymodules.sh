@@ -94,6 +94,7 @@ cd mod/tracker && git checkout MOODLE_39_WORKING && cd ../../
 #Fix dependencies 
 git submodule add https://github.com/turnitin/moodle-mod_turnitintooltwo.git            mod/turnitintooltwo
 git submodule add https://github.com/jcastello46/moodle-mod_unedtrivial.git             mod/unedtrivial
+git submodule add https://github.com/grabs/moodle-mod_unilabel.git                          mod/unilabel
 git submodule add https://github.com/jcrodriguez-dis/moodle-mod_vpl.git                 mod/vpl
 #branch v3.5.0
 #cd mod/vpl && git checkout V3.5.0 && cd ../../
@@ -130,7 +131,7 @@ git submodule add https://github.com/StudiUM/moodle-quiz_markspersection.git mod
 git submodule add https://github.com/geoffrowland/moodle-editor_atto-chemistry.git  lib/editor/atto/plugins/chemistry
 git submodule add https://github.com/ucla/moodle-atto_chemrender.git                lib/editor/atto/plugins/chemrender
 git submodule add https://github.com/dthies/moodle-atto_cloze.git                   lib/editor/atto/plugins/cloze
-
+git submodule add https://github.com/rogersegu/moodle-atto_c4l.git                  lib/editor/atto/plugins/c4l
 git submodule add https://github.com/damyon/moodle-atto_count.git                   lib/editor/atto/plugins/count
 git submodule add https://github.com/moodleou/moodle-atto_embedquestion.git         lib/editor/atto/plugins/embedquestion
 git submodule add https://github.com/andrewnicols/moodle-atto_fontsize              lib/editor/atto/plugins/fontsize
@@ -325,7 +326,6 @@ git submodule add https://github.com/jpahullo/moodle-repository_searchable.git  
 
 #Web Services
 git submodule add https://github.com/moodlehq/moodle-webservice_xmlrpc.git      webservice/xmlrpc
-
 #pumukit
 git submodule add https://github.com/teltek/moodle-atto_pumukitmedia.git            lib/editor/atto/plugins/pumukitmedia
 git submodule add https://github.com/teltek/moodle-filter_pumukitmedia.git          filter/pumukitmedia
@@ -338,3 +338,15 @@ git submodule add https://github.com/willianmano/moodle-theme_moove.git         
 git submodule add https://github.com/dbnschools/moodle-theme_learnr.git             theme/learnr
 git submodule add https://github.com/moodle-an-hochschulen/moodle-theme_boost_union.git     theme/boost_union
 #git submodule add 
+
+# Testing, temporal
+#git submodule add https://gitlab.com/adapta/moodle-tool_bulkchangeprofilefields.git            admin/tool/bulkchangeprofilefields
+#git submodule add https://github.com/moodlehq/moodle-tool_health.git                               admin/tool/health
+#git submodule add https://github.com/learnweb/moodle-tool_lifecycle.git                              admin/tool/lifecycle   
+#git submodule add https://github.com/brickfield/moodle-gradereport_markingguide.git            grade/report/markingguide
+#git submodule add https://github.com/brickfield/moodle-gradereport_rubrics.git                     grade/report/rubrics
+#git submodule add https://github.com/catalyst/moodle-assignsubmission_automaticextension.git 
+#git submodule add https://gricad-gitlab.univ-grenoble-alpes.fr/moodle-plugins/moodle-atto_code.git             lib/editor/atto/plugins/code
+#git submodule add https://gitlab.com/dne-elearning/moodle-magistere/moodle-atto_fontawesomepicker.git   lib/editor/atto/plugins/fontawesomepicker
+
+#git submodule add https://github.com/UNIMOODLE/moodle-mod_hybridteaching.git               mod/hybridteaching

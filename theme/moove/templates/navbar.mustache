@@ -62,7 +62,7 @@
         <span class="sr-only">{{#str}}sidepanel, core{{/str}}</span>
     </button>
 
-    <a href="{{{ config.homeurl }}}" class="navbar-brand d-none d-md-flex align-items-center m-0 mr-4 p-0 aabtn">
+    <a href="{{{ config.homeurl }}}" class="navbar-brand d-none d-md-flex align-items-center m-0  p-0 aabtn">{{! ecastro ULPGC removed mr-4}} 
         {{# output.should_display_logo }}
             <img src="{{output.get_logo}}" class="logo mr-1" alt="{{sitename}}">
         {{/ output.should_display_logo }}
@@ -110,38 +110,130 @@
 
 {{#secondarymoremenu}}
     <div class="secondary-navigation d-print-none moove">
-        <div class="moove-container-fluid d-flex">
+        <div class="moove-container-fluid">
             {{> core/moremenu}}
-            {{#incoursesettings}}
-                <nav class="context-header-settings-menu incoursesettings navigation">
-                    <a href="#" tabindex="0" class=" dropdown-toggle icon-no-margin" id="dropdown-2" aria-label="{{incoursesettings}}" data-toggle="dropdown" role="button" aria-expanded="true" aria-controls="moove-incourse-settings">
-                    <i class="icon fa {{coursesettingsicon}} fa-fw " title="{{incoursesettings}}" aria-label="{{incoursesettings}}"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right menu align-tr-br" id="action-menu-2-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-2" role="menu" data-align="tr-br">
-                        {{#incoursesettings}}
-                            {{#node}}
-                                {{> theme_moove/settings_page_course}}
-                            {{/node}}
-                        {{/incoursesettings}}
+            
+            <script>
+            function func12(event) {
+            //alert("DIV 1");
+            /*
+            alert("DIV 1");
+            //event.stopPropagation();
+            //event.preventDefault ();
+            //event.stopImmediatePropagation();
+            var capa_dropdown = document.getElementById("menu_opciones");
+            //alert(capa_dropdown);
+            
+            // Obtenemos el gear
+            console.log(capa_dropdown.innerHTML);
+            
+            var clases = capa_dropdown.getAttribute("class");
+            console.log(clases);
+            
+            //var datatoggle = capa_dropdown.getAttribute("data-toggle");
+            //console.log(datatoggle);
+            
+            //capa_dropdown.setAttribute("class", "democlass");
+            //capa_dropdown.setAttribute("data-toggle", "");
+            
+            //$("#capa_dropdown").toggleClass("toggled");
+            
+            capa_dropdown.click();
+            alert("DIV 2");
+            */  
+                console.log("datos del evento2: ");
+                console.log(event.srcElement.innerText);
+                console.log(event);
+                
+                var capa_dropdown = document.getElementById("menu_opciones");
+                capa_dropdown.setAttribute("class", "menuoptions show");
+                
+                var capa_principal = document.getElementById("capa_principal");
+                //capa_principal.setAttribute("class", "nav-link nav more-nav nav-tabs show");
+                capa_principal.setAttribute("class", "menupanel show");
+                
+                var capa_principal_interior = document.getElementById("capa_principal_interior");
+                
+                if (capa_principal_interior.classList.contains("show")) {
+                    capa_principal_interior.setAttribute("class", "dropdown-menu dropdown-menu-left");
+                    capa_principal_interior.setAttribute("style", "will-change: transform; min-width: 75% !important;");
+                } else {
+                    capa_principal_interior.setAttribute("class", "dropdown-menu dropdown-menu-left show");
+                    //capa_principal_interior.setAttribute("style", "will-change: transform; min-width: 50% !important; position: absolute; transform: translate3d(0px, 57px, 0px); top: 0px; left: 0px;");
+                    capa_principal_interior.setAttribute("style", "will-change: transform; min-width: 75% !important; position: absolute; top: 57px; left: 12%;");
+                }
+            }
+
+            function func12_activity(event) {
+                var capa_dropdown_activity = document.getElementById("menu_opciones_activity");
+                capa_dropdown_activity.setAttribute("class", "menuoptions show");
+
+                var capa_principal_activity = document.getElementById("capa_principal_activity");
+                //capa_principal_activity.setAttribute("class", "nav-link nav more-nav nav-tabs show");
+                capa_principal_activity.setAttribute("class", "menupanel show");
+
+                var capa_principal_interior_activity = document.getElementById("capa_principal_interior_activity");
+
+                if (capa_principal_interior_activity.classList.contains("show")) {
+                    capa_principal_interior_activity.setAttribute("class", "dropdown-menu dropdown-menu-left");
+                    capa_principal_interior_activity.setAttribute("style", "will-change: transform; min-width: 60% !important;");
+                } else {
+                    capa_principal_interior_activity.setAttribute("class", "dropdown-menu dropdown-menu-left show");
+                    //capa_principal_interior_activity.setAttribute("style", "will-change: transform; min-width: 50% !important; position: absolute; transform: translate3d(0px, 57px, 0px); top: 0px; left: 0px;");
+                    capa_principal_interior_activity.setAttribute("style", "will-change: transform; min-width: 60% !important; position: absolute; top: 57px; left: 36%;");
+                }
+            }
+
+            </script>
+            
+            {{! poner esto outer, evita poner elicono donde NO hay opciones de menú}}
+            {{#incoursesettings}}		
+                <nav class="moremenu-toggles">
+                    <div id=capa_principal class="menupanel" style="xmargin-top: -37px; xmargin-left:90%;" >
+                        <a href="#"  class="menuoptions "  id="menu_opciones" role="menuitem" aria-label="{{incoursesettings}}" data-toggle="xxxdropdown" role="button" data-auto-close="outside" aria-haspopup="true" aria-expanded="true" aria-controls="moove-incourse-settings" tabindex="-1" onclick="func12(event)">
+                            <i class="icon fa {{coursesettingsicon}} fa-fw " style=" color: #fff;" title="{{incoursesettings}}" aria-label="{{incoursesettings}}"></i> 
+                        </a>
+                        <ul id=capa_principal_interior data-auto-close="outside" class="dropdown-menu dropdown-menu-left" data-region="moredropdown" aria-labelledby="menu_opciones" role="menu" style="will-change: transform; position: absolute; transform: translate3d(0px, 59px, 0px); top: 0px; left: 0px; min-width: 50% !important;" x-placement="bottom-start">
+                            <li data-key="xxxx1" class="nav-item" role="none" data-forceintomoremenu="true">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                                {{#node}}
+                                                    {{> theme_moove/settings_page_course}}
+                                                {{/node}}
+                                        </div>
+                                    </div>
+                                </div>          
+                            </li>
+                        </ul>
                     </div>
-                </nav>
+
+
+                    {{! poner esto outer, evita poner elicono donde NO hay opciones de menú}}
+                    {{#inactivitysettings}}
+                    {{! incluir la clase nav-link en el <a> tiene efectos: REVISAR si necesario, en AMBOS, arriba y abajo}}
+                    <div id=capa_principal_activity class="menupanel" style="xmargin-top: -28px; xmargin-left:92%;" >
+                        <a href="#"  class="menuoptions "  id="menu_opciones_activity" role="menuitem" data-toggle="xxxdropdown" data-auto-close="outside" aria-haspopup="true" role="button" aria-expanded="true" aria-controls="moove-inactivity-settings" tabindex="-1" onclick="func12_activity(event)">
+                            <i class="icon fa {{activitysettingsicon}} fa-fw " style=" color: #fff;"  title="{{inactivitysettings}}" aria-label="{{inactivitysettings}}"></i>
+                        </a>
+                        <ul id=capa_principal_interior_activity data-auto-close="outside" class="dropdown-menu dropdown-menu-left" data-region="moredropdown" aria-labelledby="menu_opciones" role="menu" style="will-change: transform; position: absolute; transform: translate3d(0px, 59px, 0px); top: 0px; left: 0px; min-width: 50% !important;" x-placement="bottom-start">
+                            <li data-key="xxxx2" class="nav-item" role="none" data-forceintomoremenu="true">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-sm">
+                                            {{#activitynode}}
+                                                {{> theme_moove/settings_page_mod}}
+                                            {{/activitynode}}
+                                        </div>
+                                    </div>
+                                </div>          
+                            </li>
+                        </ul>
+                    </div>
+                    {{/inactivitysettings}}
+                </nav>    
             {{/incoursesettings}}
-            {{#inactivitysettings}}
-                <nav class="context-header-settings-menu nav-link inactivitysettings navigation">
-                    <a href="#" tabindex="0" class="dropdown-toggle icon-no-margin" id="dropdown-3" aria-label="{{inactivitysettings}}" data-toggle="dropdown" role="button" aria-expanded="true" aria-controls="moove-inactivity-settings">
-                    <i class="icon fa {{activitysettingsicon}} fa-fw " title="{{inactivitysettings}}" aria-label="{{inactivitysettings}}"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right menu align-tr-br" id="action-menu-3-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-3" role="menu" data-align="tr-br">
-                        {{#inactivitysettings}}
-                            {{#activitynode}}
-                                {{> theme_moove/settings_page_mod}}
-                                {{!> theme_boost_campus/activity_settings_incourse }}
-                            {{/activitynode}}
-                        {{/inactivitysettings}}
-                    </div>
-                </nav>
-            {{/inactivitysettings}}
-        </div>
+         </div>
     </div>
 {{/secondarymoremenu}}
 {{^secondarymoremenu}}

@@ -26,9 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'report_o365channels';
 $plugin->release = '1.0';
-$plugin->version = 2021052906;
+$plugin->version = 2021052907;
 $plugin->requires = 2020061500;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = [
-    'local_o365teams' => 2022040800,   
+    'local_o365teams' => 2022040800,
 ];
