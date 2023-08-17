@@ -138,8 +138,10 @@ class quiz_mcq_report extends quiz_default_report {
             $question = $DB->get_record_sql('
                 SELECT q.*, qc.contextid
                 FROM {question} q
-                JOIN {question_categories} qc ON qc.id = q.category
-                WHERE q.id = ?', array($allrealquestionids[$q]));
+                JOIN {question_versions} qv ON qv.questionid = q.id
+                JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+                JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
+                WHERE q.id = ?', array($allrealquestionids[$q])); // ecastro ULPGC join qc from versions
 
             // Is this a single-answer question?
             $single = $DB->get_record('qtype_multichoice_options',

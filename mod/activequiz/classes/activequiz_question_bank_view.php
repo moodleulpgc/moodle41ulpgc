@@ -28,7 +28,7 @@ use mod_activequiz\qbanktypes\question_bank_add_to_rtq_action_column;
  * @copyright   2014 University of Wisconsin - Madison
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class activequiz_question_bank_view extends \core_question\bank\view {
+class activequiz_question_bank_view extends \core_question\local\bank\view {
 
 
     /**
@@ -36,7 +36,7 @@ class activequiz_question_bank_view extends \core_question\bank\view {
      *
      * @return array
      */
-    protected function wanted_columns() {
+    protected function wanted_columns(): array {
 
         $defaultqbankcolums = array(
             'question_bank_add_to_rtq_action_column',

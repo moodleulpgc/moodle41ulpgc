@@ -47,7 +47,6 @@ require_once($CFG->dirroot . '/mod/offlinequiz/locallib.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/offlinequiz.class.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/addrandomform.php');
 require_once($CFG->dirroot . '/question/category_class.php');
-require_once($CFG->dirroot . '/mod/offlinequiz/report/statistics/lib.php');
 
 // These params are only passed from page request to request while we stay on
 // this page otherwise they would go in question_edit_setup.
@@ -72,15 +71,6 @@ require_capability('mod/offlinequiz:manage', $contexts->lowest());
 
 $defaultcategoryobj = question_make_default_categories($contexts->all());
 $defaultcategory = $defaultcategoryobj->id . ',' . $defaultcategoryobj->contextid;
-
-// See if we do bulk grade editing.
-$offlinequizgradetool = optional_param('gradetool', -1, PARAM_BOOL);
-if ($offlinequizgradetool > -1) {
-    $thispageurl->param('gradetool', $offlinequizgradetool);
-    set_user_preference('offlinequiz_gradetab', $offlinequizgradetool);
-} else {
-    $offlinequizgradetool = get_user_preferences('offlinequiz_gradetab', 0);
-}
 
 // Determine groupid.
 $groupnumber    = optional_param('groupnumber', 1, PARAM_INT);
@@ -113,29 +103,46 @@ $recordupdateanddocscreated = null;
 $PAGE->set_url($thispageurl);
 
 // Update version references before get_structure().
-if ($newquestionid = optional_param('lastchanged', null, PARAM_INT)) {
-    $sql = "SELECT DISTINCT ogq.questionid AS oldquestionid,
-                   ogq.maxmark AS maxmark,
-                   (SELECT COUNT(*)
-                      FROM {question_answers} qa
-                     WHERE qa.question = ogq.questionid) AS answercount
-              FROM {offlinequiz_group_questions} ogq
-              JOIN {question_versions} qv1 ON qv1.questionid = ogq.questionid
-              JOIN {question_versions} qv2 ON qv1.questionbankentryid = qv2.questionbankentryid AND qv1.version <> qv2.version
-             WHERE ogq.offlinequizid = :offlinequizid
-               AND qv2.questionid = :newquestionid";
+if ($newquestionid = optional_param('lastchanged', false, PARAM_INT)) {
+    $sql = "SELECT qr.id, qv.version, qr.itemid
+            FROM {question_versions} qv
+            JOIN {question_references} qr ON qv.questionbankentryid = qr.questionbankentryid
+            JOIN {context} c ON contextlevel = '70' AND qr.usingcontextid = c.id
+            WHERE qv.questionid = ?
+            AND qr.component = 'mod_offlinequiz'
+            AND qr.questionarea = 'slot'
+            AND c.instanceid = ?";
+    $questionupdate = $DB->get_record_sql($sql, [$newquestionid, $cmid]);
+    if ($questionupdate) {
+        $oldquestionid = $DB->get_field('offlinequiz_group_questions', 'questionid', ['id' => $questionupdate->itemid]);
+        $newquestioncountanswers = $DB->count_records('question_answers', ['question' => $newquestionid]);
+        $oldquestioncountanswers = $DB->count_records('question_answers', ['question' => $oldquestionid]);
+        if (!$docscreated || $oldquestioncountanswers == $newquestioncountanswers) {
+            $updategroupquestion = new stdClass();
+            $updategroupquestion->id = $questionupdate->itemid;
+            $updategroupquestion->questionid = $newquestionid;
 
-    $questionupdates = $DB->get_records_sql($sql, ['offlinequizid' => $offlinequiz->id, 'newquestionid' => $newquestionid]);
-    $newanswercount = $DB->count_records('question_answers', ['question' => $newquestionid]);
-    foreach ($questionupdates as $questionupdate) {
-        if (!$docscreated || $questionupdate->answercount == $newanswercount) {
-            offlinequiz_update_question_instance($offlinequiz,
-                                                $questionupdate->oldquestionid,
-                                                $questionupdate->maxmark,
-                                                $newquestionid);
-            offlinequiz_update_all_attempt_sumgrades($offlinequiz);
-            offlinequiz_update_grades($offlinequiz, 0, true);
-            offlinequiz_delete_statistics_caches($offlinequiz->id);
+            $DB->update_record('offlinequiz_group_questions', $updategroupquestion);
+
+            $updatereference = new stdClass();
+            $updatereference->id = $questionupdate->id;
+            $updatereference->version = $questionupdate->version;
+
+            $DB->update_record('question_references', $updatereference);
+
+            $recordupdateanddocscreated = get_string('recordupdateanddocscreatedversion', 'offlinequiz');
+        } else {
+            $updatereference = new stdClass();
+            $updatereference->id = $questionupdate->id;
+            $sql = 'SELECT qv.version
+                    FROM {question_versions} qv
+                    JOIN {offlinequiz_group_questions} ogq ON qv.questionid = ogq.questionid
+                    WHERE ogq.id = ?';
+            $updatereference->version = $DB->get_field_sql($sql, [$questionupdate->itemid]);
+
+            $DB->update_record('question_references', $updatereference);
+
+            $recordupdateanddocscreated = get_string('recordupdateanddocscreated', 'offlinequiz');
         }
     }
 }
@@ -349,6 +356,7 @@ $questionbank->set_offlinequiz_has_scanned_pages($docscreated);
 
 $PAGE->set_pagelayout('incourse');
 $PAGE->set_pagetype('mod-offlinequiz-edit');
+$PAGE->activityheader->disable();
 $PAGE->force_settings_menu(true);
 $output = $PAGE->get_renderer('mod_offlinequiz', 'edit');
 
@@ -377,13 +385,7 @@ for ($pageiter = 1; $pageiter <= $numberoflisteners; $pageiter++) {
 $PAGE->requires->data_for_js('offlinequiz_edit_config', $offlinequizeditconfig);
 $PAGE->requires->js('/question/qengine.js');
 
-
-// Questions wrapper start.
-if ($offlinequizgradetool) {
-    echo html_writer::start_tag('div', array('class' => 'mod-offlinequiz-edit-content edit_grades'));
-} else {
-    echo html_writer::start_tag('div', array('class' => 'mod-offlinequiz-edit-content'));
-}
+echo html_writer::start_tag('div', array('class' => 'mod-offlinequiz-edit-content'));
 
 $letterstr = 'ABCDEFGHIJKL';
 $groupletters = array();
@@ -392,11 +394,8 @@ for ($i = 1; $i <= $offlinequiz->numgroups; $i++) {
     $groupletters[$i] = $letterstr[$i - 1];
 }
 
-if ($offlinequizgradetool) {
-    $output->edit_grades_page($offlinequizobj, $structure, $contexts, $thispageurl, $pagevars, $groupletters);
-} else {
-    $output->edit_page($offlinequizobj, $structure, $contexts, $thispageurl, $pagevars, $groupletters);
-}
+$output->edit_page($offlinequizobj, $structure, $contexts, $thispageurl, $pagevars, $groupletters);
+
 
 // Questions wrapper end.
 echo html_writer::end_tag('div');

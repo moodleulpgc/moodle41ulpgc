@@ -114,10 +114,10 @@ class grade_edit_tree {
 
         $object = $element['object'];
         $eid    = $element['eid'];
-        $object->name = $this->gtree->get_element_header($element, true, false, true, false, true);
-        $object->icon = $this->gtree->get_element_icon($element);
-        $object->type = $this->gtree->get_element_type_string($element);
-        $object->stripped_name = $this->gtree->get_element_header($element, false, false, false);
+        $name = $this->gtree->get_element_header($element, true, false, true, false, true);
+        $icon = $this->gtree->get_element_icon($element);
+        $type = $this->gtree->get_element_type_string($element);
+        $strippedname = $this->gtree->get_element_header($element, false, false, false);
         $is_category_item = false;
         if ($element['type'] == 'categoryitem' || $element['type'] == 'courseitem') {
             $is_category_item = true;
@@ -130,13 +130,13 @@ class grade_edit_tree {
 
         $moveaction = '';
         $actions = $this->gtree->get_cell_action_menu($element, 'setup', $this->gpr);
-
+/*
         if ($element['type'] == 'item' or ($element['type'] == 'category' and $element['depth'] > 1)) {
             $aurl = new moodle_url('index.php', array('id' => $COURSE->id, 'action' => 'moveselect', 'eid' => $eid, 'sesskey' => sesskey()));
             $moveaction .= $OUTPUT->action_icon($aurl, new pix_icon('t/move', get_string('move')));
         }
-
-        if (!($this->gradebooklocked && ($element['type'] == 'category' && !$this->element_deletable($element)))) { // ecastro ULPGC only move if deletable
+*/
+        if (!($this->gradebooklocked && ($element['type'] == 'category' && !$this->element_deletable($element, $this->gradebooklocked)))) { // ecastro ULPGC only move if deletable
             $aurl = new moodle_url('index.php', array('id' => $COURSE->id, 'action' => 'moveselect', 'eid' => $eid, 'sesskey' => sesskey()));
             $moveaction .= $OUTPUT->action_icon($aurl, new pix_icon('t/move', get_string('move')));
         }
@@ -156,7 +156,7 @@ class grade_edit_tree {
             $cell->colspan = 12;
             $cell->attributes['class'] = $element['type'] . ' moving column-name level' .
                 ($level + 1) . ' level' . ($level % 2 ? 'even' : 'odd');
-            $cell->text = $object->name.' ('.get_string('move').')';
+                $cell->text = $name.' ('.get_string('move').')';
 
             // Create a row that represents the available area to move a grade item or a category into.
             $movingarea = new html_table_row();
@@ -174,7 +174,7 @@ class grade_edit_tree {
 
         if ($element['type'] == 'category') {
             $level++;
-            $this->categories[$object->id] = $object->stripped_name;
+            $this->categories[$object->id] = $strippedname;
             $category = grade_category::fetch(array('id' => $object->id));
             $item = $category->get_grade_item();
 
@@ -309,7 +309,7 @@ class grade_edit_tree {
                 if (!($this->moving && $column->hide_when_moving)) {
                     $categoryrow->cells[] = $column->get_category_cell($category, $levelclass, [
                         'id' => $id,
-                        'name' => $object->name,
+                        'name' => $name,
                         'level' => $level,
                         'actions' => $actions,
                         'moveaction' => $moveaction,
@@ -324,11 +324,13 @@ class grade_edit_tree {
             $parentcategories = array_merge($rowclasses, [$eid]);
             $emptyrow->attributes['class'] = 'spacer ' . implode(' ', $parentcategories);
             $emptyrow->attributes['data-hidden'] = 'false';
+            $emptyrow->attributes['aria-hidden'] = 'true';
 
             $headercell = new html_table_cell();
             $headercell->header = true;
             $headercell->scope = 'row';
             $headercell->attributes['class'] = 'cell column-rowspan rowspan';
+            $headercell->attributes['aria-hidden'] = 'true';
             $headercell->rowspan = $row_count;
             $emptyrow->cells[] = $headercell;
 
@@ -338,6 +340,7 @@ class grade_edit_tree {
             $endcell = new html_table_cell();
             $endcell->colspan = (19 - $level);
             $endcell->attributes['class'] = 'emptyrow colspan ' . $levelclass;
+            $endcell->attributes['aria-hidden'] = 'true';
 
             $returnrows[] = new html_table_row(array($endcell));
 
@@ -379,15 +382,15 @@ class grade_edit_tree {
                         $item,
                         [
                             'id' => $id,
-                            'name' => $object->name,
+                            'name' => $name,
                             'level' => $level,
                             'actions' => $actions,
                             'element' => $element,
                             'eid' => $eid,
                             'moveaction' => $moveaction,
                             'itemtype' => $object->itemtype,
-                            'icon' => $object->icon,
-                            'type' => $object->type
+                            'icon' => $icon,
+                            'type' => $type
                         ]
                     );
                 }
@@ -469,12 +472,12 @@ class grade_edit_tree {
      * @param array $element
      * @return bool
      */
-    public static function element_deletable($element) {
+    public static function element_deletable($element, $lockedcontext = false) { // ecastro ULPGC $lockedcontext
         global $COURSE;
 
-        if($lock=get_config('local_ulpgccore', 'enabledgradebooklocking') && ($element['type'] == 'category') ) { // ecastro ULPGC enforce gradebook locking
+        if($lockedcontext && ($element['type'] == 'category') ) { // ecastro ULPGC enforce gradebook locking
         //if($this->gradebooklocked && ($element['type'] == 'category')) { // ecastro ULPGC enforce gradebook locking items
-            return local_ulpgccore_gradecat_deletable($element['object'], $lock);
+            return local_ulpgccore_gradecat_deletable($element['object'], $lockedcontext);
         }
 
         if ($element['type'] != 'item') {
@@ -775,13 +778,11 @@ abstract class grade_edit_tree_column {
     public function get_category_cell($category, $levelclass, $params) {
         $cell = clone($this->categorycell);
         $cell->attributes['class'] .= ' ' . $levelclass;
-        $cell->attributes['text'] = '';
         return $cell;
     }
 
     public function get_item_cell($item, $params) {
         $cell = clone($this->itemcell);
-        $cell->attributes['text'] = '';
         if (isset($params['level'])) {
             $level = $params['level'] + (($item->itemtype == 'category' || $item->itemtype == 'course') ? 0 : 1);
             $cell->attributes['class'] .= ' level' . $level;
@@ -1152,7 +1153,7 @@ class grade_edit_tree_column_select extends grade_edit_tree_column {
         }
         // Build the master checkbox.
         $mastercheckbox = new \core\output\checkbox_toggleall($togglegroup, true, [
-            'id' => $togglegroup,
+            'id' => 'select_category_' . $category->id,
             'name' => $togglegroup,
             'value' => 1,
             'classes' => 'itemselect ignoredirty',

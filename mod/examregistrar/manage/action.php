@@ -85,7 +85,10 @@ if($bookedsite = optional_param('venue', '', PARAM_INT)) {
     $baseurl->param('venue', $bookedsite);
 }
 
+examregistrar_url_update($baseurl);
+
 $actionurl = new moodle_url('/mod/examregistrar/manage/action.php', array('id' => $cm->id, 'edit'=>$edit, 'action'=>$action));
+examregistrar_url_update($actionurl);
 
 /// Set the page header
 $PAGE->set_url($baseurl);

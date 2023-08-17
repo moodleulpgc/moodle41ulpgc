@@ -25,7 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['o365teams:local/o365teams:manage'] = 'Gestionar sincronización de Teams';
+$string['o365teams:manage'] = 'Gestionar sincronización de Teams';
+$string['o365teams:managechannels'] = 'Gestionar sincronización de Teams channels';
 $string['pluginname'] = 'Office 365 Extended Teams Integration';
 
 $string['settings_createnoownerteams'] = 'Create no-owner Teams';

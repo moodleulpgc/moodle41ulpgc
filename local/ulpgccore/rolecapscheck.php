@@ -28,10 +28,11 @@ require('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 $action = optional_param('action', '', PARAM_ALPHA);
-$archetype = optional_param('arch', 'user', PARAM_ALPHA);
+$archetype = optional_param('arch', 'editingteacher', PARAM_ALPHA);
+$skip = optional_param('skip', 1, PARAM_INT);
 
 // Get the base URL for this and related pages into a convenient variable.
-$baseurl = new moodle_url('/local/ulpgccore/rolecapscheck.php', array('action'=>$action, 'arch'=>$archetype));
+$baseurl = new moodle_url('/local/ulpgccore/rolecapscheck.php', array('action'=>$action, 'arch'=>$archetype, 'skip' => $skip));
 
 // setup page
 admin_externalpage_setup('local_ulpgccore_rolecapscheck', '', null, $baseurl);
@@ -39,6 +40,7 @@ admin_externalpage_setup('local_ulpgccore_rolecapscheck', '', null, $baseurl);
 // Check access permissions.
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
+$PAGE->add_body_class('rolecapscheck');
 require_capability('local/ulpgccore:manage', $systemcontext);
 
 $archetypes = get_role_archetypes();
@@ -52,11 +54,19 @@ $PAGE->set_navigation_overflow_state(false);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('rolecapscheck', 'local_ulpgccore'));
 
-$select = new single_select($baseurl, 'arch', $archetypes, $archetype);
-$select->label = get_string('archetype', 'core_role');
-$select->formid = 'selectarchetype';
-echo $OUTPUT->render($select);
+echo $OUTPUT->container_start('controls d-flex');
+    $select = new single_select($baseurl, 'arch', $archetypes, $archetype);
+    $select->label = get_string('archetype', 'core_role');
+    $select->formid = 'selectarchetype';
+    echo $OUTPUT->render($select);
 
+    $options = [0 => get_string('skip0', 'local_ulpgccore'),
+                1 => get_string('skip1', 'local_ulpgccore'),];
+    $select = new single_select($baseurl, 'skip', $options, $skip);
+    $select->label = get_string('skipcap', 'local_ulpgccore');
+    $select->formid = 'selectskip';
+    echo $OUTPUT->render($select);
+echo $OUTPUT->container_end();
 
 //$adminurl = new moodle_url('/admin/');
 $arguments = array('contextid' => $systemcontext->id,
@@ -68,7 +78,7 @@ $PAGE->requires->strings_for_js(
                                     'confirmunassignno', 'deletexrole'), 'core_role');
 $PAGE->requires->js_call_amd('core/permissionmanager', 'initialize', array($arguments));
 
-$table = new check_role_permissions_table($systemcontext, $archetype);
+$table = new check_role_permissions_table($systemcontext, $archetype, $skip);
 
 if($table->has_derived_roles()) {
     echo $OUTPUT->box_start('generalbox capbox');

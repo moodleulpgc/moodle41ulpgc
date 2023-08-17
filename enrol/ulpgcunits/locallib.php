@@ -143,12 +143,14 @@ function enrol_ulpgcunits_sync(progress_trace $trace, $courseid = NULL, $unitidn
         $params['customchar2'] = $unitidnumber;
     }
    
+   $collation = $DB->get_dbcollation();
+
    $sql = "SELECT e.*, su.name AS unitname, su.type, u1.id AS directorid, u2.id AS secretaryid, u3.id AS coordid
              FROM {enrol} e
-             JOIN {local_sinculpgc_units} su ON su.idnumber = e.customchar2 AND su.idnumber != 0
-        LEFT JOIN {user} u1 ON u1.idnumber = su.director
-        LEFT JOIN {user} u2 ON u2.idnumber = su.secretary
-        LEFT JOIN {user} u3 ON u3.idnumber = su.coord
+             JOIN {local_sinculpgc_units} su ON su.idnumber = e.customchar2 COLLATE $collation AND su.idnumber != 0
+        LEFT JOIN {user} u1 ON u1.idnumber = su.director COLLATE $collation
+        LEFT JOIN {user} u2 ON u2.idnumber = su.secretary COLLATE $collation
+        LEFT JOIN {user} u3 ON u3.idnumber = su.coord COLLATE $collation
             WHERE e.enrol = :enrol $where 
             ORDER BY e.id ";
    
@@ -270,7 +272,5 @@ function enrol_ulpgcunits_sync(progress_trace $trace, $courseid = NULL, $unitidn
     
     $trace->output('...ulpgcunits user enrolment synchronisation finished.');
 
-    die;
-    
     return 0;
 }

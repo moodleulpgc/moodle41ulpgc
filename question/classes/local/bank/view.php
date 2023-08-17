@@ -204,6 +204,15 @@ class view {
         $this->init_sort();
         $this->init_search_conditions();
         $this->init_bulk_actions();
+
+        // ecastro ULPGC
+        $this->enabledadvancedquiz = false;
+        $this->canviewhiddenquestions = false;
+        if(get_config('local_ulpgcquiz', 'enabledadvancedquiz')) {
+            $this->enabledadvancedquiz = true;
+            $this->canviewhiddenquestions = has_capability('local/ulpgcquiz:viewhiddenstatus',
+                                                           \context_course::instance($course->id));
+        }
     }
 
     /**
@@ -300,7 +309,7 @@ class view {
             }
             foreach ($plugincolumnobjects as $columnobject) {
                 $columnname = $columnobject->get_column_name();
-                foreach ($corequestionbankcolumns as $key => $corequestionbankcolumn) {
+                foreach ($corequestionbankcolumns as $corequestionbankcolumn) {
                     if (!\core\plugininfo\qbank::is_plugin_enabled($componentname)) {
                         unset($questionbankclasscolumns[$columnname]);
                         continue;
@@ -334,7 +343,7 @@ class view {
 
         // Mitigate the error in case of any regression.
         foreach ($questionbankclasscolumns as $shortname => $questionbankclasscolumn) {
-            if (empty($questionbankclasscolumn)) {
+            if (!is_object($questionbankclasscolumn)) {
                 unset($questionbankclasscolumns[$shortname]);
             }
         }

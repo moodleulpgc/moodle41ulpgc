@@ -43,11 +43,13 @@ class backuprestore_prebackupfrom_form extends moodleform {
 function prebk_update_question_users() {
     global $DB;
     
-    $sql = "SELECT q.id, uq.id AS uqid, q.category, qc.contextid, q.createdby, q.modifiedby, uq.creatoridnumber, uq.modifieridnumber,
+    $sql = "SELECT q.id, uq.id AS uqid, qc.id AS category, qc.contextid, q.createdby, q.modifiedby, uq.creatoridnumber, uq.modifieridnumber,
                     uc.idnumber AS ucidnumber, um.idnumber AS umidnumber
             FROM {question} q
             LEFT JOIN {local_ulpgccore_questions} uq ON uq.questionid = q.id
-            JOIN {question_categories} qc ON q.category = qc.id
+            JOIN {question_versions} qv ON qv.questionid = q.id
+            JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+            JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
             JOIN {user} uc ON q.createdby = uc.id
             JOIN {user} um ON q.modifiedby = um.id
             WHERE (uq.creatoridnumber <> uc.idnumber OR uq.modifieridnumber <> um.idnumber OR uq.creatoridnumber IS NULL OR  uq.modifieridnumber IS NULL)

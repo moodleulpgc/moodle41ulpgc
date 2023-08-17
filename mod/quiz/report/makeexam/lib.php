@@ -168,6 +168,12 @@ function quiz_makeexam_validate_questions($examfileid) {
     return true;
 }
 
+
+
+
+
+
+
 /**
  * Get
  *
@@ -188,9 +194,22 @@ function quiz_makeexam_quiz_used_questionids($quiz) {
 
     if($attempts) {
         list($insql, $params) = $DB->get_in_or_equal(array_keys($attempts), SQL_PARAMS_NAMED, 'at_');
+        /*
         $select = "quizid = :quizid AND inuse = 1 AND mkattempt $insql";
         $params['quizid'] = $quiz->id;
-        $questions = $DB->get_records_select_menu('quiz_makeexam_slots', $select, $params, 'questionid', 'id, questionid');
+        $questions = $DB->get_records_select_menu('quiz_makeexam_slots', $select, $params, 'questionbankentryid', 'id, questionbankentryid');
+        */
+        $versionjoin = quiz_makeexam_question_version_sqljoin('quiz_makeexam_slots', 'qms.questionbankentryid');
+        $sql = "SELECT qms.id, qv.questionid
+                FROM {quiz_makeexam_slots} qms
+                    $versionjoin
+                WHERE qms.quizid = :quizid1 AND qms.inuse = 1 AND qms.mkattempt $insql
+                ORDER BY qms.slot ";
+        $params = $params + ['draft' => question_version_status::QUESTION_STATUS_DRAFT,
+                            'quizid1' => $quizid,
+                            'quizid2' => $quizid,
+                            ];
+        $questions = $DB->get_records_sql_menu($sql, $params);
     }
 
     if($questions) {
@@ -198,6 +217,44 @@ function quiz_makeexam_quiz_used_questionids($quiz) {
     }
     return $questions;
 }
+
+
+
+/**
+ * Construct SQl JOINS to recover the lastest version for a given questionbankentryid in tables
+ *
+ * @param string $table a table containing questionbankentryid and version (null) fields
+ * @param string $qbentrytablereference a qualified identifier of a field containig questionbankentryid
+ *                for instance qb.qbentryid
+ * @return string
+ */
+function quiz_makeexam_question_version_sqljoin(string $table, string $qbentrytablereference): string {
+    $sqljoin = "-- This way of getting the latest version for each slot is a bit more complicated
+                -- than we would like, but the simpler SQL did not work in Oracle 11.2.
+                -- (It did work fine in Oracle 19.x, so once we have updated our min supported
+                -- version we could consider digging the old code out of git history from
+                -- just before the commit that added this comment.
+                -- For relevant question_bank_entries, this gets the latest non-draft slot number.
+                LEFT JOIN (
+                      SELECT lv.questionbankentryid,
+                            MAX(CASE WHEN lv.status <> :draft THEN lv.version END) AS usableversion,
+                            MAX(lv.version) AS anyversion
+                        FROM {{$table}} lqr
+                        JOIN {question_versions} lv ON lv.questionbankentryid = lqr.questionbankentryid
+                       WHERE lqr.quizid = :quizid2
+
+                         AND lqr.version IS NULL
+                    GROUP BY lv.questionbankentryid
+                ) latestversions ON latestversions.questionbankentryid = $qbentrytablereference
+
+                LEFT JOIN {question_versions} qv ON qv.questionbankentryid = $qbentrytablereference
+                                        -- Either specified version, or latest usable version, or a draft version.
+                                        AND qv.version = COALESCE(
+                                            latestversions.usableversion,
+                                            latestversions.anyversion) ";
+    return $sqljoin;
+}
+
 
 /**
  * Checks if exists a makeexam currents atetmpt and displays its name if any
@@ -221,10 +278,14 @@ function quiz_makeexam_quiz_current_attempt($quizid) {
                 $messages[] = get_string('wrongexamversion', 'quiz_makeexam');
             }
             
-            $mkquestions = explode(',', $makeexamattempt->questions);
+            $mkquestions = explode(',', $makeexamattempt->qbankentries);
             $quizobj->preload_questions();
             $quizobj->load_questions();
-            $qzquestions = array_keys($quizobj->get_questions());
+            $qzquestions = [];
+            foreach($quizobj->get_questions() as $slot) {
+                $qzquestions[] = $slot->questionbankentryid;
+            }
+
             if(sort($mkquestions) != sort($qzquestions)) {
                 $messages[] = get_string('examchangedversion', 'quiz_makeexam');
             }            

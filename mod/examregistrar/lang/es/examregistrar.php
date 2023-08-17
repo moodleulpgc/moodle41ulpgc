@@ -582,7 +582,7 @@ y se generará un nuevo examen sólo si el curso está incluido dentro de esas f
  * Semestre de la asignatura: se determinará el Semestre de la asignatura y sólo se generará un nuevo examen cuando coincidan los semestres de la Convocatoria y curso.
 
 ';
-$string['periodselected'] = 'Según seelcción';
+$string['periodselected'] = 'Según selección';
 $string['periodfromstartdate'] = 'Fecha de inicio de curso';
 $string['periodfromterm'] = 'Semestre de la asignatura';
 $string['genassignprogramme'] = 'Asignación de Titulación';
@@ -648,7 +648,7 @@ $string['voucherissued'] = ' Comprobante emitido el {$a} ';
 $string['voucheruser'] = 'El estudiante <strong>{$a->firstname} {$a->lastname}</strong>, con DNI nº <strong>{$a->idnumber}</strong>, ha realizado una inscripción en el examen y sesión indicada como:';
 $string['voucherdisclaimer'] = 'Este Comprobante debe ser validado en la plataforma usando los códigos de más arriba. Solo si la verificación es validada este Comprobante constituye una evidencia de inscripción.';
 $string['bookingdate'] = ' Inscripción realizada el {$a}. ';
-$string['taken'] = 'Examen realizado';
+$string['examtaken'] = 'Examen {$a} ya realizado por estudiantes';
 $string['notbooked'] = 'No inscrito';
 $string['booked'] = 'Inscrito';
 $string['booking'] = 'Inscripción';

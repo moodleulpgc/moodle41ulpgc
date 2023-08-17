@@ -3790,7 +3790,7 @@ function core_course_drawer(): string {
     }
 
     // Show course index to users can access the course only.
-    if (!can_access_course($PAGE->course)) {
+    if (!can_access_course($PAGE->course, null, '', true)) {
         return '';
     }
 

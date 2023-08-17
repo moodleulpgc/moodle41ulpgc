@@ -36,7 +36,7 @@
         <INDEX NAME="type" UNIQUE="false" FIELDS="type"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="local_sinculpgc_rule" COMMENT="enrolment rules details for ULPGC" >
+    <TABLE NAME="local_sinculpgc_rules" COMMENT="enrolment rules details for ULPGC" >
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="enrol" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false"/>

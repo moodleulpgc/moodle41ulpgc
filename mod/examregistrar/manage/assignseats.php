@@ -68,11 +68,15 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $usort = optional_param('usort', '', PARAM_ALPHANUMEXT);
 $rsort = optional_param('rsort', '', PARAM_ALPHANUMEXT);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit));
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'tab'=>'session'));
+$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit, 'tab'=>'session')));
+examregistrar_url_update($baseurl);
+
 $params =  array('id' => $cm->id, 'edit'=>$edit, 'session'=>$session, 'venue'=>$bookedsite);
 $allocurl = new moodle_url('/mod/examregistrar/manage/assignseats.php', $params);
+examregistrar_url_update($allocurl);
+
 $actionurl = new moodle_url('/mod/examregistrar/manage/action.php', $params);
+examregistrar_url_update($actionurl);
 $actionurl->param('examsession', $session);
 
 $courseurl = new moodle_url('/course/search.php');
@@ -89,7 +93,6 @@ $PAGE->set_activity_record($examregistrar);
 
 $output = $PAGE->get_renderer('mod_examregistrar');
 if($edit) {
-    //$baseurl->param('edit', $edit);
     $PAGE->navbar->add(get_string($edit, 'examregistrar'), $baseurl);
 } else {
     $PAGE->navbar->add(get_string('managesession', 'examregistrar'), $baseurl);

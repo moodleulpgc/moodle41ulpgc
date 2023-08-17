@@ -344,12 +344,13 @@ foreach ($questions as $question) {
             // Get the question status.
             $getqversionstatus = $DB->get_record('question_versions', ['questionid' => $question->id, 'questionbankentryid' => $qbankentry->id]);
             $oldqstatus = $getqversionstatus->status;
+            $originalversionnumber = 'V. '.$getqversionstatus->version;
 
             // Duplicating mdl_question -> mdl_question.
             unset($question->id);
 
             $question->parent = 0;
-            $question->name = substr($question->name . " (MTF " . date("Y-m-d H:i:s") . ")", 0, 255);
+            $question->name = substr($question->name . " [$originalversionnumber] (MTF " . date("Y-m-d H:i:s") . ")", 0, 255);
             $question->qtype = "mtf";
             $question->stamp = make_unique_id_code();
             $question->version = make_unique_id_code();

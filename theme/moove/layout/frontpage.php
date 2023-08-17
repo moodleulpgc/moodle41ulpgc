@@ -120,6 +120,9 @@ $themesettings = new \theme_moove\util\settings();
 
 $templatecontext = array_merge($templatecontext, $themesettings->footer());
 
+// ecastro ULPGC
+$templatecontext = array_merge($templatecontext, theme_moove_union_settings());
+
 if (isloggedin()) {
     echo $OUTPUT->render_from_template('theme_moove/drawers', $templatecontext);
 } else {

@@ -1,0 +1,194 @@
+/* ------------------------------- ateigh.com ------------------------------- 
+ * @file
+ * Variables for theme from ULPGC Design system
+ * ------------------------------- ateigh.com -------------------------------
+ */
+
+// Colors
+$color-blue:#0066a1;
+$color-blue-10:#E5EFF5;
+$color-blue-50:#7fb2d0;
+$color-blue-80:#3385B4;
+$color-blue-dark:#05476d;
+$color-gray:#565a5c;
+$color-gray-10:#eeeeee;
+$color-gray-20:#dddede;
+$color-gray-5:#f6f7f7;
+$color-gray-50:#aaacad;
+$color-gray-80:#787b7d;
+$color-gray-dark:#2d3133;
+$color-orange:#ffa100;
+$color-orange-10:#fff5e5;
+$color-orange-50:#ffd07f;
+$color-orange-80:#ffb433;
+$color-orange-dark:#9C6609;
+$color-red: #CB2E2D;
+$color-red-10:#F9EAEA;
+$color-red-dark: #8C290E;
+$color-white:#fff;
+$color-green:#377B33;
+$color-green-10:#EBF1EA;
+
+
+// general vars
+$text-color:            $color-gray;
+$background-color:      $color-white;
+$link-color:            $color-blue;
+$link-color-hover:      $color-orange;
+$link-color-focus:      $color-orange-dark;
+$link-color-visited:    $color-blue-dark;
+$white:                 #ffffff;
+$black:                 #282828;
+
+$primary-color:             $color-blue;
+$primary-color-lighter:     $color-blue-10;
+$primary-color-light:       $color-blue-50;
+$primary-color-dark:        $color-blue-dark;
+
+$secondary-color:           $color-orange;
+$secondary-color-lighter:   $color-orange-10;
+$secondary-color-light:     $color-orange-50;
+$secondary-color-dark:      $color-orange-dark;
+
+// Background colors
+$background-color-1:      $background-color;
+$background-color-2:      $color-blue-10;
+$background-color-3:      $color-orange-10;
+
+
+// Opacity colors
+$primary-color-opacity:     rgba($primary-color,0.9);
+$secondary-color-opacity:   rgba($secondary-color,0.9);
+$overlay-opacity:           rgba($black,0.6);
+
+// Gradients use
+// @example @include linear-gradient($primary-color, $secondary-color);
+// @example @include linear-gradient(to right, $primary-color-light 0%, #primary-color 50%, $primary-color-dark 100%);
+
+//Feedback colors
+$success-color:             $color-green;
+$success-color-light:       $color-green-10;
+$danger-color:              $color-red;
+$danger-color-light:        $color-red-10;
+$warning-color:             $color-orange;
+$warning-color-light:       $color-orange-10;
+
+
+/// Breakpoints map
+/// @prop {String} keys - Keys are identifiers mapped to a given length
+/// @prop {Map} values - Values are actual breakpoints expressed in pixels
+$breakpoints: (
+  'xs-screen':  320px,
+  's-screen':   720px,
+  'm-screen':   960px,
+  'fix-header': 1150px,
+  'l-screen':   1200px,
+  'xl-screen':  1440px,
+) !default;
+
+/// Retina devices
+$devices: (
+    'phone':    320px,
+    'tablet':   768px,
+    'desktop':  1200px,
+) !default;
+
+$z-indexes: (
+    'default':      1,
+    'navigation':   400,
+    'header':       300,
+    'footer':       200,
+    'modal':        500,
+    'bellow':       -1,
+) !default;
+
+// Base url
+$base-url: '../' !default;
+
+// Fonts family
+$icomoon-font-family: "ULPGC-icon" !default;
+$icomoon-font-path: "../fonts" !default;
+
+// Icons
+$icon-add-folder: "\e948";
+$icon-bell: "\e949";
+$icon-comment: "\e94a";
+$icon-exit: "\e94b";
+$icon-eye: "\e94c";
+$icon-heart: "\e947";
+$icon-papers: "\e946";
+$icon-tools: "\e940";
+$icon-research: "\e941";
+$icon-moodle: "\e943";
+$icon-hat: "\e944";
+$icon-tick: "\e945";
+$icon-teacher: "\e942";
+$icon-ulpgc: "\e935";
+$icon-computer: "\e93b";
+$icon-exterior: "\e93c";
+$icon-fax: "\e93d";
+$icon-list: "\e93e";
+$icon-reload: "\e93f";
+$icon-add-file: "\e900";
+$icon-add-group: "\e901";
+$icon-add-image: "\e902";
+$icon-add-user: "\e903";
+$icon-add: "\e904";
+$icon-alert: "\e905";
+$icon-arrow-down: "\e906";
+$icon-arrow-left: "\e907";
+$icon-arrow-right: "\e908";
+$icon-arrow-up: "\e909";
+$icon-audio: "\e90a";
+$icon-book: "\e90b";
+$icon-calendar: "\e90c";
+$icon-campus: "\e90d";
+$icon-caret-down: "\e90e";
+$icon-caret-left: "\e90f";
+$icon-caret-right: "\e910";
+$icon-caret-up: "\e911";
+$icon-check: "\e912";
+$icon-chevron-down: "\e913";
+$icon-chevron-left: "\e914";
+$icon-chevron-right: "\e915";
+$icon-chevron-up: "\e916";
+$icon-clock: "\e917";
+$icon-close: "\e918";
+$icon-code: "\e919";
+$icon-dots: "\e91a";
+$icon-download: "\e91b";
+$icon-edit: "\e91c";
+$icon-envelope: "\e91d";
+$icon-expand: "\e91e";
+$icon-facebook: "\e91f";
+$icon-file: "\e920";
+$icon-filter: "\e921";
+$icon-flickr: "\e922";
+$icon-folder: "\e923";
+$icon-group: "\e924";
+$icon-image: "\e925";
+$icon-info: "\e926";
+$icon-instagram: "\e927";
+$icon-less: "\e928";
+$icon-linkedin: "\e929";
+$icon-lock: "\e92a";
+$icon-menu: "\e92b";
+$icon-miulpgc: "\e92c";
+$icon-more: "\e92d";
+$icon-phone: "\e92e";
+$icon-place: "\e92f";
+$icon-play: "\e930";
+$icon-power: "\e931";
+$icon-remove: "\e932";
+$icon-search: "\e933";
+$icon-sort: "\e934";
+$icon-thinker: "\e935";
+$icon-twitter: "\e936";
+$icon-upload: "\e937";
+$icon-user: "\e938";
+$icon-whatsapp: "\e939";
+$icon-youtube: "\e93a";
+$icon-issuu: "\e94d";
+$icon-ivoox: "\e94e";
+$icon-pinterest: "\e94f";
+$icon-spotify: "\e950";

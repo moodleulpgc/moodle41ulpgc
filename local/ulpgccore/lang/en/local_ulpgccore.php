@@ -403,5 +403,9 @@ $string['unilabeladdederror'] = 'Unilabel adding error in course {$a->course} wi
 $string['check_customroles'] = 'Custom roles';
 $string['check_customroles_notset'] = 'Not defined custom roles setting';
 $string['check_customroles_missing'] = 'Some required custom role is missing';
-$string['check_customroles_missinglist'] = 
+$string['check_customroles_missinglist'] = 'Missing list';
 $string['check_customroles_details'] = 'Review custom roles';
+$string['skipcap'] = 'Skip capabilities';
+$string['skip0'] = 'None';
+$string['skip1'] = 'All identical to archetype';
+

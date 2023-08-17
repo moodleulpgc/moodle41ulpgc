@@ -31,7 +31,6 @@ $data['courseid'] = required_param('id', PARAM_INT); // Course ID.
 require_login($data['courseid']);
 use report_advancedgrading\guide;
 
-
 $dload = optional_param("dload", '', PARAM_BOOL);
 $data['headerstyle'] = 'style="background-color:#D2D2D2;"';
 $data['reportname'] = get_string('guidereportname', 'report_advancedgrading');
@@ -51,7 +50,7 @@ if (isset($data['students'])) {
 }
 
 // Each guide criteria has a score,definition and feedback column.
-$data['criteriaspan'] = " colspan='2' ";
+$data['criteriaspan'] = 2;
 $data['colcount'] += count($data['criteria']) * 2;
 $data['rows'] = $guide->get_rows($data);
 

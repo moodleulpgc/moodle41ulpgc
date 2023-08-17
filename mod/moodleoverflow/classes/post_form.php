@@ -59,25 +59,8 @@ class mod_moodleoverflow_post_form extends moodleform {
 
         // The message.
         // ecastro ULPGC
-        global $COURSE, $PAGE, $CFG;
         $postid = (isset($post->id)) ? $post->id : null;
-        $editorpptions = array(
-                            'maxfiles' => 5,
-                            'maxbytes' => get_user_max_upload_file_size($PAGE->context, $CFG->maxbytes, $COURSE->maxbytes),
-                            'trusttext'=> false,
-                            'return_types'=> FILE_INTERNAL | FILE_EXTERNAL,
-                            'subdirs' => file_area_contains_subdirs($modcontext, 'mod_moodleoverflow', 'post', $postid),
-                            /*
-                            'subdirs'=>0,
-                            'maxbytes'=>get_user_max_upload_file_size($PAGE->context, $CFG->maxbytes, $COURSE->maxbytes),
-                            'maxfiles'=>1,
-                            'changeformat'=>0,
-                            'context'=>$modcontext,
-                            'noclean'=>0,
-                            'trusttext'=>0, */
-                            'context'=>$modcontext,
-                            'enable_filemanagement' => true);        
-        
+        $editorpptions = $this->editor_options($moodleoverflow, $postid);
         $modform->addElement('editor', 'message', get_string('message', 'moodleoverflow'), null, $editorpptions);
         // ecastro ULPGC
         $modform->setType('message', PARAM_RAW);
@@ -160,6 +143,35 @@ class mod_moodleoverflow_post_form extends moodleform {
             'maxfiles' => $moodleoverflow->maxattachments,
             'accepted_types' => '*',
             'return_types' => FILE_INTERNAL | FILE_CONTROLLED_LINK
+        );
+    }
+
+///////////////////////////////////////////////////////////////////////////////
+//// Added, or recovered from 3.x versions, by ecastro ULPGC              ////
+
+    /**
+     * Returns the options array to use in filemanager for moodleoverflow attachments
+     *
+     * @param stdClass $moodleoverflow
+     *
+     * @return array
+     */
+    public static function editor_options($moodleoverflow, $postid = null) {
+        global $COURSE, $PAGE, $CFG;
+        $maxbytes = get_user_max_upload_file_size($PAGE->context, $CFG->maxbytes, $COURSE->maxbytes, $moodleoverflow->maxbytes);
+        $postid = (!empty($postid)) ? $postid : null;
+        $subdirs = file_area_contains_subdirs($PAGE->context, 'mod_moodleoverflow', 'post', $postid);
+
+        return array(
+            'subdirs'        => $subdirs,
+            'maxbytes'       => $maxbytes,
+            'maxfiles'       => 5,
+            'accepted_types' => '*',
+            'trusttext'=> false,
+            'noclean'=>false,
+            'context' => $PAGE->context,
+            'enable_filemanagement' => true,
+            'return_types'   => FILE_INTERNAL | FILE_EXTERNAL | FILE_CONTROLLED_LINK
         );
     }
 }

@@ -1,0 +1,268 @@
+/* ------------------------------- ateigh.com ------------------------------- 
+ *
+ * Buttons styles for theme from ULPGC Design system
+ *
+ * ------------------------------- ateigh.com -------------------------------
+ */
+@import "ulpgcds/mixins";
+
+
+a{
+    &.ulpgcds-btn{
+        text-decoration:none;
+        &--primary{
+            &:hover{
+                color:$color-white;
+            }
+        }
+    }    
+}
+
+.ulpgcds-btn{
+    @include transition(0.2s ease-in-out);
+    //font-family: $font-1;
+    //font-size: $font-size-buttons;
+    //font-weight: $medium;
+    text-align: center;
+    //line-height: $line-height-m;
+    //padding: $spacing-s $spacing-xl;
+    //margin: $layout-xs auto $layout-xs 0;
+    border: solid 0;
+    //border-radius: $radius;
+    min-width: 120px;
+    outline: none;
+    cursor:pointer;
+    display:inline-block;
+    text-decoration:none;    
+    &--primary{
+        background: $color-blue;
+        color: $color-white; 
+        &:visited{
+            color:$color-white;
+        }
+        &:hover, &:focus{      
+          background: $color-orange;
+        }  
+        &:active {
+          background: $color-orange-dark;
+        }  
+        &:disabled {
+            @include opacity(0.5);
+            cursor:auto;
+            &:hover {
+              background: $color-blue;
+            }
+        } 
+        @include input-placeholder{
+            color: $color-gray-50;
+            //font-weight:$medium;
+        }
+        &.ulpgcds-btn--reverse{
+            background:$color-white;
+            color:$color-blue;
+            &:hover, &:focus{
+                background:$color-orange;
+                color:$color-white;
+            }
+        }
+               
+        &.ulpgcds-btn--alert{
+            color:$color-white;
+            background:$color-red;
+            &:hover, &:focus{
+                background:$color-red-dark;
+            }
+        }
+    }
+    &--secondary{
+        background: transparent;  
+        color: $color-blue;
+        border:2px solid $color-blue;
+        //padding: 10px $spacing-xl;
+        
+        &:active {
+            border-color:$color-orange-dark;
+            color:$color-orange-dark;
+        }  
+        
+        &:hover, &:focus {
+            border-color:$color-orange;
+            color:$color-orange;           
+        } 
+        &:disabled {
+            @include opacity(0.5);  
+            cursor:auto;            
+            &:hover {  
+                border-color:$color-blue;
+                color:$color-blue;
+            }
+        } 
+        @include input-placeholder{
+            color: $color-gray-50;
+            //font-weight:$medium;
+        }
+        &.ulpgcds-btn--reverse{
+            border-color:$color-white;
+            color:$color-white;
+            &:hover, &:focus{
+                color:$color-orange;
+                border-color:$color-orange;
+            }
+
+        }               
+        &.ulpgcds-btn--alert{
+            color:$color-red;
+            border-color:$color-red;
+            &:hover{
+              color:$color-red-dark;  
+              border-color:$color-red-dark;
+            }
+        }
+    }
+    &--text{
+        text-align: left;
+        background:transparent;
+        color: $color-blue;
+        outline: none;  
+        border: none;
+        cursor:pointer;
+        min-width: auto;
+        padding-left:0;
+        padding-right:0;
+        &:hover, &:focus {
+          color:$color-orange;
+        }
+        &:active {
+          color: $color-orange-dark;
+        }
+        &__icon{
+            top:4px;
+        }
+        &.ulpgcds-btn--reverse{
+            color:$color-white;
+            &:hover{
+                color:$color-orange;
+            }
+        }
+               
+        &.ulpgcds-btn--alert{
+            color:$color-red;
+            &:hover{
+                color:$color-red-dark;
+            }
+        }
+    }
+    
+    &__icon{
+        position: relative;
+        top:0rem;  
+        height: 18px;
+        width: 18px;  
+        display:inline-block;                         
+    }
+    &--icon {
+        background: $color-blue;
+        color: $color-white;
+        min-width:48px;
+        min-height:48px;
+        padding: 10px;
+        .ulpgcds-btn__icon{
+            margin:0;
+            height:24px;
+            width:24px;
+            display:inline-block;
+            &:before{
+                font-size:1.5rem;
+            }
+        }
+        
+        &:hover, &:focus{
+            background:$color-orange;
+        }
+        &:active {
+            background: $color-orange-dark;
+        }
+        &:disabled {
+            opacity: 0.3;
+            &:hover {
+               background: $color-blue;
+            }
+        }
+        &.ulpgcds-btn--reverse{
+            background:$color-white;
+            color:$color-blue;
+            &:hover{
+                background:$color-orange;
+                color:$color-white;
+            }
+        }               
+        &.ulpgcds-btn--alert{
+            color:$color-white;
+            background:$color-red;
+            &:hover{
+                background:$color-red-dark;
+            }
+        }
+        span + span{
+            @include visually-hidden;
+        }
+    }
+    &.ulpgcds-btn--ghost {
+        background: transparent;
+        color: $color-blue;
+        &:hover, &:focus {
+          color: $color-orange;
+        }
+
+         &:active {
+          color: $color-orange-dark;
+        }
+
+         &:disabled {
+           opacity: 0.3;
+
+           &:hover {
+             background: $color-blue;
+           }
+        }        
+        &.ulpgcds-btn--alert{
+            color:$color-red;
+            &:hover{
+                background:none;
+                color:$color-red-dark;
+            }
+        }
+        &.ulpgcds-btn--reverse{
+            color:$color-white;
+            background:none;
+            &:hover{
+                color:$color-orange;
+            }
+        }
+        
+    }
+    &--small{
+        //padding: $spacing-xs $spacing-xl;
+        &.ulpgcds-btn--icon{
+            //padding:$spacing-xxs $spacing-xs;
+            min-height:32px;
+            min-width:32px;
+            .ulpgcds-btn__icon{
+                width:16px;
+                height:16px;
+                &:before{
+                    font-size:1em;
+                }
+            }
+        }
+        &.ulpgcds-btn--secondary{
+            //padding: 6px $spacing-xl;
+        }
+    }    
+    &.ulpgcds-tooltip{
+        background:none;
+    }
+    + .ulpgcds-btn{
+        //margin-left:$layout-m;
+    }
+}

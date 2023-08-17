@@ -410,7 +410,7 @@ function quiz_get_user_attempt_unfinished($quizid, $userid) {
  *      (row of the quiz_attempts table).
  * @param object $quiz the quiz object.
  */
-function quiz_delete_attempt($attempt, $quiz, $nocheck=false) { // ecastro to enforce preservation negative delete
+function quiz_delete_attempt($attempt, $quiz) {
     global $DB;
     if (is_numeric($attempt)) {
         if (!$attempt = $DB->get_record('quiz_attempts', array('id' => $attempt))) {
@@ -429,22 +429,8 @@ function quiz_delete_attempt($attempt, $quiz, $nocheck=false) { // ecastro to en
         $quiz->cmid = $cm->id;
     }
 
-    if(get_config('quiz_makeexam', 'enabled')) {  // ecastro ULPGC to be used with makeexam
-        // ecastro ULPGC for correct usage make exam
-        $makexam = false;
-        if(!$nocheck && $attempt->uniqueid > 0) {
-            $makexam = $DB->record_exists('quiz_attempts', array('uniqueid' => - abs($attempt->uniqueid)));
-        }
-        if(!$makexam) { // ecastro ULPGC for correct usage make exam
-            question_engine::delete_questions_usage_by_activity($attempt->uniqueid);
-        }
-        if($attempt->uniqueid > 0 || $nocheck) {
-            $DB->delete_records('quiz_attempts', array('id' => $attempt->id));
-        }
-    } else { // this is the regular moodle action
-        question_engine::delete_questions_usage_by_activity($attempt->uniqueid);
-        $DB->delete_records('quiz_attempts', array('id' => $attempt->id));
-    }
+    question_engine::delete_questions_usage_by_activity($attempt->uniqueid);
+    $DB->delete_records('quiz_attempts', array('id' => $attempt->id));
 
     // Log the deletion of the attempt if not a preview.
     if (!$attempt->preview) {

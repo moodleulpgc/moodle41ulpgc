@@ -215,3 +215,12 @@ body.path-mod-dialogue #region-main  .btn.btn-small.disabled {
 .popover-region-notifications.ulpgc .fa-bullhorn::before {
   font-family: 'fontawesome';
 }
+
+.permission.role .text {
+    padding: 0.5rem 1.0rem;
+    border-radius: 0.5rem;
+}
+
+.rolecapscheck.path-admin-local-ulpgccore .controls .singleselect {
+    margin-right: 0.5rem;
+}

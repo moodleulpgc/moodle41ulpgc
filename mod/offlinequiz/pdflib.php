@@ -90,7 +90,7 @@ class offlinequiz_pdf extends pdf
     public function set_title($newtitle) {
         $this->title = $newtitle;
     }
-    
+
 }
 class offlinequiz_question_pdf extends offlinequiz_pdf
 {
@@ -160,7 +160,6 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
         $this->Line(12.5, 10.5, 12.5, 13.5);
         $this->Line(193, 12, 196, 12);
         $this->Line(194.5, 10.5, 194.5, 13.5);
-        
         $this->SetFont('FreeSans', 'B', 14);
         // ecastro ULPGC
         $this->SetXY(15, 10);
@@ -226,7 +225,7 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
                 $this->Image("$CFG->dirroot/mod/offlinequiz/pix/kreuz.gif", $this->GetX() - 2.75,  $this->Gety() + 0.15,  3.15,  0);
             }
         }
-        
+
         $this->SetFont('FreeSans', 'B', 32);
         // position right to block, and baseline with boxes, taking into account font size in points, 72 points/inch
         $this->SetXY($x -16*25.4/72,  $y + 3.5 - 32*25.4/72);
@@ -242,7 +241,7 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
         $this->MultiCell(90, 2, offlinequiz_str_html_pdf(get_string('instruction2',  'offlinequiz')), 0, 'L');
         $this->Ln(2);
         $this->MultiCell(115, 3, offlinequiz_str_html_pdf(get_string('instruction3',  'offlinequiz')), 0, 'L');
-        
+
         // ecatro ULPGC
         // now write the example markers 
         $x= 106;
@@ -336,8 +335,8 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
         $letterstr = ' ABCDEF';
 
         $footery = 280 + 0; // ecastro ULPGC
-       
-        //$this->Line(11, 285, 14, 285);
+
+        // Position at x mm from bottom.
         $y = $footery + 5;
         $this->Line(11, $y, 14, $y);
         
@@ -389,9 +388,6 @@ class offlinequiz_answer_pdf extends offlinequiz_pdf {
 
         $y = $this->GetY();
         $x = $this->GetX();
-        
-        
-        
         // Print bar code for page.
         offlinequiz_barcodewriter::print_barcode($this, $this->PageNo(), $x, $y);
 
@@ -564,9 +560,12 @@ function offlinequiz_get_answers_html($offlinequiz, $templateusage,
             if ($question->options->answers[$answer]->fraction > 0) {
                 $html .= '<span style="background-color: #ffff00;">';
             }
-            // ecastro ULPGC reduce print load for revision. Only correct, right, options graded.
+
             if($question->options->answers[$answer]->fraction != 0) {
-                $answertext .= "  (".round($question->options->answers[$answer]->fraction * 100)."%)©";
+                $answertext .= "  (".round($question->options->answers[$answer]->fraction * 100)."%)";
+            }
+            if($question->options->answers[$answer]->fraction > 0) {
+                $answertext .= " ©";
             }
             // ecastro ULPGC 
         }
@@ -630,7 +629,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
     $groupletter = strtoupper($letterstr[$group->groupnumber - 1]);
 
     $coursecontext = context_course::instance($courseid);
-    
+
     $pdf = new offlinequiz_question_pdf('P', 'mm', 'A4');
     $trans = new offlinequiz_html_translator();
     offlinequiz_set_course_info($courseid, $pdf); // ecastro ULPGC
@@ -689,8 +688,6 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
         } else {
             $pdf->Rect(34, $startY, 137, 40, 'D');
         }
-
-        
         $pdf->SetFont('FreeSans', '', 10);
         // Line breaks to position name string etc. properly.
         //$pdf->Ln(14);
@@ -708,7 +705,6 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
             $pdf->Rect(76, $startY+32, 80, 0.3, 'F');
             $pdf->Ln(10);
         }
-        
         $pdf->Cell(58, 10, offlinequiz_str_html_pdf(get_string('signature', 'offlinequiz')) . ":", 0, 0, 'R');
         if ($offlinequiz->printstudycodefield) {
             //$pdf->Rect(76, 84, 80, 0.3, 'F');
@@ -756,11 +752,13 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 }
             }
         }
+        //$pdf->AddPage();
+        //$pdf->Ln(2);
     }
 
     $pdf->AddPage();
     //$pdf->Ln(2);
-    $pdf->SetMargins(15, 15, 15);    
+    $pdf->SetMargins(15, 15, 15);
     // ecastro ULPGC new section if two columns
     $offlinequiz->qsheetcols = 1;
     if($offlinequiz->qsheetcols > 1) {
@@ -771,7 +769,6 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
         $width = ($pagedim['wk'] - $pagedim['lm'] - $pagedim['rm'] - 10 ) / 2;
         $pdf->setEqualColumns($offlinequiz->qsheetcols, $width);
     }
-
 
     // Load all the questions needed for this offline quiz group.
     $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark
@@ -955,6 +952,10 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
     $letterstr = ' abcdefghijklmnopqrstuvwxyz';
     $groupletter = strtoupper($letterstr[$group->groupnumber]);
 
+    $fm = new stdClass();
+    $fm->q = 0;
+    $fm->a = 0;
+
     $texfilter = new filter_tex($context, array());
 
     $pdf = new offlinequiz_answer_pdf('P', 'mm', 'A4');
@@ -1021,7 +1022,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
 
     // Counting the total number of multichoice questions in the question usage.
     $totalnumber = offlinequiz_count_multichoice_questions($templateusage);
-    
+
     // ecastro ULPGC 
     $pdf->formtype = offlinequiz_get_formtype($offlinequiz->questionspercolumn, $totalnumber, $maxanswers);
     $pdf->colwidth = 7 * 6.5;
@@ -1047,12 +1048,12 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
 
     $number = 0;
     $col = 1;
-    $offsety = 105.5; 
-    $offsetx = 17.3; 
+    $offsety = 105.5;
+    $offsetx = 17.3;
     $offsetx = floor((210 - $pdf->colwidth*$pdf->formtype)/2); // ecastro ULPGC
     
     $page = 1;
-    
+
     $pdf->SetY($offsety);
 
     $pdf->SetFont('FreeSans', 'B', 10);
@@ -1070,7 +1071,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
         if ($question->qtype != 'multichoice' && $question->qtype != 'multichoiceset') {
             continue;
         }
-        
+
         // Print the answer letters every 8 questions.
         //if ($number % 8 == 0) {
         if ($number % $numperblock == 0) { // ecastro ULPGC

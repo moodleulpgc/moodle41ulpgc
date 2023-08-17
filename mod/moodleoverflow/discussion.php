@@ -143,6 +143,11 @@ $PAGE->requires->js_call_amd('mod_moodleoverflow/rating', 'init', [$USER->id, $m
 // Initiate the page.
 $PAGE->set_title($course->shortname . ': ' . format_string($discussion->name));
 $PAGE->set_heading($course->fullname);
+// ecastro ULPGC
+$PAGE->set_activity_record($moodleoverflow);
+$PAGE->set_secondary_active_tab('modulepage');
+$PAGE->activityheader->disable();
+// ecastro ULPGC
 
 // Include the renderer.
 $renderer = $PAGE->get_renderer('mod_moodleoverflow');

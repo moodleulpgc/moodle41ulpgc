@@ -98,3 +98,5 @@ $string['cutOffscore'] = 'Cut Off Score';
 $string['score'] = 'Score';
 $string['questionnumber'] = 'Question Number';
 $string['questionreview'] = "(Click to Review Question & Last Attempt)";
+// ecastro ULPGC
+$string['quizanalytics:view'] = 'View quiz analytics report';

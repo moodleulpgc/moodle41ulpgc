@@ -239,6 +239,7 @@ git submodule add https://edugit.org/nik/moodle-filter_jmol.git                 
 #git submodule add  https://github.com/marcusgreen/moodle-gradingform_btec.git       grade/grading/form/btec
 git submodule add  https://github.com/moodlerooms/moodle-gradingform_checklist.git  grade/grading/form/checklist
 git submodule add  https://github.com/johndimopoulos/moodle-gradingform_erubric.git grade/grading/form/erubric
+git submodule add  git@github.com:catalyst/moodle-gradingform_rubric_ranges.git     grade/grading/form/rubric_ranges
 
 #Gradebook Exports 
 git submodule add https://github.com/davosmith/moodle-grade_checklist.git grade/export/checklist

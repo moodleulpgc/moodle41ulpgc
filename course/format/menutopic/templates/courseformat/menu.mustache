@@ -40,7 +40,7 @@
             {{#styleboots}}{{#shownavbarbrand}}<span class="navbar-brand">{{#str}} navbartitle, format_menutopic {{/str}}</span>{{/shownavbarbrand}}{{/styleboots}}
             {{#withstyles}}
                 {{#styleboots}}
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarmenutopic" aria-controls="navbarmenutopic" aria-expanded="false" aria-label="{{#str}}tooglemenu, format_menutopic{{/str}}">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarmenutopic" aria-controls="navbarmenutopic" aria-expanded="false" aria-label="{{#str}}togglemenu, format_menutopic{{/str}}">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarmenutopic">
@@ -60,8 +60,8 @@
             {{/withstyles}}
             {{#enableedition}}
                 <form method="post" class="d-flex editmode-form" action="{{baseurl}}/course/view.php">
-                    <input type="hidden" name="editmenumode" value="true" />
-                    <input type="hidden" name="id" value="{{courseid}}" />
+                    <input type="hidden" name="editmenumode" value="true">
+                    <input type="hidden" name="id" value="{{courseid}}">
                     <button type="submit" class="btn btn-primary" title="{{#str}}editmenu, format_menutopic{{/str}}">{{#pix}} a/setting, core {{/pix}}</button>
                 </form>
             {{/enableedition}}

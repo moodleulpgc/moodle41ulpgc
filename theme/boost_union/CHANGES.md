@@ -4,6 +4,16 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r9
+
+* 2023-07-24 - Improvement: Only add load OffCanvas module when offcanvas region is enabled, solves #343.
+* 2023-07-11 - Improvement: Place mustache templates which are overridden from theme_boost into subfolder, solves #337.
+* 2023-07-10 - Bugfix: Omit warning when no CSS cached folder present, solves #330.
+* 2023-07-10 - Bugfix: Overwriting module purposes did not affect all places where the activity icon is displayed, solves #318.
+* 2023-07-07 - Bugfix: Changing module purpose to "other" made icon background white instead of grey, solves #333.
+* 2023-07-07 - Bugfix: Changing module purpose to "other" made icon invisible, solves #319.
+* 2023-06-26 - Bugfix: If the settings blockregionoutsiderightwidth or blockregionoutsiderightwidth were not set for any reason, the SCSS was not compiled, solves #325.
+
 ### v4.1-r8
 
 * 2023-06-18 - Improvement: Split "Branding" tab into "Site branding" and "Activity branding", solves #315.

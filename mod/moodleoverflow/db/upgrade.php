@@ -406,5 +406,23 @@ function xmldb_moodleoverflow_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023040400, 'moodleoverflow');
     }
 
+    if ($oldversion < 2023070300.03) {
+        // make sure table has gradescalefactor 1 as default
+        $table = new xmldb_table('moodleoverflow');
+        $field = new xmldb_field('gradescalefactor', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        if ($dbman->field_exists($table, $field)) {
+            $field = new xmldb_field('gradescalefactor', XMLDB_TYPE_INTEGER, '10', null, null, null, '1');
+            $dbman->change_field_default($table, $field);
+        }
+
+        // make sure all instances has gradescalefactor as 1, not zero
+        $DB->set_field_select('moodleoverflow', 'gradescalefactor', 1,
+                            '(gradescalefactor < 1) OR gradescalefactor IS NULL ', []);
+
+        // Moodleoverflow savepoint reached.
+        upgrade_mod_savepoint(true, 2023070300.03, 'moodleoverflow');
+    }
+
     return true;
 }

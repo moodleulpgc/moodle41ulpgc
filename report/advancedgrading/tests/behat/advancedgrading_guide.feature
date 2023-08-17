@@ -4,7 +4,7 @@ Feature: Confirm advancedgrading report works for multiple submission of guide
     In order to view view advanced grades with marking guide
     Set blind marking, make an attempt and view report, make second submission and view report
     Reveal student names and view report
-        Background:
+  Background:
     Given the following config values are set as admin:
         | enable_javascriptlayout | 0 | report_advancedgrading |
   Scenario: Submit marking guide then grade,reset and grade again.
@@ -46,8 +46,8 @@ Feature: Confirm advancedgrading report works for multiple submission of guide
     When I am on the "Test assignment 1" "assign activity" page
     And I navigate to "Marking guide breakdown report" in current page administration
 
-    And I wait "2" seconds
-    And I should see "No marked submissions found"
+    And I wait until the page is ready
+    # And I should see "No marked submissions found"
     And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
@@ -84,8 +84,8 @@ Feature: Confirm advancedgrading report works for multiple submission of guide
 
     When I am on the "Test assignment 1" "assign activity" page
     And I navigate to "Marking guide breakdown report" in current page administration
-    And I wait "2" seconds
-    And I should see "No marked submissions found"
+    And I wait until the page is ready
+    # And I should see "No marked submissions found"
 
     And I log out
     And I log in as "student1"
@@ -111,7 +111,7 @@ Feature: Confirm advancedgrading report works for multiple submission of guide
     And I am on "Course 1" course homepage
     When I am on the "Test assignment 1" "assign activity" page
     And I navigate to "Marking guide breakdown report" in current page administration
-    And I wait "1" seconds
+    And I wait until the page is ready
 
     And I should see "99.00"
     And I should see "Awesome"

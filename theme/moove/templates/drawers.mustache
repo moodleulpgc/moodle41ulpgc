@@ -145,12 +145,7 @@
                         {{{ topblocks }}}
                     </section>
                     <section id="region-main" aria-label="{{#str}}content{{/str}}">
-                        {{! additional blocks section // ecastro ULPGC }}
-                        {{#haslateralblocks}}
-                            <div id="lateral-side-blocks" data-region="blocks-lateral-side" class="d-print-none">
-                                {{{ lateralsideblocks }}}
-                            </div>
-                        {{/haslateralblocks}}
+
                         <div class="main-content">
                             {{#hasregionmainsettingsmenu}}
                                 <div class="region_main_settings_menu_proxy"></div>
@@ -170,8 +165,13 @@
                             {{{ output.activity_navigation }}}
                             {{{ output.course_content_footer }}}
                         </div>
+                        {{! additional blocks section // ecastro ULPGC }}
+                        {{#haslateralblocks}}
+                            <div id="lateral-side-blocks" data-region="blocks-lateral-side" class="d-print-none">
+                                {{{ lateralsideblocks }}}
+                            </div>
+                        {{/haslateralblocks}}
                     </section>
-
                     {{! additional blocks section // ecastro ULPGC }}
                     <section id="bottom-blocks" data-region="blocks-rowbottom" class="clearfix d-print-none">
                         {{{ bottomblocks }}}

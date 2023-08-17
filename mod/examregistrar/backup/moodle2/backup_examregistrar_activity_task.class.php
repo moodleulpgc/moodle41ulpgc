@@ -27,7 +27,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/examregistrar/backup/moodle2/backup_examregistrar_stepslib.php');
-require_once($CFG->dirroot . '/mod/examregistrar/backup/moodle2/backup_examregistrar_settingslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the Choice instance
@@ -40,23 +39,25 @@ class backup_examregistrar_activity_task extends backup_activity_task {
     protected function define_my_settings() {
         global $DB;
 
-        $examregistrar = $DB->get_record('examregistrar', array('id' => $this->activityid), '*', MUST_EXIST);
-        $userinfo = $this->get_setting_value('userinfo');
-        $userinfo = false; /// TODO  TODO 
-        if($userinfo && empty($examregistrar->primaryreg) && $examregistrar->primaryidnumber) {
+        $examregistrar = $DB->get_record('examregistrar', array('id' => $this->activityid), 'id, primaryreg, primaryidnumber', MUST_EXIST);
+
+        if(($examregistrar->primaryreg === '') && !empty($examregistrar->primaryidnumber)) {
 
         // All the settings related to this activity will include this prefix
-            $settingprefix = $this->modulename . '_' . $this->moduleid . '_';
+            $settingprefix = $this->modulename . '_';
             $settingname = $settingprefix . 'registrarincluded';
             $registrar_included = new backup_activity_included_setting($settingname, base_setting::IS_BOOLEAN, false);
             $registrar_included->get_ui()->set_icon(new pix_icon('icon', get_string('pluginname', $this->modulename),
                 $this->modulename, array('class' => 'iconlarge icon-post')));
+            $registrar_included->get_ui()->set_label(get_string('brsettingregistrar', 'examregistrar'));
             $this->add_setting($registrar_included);
 
             $settingname = $settingprefix . 'examsincluded';
             $exams_included = new backup_activity_included_setting($settingname, base_setting::IS_BOOLEAN, false);
             $exams_included->get_ui()->set_icon(new pix_icon('icon', get_string('pluginname', $this->modulename),
                 $this->modulename, array('class' => 'iconlarge icon-post')));
+            $exams_included->get_ui()->set_label(get_string('brsettingexams', 'examregistrar'));
+
             $this->add_setting($exams_included);
 
             $included = $settingprefix . 'included';

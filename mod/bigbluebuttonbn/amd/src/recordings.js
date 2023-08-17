@@ -376,7 +376,7 @@ const setupDatatable = (tableId, searchFormId, response) => {
             });
             return new yuiInstance.DataTable({
                 paginatorView: "RecordsPaginatorView",
-                width: "1195px",
+                width: "100%", // ecastro ULPGC
                 columns: recordingData.columns,
                 data: tableData,
                 rowsPerPage: 10,

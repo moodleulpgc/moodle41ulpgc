@@ -603,9 +603,17 @@ if ($ADMIN->fulltree) {
         }
     
         $name = 'theme_moove/remotemycourses';
-        $title = get_string('mycoursesremotessetting', 'theme_moove', null, true);
-        $description = get_string('mycoursesremotessetting_desc', 'theme_moove', null, true);
+        $title = get_string('coursesremotessetting', 'theme_moove', null, true);
+        $description = get_string('coursesremotessetting_desc', 'theme_moove', null, true);
         $setting = new admin_setting_configselect($name, $title, $description, 0, $blocksmenu);
+        $page->add($setting);
+
+        $remotelist = ['user' => get_string('remotessettinguser', 'theme_moove'),
+                       'list' => get_string('remotessettinglist', 'theme_moove')];
+        $name = 'theme_moove/remotecoursestype';
+        $title = get_string('remotestypesetting', 'theme_moove', null, true);
+        $description = get_string('remotestypesetting_desc', 'theme_moove', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, 'list', $remotelist);
         $page->add($setting);
 
         // Create breadcrumbs heading.

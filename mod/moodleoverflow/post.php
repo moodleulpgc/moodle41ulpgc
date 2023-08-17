@@ -547,7 +547,7 @@ if (!empty($parent)) {
 
 // Get the original post.
 $postid = empty($post->id) ? null : $post->id;
-$editoroptions = mod_moodleoverflow_post_form::editor_options($moodleoverflow);
+$editoroptions = mod_moodleoverflow_post_form::editor_options($moodleoverflow, $postid);
 $post = file_prepare_standard_editor($post, 'message', $editoroptions, $modulecontext, 'mod_moodleoverflow', 'post', $postid);
 
 $postmessage = empty($post->message) ? null : $post->message;
@@ -795,27 +795,31 @@ if ($fromform = $mformpost->get_data()) {
 // Define the message to be displayed above the form.
 $toppost = new stdClass();
 $toppost->subject = get_string("addanewdiscussion", "moodleoverflow");
+// ecastro ULPGC
+if(!empty($discussion->name)) {
+    $toppost->subject = format_string($discussion->name);
+}
+// ecastro ULPGC
 
 // Initiate the page.
-$PAGE->set_title("$course->shortname: $moodleoverflow->name " . format_string($toppost->subject));
+$PAGE->set_title("$course->shortname: $moodleoverflow->name - " . format_string($toppost->subject)); // ecastro ULPGC - separator
 $PAGE->set_heading($course->fullname);
 
 // The page should not be large, only pages containing broad tables are usually.
 $PAGE->add_body_class('limitedwidth');
 
+// ecastro ULPGC
+$PAGE->set_activity_record($moodleoverflow);
+$PAGE->set_secondary_active_tab('modulepage');
+$PAGE->activityheader->disable();
+// ecastro ULPGC
+
 // Display the header.
 echo $OUTPUT->header();
 
-echo $OUTPUT->heading(format_string($moodleoverflow->name), 2);
+echo $OUTPUT->heading($toppost->subject, 1, 'discussionname'); // ecastro ULPGC
 
-if(!$reply || ($reply && $parent->parent == 0)) { 
-    // we are writing a new question
-// Show the description of the instance.
-if (!empty($moodleoverflow->intro)) {
-    echo $OUTPUT->box(format_module_intro('moodleoverflow', $moodleoverflow, $cm->id), 'generalbox', 'intro');
-    }
-} 
-if($reply) { 
+if($reply) {
     // we are replying to a question or post 
     // Print the starting post.
     $istracked = \mod_moodleoverflow\readtracking::moodleoverflow_is_tracked($moodleoverflow);

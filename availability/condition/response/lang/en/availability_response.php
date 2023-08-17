@@ -45,3 +45,4 @@ $string['op_endswith'] = 'ends with';
 $string['op_isequalto'] = 'is equal to';
 $string['op_startswith'] = 'starts with';
 $string['title'] = 'Response';
+$string['unknownchoice'] = 'Unknown choice id={$a}';

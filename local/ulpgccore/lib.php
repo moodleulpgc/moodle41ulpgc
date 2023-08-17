@@ -107,18 +107,20 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
                 }
             }          
         }
-        
+
         if($modnode =  $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {    
             //print_object($modnode->get_children_key_list());
-            //$url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
-            //$modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
-            //print_object($modnode->get_children_key_list());
-            
+            if(has_capability('report/log:view', $context)) {
+                $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
+                $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
+                if ($node = $nav->find('logreport', navigation_node::TYPE_SETTING)) {
+                    $node->remove();
+                }
+            }
             if(has_any_capability(['moodle/role:assign', 'moodle/grade:edit'], $context)) {
                 $links = ['roleoverride', 'roleassign', 'rolecheck', 'contextlocking'];
                 $name = get_string('rolepermissions', 'local_ulpgccore');
                 local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
-
             }
             if(has_any_capability(['moodle/backup:backupcourse', 'moodle/grade:edit'], $context)) {
                 $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
@@ -126,25 +128,12 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
                 local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
             }
 
-/*
-            $siblibgs = $modnode->get_siblings();
-            foreach($siblibgs as $n) {
-                print_object($n->get_children_key_list());
-                print_object(' SIB node coursesettings ' . $n->key);
+            if ($node = $nav->find('guidegrades', navigation_node::TYPE_SETTING)) {
+                $node->set_force_into_more_menu(true);
             }
-
-            local_ulpgccore_boostnav_get_all_childrenkeys($modnode);
-
-            foreach($modnode->get_children_key_list() as $key) {
-                $nod = $modnode->get($key);
-                if($nod->has_children  ) {
-                    print_object($nod->get_children_key_list());
-                    print_object("Children for key: $key");
-                }
+            if ($node = $nav->find('cgguidegrades', navigation_node::TYPE_SETTING)) {
+                $node->set_force_into_more_menu(true);
             }
-*/
-
-
         }
     }
 
@@ -152,35 +141,24 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
     if ($node = $nav->find('contextlocking', navigation_node::TYPE_SETTING)) {
         $node->set_force_into_more_menu(true);
     }
-    
-    //print_object("Estoy en localulpgccore");    
+
     //print_object($PAGE->navigation->get_children_key_list());
     //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->navigation));
 /*
-    print_object("Estoy en localulpgccore");    
     print_object("Estoy en localulpgccore");
     print_object($PAGE->primarynav->get_children_key_list());
     print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->primarynav));
     if(isset($PAGE->primarynav)) {
-        print_object("Primary Navigation");    
         print_object($PAGE->primarynav->get_children_key_list());
-        print_object("Primary Navigation");
     } else {print_object("NOT EXISTS  Primary Navigation");}
     
     print_object($PAGE->secondarynav->get_children_key_list());
-    print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->secondarynav));
     if(!empty($PAGE->secondarynav)) {
-        print_object("Secondary Navigation");    
         print_object($PAGE->secondarynav->get_children_key_list());
-        print_object("Secondary Navigation");        
     //local_ulpgccore_boostnav_get_all_childrenkeys        
     } else {print_object("NOT EXISTS  Secondary Navigation");}        
 */
-  
-
 }
-
-
 
 /**
  * This function takes the plugin's custom nodes setting, builds the custom nodes and adds them to the given navigation_node.
@@ -369,15 +347,15 @@ function local_ulpgccore_get_userfields() {
         'phone1'      => get_string('phone'),
         'phone2'      => get_string('phone2'),
         'url'      => get_string('webpage'),
-        'icq'      => get_string('icqnumber'),
+        //'icq'      => get_string('icqnumber'), // deprecated strings in 4.x
         'skype'      => get_string('skypeid'),
-        'yahoo'      => get_string('yahooid'),
-        'msn'      => get_string('msnid'),
+        //'yahoo'      => get_string('yahooid'),
+        //'msn'      => get_string('msnid'),
         'department'  => get_string('department'),
         'institution' => get_string('institution'),
         'city' => get_string('city'),
         'address'      => get_string('address'),
-        'aim' => get_string('aimid'),
+        //'aim' => get_string('aimid'),
         'country' => get_string('country'),
         'lang' => get_string('language'),
         'timezone'      => get_string('timezone'),

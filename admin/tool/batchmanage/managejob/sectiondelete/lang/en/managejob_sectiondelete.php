@@ -33,6 +33,13 @@ $string['applysectiondelete_help'] = '
 Allows to specify a course section in a form and then remove the section and its contents in specified courses selected in a second form.
 
 Course selection based on category, visibility and other properties';
-$string['forcedelete'] = 'Delete section modules';
-$string['forcedelete_help'] = 'If set to NO, only empty sections (without modules) will be deleted. <br />
-When set to YES then ALL modules in the affected sections will be permanently erased without asking further confirmation.';
+$string['sectionemptydel'] = 'Empty or full delete';
+$string['sectionemptydel_help'] = 'Either only empty the sections,
+deleting the modules it contains but keeping the section title,
+of completely deleting the section (moving other sections upwards).';
+$string['sectionempty'] = 'Empty section';
+$string['sectiondelete'] = 'Remove section completely';
+$string['forcedelete'] = 'Force delete section modules if not empty';
+$string['forcedelete_help'] = 'If set to NO, only empty sections (already without modules) will be deleted. <br />
+When set to YES then ALL modules in the affected sections will be permanently erased without asking further confirmation,
+and afterwards the section will be removed.';

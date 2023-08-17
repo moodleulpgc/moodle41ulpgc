@@ -49,38 +49,22 @@ class course extends base_course {
     /**
      * Export this data so it can be used as state object in the course editor.
      *
-     * @param renderer_base $output typically, the renderer that's calling this function
+     * @param \renderer_base $output typically, the renderer that's calling this function
      * @return stdClass data context for a mustache template
      */
     public function export_for_template(\renderer_base $output): stdClass {
+        $data = parent::export_for_template($output);
+
+        $data->firstsectionlist = [];
+        $data->secondsectionlist = [];
+
         $format = $this->format;
-        $course = $format->get_course();
-        // State must represent always the most updated version of the course.
-
-        $url = new moodle_url('/course/view.php', ['id' => $course->id]);
-
-        $data = (object)[
-            'id' => $course->id,
-            'numsections' => $format->get_last_section_number(),
-            'sectionlist' => [],
-            'firstsectionlist' => [],
-            'secondsectionlist' => [],
-            'editmode' => $format->show_editor(),
-            'highlighted' => $format->get_section_highlighted_name(),
-            'maxsections' => $format->get_max_sections(),
-            'baseurl' => $url->out(),
-            'statekey' => course_format::session_cache($course),
-        ];
-
-        $format = course_get_format($course->id);
         $sections = $format->fmt_get_sections();
         $parentid = null;
         $lastparentid = null;
 
         foreach ($sections as $section) {
             if ($format->is_section_visible($section)) {
-                $data->sectionlist[] = $section->id;
-
                 if ($section->levelsan <= 0) {
                     $parentid = $section->id;
                     $lastparentid = $section->id;

@@ -1,0 +1,149 @@
+/* ------------------------------- ateigh.com ------------------------------- 
+ *
+ * Buttons styles for #{$theme-name}
+ *
+ * ------------------------------- ateigh.com -------------------------------
+ */
+@import "ulpgcds/buttons";
+
+$background: $color-gray-5;
+body {
+    background-color: $background !important; /* stylelint-disable-line */
+}
+
+
+a {
+  &:active {
+    color: $color-orange-dark;
+  }
+
+  &:focus{
+      color: $color-orange-dark;
+  }
+  .icon.fa:hover{
+      color: $color-orange;
+  }
+
+}
+
+
+.btn{
+    &-primary{
+        background: $color-blue;
+        border:2px solid $color-blue;
+        color: $color-white;
+        &:visited{
+            color:$color-white;
+          border-color:$color-orange-dark;
+          background: $color-orange-dark;
+        }
+        &:hover, &:focus{
+          border-color:$color-orange;
+          background: $color-orange;
+        }
+        &:active {
+          border-color:$color-orange-dark;
+          background: $color-orange-dark;
+        }
+        &:disabled {
+            @include opacity(0.5);
+            cursor:auto;
+            &:hover {
+              background: $color-blue;
+            }
+        }
+    }
+    &-secondary{
+        background: transparent;  
+        color: $color-blue;
+        border:2px solid $color-blue;
+        &:active {
+            background: $color-orange-dark;
+            border-color:$color-orange-dark;
+            color:$color-orange-dark;
+        }  
+        
+        &:hover, &:focus {
+            background: transparent;
+            border-color:$color-orange;
+            color:$color-orange;           
+        } 
+        &:disabled {
+            @include opacity(0.5);
+            cursor:auto;            
+            &:hover {  
+                border-color:$color-blue;
+                color:$color-blue;
+            }
+        }
+    }
+    &-create{
+        background: $color-blue;
+        border:2px solid $color-blue;
+        color: $color-white;
+        &:visited{
+          color:$color-white;
+          border-color:$color-orange-dark;
+          background: $color-orange-dark;
+        }
+        &:hover, &:focus{
+          border-color:$color-orange;
+          background: $color-orange;
+        }
+        &:active {
+          border-color:$color-orange-dark;
+          background: $color-orange-dark;
+        }
+        &:disabled {
+            @include opacity(0.5);
+            cursor:auto;
+            &:hover {
+              background: $color-blue;
+            }
+        }
+    }
+    &-xxlink{
+        background: transparent;
+        color: $color-blue;
+        border:2px solid $color-blue;
+        &:active {
+            background: $color-orange-dark;
+            border-color:$color-orange-dark;
+            color:$color-orange-dark;
+        }
+
+        &:hover, &:focus {
+            background: transparent;
+            border-color:$color-orange;
+            color:$color-orange;
+        }
+        &:disabled {
+            @include opacity(0.5);
+            cursor:auto;
+            &:hover {
+                border-color:$color-blue;
+                color:$color-blue;
+            }
+        }
+   }
+
+}
+
+// Reset the default styling back to the bootstrap defaults for
+// the secondary outline button because gray-200 is much too light
+// for an outline button.
+.btn-outline-secondary {
+    //@include button-outline-variant($gray-600);
+    @include button-outline-variant($gray-600, $color-orange, transparent, $color-orange);
+    border-color: $gray-600;
+}
+
+
+
+.btn-outline-info {
+    @include button-outline-variant($info-outline);
+}
+
+.btn-outline-warning {
+    @include button-outline-variant($warning-outline);
+}

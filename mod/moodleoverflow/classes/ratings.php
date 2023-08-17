@@ -612,6 +612,71 @@ class ratings {
     }
 
     /**
+     * Get the ratings of all posts in a discussion.
+     *
+     * @param int  $discussionid
+     * @param null $userid
+     * @author ecastro ULPGC
+     *
+     * @return array
+     */
+    public static function moodleoverflow_get_answers_by_discussion($discussionid, $userid = null) {
+        global $DB, $USER;
+
+        // Get the user id.
+        if (!isset($userid)) {
+            $userid = $USER->id;
+        }
+
+        $sql = "SELECT COUNT(p.id)
+                    FROM {moodleoverflow_posts} p
+                    JOIN {moodleoverflow_discussions} d ON p.discussion = d.id AND p.parent = d.firstpost
+                    WHERE  p.discussion = :discussion AND p.userid = :userid ";
+
+        return $DB->count_records_sql($sql, ['discussion' => $discussionid,  'userid' => $userid]);
+    }
+
+    /**
+     * Get the post & rating counts for a user in a moodleoverflow instance
+     *
+     * @param int  $moodleoverflow
+     * @param null $userid
+     * @author ecastro ULPGC
+     *
+     * @return array
+     */
+    public static function moodleoverflow_get_singleuser_stats($moodleoverflow, $userid = null) {
+        global $DB, $USER;
+
+        // Get the user id.
+        if (!isset($userid)) {
+            $userid = $USER->id;
+        }
+
+        $sql = "SELECT p.userid, COUNT(p.id) AS posts,
+                        (SELECT COUNT(p.id)
+                           FROM {moodleoverflow_posts} p2
+                           JOIN {moodleoverflow_discussions} d2 ON p2.discussion = d2.id AND p2.parent = d.firstpost
+                          WHERE  d2.moodleoverflow = :moid2 AND p2.userid = :userid2
+                        ) AS answers,
+                        (SELECT COUNT(r.id)
+                           FROM {moodleoverflow_ratings} r
+                          WHERE  r.moodleoverflowid = :moid3 AND r.userid = :userid3 AND (r.rating > 1 AND r.rating < 10)
+                        ) AS votes
+                    FROM {moodleoverflow_posts} p
+                    JOIN {moodleoverflow_discussions} d ON p.discussion = d.id
+                   WHERE  d.moodleoverflow = :moid1 AND p.userid = :userid1
+               GROUP BY p.userid ";
+        $params =  ['moid1' => $moodleoverflow->id,
+                    'moid2' => $moodleoverflow->id,
+                    'moid3' => $moodleoverflow->id,
+                    'userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid];
+        return $DB->get_records_sql($sql, $params);
+    }
+
+
+
+    /**
      * Get the reputation of a user within a course.
      *
      * @param int  $courseid
@@ -866,31 +931,29 @@ class ratings {
      */
     public static function moodleoverflow_discussion_is_locked($moodleoverflow, $discussionid, $solved = null, $helpful = null) : bool {
         global $DB, $USER;    
-        
-        if($moodleoverflow->gradescalefactor && $moodleoverflow->lockdiscussions) { 
-        
-            if($moodleoverflow->lockuntildate && time() > $moodleoverflow->lockuntildate) {
-                return false;
-            } 
-        
-            if(empty($solved)) {
-                $solved = self::moodleoverflow_discussion_is_solved($discussionid, true);
-            }
-            if(empty($helpful)) {
-                $helpful = self::moodleoverflow_discussion_is_solved($discussionid, false);
-            }
-        
-            $reputation = self::moodleoverflow_get_reputation($moodleoverflow->id, $USER->id, true);
-            if($moodleoverflow->gradescalefactor >= $reputation) { 
-                if((($moodleoverflow->lockdiscussions == RATING_SOLVED) && !empty($solved)) || 
-                    (($moodleoverflow->lockdiscussions == RATING_HELPFUL) && !empty($helpful)) ||
-                    (($moodleoverflow->lockdiscussions > RATING_HELPFUL) && !empty($helpful) && !empty($solved))) {
-                        return true;
-             
-                }
+
+        // not lock if not used locking or pass deadline date
+        if(empty($moodleoverflow->lockdiscussions) || ($moodleoverflow->lockuntildate && time() > $moodleoverflow->lockuntildate)) {
+            return false;
+        }
+
+        if(empty($solved)) {
+            $solved = self::moodleoverflow_discussion_is_solved($discussionid, true);
+        }
+        if(empty($helpful)) {
+            $helpful = self::moodleoverflow_discussion_is_solved($discussionid, false);
+        }
+        $reputation = self::moodleoverflow_get_reputation($moodleoverflow->id, $USER->id, true);
+
+        // Only apply locking for users that have not achieved the maximun reputation
+        if($moodleoverflow->gradescalefactor >= $reputation) {
+            if((($moodleoverflow->lockdiscussions == RATING_SOLVED) && !empty($solved)) ||
+                (($moodleoverflow->lockdiscussions == RATING_HELPFUL) && !empty($helpful)) ||
+                (($moodleoverflow->lockdiscussions > RATING_HELPFUL) && !empty($helpful) && !empty($solved))) {
+                    return true;
             }
         }
-    
+
         return false;
     }
     

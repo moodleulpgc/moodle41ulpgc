@@ -53,6 +53,12 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 $PAGE->set_context($context);
 
+// ecastro ULPGC
+$PAGE->set_activity_record($moodleoverflow);
+$PAGE->set_secondary_active_tab('modulepage');
+$PAGE->activityheader->disable();
+// ecastro ULPGC
+
 // Do a capability check, in case a user iserts the userstats-url manually.
 if (has_capability('mod/moodleoverflow:viewanyrating', $context) && get_config('moodleoverflow', 'showuserstats')) {
     // Print the page header.
@@ -63,7 +69,8 @@ if (has_capability('mod/moodleoverflow:viewanyrating', $context) && get_config('
 
     // Output starts here.
     echo $OUTPUT->header();
-    echo $OUTPUT->heading('');
+    //echo $OUTPUT->heading('');
+    echo $OUTPUT->heading(get_string('showuserstats', 'moodleoverflow')); // ecastro ULPGC
     $table = new userstats_table('statisticstable' , $course->id, $moodleoverflow->id, $PAGE->url);
     $table->out();
     echo $OUTPUT->footer();

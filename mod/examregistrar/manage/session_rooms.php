@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
 require_capability('mod/examregistrar:managelocations',$context);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id'=>$cm->id,'edit'=>$edit));
 $output = $PAGE->get_renderer('mod_examregistrar', 'printrooms');
 
 /// filter form parameters
@@ -45,7 +44,7 @@ $params = array('id'=>$cm->id, 'edit' => $edit,
                       'sparent' => $sel_parent,
                       );
 
-$manageurl = new moodle_url($baseurl, $params);
+$manageurl = new moodle_url($baseurl, array_filter($params));
 
 $annuality =  examregistrar_get_annuality($examregistrar);
 

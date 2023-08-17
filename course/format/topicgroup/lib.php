@@ -26,6 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot. '/course/format/topics/lib.php');
 
+use core\output\inplace_editable;
+
 /**
  * Main class for the Topics course format
  *
@@ -44,15 +46,11 @@ class format_topicgroup extends format_topics {
      * @return string Display name that the course format prefers, e.g. "Topic 2"
      */
     public function get_section_name($section) {
-        $section = $this->get_section($section);
-        if ((string)$section->name !== '') {
-            return format_string($section->name, true,
-                    array('context' => context_course::instance($this->courseid)));
-        } else if ($section->section == 0) {
+        $sec = $this->get_section($section);
+        if(($sec->section == 0) && ((string)$sec->name == '')) {
             return get_string('section0name', 'format_topicgroup');
-        } else {
-            return get_string('topic').' '.$section->section;
         }
+        return parent::get_section_name($section);
     }
 
 
@@ -126,64 +124,72 @@ class format_topicgroup extends format_topics {
     public function create_edit_form_elements(&$mform, $forsection = false) {
         $elements = parent::create_edit_form_elements($mform, $forsection);
 
-        // include here custom elements
-        if (!$forsection) {
+        // include here custom elements for section
+        if ($forsection) {
+            /*
+            if($mform->elementExists('grouping')) {
+                $element = $mform->createElement('header', 'topicgroupheading', get_string('sectionlegend', 'format_topicgroup'));
+                $mform->insertElementBefore($element, 'grouping');
+                $mform->setExpanded('topicgroupheading', true);
+            }
+            $sectionid = required_param('id', PARAM_INT);
+            */
         }
         return $elements;
     }
 
-    
+
     /**
-     * Applies permission changes on restricted roles
+     * Users should be able to specify per-section options
      *
-     * In case if course format was changed to 'topicgroup', we try to copy options
-     * 'coursedisplay', 'numsections' and 'hiddensections' from the previous format.
-     * If previous course format did not have 'numsections' option, we populate it with the
-     * current number of sections
-     *
-     * @param array $options courseformat options with values
-     * @param object $context 
-     * @param array $restrictedroles collectiosn of roleid to cgange permissions for 
-     *     
-     * @return void
+     * @param bool $foreditform
+     * @return array
+     * @throws dml_exception
      */
-    public static function change_role_permissions($options, $context, $restrictedroles) {
-                
-        $permission = [-1 =>  CAP_PREVENT,
-                                 1 => CAP_ALLOW, 
-                               99 => CAP_INHERIT];
-                              
-        if($restrictedroles) {
-            foreach($restrictedroles as $role) {
-                if(isset($options['accessallgroups']) &&  $options['accessallgroups']) {
-                    //$permission = ($options['accessallgroups'] < 0) ? CAP_PREVENT : CAP_ALLOW;
-                    role_change_permission($role, $context, 'moodle/site:accessallgroups', 
-                                                            $permission[$options['accessallgroups']]);
-                }
-                if(isset($options['manageactivities']) &&  $options['manageactivities']) {
-                    //$permission = ($options['manageactivities'] < 0) ? CAP_PREVENT : CAP_ALLOW;
-                    $caps = array('moodle/course:manageactivities',
-                                    'moodle/course:enrolconfig',
-                                    'moodle/course:movesections',
-                                    'moodle/course:sectionvisibility',
-                                    'moodle/course:update',
-                                    'moodle/filter:manage',
-                                    'moodle/grade:manage',
-                                    'moodle/competency:coursecompetencymanage',
-                                );
-                    foreach($caps  as $cap) { 
-                        role_change_permission($role, $context, $cap, $permission[$options['manageactivities']]);
-                    }
-                }
-                if($options['accessallgroups'] || $options['manageactivities'] ) {
-                    role_change_permission($role, $context, 'moodle/course:setcurrentsection', CAP_PREVENT);
-                }
-                
+    public function section_format_options($foreditform = false): array {
+        $options = parent::section_format_options($foreditform);
+
+        /*
+        $courseid = $this->get_courseid();
+        $groupings = array();
+        $groupings[0] = get_string('choose');
+        if ($cgroupings = groups_get_all_groupings($courseid)) {
+            foreach ($cgroupings as $grouping) {
+                $groupings[$grouping->id] = format_string($grouping->name);
             }
-        } 
+        }
+
+        $options['grouping'] = [
+            'default' => 0,
+            'type' => PARAM_INT,
+            'label' => new lang_string('grouping', 'format_topicgroup'),
+            'element_type' => 'select',
+            'element_attributes' => [$groupings]
+        ];
+        */
+        return $options;
     }
-    
-    
+
+    /**
+     * When the section form is changed, make sure any uploaded
+     * images are saved properly
+     *
+     * @param stdClass|array $data Return value from moodleform::get_data() or array with data
+     * @return bool True if changes were made
+     * @throws coding_exception
+     */
+    public function update_section_format_options($data) {
+        $changes = parent::update_section_format_options($data);
+
+        // Make sure we don't accidentally clobber any existing saved images if we get here
+        // from inplace_editable.
+        if (!array_key_exists('image', $data)) {
+            return $changes;
+        }
+        return $changes;
+    }
+
+
     /**
      * Updates format options for a course
      *
@@ -224,17 +230,113 @@ class format_topicgroup extends format_topics {
         }
         return $changed;
     }
-    
+
+    /**
+     * Applies permission changes on restricted roles
+     *
+     * In case if course format was changed to 'topicgroup', we try to copy options
+     * 'coursedisplay', 'numsections' and 'hiddensections' from the previous format.
+     * If previous course format did not have 'numsections' option, we populate it with the
+     * current number of sections
+     *
+     * @param array $options courseformat options with values
+     * @param object $context
+     * @param array $restrictedroles collectiosn of roleid to cgange permissions for
+     *
+     * @return void
+     */
+    public static function change_role_permissions($options, $context, $restrictedroles) {
+
+        $permission = [-1 =>  CAP_PREVENT,
+                                 1 => CAP_ALLOW,
+                               99 => CAP_INHERIT];
+
+        if($restrictedroles) {
+            foreach($restrictedroles as $role) {
+                if(isset($options['accessallgroups']) &&  $options['accessallgroups']) {
+                    //$permission = ($options['accessallgroups'] < 0) ? CAP_PREVENT : CAP_ALLOW;
+                    role_change_permission($role, $context, 'moodle/site:accessallgroups',
+                                                            $permission[$options['accessallgroups']]);
+                }
+                if(isset($options['manageactivities']) &&  $options['manageactivities']) {
+                    //$permission = ($options['manageactivities'] < 0) ? CAP_PREVENT : CAP_ALLOW;
+                    $caps = array('moodle/course:manageactivities',
+                                    'moodle/course:enrolconfig',
+                                    'moodle/course:movesections',
+                                    'moodle/course:sectionvisibility',
+                                    'moodle/course:update',
+                                    'moodle/filter:manage',
+                                    'moodle/grade:manage',
+                                    'moodle/competency:coursecompetencymanage',
+                                );
+                    foreach($caps  as $cap) {
+                        role_change_permission($role, $context, $cap, $permission[$options['manageactivities']]);
+                    }
+                }
+                if($options['accessallgroups'] || $options['manageactivities'] ) {
+                    role_change_permission($role, $context, 'moodle/course:setcurrentsection', CAP_PREVENT);
+                }
+            }
+        }
+    }
+
+    /**
+    * Updates a section or section_info object to inlcude grouping from format_topicgroup_sections
+    *
+    * @param stdClass $section the object to be updated
+    * @return stdClass updated section
+     */
+    public static function get_section_grouping(&$section): \stdClass {
+        global $DB;
+        $tgsection = new \stdClass();
+
+        // Update/delete part
+        if($tgsection = $DB->get_record('format_topicgroup_sections', array('course'=>$section->course, 'sectionid'=>$section->id))) {
+            $tgsection->section = $section->section;
+            $section->groupingid = $tgsection->groupingid;
+        } else {
+            $tgsection = new \stdClass();
+        }
+
+        if(!empty($section->groupingid)) {
+            $tgsection->groupingname = format_string(groups_get_grouping_name($section->groupingid));
+        }
+
+        return $tgsection;
+    }
+
+    /**
+    * Checks if the user is member of any group of the grouping
+    *
+    * @param int $groupingid
+    * @param int $userid the user to thesr, if 0 defaults to user
+    * @return bool either is member of a group or not
+     */
+    public static function is_grouping_member(int $groupingid, $userid = 0): bool {
+        global $DB, $USER;
+
+        if(!$userid) {
+            $userid = $USER->id;
+        }
+
+        $sql = "SELECT 1
+                    FROM {groups_members} gm
+                    JOIN {groupings_groups} gg ON gm.groupid = gg.groupid
+                    WHERE  gg.groupingid = :groupingid AND userid = :userid ";
+        $params = array('groupingid'=>$groupingid, 'userid'=>$userid);
+
+        return $DB->record_exists_sql($sql, $params);
+    }
 }
 
 
 /**
- * Implements callback inplace_editable() allowing to edit values in-place
+ * Implements callback inplace_editable() allowing to edit values in-place.
  *
  * @param string $itemtype
  * @param int $itemid
  * @param mixed $newvalue
- * @return \core\output\inplace_editable
+ * @return inplace_editable
  */
 function format_topicgroup_inplace_editable($itemtype, $itemid, $newvalue) {
     global $DB, $CFG;
@@ -242,7 +344,7 @@ function format_topicgroup_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'sectionname' || $itemtype === 'sectionnamenl') {
         $section = $DB->get_record_sql(
             'SELECT s.* FROM {course_sections} s JOIN {course} c ON s.course = c.id WHERE s.id = ? AND c.format = ?',
-            array($itemid, 'topicgroup'), MUST_EXIST);
+            [$itemid, 'topicgroup'], MUST_EXIST);
         return course_get_format($section->course)->inplace_editable_update_section_name($section, $itemtype, $newvalue);
     }
 }
@@ -258,7 +360,6 @@ function format_topicgroup_getset_grouping(&$section, $create = false) {
     global $DB;
     $tgsection = '';
     if(!isset($section->groupingid) || $create) {
-        $grouping = 0;
         if(!$tgsection = $DB->get_record('format_topicgroup_sections', array('course'=>$section->course, 'sectionid'=>$section->id))) {
             if($create) {
                 $tgsection = new stdClass;
@@ -272,9 +373,8 @@ function format_topicgroup_getset_grouping(&$section, $create = false) {
             }
         } else {
             $tgsection->section = $section->section;
-            $grouping = $tgsection->groupingid;
         }
-        $section->groupingid = $grouping;
+        $section->groupingid = $tgsection->groupingid;
     }
 
     return $tgsection;
@@ -367,34 +467,45 @@ function format_topicgroup_section_availability($courseid, $sectionnum, $groupin
     $sectioninfo = $modinfo->get_section_info($sectionnum);
     $availability_info = new \core_availability\info_section($sectioninfo);
 
+    $availabilityempty = false;
+    if(empty($sectioninfo->availability)) {
+        $availabilityempty = true;
+    } else {
+        $tree = $availability_info->get_availability_tree();
+        $availabilityempty = $tree->is_empty();
+    }
+
     $newjson = '';
     $delete = false;
 
     if($groupingid) {
         // we are adding/editing a grouping. SET availability conditions
         $groupingjson = \availability_grouping\condition::get_json($groupingid); // the new condition to add;
-        if(!$sectioninfo->availability) {
+        if($availabilityempty) {
             // NO condition yet, add grouping condition
             $newjson = \core_availability\tree::get_root_json(array($groupingjson),
-                                    \core_availability\tree::OP_AND, array(true));
+                                    \core_availability\tree::OP_AND, true);
         } else {
             // we have some conditions
             $treejson = json_decode($sectioninfo->availability);
             $tree = $availability_info->get_availability_tree();
-            $conditions = $tree->get_all_children('\core_availability\condition');
-            $firstcondition = reset($conditions);
-            if(($treejson->op != \core_availability\tree::OP_AND) ||
-                                (get_class($firstcondition) != 'availability_grouping\condition') ) {
-                // add grouping condition on top, then the rest or the tree
-                $newjson = \core_availability\tree::get_root_json(array($groupingjson, $treejson),
-                                    \core_availability\tree::OP_AND, array(true, true));
-            } else {
-                // see alternative on https://moodle.org/mod/forum/discuss.php?d=282288
-                // The first element is an availability_grouping\condition, just make sure right groupingid
-                if($treejson->c[0]->type == 'grouping') {
-                    if($treejson->c[0]->id != $groupingid) {
-                        $treejson->c[0]->id = $groupingid;
-                        $newjson = $treejson;
+            if($tree->is_empty()) {
+                $delete = true;
+            } elseif($conditions = $tree->get_all_children('\core_availability\condition')) {
+                $firstcondition = reset($conditions);
+                if(($treejson->op != \core_availability\tree::OP_AND) ||
+                                    (get_class($firstcondition) != 'availability_grouping\condition') ) {
+                    // add grouping condition on top, then the rest or the tree
+                    $newjson = \core_availability\tree::get_root_json(array($groupingjson, $treejson),
+                                        \core_availability\tree::OP_AND, array(true, true));
+                } else {
+                    // see alternative on https://moodle.org/mod/forum/discuss.php?d=282288
+                    // The first element is an availability_grouping\condition, just make sure right groupingid
+                    if($treejson->c[0]->type == 'grouping') {
+                        if($treejson->c[0]->id != $groupingid) {
+                            $treejson->c[0]->id = $groupingid;
+                            $newjson = $treejson;
+                        }
                     }
                 }
             }
@@ -404,27 +515,30 @@ function format_topicgroup_section_availability($courseid, $sectionnum, $groupin
         if($sectioninfo->availability) {
             $treejson = json_decode($sectioninfo->availability);
             $tree = $availability_info->get_availability_tree();
-            $conditions = $tree->get_all_children('\core_availability\condition');
-            $firstcondition = reset($conditions);
-            if(get_class($firstcondition) == 'availability_grouping\condition') {
-                // remove first, move up all rest
-                $children = $treejson->c;
-                $showc = $treejson->showc;
-                array_shift($children); // array shift renumber the array
-                array_shift($showc);
-                if(count($children) < 1) {
-                    // no more conditions, remove
-                    $delete = true;
-                } else {
-                    $newjson = new stdClass;
-                    $newjson->op = $treejson->op;
-                    $newjson->c = $children;
-                    $newjson->showc = $showc;
-                }
-
-            } else {
-                // weird, some conditions before , remove all conditions
+            if($tree->is_empty()) {
                 $delete = true;
+            } elseif($conditions = $tree->get_all_children('\core_availability\condition')) {
+                $firstcondition = reset($conditions);
+                if(get_class($firstcondition) == 'availability_grouping\condition') {
+                    // remove first, move up all rest
+                    $children = $treejson->c;
+                    $show = $treejson->showc;
+                    array_shift($children); // array shift renumber the array
+                    array_shift($show);
+                    if(count($children) < 1) {
+                        // no more conditions, remove
+                        $delete = true;
+                    } else {
+                        $newjson = new stdClass;
+                        $newjson->op = $treejson->op;
+                        $newjson->c = $children;
+                        $newjson->showc = $show;
+                    }
+
+                } else {
+                    // weird, some conditions before , remove all conditions
+                    $delete = true;
+                }
             }
         }
     }

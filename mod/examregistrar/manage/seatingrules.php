@@ -67,8 +67,11 @@ $bookedsite   = optional_param('venue', '', PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 
 $baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit));
+examregistrar_url_update($baseurl);
+
 $params =  array('id' => $cm->id, 'edit'=>$edit, 'session'=>$session, 'venue'=>$bookedsite);
 $actionurl = new moodle_url('/mod/examregistrar/manage/seatingrules.php', $params);
+examregistrar_url_update($actionurl);
 
 /// Set the page header
 $PAGE->set_url($baseurl);

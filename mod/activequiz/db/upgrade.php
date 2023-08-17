@@ -180,5 +180,24 @@ function xmldb_activequiz_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2016030601, 'activequiz');
     }
 
+    // ecastro ULPGC to change from 3.9 to 4.1
+    if( $oldversion < 2017010402.01 ) {
+        $table = new xmldb_table('activequiz');
+        $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        if ($dbman->field_exists($table, $field)) {
+            $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $dbman->change_field_default($table, $field);
+        }
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'grouping');
+        }
+
+        // Activequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2017010402.01, 'activequiz');
+    }
+
+
     return true;
 }

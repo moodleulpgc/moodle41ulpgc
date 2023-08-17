@@ -11,15 +11,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
     /* allows the user to manage ULPGC groups settings */
-    'local/ulpgcquiz:manage' => array(
+    'local/ulpgcquiz:manage' => [
         'riskbitmask' => RISK_SPAM | RISK_PERSONAL | RISK_CONFIG | RISK_DATALOSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW
-        )
-    ),
-    
-);
+        ],
+    ],
+    // View the quiz reports.
+    'local/ulpgcquiz:viewhiddenstatus' => [
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ]
+    ],
+];

@@ -980,15 +980,13 @@ function print_grade_page_head(int $courseid, string $active_type, ?string $acti
 
     $output = '';
     // Add a help dialogue box if provided.
-    if (isset($headerhelpidentifier)) {
+    if (isset($headerhelpidentifier) && !empty($heading)) {
         $output = $OUTPUT->heading_with_help($heading, $headerhelpidentifier, $headerhelpcomponent);
-    } else {
-        if (isset($user)) {
-            $renderer = $PAGE->get_renderer('core_grades');
-            $output = $OUTPUT->heading($renderer->user_heading($user, $courseid));
-        } else {
-            $output = $OUTPUT->heading($heading);
-        }
+    } else if (isset($user)) {
+        $renderer = $PAGE->get_renderer('core_grades');
+        $output = $OUTPUT->heading($renderer->user_heading($user, $courseid));
+    } else if (!empty($heading)) {
+        $output = $OUTPUT->heading($heading);
     }
 
     if ($return) {
@@ -1614,11 +1612,11 @@ class grade_structure {
                 !empty($element['object']->idnumber) && strlen($element['object']->itemname) > 15 ) {  // ecastro ULPGC shorten item names in gradebook
              $title = format_string($element['object']->idnumber);
         } else {
-            $title = $element['object']->get_name($fulltotal);
+            $title = shorten_text($element['object']->get_name($fulltotal));
         }
         // ecastro ULPGC
 
-        $title = $element['object']->get_name($fulltotal);
+        //$title = $element['object']->get_name($fulltotal);
         $titleunescaped = $element['object']->get_name($fulltotal, false);
         $header .= $title;
 

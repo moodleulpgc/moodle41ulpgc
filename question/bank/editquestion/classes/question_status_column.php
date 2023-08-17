@@ -40,11 +40,15 @@ class question_status_column extends column_base {
     protected function display_content($question, $rowclasses): void {
         global $PAGE;
         $attributes = [];
+
         if (question_has_capability_on($question, 'edit')
-            && $question->status !== question_version_status::QUESTION_STATUS_HIDDEN) {
+            && (($question->status !== question_version_status::QUESTION_STATUS_HIDDEN) || $this->qbank->canviewhiddenquestions)) { // ecastro ULPGC
             $options = [];
             $options['questionid'] = $question->id;
             $statuslist = editquestion_helper::get_question_status_list();
+            if(!$this->qbank->canviewhiddenquestions) { // ecastro ULPGC
+                unset($statuslist[question_version_status::QUESTION_STATUS_HIDDEN]);
+            }
             foreach ($statuslist as $value => $displaystatus) {
                 $options['options'][] = [
                     'name' => $displaystatus,

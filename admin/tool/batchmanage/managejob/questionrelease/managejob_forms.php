@@ -6,9 +6,12 @@
  * @copyright  2013 Enrique Castro @ ULPGC
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- global $CFG;
+
+global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->dirroot.'/admin/tool/batchmanage/managejob_forms.php');
+
+use core_question\local\bank\question_version_status;
 
 class batchmanage_question_selector_form extends batchmanageform {
 
@@ -51,10 +54,12 @@ class batchmanage_question_selector_form extends batchmanageform {
         $mform->setDefault('qtnquestionid', '');
         $mform->addHelpButton('qtnquestionid', 'questionid', 'managejob_questionrelease');
 
-        $options = array( -1 => get_string('any'),
-                          1 => get_string('hidden', 'managejob_questionrelease'),
-                          0 => get_string('visible'));
-        $mform->addElement('select', 'qtnvisibility', get_string('questionvisibility', 'managejob_questionrelease'), $options);
+        $options = array( '' => get_string('any'),
+                          question_version_status::QUESTION_STATUS_READY => get_string('questionstatus'.question_version_status::QUESTION_STATUS_READY, 'qbank_editquestion'),
+                          question_version_status::QUESTION_STATUS_HIDDEN => get_string('questionstatus'.question_version_status::QUESTION_STATUS_HIDDEN, 'qbank_editquestion'),
+                          question_version_status::QUESTION_STATUS_DRAFT => get_string('questionstatus'.question_version_status::QUESTION_STATUS_DRAFT, 'qbank_editquestion'),
+                         );
+        $mform->addElement('select', 'qtnstatus', get_string('questionstatus', 'qbank_editquestion'), $options);
 
         $mform->addElement('hidden', 'process', 'selectedquestion');
         $mform->setType('process', PARAM_TEXT);
@@ -62,7 +67,6 @@ class batchmanage_question_selector_form extends batchmanageform {
         $this->add_action_buttons(true, $next);
     }
 }
-
 
 
 /**
@@ -82,10 +86,18 @@ class batchmanage_question_config_form extends batchmanageform {
         }
         
         $mform->addElement('header','general', get_string('general', 'form'));
-
+/*
         $element = $mform->createElement('advcheckbox', 'hidden', get_string('questionhidden', 'managejob_questionrelease') , '');
         $mform->setType('confighidden', PARAM_INT);
         $this->add_grouped_element($element, 'hidden');
+*/
+        $options = array(question_version_status::QUESTION_STATUS_READY => get_string('questionstatus'.question_version_status::QUESTION_STATUS_READY, 'qbank_editquestion'),
+                         question_version_status::QUESTION_STATUS_HIDDEN => get_string('questionstatus'.question_version_status::QUESTION_STATUS_HIDDEN, 'qbank_editquestion'),
+                         question_version_status::QUESTION_STATUS_DRAFT => get_string('questionstatus'.question_version_status::QUESTION_STATUS_DRAFT, 'qbank_editquestion'),
+                        );
+        $element = $mform->createElement('select', 'status', get_string('questionstatus', 'qbank_editquestion') , $options);
+        $mform->setType('configstatus', PARAM_ALPHANUMEXT);
+        $this->add_grouped_element($element, 'status');
 
         $options = array(0=>get_string('tagremove', 'quiz_makeexam'),
                          1=>get_string('tagvalidated', 'quiz_makeexam'),

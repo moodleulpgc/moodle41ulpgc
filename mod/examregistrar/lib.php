@@ -512,91 +512,444 @@ function examregistrar_is_extra_period($examregistrar, $period) {
     return $extra;
 }
 
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//   Exams submitting &a reviewing functions                                   //
+////////////////////////////////////////////////////////////////////////////////
+
+
 /**
- * Function to be run periodically according to the moodle cron
- * This function searches for things that need to be done, such
- * as sending out mail, toggling flags etc ...
+ * Generates the exam idnumber identifier from course idnumber and exam period
  *
- * @return boolean
- * @todo Finish documenting this function
- **/
-function examregistrar_cron_disabled_todelete() {
-    global $CFG, $DB, $OUTPUT, $USER;
+ * @param object $exam and exam record from examregistrar_exams
+ * @param string $source initial name, tipically a course idnumber
+ * @return string examfile idnumber string
+ */
+function examregistrar_examfile_idnumber($exam, $source) {
 
-    $config = get_config('examregistrar');
+    $pieces = explode('_', $source);
+    $examidnumber = $pieces[0].'-'.$pieces[5];
+    list($name, $idnumber) = examregistrar_get_namecodefromid($exam->period, 'periods');
+    $examidnumber .= '-'. $idnumber;
+    list($name, $idnumber) = examregistrar_get_namecodefromid($exam->examscope);
+    $callnum = $exam->callnum > 0 ? $exam->callnum : 'R'.abs($exam->callnum);
+    $examidnumber .= '-'. $idnumber.'-'.$callnum;
 
-    /// routines executed on cron basis
+    return $examidnumber;
+}
 
-    include_once($CFG->dirroot.'/mod/tracker/locallib.php');
-    include_once($CFG->dirroot.'/mod/examregistrar/locallib.php');
-    $success = examregistrar_examstatus_synchronize(EXAM_STATUS_APPROVED, TESTING, RESOLVED);
-    $success = examregistrar_examstatus_synchronize(EXAM_STATUS_REJECTED, ABANDONNED, TRANSFERED);
 
-    /// checking for examfiles without review instance
-    $select = " workmode = :workmode AND (reviewmod <> '' AND reviewmod IS NOT NULL)
-                    AND (programme <> 0 AND programme <> '' AND programme IS NOT NULL) ";
-    if($registrars = $DB->get_records_select('examregistrar', $select, array('workmode'=>EXAMREGISTRAR_MODE_REVIEW))) {
-        foreach($registrars as $key => $registrar) {
-            mtrace("... adding missing review issues for examregistrar {$registrar->name} ({$registrar->id})");
-            examregistrar_tracker_add_issues($registrar);
-            examregistrar_tracker_delete_issues($registrar);
+/**
+ * Returns the display name and idnumber of an item as stored in elements table
+ *
+ * @param object $item the record item from an examregisrar table
+ * @param string $field the name of the field that stored the element ID
+ * @return array (name, idnumber)
+ */
+function examregistrar_item_getelement($item, $field='element') {
+    global $DB;
+
+    if(!$item) {
+        return array('', '');
+    }
+
+    if($field == 'stafferitem') {
+        $user = $DB->get_record('user', array('id'=>$item->userid), 'id, firstname, lastname, idnumber');
+            $element = new stdClass();
+            $element->name = fullname($user);
+            $element->idnumber = $user->idnumber;
+    } else {
+        if(!$field || $field == 'element' ) {
+            $eid = $item->id;
+        } else {
+            $eid = $item->$field;
+        }
+        if(!$element = $DB->get_record('examregistrar_elements', array('id'=>$eid))) {
+            $element = new stdClass();
+            $element->name = '';
+            $element->idnumber = '';
         }
     }
 
+    return array($element->name, $element->idnumber);
+}
 
 
-    /// checking for execution ONLY ONCE daily
+/**
+ * Returns a menu of elements by type
+ *
+ * @param int $itemid the ID if the item in the table
+ * @param string $table table where this ID is located
+ * @param string $field of element type
+ * @return array element name, idnumber
+ */
+function examregistrar_get_namecodefromid($itemid, $table = '', $field = '') {
+    global $DB;
 
-    require_once($CFG->libdir .'/statslib.php');
-    $timetocheck  = time();
-    $today = stats_get_base_daily();
+    if($table === '') {
+        if(!$element = $DB->get_record('examregistrar_elements', array('id'=>$itemid), 'name,idnumber')) {
+            $element = new stdClass();
+            $element->name = '';
+            $element->idnumber = '';
+        }
 
-    /// these routines will run only once a day
-    $strtoday = strftime('%Y-%m-%d', $timetocheck);
+        return array($element->name, $element->idnumber);
+    }
 
-    /// checks for once a day except if in debugging mode
-    $timetocheck  = $today + $config->runtimestarthour*60*60 + $config->runtimestartminute*60;
-    // Note: This will work fine for sites running cron each 4 hours or less (hopefully, 99.99% of sites). MDL-16709
-    // check to make sure we're due to run, at least 20 hours after last run
-    if (isset($config->lastexecution) && ((time() - 20*60*60) < $config->lastexecution)) {
-        mtrace("...preventing stats to run, last execution was less than 20 hours ago.");
+    if(!$field) {
+        $field = substr($table, 0, -1);
+    }
+    $item = $DB->get_record('examregistrar_'.$table, array('id' => $itemid));
+
+    if($table == 'exams') {
+        $period = new stdClass;
+        list($period->name,  $period->idnumber) = examregistrar_get_namecodefromid($item->period, 'periods', 'period');
+        $scope = $DB->get_record('examregistrar_elements', array('id'=>$item->examscope), 'name,idnumber');
+        $name = $item->programme.'_'.$DB->get_field('course', 'shortname', array('id'=>$item->courseid)).
+                '_'.$period->idnumber.'_'.$scope->idnumber.'_'.$item->callnum;
+        $idnumber = '';
+        return array($name, $idnumber);
+    }
+
+    return examregistrar_item_getelement($item, $field);
+}
+
+
+function examregistrar_file_set_nameextension($examregistrar, $filename, $type, $ext='.pdf') {
+
+    $filename = trim($filename);
+    $ext = trim($ext);
+    if(strpos($ext, '.') === false) {
+        $ext = '.'.$ext;
+    }
+
+    $config = examregistrar_get_instance_config($examregistrar->id, 'extanswers, extkey, extresponses'); //config***
+
+    $qualifier = '';
+    if($type == 'answers') {
+        $qualifier = $config->extanswers;
+    } elseif($type == 'key') {
+        $qualifier = $config->extkey;
+    } elseif($type == 'responses') {
+        $qualifier = $config->extresponses;
+    }
+    if($qualifier) {
+        $qualifier = trim($qualifier);
+    }
+
+    return clean_filename($filename.$qualifier.$ext);
+}
+
+
+/**
+ * Locates the Tracker issue associated to an examregistrar instance
+ *
+ * @param object $examregistrar the examregistrar object
+ * @param object $course the course object containing teh examregistrar instance
+ * @return object tracker record
+ **/
+function examregistrar_get_review_tracker($examregistrar, $course) {
+    global $DB;
+
+    if(!$moduleid = $DB->get_field('modules', 'id', array('name'=>'tracker'))) {
         return false;
-    // also check that we are a max of 4 hours after scheduled time, stats won't run after that
-    } else if (time() > $timetocheck + 4*60*60) {
-        mtrace("...preventing stats to run, more than 4 hours since scheduled time.");
+    }
+
+    $params = array('course'=>$course->id, 'module'=>$moduleid, 'idnumber'=>$examregistrar->reviewmod);
+    if(!$cms = $DB->get_records('course_modules', $params)) {
+        $sql = "SELECT cm.*, c.category
+                FROM {course_modules} cm
+                JOIN {course} c  ON c.id = cm.course
+                WHERE cm.module = :module AND cm.idnumber = :idnumber AND c.category = :category ";
+        $params['category'] = $course->category;
+        $cms = $DB->get_records_sql($sql, $params);
+    }
+    $cm = 0;
+    if($cms) {
+        $cm = reset($cms);
+    }
+
+    if(!$cm) {
+        mtrace("... missing review Tracker instance for examregistrar {$examregistrar->name} ({$examregistrar->id})");
         return false;
-    } else {
-        if($examregistrars = $DB->get_records('examregistrar', array('primaryreg'=>''))) {
-            foreach($examregistrars as $examregistrar) {
-                // allocate students in rooms for session
-                $session = examregistrar_next_sessionid($examregistrar, $today, true);
-                if($session && ($session->examdate > $today) && ($session->examdate < $today + 15*DAYSECS)) {
-                    $sql = "SELECT b.id, b.bookedsite
-                                FROM {examregistrar_bookings} b
-                                JOIN {examregistrar_exams} e ON e.id = b.examid
-                                WHERE e.examsession = :session
-                                GROUP BY b.bookedsite ";
-                    if($bookedsites = $DB->get_records_sql_menu($sql, array('examsession'=>$session->id))) {
-                        foreach($bookedsites as $bookedsite) {
-                            if(examregistrar_is_venue_single_room($bookedsite)) {
-                                if(!$max = $DB->get_records('examregistrar_session_seats', array('examsession'=>$session->id, 'bookedsite'=>$bookedsite),
-                                                                ' timemodified DESC ', '*', 0, 1)) {
-                                    examregistrar_session_seats_makeallocation($session->id, $bookedsite);
-                                } else {
-                                    $lasttime = reset($max)->timecreated;
-                                    examregistrar_session_seats_newbookings($session->id, $bookedsite, $lasttime+1);
-                                }
-                            }
-                        }
-                    }
+    }
+    /// OK, now we have the cm of a tracker instance
+    return $DB->get_record('tracker', array('id' => $cm->instance));
+}
+
+/**
+ * Locates the Tracker issue associated to an examregistrar instance
+ *  Returns de issueid of the issue creted for an exam file
+ *
+ * @param object $examregistrar the examregistrar object
+ * @param object $examregistrar the examregistrar object
+ * @param object $examregistrar the examregistrar object
+ * @return int tracker issue ID
+ */
+function examregistrar_review_addissue($examregistrar, $course, $examfile, $tracker = false) {
+    global $CFG, $DB, $OUTPUT;
+
+    $issueid = 0;
+
+    if(!$examregistrar->reviewmod) {
+        return 0;
+    }
+
+    if(!$tracker) {
+        $tracker = examregistrar_get_review_tracker($examregistrar, $course);
+    }
+
+    if(!$tracker) {
+        return -1;
+    }
+
+    $exam = $DB->get_record('examregistrar_exams', array('id'=>$examfile->examid), '*', MUST_EXIST);
+    $examcourse = $DB->get_record('course', array('id'=>$exam->courseid), 'id, fullname, shortname, idnumber', MUST_EXIST);
+
+    $examcoursename = $examcourse->shortname.' - '.format_string($examcourse->fullname);
+    $summary = $examcoursename." \n".$examfile->idnumber.'  ('.$examfile->attempt.')' ;
+
+    $items = array();
+    $items[] = get_string('attemptn', 'examregistrar', $examfile->attempt);
+
+    list($name, $idnumber) = examregistrar_get_namecodefromid($exam->annuality);
+    $items[] = get_string('annualityitem', 'examregistrar').': '.$name.' ('.$idnumber.')';
+
+    $items[] = get_string('programme', 'examregistrar').': '.$exam->programme;
+
+    list($name, $idnumber) = examregistrar_get_namecodefromid($exam->period, 'periods');
+    $items[] = get_string('perioditem', 'examregistrar').': '.$name.' ('.$idnumber.')';
+
+    list($name, $idnumber) = examregistrar_get_namecodefromid($exam->examscope);
+    $items[] = get_string('scopeitem', 'examregistrar').': '.$name.' ('.$idnumber.')';
+
+    $items[] = get_string('callnum', 'examregistrar').': '.$exam->callnum;
+
+    list($name, $idnumber) = examregistrar_get_namecodefromid($exam->examsession, 'examsessions');
+    $items[] = get_string('examsessionitem', 'examregistrar').': '.$name.' ('.$idnumber.')';
+
+
+    $examcontext = context_course::instance($examcourse->id);
+    $filename = examregistrar_file_set_nameextension($examregistrar, $examfile->idnumber, 'exam'); //$examfile->idnumber.'.pdf';
+    $url = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$examcontext->id.'/mod_examregistrar/exam/rev/'.$tracker->course.'/'.$examfile->id.'/'.$filename);
+    $mime = mimeinfo("icon", $filename);
+    $icon = new pix_icon(file_extension_icon($filename), $mime, 'moodle', array('class'=>'icon'));
+    $filelink = $OUTPUT->action_link($url, $filename, null, null, $icon); //   html_writer::link($ffurl, " $icon &nbsp; $filename ");
+    $filelink .= '<br />';
+
+    $filename = examregistrar_file_set_nameextension($examregistrar, $examfile->idnumber, 'answers');//$examfile->idnumber.'_resp.pdf';
+    $url = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$examcontext->id.'/mod_examregistrar/exam/rev/'.$tracker->course.'/'.$examfile->id.'/answers/'.$filename);
+    $mime = mimeinfo("icon", $filename);
+    $icon = new pix_icon(file_extension_icon($filename), $mime, 'moodle', array('class'=>'icon'));
+    $filelink .= $OUTPUT->action_link($url, $filename, null, null, $icon); //   html_writer::link($ffurl, " $icon &nbsp; $filename ");
+
+    if(isset($exam->quizplugincm) && $exam->quizplugincm) {
+        $strexamfile = get_string('examfile', 'examregistrar');
+        $examobj = new examregistrar_exam($exam);
+        if($mkattempt = $examobj->get_makeexam_attempt($examfile->id, true)) {
+            $filelink .= '<br />';
+            $attemptname = $mkattempt->name .' ('.userdate($mkattempt->timecreated, get_string('strftimerecent')).') ';
+            $url = new moodle_url('/mod/quiz/report.php', array('id' => $mkattempt->cm, 'mode' => 'makeexam', 'review' => $mkattempt->review, 'confirm' => 1));
+            $icon = new pix_icon('icon', $strexamfile, 'quiz', array('class'=>'icon', 'title'=>$strexamfile));
+            $filelink .= $OUTPUT->action_link($url,$attemptname, null, null, $icon);
+        }
+    }
+
+    $description = html_writer::tag('h3', $examcoursename).html_writer::div($filelink, ' examreviewissuefilelink ').html_writer::div(implode('<br />', $items), ' examreviewissuebody ' );
+
+    /// TODO use function tracker_submitanissue(&$tracker, &$data) TODO
+    /// TODO or better use an EVENT caller/logger to communicate modules TODO
+    /// TODO or better use an EVENT caller/logger to communicate modules TODO
+    /// TODO or better use an EVENT caller/logger to communicate modules TODO
+    /// TODO use function tracker_submitanissue(&$tracker, &$data) TODO
+
+    $issue = new StdClass;
+    $issue->datereported = time();
+    $issue->summary = $summary;
+    $issue->description = $description;
+    $issue->descriptionformat = FORMAT_HTML;
+    $issue->format = 1;
+    $issue->assignedto = $tracker->defaultassignee;
+    $issue->bywhomid = 0;
+    $issue->trackerid = $tracker->id;
+    $issue->status = 0;
+    $issue->reportedby = $examfile->userid;
+    $issue->usermodified = $issue->datereported;
+    $issue->resolvermodified = $issue->datereported;
+    $issue->userlastseen = 0;
+
+    $issueid = $DB->insert_record('tracker_issue', $issue);
+    if($issueid > 0) {
+        if($DB->set_field('examregistrar_examfiles', 'reviewid', $issueid, array('id'=>$examfile->id))) {
+            $eventdata = array();
+            $eventdata['objectid'] = $examfile->id;
+            list($course, $cm) = get_course_and_cm_from_instance($examregistrar, 'examregistrar', $examregistrar->course);
+            $eventdata['context'] = context_module::instance($cm->id);
+            $eventdata['other'] = array();
+            $eventdata['other']['attempt'] = $examfile->attempt;
+            $eventdata['other']['examid'] = $examfile->examid;
+            $eventdata['other']['issueid'] = $issueid;
+            $eventdata['other']['idnumber'] = $examfile->idnumber;
+            $eventdata['other']['examregid'] = $examregistrar->id;
+            $event = \mod_examregistrar\event\examfile_synced::create($eventdata);
+            $event->trigger();
+        }
+    }
+    return (int)$issueid;
+}
+
+
+/**
+ * Retrieves the instance config settings stored in plugin_config table
+ *
+ * @param int $examregid the ID if the examregistrar instance
+ * @param mixed $fields either a string, name of a setting,
+ *               comma-separated list or an array of setting names to retrieve
+ * @param string $prefix a prefix identifying config storable keys in object
+ * @return mixed, object config data object or value if single field
+ */
+function examregistrar_get_instance_config($examregid, $fields = false, $prefix = '') {
+    global $DB;
+
+    //check if this is a primary instance
+    $examregprimaryid = examregistrar_check_primaryid($examregid);
+
+    $select = 'examregid = :examregid AND plugin = :plugin AND subtype = :subtype ';
+    $params = ['examregid' => $examregprimaryid,
+                'plugin' => '',
+                'subtype' => 'examregistrar'];
+    if(is_string($fields)) {
+        $fields = array_map('trim', explode(',', $fields));
+
+    }
+    if(is_array($fields) && !empty($fields)) {
+        list($insql, $inparams) = $DB->get_in_or_equal($fields, SQL_PARAMS_NAMED, 'name');
+        $select .= " AND name $insql ";
+        $params = $params + $inparams;
+    }
+
+    $config = false;
+    if($config = $DB->get_records_select_menu('examregistrar_plugin_config', $select, $params, '', 'name, value')) {
+        if(isset($config['staffcats'])) {
+            $config['staffcats'] = explode(',', $config['staffcats']);
+        }
+        if(count($config) == 1) {
+            $config = reset($config);
+        } else {
+            if($prefix) {
+                //used prefix to qualify keys for an user input form
+                foreach($config as $key => $value) {
+                    $config[$prefix.$key] = $value;
+                    unset($config[$key]);
                 }
             }
-            set_config('lastexecution', $today, 'examregistrar');  /// Grab this execution as last one
+            $config = (object)$config;
         }
     }
 
-    return true;
+    if(empty($config)) {
+        $config = '';
+    }
+
+    return $config;
 }
+
+/**
+ * Stores the instance config settings n plugin_config table
+ *
+ * @param int $examregid the ID if the examregistrar instance
+ * @param object $config containing the key, value pairs, optionally with prefix in key
+ * @param mixed $fields either a string, name of a setting,
+ *               comma-separated list or an array of setting names to save
+                false means all fields
+ * @param string $prefix a prefix identifying storable keys in input form
+ * @return mixed, object config data object or value if single field
+ */
+function examregistrar_save_instance_config($examregid, $config, $fields = false, $prefix = '') {
+    global $DB;
+
+    //check if this is a primary instance
+    $examregprimaryid = examregistrar_check_primaryid($examregid);
+
+    $select = 'examregid = :examregid AND plugin = :plugin AND subtype = :subtype ';
+    $params = ['examregid' => $examregprimaryid,
+                'plugin' => '',
+                'subtype' => 'examregistrar'];
+    if(is_string($fields)) {
+        $fields = array_map('trim', explode(',', $fields));
+
+    }
+    if(is_array($fields) && !empty(fields)) {
+        list($insql, $inparams) = $DB->get_in_or_equal($fields, SQL_PARAMS_NAMED, 'name');
+        $select .= " AND name $insql ";
+        $params = $params + $inparams;
+    }
+
+    $stored = $DB->get_records_select_menu('examregistrar_plugin_config', $select, $params, '', 'name, id');
+
+    $all = empty($fields);
+    $record = new stdClass();
+    $record->examregid = $examregprimaryid;
+    $record->plugin = '';
+    $record->subtype = 'examregistrar';
+    foreach($config as $name => $value) {
+        if($prefix) {
+            // use prefix when data comes from a form, input config form
+            if(strpos($name, $prefix) === 0) {
+                $name = str_replace($prefix, '', $name);
+            } else {
+                continue;
+            }
+        }
+        if(is_array($value)) {
+            $value = implode(',', $value);
+        }
+        if($all || in_array($name, $fields)) {
+            if(isset($stored[$name])) {
+                // existing value, update
+                $DB->set_field('examregistrar_plugin_config', 'value', $value, ['id' => $stored[$name]]);
+            } else {
+                //not existing,  insert new value
+                $record->name = $name;
+                $record->value = $value;
+                $DB->insert_record('examregistrar_plugin_config', $record);
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Returns all other caps used in the module

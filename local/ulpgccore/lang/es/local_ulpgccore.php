@@ -292,3 +292,6 @@ $string['archivereuse'] = 'Archivo/Reuso';
 $string['rolepermissions'] = 'Permisos';
 $string['participants'] = 'Lista de Participantes matriculados';
 $string['myindexcleaned'] = 'Páginas My Index de usuario sin bloques adicionales';
+$string['skipcap'] = 'Omitir permisos';
+$string['skip0'] = 'Ninguno';
+$string['skip1'] = 'Todos idénticos al Arquetipo';

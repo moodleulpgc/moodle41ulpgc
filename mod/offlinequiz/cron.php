@@ -163,7 +163,6 @@ function offlinequiz_evaluation_cron($jobid = 0, $verbose = false) {
                     if ($version < 2) {
                         // Create a new scanner for every page.
                         $scanner = new offlinequiz_page_scanner($offlinequiz, $context->id, $maxquestions, $maxanswers);
-                        
                         // Try to load the image file.
                         echo 'job ' . $job->id . ': evaluating ' . $data->filename . "\n";
                         $scannedpage = $scanner->load_image($data->filename);
@@ -212,17 +211,6 @@ function offlinequiz_evaluation_cron($jobid = 0, $verbose = false) {
                             $scanner->store_hotspots($scannedpage->id);
                         }
 
-                        // ecastro ULPGC
-/* debugging
-                        echo s(print_r("formtype = ". $scanner->formtype, true));
-                        echo s(print_r("offsetx = ". $scanner->offsetx, true));
-                        echo s(print_r("usernumber = ". $scanner->get_usernumber(), true));
-                        echo s(print_r("status = ". $scannedpage->status, true ));
-                        echo s(print_r("errors = ". $scannedpage->error, true ));
-                        echo s(print_r($scanner->hotspots, true));
-*/                        
-                        
-                        
                         if ($scannedpage->status == 'ok' || $scannedpage->status == 'submitted'
                                 || $scannedpage->status == 'suspended' || $scannedpage->error == 'missingpages') {
                             // Mark the file as processed.

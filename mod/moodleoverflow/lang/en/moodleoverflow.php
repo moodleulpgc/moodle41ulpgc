@@ -369,6 +369,7 @@ $string['nodownvote'] = 'No downvote';
 $string['downvote'] = 'Downvote';
 $string['movetopicicon'] = 'The icon to move a topic';
 $string['movetopictoforum'] = 'The icon to move a selected topic to another forum';
+$string['movetopictowhere'] = 'Where do you want to move the topic "{$a}"?';
 
 // Privacy.
 $string['privacy:metadata:core_files'] = 'Moodleoverflow stores files which have been uploaded by the user to form part of a forum post.';
@@ -495,6 +496,9 @@ $string['original_post'] = 'Original post';
 $string['digestunreadpost'] = 'Course: {$a->linktocourse} -> {$a->linktoforum}, Topic: {$a->linktodiscussion} has {$a->unreadposts} unread posts.';
 
 /* ecastro ULPGC */
+$string['singleuserstats'] = 'Answers: {$a->answers}, Posts: {$a->posts}, Votes: {$a->votes} | Reputation index: {$a->totalrating}.';
+$string['statuslocked'] = 'Discussion solved! Please try another discussion.';
+$string['statusneedsanswer'] = 'Needs your answer!';
 $string['repcountvotes'] = 'Count received student votes.';
 $string['repcountvotes_help'] = 'If marked, then the votes received by an student form other students 
 will be included in grades calculated form reputation for that student.';
@@ -510,6 +514,10 @@ $string['configvotescalepost']         = 'The amount of reputation a post gives.
 $string['votescalecomment']               = 'Reputation: Comment.';
 $string['configvotescalecomment']         = 'The amount of reputation a commentpost gives.';
 // Completion 
+$string['completiondetail:discussions'] = 'Start discussions: {$a}';
+$string['completiondetail:answers'] = 'Post answers: {$a}';
+$string['completiondetail:comments'] = 'Make comments: {$a}';
+$string['completiondetail:success'] = 'Get posts Solved/Helpful: {$a}';
 $string['completiondiscussions'] = 'Student must create discussions:';
 $string['completiondiscussionsdesc'] = 'Student must create at least {$a} discussion(s)';
 $string['completiondiscussionsgroup'] = 'Require discussions';
@@ -522,12 +530,10 @@ $string['completionanswers'] = 'Student must post answers:';
 $string['completionanswersdesc'] = 'Student must post at least {$a} answers';
 $string['completionanswersgroup'] = 'Require answers';
 $string['completionanswershelp'] = 'requiring answers to complete';
-$string['completiosuccess'] = 'Student must get right answers:';
-$string['completiosuccessdesc'] = 'Student must post at least {$a} answers labeled as right or useful';
-$string['completiosuccessgroup'] = 'Require right answers';
-$string['completiosuccesshelp'] = 'requiring right answers to complete';
-
-
+$string['completionsuccess'] = 'Student must get right answers:';
+$string['completionsuccessdesc'] = 'Student must post at least {$a} answers labeled as right or useful';
+$string['completionsuccessgroup'] = 'Require right answers';
+$string['completionsuccesshelp'] = 'requiring right answers to complete';
 $string['lockingheading'] = 'Locking options';
 $string['lockdiscussions'] = 'Lock answered discussions';
 $string['lockdiscussions_help'] = 'When a discussion is answered, 

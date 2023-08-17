@@ -150,12 +150,67 @@ function xmldb_quiz_makeexam_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015081100, 'quiz', 'makeexam');
     }
 
-    if ($oldversion < 2020082300) {    
-    
+    if ($oldversion < 2020082300) {
+
         // Main savepoint reached.
         upgrade_plugin_savepoint(true, 2020082300, 'quiz', 'makeexam');
-    }    
-    
+    }
+
+    if ($oldversion < 2020082302) {
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2020082302, 'quiz', 'makeexam');
+    }
+
+    if ($oldversion < 2023080100) {
+        // Define fields to be added to quiz_makeexam_slots table.
+        $table = new xmldb_table('quiz_makeexam_slots');
+
+        $field = new xmldb_field('questionbankentryid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('version', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $key = new xmldb_key('questionbankentryid', XMLDB_KEY_FOREIGN, array('questionbankentryid'), 'question_bank_entries', array('id'));
+        // Launch add key questionbankentryid.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->add_key($table, $key);
+        }
+
+        // remove not needed fields &  related keys
+        $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN, array('questionid'), 'question', array('id'));
+        $dbman->drop_key($table, $key);
+
+        $field = new xmldb_field('questionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2023080100, 'quiz', 'makeexam');
+    }
+
+    if ($oldversion < 2023080102) {
+        // Define fields to be added to quiz_makeexam_slots table.
+        $table = new xmldb_table('quiz_makeexam_attempts');
+
+        $field = new xmldb_field('questions', XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'qbankentries');
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2023080102, 'quiz', 'makeexam');
+    }
+
+
+
+
     return true;
 }
 

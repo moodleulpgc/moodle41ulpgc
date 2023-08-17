@@ -35,8 +35,8 @@
 }
 
 .moodleoverflowdiscussion .discussionmove .icon {
-    width: 16px; /* ecastro ULPGC 24 */ 
-    height: 16px;
+    width: 24px;
+    height: 24px;
     color: #848d95;
 }
 
@@ -109,34 +109,6 @@
 .moodleoverflowdiscussion .subject {
     font-size: 1.25em;
 }
-
-/* ecastro ULPGC */
-.moodleoverflowdiscussion .actions {
-    float: right;
-    margin-left: auto;
-}
-
-.moodleoverflowdiscussion .discussiontoggle {
-    font-size: 12px;
-    padding-top: 4px;
-}
-
-.moodleoverflowdiscussion .upper {
-    justify-content: center;
-}
-
-.moodleoverflowdiscussion .status {
-    flex-direction: column;
-    margin-left: 12px;
-    align-content: flex-start;
-}
-
-.rrreply-correction  .fa-reply::before {
-    font-family: "Fontawesome";
-    content: '\f112';
-}
-
-/* ecastro ULPGC */
 
 /*
  * The form to post new messages.
@@ -241,11 +213,6 @@
     width: 4px;
 }
 
-.moodleoverflowpost.statusstarter:before {
-    /* background: rgba(234, 133, 22, 1); */  /* ecastro ULPGC to improve unread */ 
-    background: rgba(128, 0, 128, 1);
-}
-
 .moodleoverflowpost.markedhelpful:before {
     background: rgba(234, 133, 22, 1);
     bottom: -1px;
@@ -315,31 +282,6 @@
 
 .moodleoverflowpost.unread .row.header {
     border-bottom: 1px solid #ddd;
-}
-
-.moodleoverflowpost.border.unread {
-    border: 2px solid #ff9a00 !important; 
-    
-}
-
-.moodleoverflowpost.unread:before {
-    background: #ff9a00;
-    bottom: -1px;
-    content: "";
-    display: block;
-    left: -6px;
-    position: absolute;
-    top: -1px;
-    width: 6px;
-}
-
-.moodleoverflowpost .row {
-    margin-left: 0;
-}
-
-.moodleoverflowpost .row:before,
-.moodleoverflowpost .row:after {
-    content: none;
 }
 
 .moodleoverflowpost .topic .author {
@@ -493,11 +435,6 @@
 .moodleoverflowpost .answercell .post-info .leftbox .user-info .user-avatar + .user-details {
     margin-left: 8px;
     width: calc(100% - 40px);
-}
-
-
-.moodleoverflowpost td.answercell table.post-info td.leftbox .user-info .user-details .-flair {
-    display: block;
 }
 
 .moodleoverflowpost .commentcell {

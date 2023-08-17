@@ -40,13 +40,22 @@ class check_role_permissions_table extends \core_role_capability_table_base {
      * @param context $context the context this table relates to.
      * @param string $archetype role to show 
      */
-    public function __construct($context, $archetype) {
+    public function __construct($context, $archetype, $skip) {
         parent::__construct($context, 'permissions');
         $this->archetype = $archetype;
+        $this->skip = $skip;
 
         $roles = get_archetype_roles($archetype);
         $this->roles = role_fix_names($roles, $context, ROLENAME_ORIGINAL);
-        
+
+        $this->permissionlabels = array(
+            '-' => get_string('notset', 'core_role'), // notset
+            CAP_INHERIT => get_string('inherit', 'core_role'), // notset
+            CAP_ALLOW => get_string('allow', 'core_role'),
+            CAP_PREVENT => get_string('prevent', 'core_role'),
+            CAP_PROHIBIT => get_string('prohibit', 'core_role'),
+        );
+
         foreach($this->roles as $rid => $role) {
             $caps = get_capabilities_from_role_on_context($role, $context);
             $role->capabilities = [];
@@ -83,7 +92,7 @@ class check_role_permissions_table extends \core_role_capability_table_base {
     }
 
     protected function add_row_cells($capability) {
-        global $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT, $PAGE;
         
         //print_object($capability);
         
@@ -157,28 +166,49 @@ class check_role_permissions_table extends \core_role_capability_table_base {
 
         */
         
-        $archetype = '';
+        $archetype = '-';
         if(isset($this->rolearchetype->capabilities[$capability->name])) {
             $archetype =  $this->rolearchetype->capabilities[$capability->name];
         }
+        $archetypelabel = $this->permissionlabels[$archetype];
         
         if($risks = $this->get_risks($capability)) {
-            $risks = '  &nbsp;  '.$risks;
+            $risks = '<br />'.$risks;
         }
-        
-        
-        $contents = \html_writer::tag('td', $archetype.$risks, array('class' => 'permission  archetype'));
+        $checkurl = new \moodle_url($CFG->wwwroot.'/admin/tool/editrolesbycap/index.php');
+
+        $label = '';
+        $contents = '';
+        $difference = false;
         foreach($this->roles as $role) {
             $permission = '-';
+            $warning = '';
             if(isset($role->capabilities[$capability->name])) {
                 $permission =  $role->capabilities[$capability->name];
             }
             if($permission === $archetype) {
-                $permission = '';
+                $label = '';
+            } else {
+                $label = $this->permissionlabels[$permission];
+                if($permission && ($permission != '-')) {
+                    $warning = 'alert-danger';
+                    $checkurl->param('cap', $capability->name);
+                    $label= \html_writer::link($checkurl, $label);
+                }
+                $difference = true;
             }
-            
-            $contents .= \html_writer::tag('td', $permission, array('class' => 'permission role'));
-        }        
+            $contents .= \html_writer::tag('td', \html_writer::span($label, 'text '.$warning), array('class' => 'permission role'));
+        }
+
+        // add first column last, when checking done
+        if($difference) {
+            $checkurl->param('cap', $capability->name);
+            $archetypelabel = \html_writer::link($checkurl, $archetypelabel);
+        }
+        $contents = \html_writer::tag('td', $archetypelabel.$risks, array('class' => 'permission  archetype')) . $contents;
+
+
+
         return $contents;
     }
 
@@ -211,6 +241,11 @@ class check_role_permissions_table extends \core_role_capability_table_base {
      * @return boolean. If true, this row is omitted from the table.
      */
     protected function skip_row($capability) {
+
+        if(!$this->skip) {
+            return false;
+        }
+
         $archetype = '';
         if(isset($this->rolearchetype->capabilities[$capability->name])) {
             $archetype =  $this->rolearchetype->capabilities[$capability->name];

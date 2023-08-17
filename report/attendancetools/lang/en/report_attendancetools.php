@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $string['attendancetools'] = 'Attendance tools';
 $string['attendancetools:view'] = 'View Attendance tools';
-$string['attendancetools:view'] = 'Manage Instant session params';
+$string['attendancetools:manage'] = 'Manage Instant session params';
 $string['pluginname'] = 'Attendance tools';
 $string['autosession'] = 'Instant session';
 $string['milista'] = 'Milista';

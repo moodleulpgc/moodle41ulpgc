@@ -45,3 +45,4 @@ $string['requires_notisequalto'] = 'Su respuesta en <strong>{$a->field}</strong>
 $string['requires_notstartswith'] = 'Su respuesta en <strong>{$a->field}</strong> does not start with <strong>{$a->value}</strong>';
 $string['requires_startswith'] = 'Su respuesta en <strong>{$a->field}</strong> starts with <strong>{$a->value}</strong>';
 $string['title'] = 'Respuesta';
+$string['unknownchoice'] = 'Desconocida Consulta con id={$a}';

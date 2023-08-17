@@ -70,18 +70,21 @@ function theme_moove_get_main_scss_content($theme) {
     $moovevariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/moove/_variables.scss');
 
     // ensure add ULPGC variables after standard ones but before regular css
-    $ulpgcvariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc/_variables.scss');
-    $moovevariables = $moovevariables . "\n" . $ulpgcvariables;
+    $ulpgcvariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc/variables.scss');
+    $moovevariables = $moovevariables . "\n" . $ulpgcvariables  ;
 
     $moove = file_get_contents($CFG->dirroot . '/theme/moove/scss/default.scss');
+
+
     $security = file_get_contents($CFG->dirroot . '/theme/moove/scss/moove/_security.scss');
 
     // Combine them together.
     $allscss = $moovevariables . "\n" . $scss . "\n" . $moove . "\n" . $security;
 
     // now load specific ULPGC scss
+    $ulpgcbuttons = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc/buttons.scss');
     $ulpgc = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc.scss');
-    $allscss = $allscss . "\n" . $ulpgc;
+    $allscss = $allscss . "\n" . $ulpgcbuttons . "\n"  . $ulpgc;
 
     return $allscss;
 }
@@ -124,16 +127,28 @@ function theme_moove_get_extra_scss($theme) {
         if (isset($theme->settings->{$configname}) && $theme->settings->{$configname} != $defaultpurpose) {
             // Add CSS to modify the activity purpose color in the activity chooser and the activity icon.
             $content .= '.activity.modtype_'.$modname.' .activityiconcontainer.courseicon,';
-            $content .= '.modchoosercontainer .modicon_'.$modname.'.activityiconcontainer { ';
-            $content .= 'background-color: var(--activity'.$theme->settings->{$configname}.') !important;';
-            $content .= '}';
+            $content .= '.modchoosercontainer .modicon_'.$modname.'.activityiconcontainer,';
+            $content .= '#page-header .modicon_'.$modname.'.activityiconcontainer,';
+            $content .= '.block_recentlyaccesseditems .theme-boost-union-'.$modname.'.activityiconcontainer,';
+            $content .= '.block_timeline .theme-boost-union-mod_'.$modname.'.activityiconcontainer {';
+            // If the purpose is now different than 'other', change the background color to the new color.
+            if ($theme->settings->{$configname} != MOD_PURPOSE_OTHER) {
+                $content .= 'background-color: var(--activity' . $theme->settings->{$configname} . ') !important;';
+
+                // Otherwise, the background color is set to light grey (as there is no '--activityother' variable).
+            } else {
+                $content .= 'background-color: $light !important;';
+            }
             // If the default purpose originally was 'other' and now is overridden, make the icon white.
             if ($defaultpurpose == MOD_PURPOSE_OTHER) {
-                $content .= '.activity.modtype_'.$modname.' .activityiconcontainer.courseicon .activityicon,';
-                $content .= '.modchoosercontainer .modicon_'.$modname.'.activityiconcontainer .activityicon { ';
-                $content .= 'filter: brightness(0) invert(1);';
-                $content .= '}';
+                //$content .= '.activityicon, .icon { filter: brightness(0) invert(1); }';
+                $content .= '.activityicon, .icon { filter: none; }';
             }
+            // If the default purpose was not 'other' and now it is, make the icon black.
+            if ($theme->settings->{$configname} == MOD_PURPOSE_OTHER) {
+                $content .= '.activityicon, .icon { filter: none; }';
+            }
+            $content .= '}';
         }
     }
 

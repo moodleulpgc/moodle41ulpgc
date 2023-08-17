@@ -96,7 +96,7 @@ class batchmanage_managejob_sectiondelete extends batchmanage_managejob_plugin {
         
         $params = array_merge($sparams, $cparams);
 
-        $sql = "SELECT cs.*, c.shortname, c.category
+        $sql = "SELECT cs.*, c.id AS courseid, c.shortname, c.category
                     FROM {course_sections} cs
                     JOIN {course} c ON cs.course = c.id
                     $coursejoin
@@ -114,7 +114,21 @@ class batchmanage_managejob_sectiondelete extends batchmanage_managejob_plugin {
         if($data) {
             $this->cleanup_course_cache($section->course);
 
-            $success = course_delete_section($section->course, $section->section, $data->sectionforcedelete);
+            if($data->sectionemptydel) {
+                // we are deleting the whole section
+                $success = course_delete_section($section->course, $section->section, $data->sectionforcedelete);
+            } else {
+                // we are just emptying the section
+                $coursemodinfo = get_fast_modinfo($section->course);
+                $sections = $coursemodinfo->get_sections();
+                if(isset($sections[$section->section])) {
+                    foreach($sections[$section->section] as $modid) {
+                        // this function rebuilds course cache internally
+                        course_delete_module($modid);
+                    }
+                    $success = true;
+                }
+            }
         }
     
         return array($success, $section->name, '');

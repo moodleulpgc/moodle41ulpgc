@@ -146,13 +146,17 @@ class datalynxfield_multiselect extends datalynxfield_option_multiple {
         return parent::update_content($entry, $values);
     }
 
-    public function get_search_sql($search) {
+    /**
+     * {@inheritDoc}
+     * @see datalynxfield_base::get_search_sql()
+     */
+    public function get_search_sql(array $search): array {
 
         // If we only see the andor and no value just skip.
-        if (count($search[2]) == 0) {
+        if (is_array($search[2]) && count($search[2]) == 0) {
             return array('', '', '');
         }
-        if (count($search[2]) == 1 AND isset($search[2]['andor'])) {
+        if (is_array($search[2]) && count($search[2]) == 1 && isset($search[2]['andor'])) {
             return array('', '', '');
         }
 

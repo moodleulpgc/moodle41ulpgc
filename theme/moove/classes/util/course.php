@@ -115,10 +115,11 @@ class course {
         if (!$cat) {
             return '';
         }
-
         // ecastro ULPGC, shorten
         $name = $cat->get_formatted_name();
         if($ulpgcshorten = get_config('local_ulpgccore','shortennavbar')) {
+            global $CFG;
+            require_once($CFG->dirroot.'/local/ulpgccore/lib.php');
             $name = local_ulpgccore_shorten_titles($name);        
         }
         return $name;

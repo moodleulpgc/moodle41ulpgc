@@ -1,4 +1,9 @@
 CHANGELOG
+=========
+4.1.0
+-----------------
+* [Feature] Compatible Version for Moodle 4.01
+* [Feature] On the overview page you can see the progress of what's done.
 
 4.0.1
 -----------------

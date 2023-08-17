@@ -58,6 +58,7 @@ class api {
 
         // Is notification enabled ?
         if ($useridto == $USER->id) {
+            $USER->emailstop = ($USER->id) ? $USER->emailstop : 0; // ecastro ULPGC prevent warning when not logged
             $disabled = $USER->emailstop;
         } else {
             $user = \core_user::get_user($useridto, "emailstop", MUST_EXIST);

@@ -466,6 +466,9 @@ class examregistrar_exam implements renderable {
             return $message;
         } 
         
+        // TODO // TODO // TODO
+        // TODO for 4.x would be better to restore questions from mkattempt before setting quiz
+
         $quizobj = quiz::create($quiz->id, $USER->id);
         $quizobj->preload_questions();
         $quizobj->load_questions();
@@ -480,9 +483,31 @@ class examregistrar_exam implements renderable {
             }            
         }
         
+        // TODO // TODO // TODO
+
+        // NOT WORKING ON 4.x no  $makeexamattempt->questions but qestionbankentryids
+
+
+        // TODO // TODO // TODO
+
         if($mkquestions && array_diff($mkquestions, $qzquestions) && (count($mkquestions) != count($qzquestions))) {   
             // change questions, from stored makeexam
-            $makeexam->load_exam_questions($quiz, $makeexamattempt, true, $insertcontrol);
+            // we always restore into an empty quiz
+            $makeexam->clear_quiz($quiz);
+            $makeexam->load_slots_sections_from_attempt($quiz, $makeexamattempt, true, true, $insertcontrol);
+            // once loaded housekeeping
+            quiz_repaginate_questions($quiz->id, $quiz->questionsperpage);
+            quiz_delete_previews($quiz);
+
+            $eventdata = array();
+            $eventdata['objectid'] = $makeexamattempt->id;
+            $eventdata['context'] = $quizobj->get_context();
+            $eventdata['userid'] = $USER->id;
+            $eventdata['other'] = array();
+            $eventdata['other']['quizid'] = $quiz->id;
+            $eventdata['other']['examid'] = $makeexamattempt->examid;
+            $event = \quiz_makeexam\event\exam_recalled::create($eventdata);
+            $event->trigger();
             if($notify) {
                 $info = $this->get_exam_name(true, true);
                 \core\notification::add(get_string('examquestionsloaded', 'examregistrar', $info), \core\output\notification::NOTIFY_SUCCESS);

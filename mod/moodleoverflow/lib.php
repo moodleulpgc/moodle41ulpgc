@@ -120,74 +120,6 @@ function moodleoverflow_supports($feature) {
 }
 
 /**
- * Obtains the automatic completion state for this moodleoverflow based on any conditions
- * in moodleoverflow settings.
- *
- * @global object
- * @global object
- * @param object $course Course
- * @param object $cm Course-module
- * @param int $userid User ID
- * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
- * @return bool True if completed, false if not. (If no conditions, then return
- *   value depends on comparison type)
- */
-function moodleoverflow_get_completion_state($course,$cm,$userid,$type) {
-    global $CFG,$DB;
-
-    // Get moodleoverflow details
-    if (!($moodleoverflow=$DB->get_record('moodleoverflow',array('id'=>$cm->instance)))) {
-        throw new Exception("Can't find moodleoverflow {$cm->instance}");
-    }
-
-    $result=$type; // Default return value
-
-    $postcountparams=array('userid'=>$userid,'moodleoverflowid'=>$moodleoverflow->id);
-    $postcountsql="SELECT COUNT(1)
-                    FROM {moodleoverflow_posts} fp
-                    INNER JOIN {moodleoverflow_discussions} fd ON fp.discussion=fd.id
-                    WHERE fp.userid=:userid AND fd.moodleoverflow=:moodleoverflowid";
-
-    if ($moodleoverflow->completiondiscussions) {
-        $value = $moodleoverflow->completiondiscussions <=
-                 $DB->count_records('moodleoverflow_discussions',array('moodleoverflow'=>$moodleoverflow->id,'userid'=>$userid));
-        if ($type == COMPLETION_AND) {
-            $result = $result && $value;
-        } else {
-            $result = $result || $value;
-        }
-    }
-    if ($moodleoverflow->completionanswers) {
-        $value = $moodleoverflow->completionanswers <=
-                 $DB->get_field_sql( $postcountsql.' AND fp.parent = fd.firstpost',$postcountparams);
-        if ($type==COMPLETION_AND) {
-            $result = $result && $value;
-        } else {
-            $result = $result || $value;
-        }
-    }
-    if ($moodleoverflow->completioncomments) {
-        $value = $moodleoverflow->completioncomments <= $DB->get_field_sql($postcountsql.' AND (fp.parent <> fd.firstpost AND fp.parent <> 0)', $postcountparams);
-        if ($type == COMPLETION_AND) {
-            $result = $result && $value;
-        } else {
-            $result = $result || $value;
-        }
-    }
-    if ($moodleoverflow->completionsuccess) {
-        $value = $moodleoverflow->completionsuccess <= $DB->get_field_sql($postcountsql.' AND (fp.parent <> fd.firstpost AND fp.parent <> 0)', $postcountparams);
-        if ($type == COMPLETION_AND) {
-            $result = $result && $value;
-        } else {
-            $result = $result || $value;
-        }
-    }
-
-    return $result;
-}
-
-
-/**
  * Saves a new instance of the moodleoverflow into the database.
  *
  * Given an object containing all the necessary data,
@@ -1287,52 +1219,6 @@ function moodleoverflow_get_coursemodule_info($coursemodule) {
     return $result;
 }
 
-/**
- * Callback which returns human-readable strings describing the active completion custom rules for the module instance.
- *
- * @param cm_info|stdClass $cm object with fields ->completion and ->customdata['customcompletionrules']
- * @return array $descriptions the array of descriptions for the custom rules.
- */
-function mod_moodleoverflow_get_completion_active_rule_descriptions($cm) {
-    // Values will be present in cm_info, and we assume these are up to date.
-    if (empty($cm->customdata['customcompletionrules'])
-        || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
-        return [];
-    }
-
-    $descriptions = [];
-    foreach ($cm->customdata['customcompletionrules'] as $key => $val) {
-        switch ($key) {
-            case 'completiondiscussions':
-                if (empty($val)) {
-                    continue 2; // ecastro ULPGC
-                }
-                $descriptions[] = get_string('completiondiscussionsdesc', 'moodleoverflow', $val);
-                break;
-            case 'completionanswers':
-                if (empty($val)) {
-                    continue 2;
-                }
-                $descriptions[] = get_string('completionanswersdesc', 'moodleoverflow', $val);
-                break;
-            case 'completioncomments':
-                if (empty($val)) {
-                    continue 2;
-                }
-                $descriptions[] = get_string('completioncommentsdesc', 'moodleoverflow', $val);
-                break;
-            case 'completionsuccess':
-                if (empty($val)) {
-                    continue 2;
-                }
-                $descriptions[] = get_string('completionsuccessdesc', 'moodleoverflow', $val);
-                break;
-            default:
-                break;
-        }
-    }
-    return $descriptions;
-}
 
 /**
  * Obtain grades from plugin's database tab
@@ -1442,11 +1328,11 @@ function moodleoverflow_get_fontawesome_icon_map() {
     return [
         'mod_moodleoverflow:i/commenting' => 'fa-commenting',
         'mod_moodleoverflow:i/pending-big' => 'fa-clock-o text-danger moodleoverflow-icon-2x',
-        'mod_moodleoverflow:i/status-helpful' => 'fa-thumbs-up xmoodleoverflow-icon-1_5x moodleoverflow-text-orange',
-        'mod_moodleoverflow:i/status-solved' => 'fa-check xmoodleoverflow-icon-1_5x moodleoverflow-text-green',
+        'mod_moodleoverflow:i/status-helpful' => 'fa-square-check xmoodleoverflow-icon-1_5x moodleoverflow-text-helpful', // ecastro ULPGC
+        'mod_moodleoverflow:i/status-solved' => 'fa-regular fa-circle-check xmoodleoverflow-icon-1_5x moodleoverflow-text-green', // ecastro ULPGC
         'mod_moodleoverflow:i/reply' => 'fa-reply xmoodleoverflow-icon-1_5x',
-        'mod_moodleoverflow:i/subscribed' => 'fa-bell xmoodleoverflow-icon-1_5x',
-        'mod_moodleoverflow:i/unsubscribed' => 'fa-bell-slash-o xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/subscribed' => 'fa-envelope-circle-check xmoodleoverflow-icon-1_5x',
+        'mod_moodleoverflow:i/unsubscribed' => 'fa-regular fa-bell-slash-o xmoodleoverflow-icon-1_5x',
         'mod_moodleoverflow:i/vote-up' => 'fa-chevron-up xmoodleoverflow-icon-2x moodleoverflow-icon-no-margin',
         'mod_moodleoverflow:i/vote-down' => 'fa-chevron-down xmoodleoverflow-icon-2x moodleoverflow-icon-no-margin'
     ];

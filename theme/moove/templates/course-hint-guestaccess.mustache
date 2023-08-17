@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template theme_boost_union/course-hint-guestaccess
+    @template theme_moove/course-hint-guestaccess
 
     Boost Union template for outputting the guestaccess course hint.
 
@@ -35,9 +35,9 @@
     <div class="media">
         <div class="mr-3 icon-size-5"><i class="fa fa-exclamation-circle fa-3x"></i></div>
         <div class="media-body align-self-center">
-            {{#str}} showhintcourseguestaccessgeneral, theme_boost_union, { "role": "{{role}}" } {{/str}}
+            {{#str}} showhintcourseguestaccessgeneral, theme_moove, { "role": "{{role}}" } {{/str}}
             {{#showselfenrollink}}
-                <br />{{#str}} showhintcourseguestaccesslink, theme_boost_union, { "url": "{{config.wwwroot}}/enrol/index.php?id={{courseid}}" } {{/str}}
+                <br />{{#str}} showhintcourseguestaccesslink, theme_moove, { "url": "{{config.wwwroot}}/enrol/index.php?id={{courseid}}" } {{/str}}
             {{/showselfenrollink}}
         </div>
     </div>

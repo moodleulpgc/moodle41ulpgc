@@ -106,16 +106,6 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
                 'isactive' => $node->isactive,
                 'key' => $node->key,
             ];
-            /*
-            $nodes[] = [
-                'title' => $node->get_title(),
-                'url' => $node->action(),
-                'text' => $node->text,
-                'icon' => $node->icon,
-                'isactive' => $node->isactive,
-                'key' => $node->key,
-            ];
-            */
         }
 
         return $nodes;
@@ -139,7 +129,8 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
         $remotes = [];
         if(!empty($block)) {
             $remotecourseurl = $block->config->remotesite.'/course/view.php?id=';
-            $remotes = $block->get_remote_courses_list();
+            $remotetype = get_config('theme_moove', 'remotecoursestype');
+             $remotes = $block->get_remote_courses($remotetype);
         }
         
         // Early return if a courses list does not exists.
@@ -164,12 +155,17 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
         $item->url = '';
         $item->title = '';
         $item->sort = 1;
+        $item->isactive = 0;
         $item->children  = [];
         $item->haschildren  = false ;   !(empty($courses) && empty($remotes));
         
         $menuitems = [];
         $sort = 2;
+        $strparticipants = get_string('participants');
+        $strgrades = get_string('grades');
+
         foreach ($courses as $course) {
+            $item->isactive = 0;
             $item->moremenuid = 'localown-'.uniqid(); 
             $item->text = format_string(get_course_display_name_for_list($course));
             $linkcss = $course->visible ? '' : 'dimmed';
@@ -186,7 +182,15 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             $item->children  = [];
             $item->haschildren  = false ;  
             $menuitems[] = clone $item;
-            $item->isactive = 0;
+            if($item->isactive) {
+                $item->text = '&nbsp; &nbsp; · '.$strparticipants;
+                $item->url = $CFG->wwwroot.'/user/index.php?id='.$course->id;
+                $menuitems[] = clone $item;
+                $item->text = '&nbsp; &nbsp; · '.$strgrades;
+                $item->url = $CFG->wwwroot.'/grade/report/index.php?id='.$course->id;
+                $menuitems[] = clone $item;
+            }
+            $item->isactive = 0; // set for next menus
             $sort++;
         }
         
@@ -195,6 +199,7 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             $item->text = '###';
             $item->url = '';
             $item->divider = 1;
+            $item->isactive = 0;
             $item->sort = $sort;
             $menuitems[] = clone $item;
             $sort++;
@@ -213,15 +218,11 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             $item->text = '###';
             $item->url = '';
             $item->divider = 1;
+            $item->isactive = 0;
             $item->sort = $sort;
             $menuitems[] = clone $item;
             $sort++;
             $item->divider = null ;
-            $item->moremenuid = uniqid(); 
-            $item->sort = $sort;
-            $item->text = html_writer::span($block->blockname, 'myremotecourses title');  
-            $menuitems[] = clone $item;
-            $sort++;
         }
 
         foreach ($remotes as $course) {
@@ -230,6 +231,7 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
             $item->url = $remotecourseurl.$course->id;
             $item->title = '';
             $item->sort = $sort;
+            $item->isactive = 0;
             $item->children  = [];
             $item->haschildren  = false ;  
             $menuitems[] = clone $item;
@@ -243,6 +245,7 @@ class primarynav extends \core\navigation\output\primary implements renderable, 
         $item->classes = ' mycourseslist ';
         $item->sort = 1;
         $item->divider = null ;
+        $item->isactive = 0;
         $item->children  = $menuitems;
         $item->haschildren  =!(empty($menuitems));        
         

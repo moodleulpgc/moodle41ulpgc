@@ -1,6 +1,5 @@
 <?php
-
-// This file is part of Moodle - http://moodle.org/
+// This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,182 +12,651 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'offlinequiz', language 'es', branch 'MOODLE_35_STABLE'
+ * Strings for component 'offlinequiz', language 'es', version '4.1'.
  *
- * @package   offlinequiz
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     offlinequiz
+ * @category    string
+ * @copyright   1999 Martin Dougiamas and contributors
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'Examen escaneable';
-$string['modulename_help'] = 'Este módulo permite al Profesor diseñar exámenes en papel usando el Banco de preguntas de Moodle.
-
-Se añaden preguntas de opción múltiple a un cuestionario, pero en lugar de ser respondidas por los estudiantes en línea, en la web, se generan documentos (PDF, DOCX o LaTeX) que se pueden imprimir.
-
-Se pueden generar varias planillas a partir de las mismas o distintas preguntas. 
-Se generan tanto documentos con los enunciados de las preguntas como hojas de respuestas con casillas para marcar la respuesta correcta. 
-
-Las hojas de respuesta pueden ser escaneadas, importadas al Campus y procesadas para la puntuación automatizada del examen. 
-Se analizan las casillas marcadas y se les asigna una puntuación. 
-El profesor controla cómo se presentan los resultados a los estudiantes, solo la puntuación o alguna infromación adicional.';
-$string['modulenameplural'] = 'Exámenes escaneables';
-$string['pluginname'] = 'Examen escaneable';
-$string['pluginadministration'] = 'Administración de Examen escaneable';
-$string['addarandomquestion_help'] = 'Moodle agrega una selección aleatoria de preguntas de opción múltiple (o preguntas de todo o nada) a la actual Planilla de prueba fuera de línea. 
-Puede establecer el número de preguntas añadido. Las preguntas se eligen de la categoría actual de la cuestión (y si, sus subcategorías).';
-$string['answerformforgroup'] = 'Formulario de respuesta para planilla {$a}';
-$string['copyselectedtogroup'] = 'Añadir las preguntas seleccionadas a la planilla {$a}';
-$string['correctforgroup'] = 'Respuestas correctas para la planilla {$a}';
-$string['correctupdated'] = 'Formulario de corrección actualizado para la planilla {$a}.';
-$string['createofflinequiz'] = 'Crear exámenes';
-$string['createpdfforms'] = 'Generar documentos';
-$string['createpdfs'] = 'Documentos imprimibles';
+$string['add'] = 'Añadir';
+$string['addarandomquestion'] = 'preguntas al azar';
+$string['addarandomquestion_help'] = 'Moodle agrega una selección aleatoria de preguntas de opción múltiple (o preguntas de todo o nada) al actual Grupo de prueba fuera de línea. Puede establecer el número de preguntas añadido. Las preguntas se eligen de la categoría actual de la cuestión (y si, sus subcategorías).';
+$string['addarandomselectedquestion'] = 'Añadir una pregunta seleccionada al azar...';
+$string['addlist'] = 'Añadir lista de asistencia';
+$string['addnewpagesafterselected'] = 'Añadir saltos de página después de las preguntas seleccionadas';
+$string['addnewquestion'] = 'una nueva pregunta';
+$string['addnewquestionsqbank'] = 'Añadir preguntas a la categoría  {$a->catname}: {$a->link}';
+$string['addnewuseroverride'] = 'Añadir usuario rebase';
+$string['addpagebreak'] = 'Añadir salto de página';
+$string['addpagehere'] = 'Agregar página aquí';
+$string['addparts'] = 'Añadir participantes';
+$string['addquestionfrombankatend'] = 'Añadir desde el banco de preguntas al final';
+$string['addquestionfrombanktopage'] = 'Añadir desde el banco de preguntas a la página {$a}';
+$string['addrandom'] = 'Al azar agregar {$a} pregunta/s de elección múltiple/s';
+$string['addrandomfromcategory'] = 'preguntas al azar';
+$string['addrandomquestion'] = 'preguntas al azar';
+$string['addrandomquestiontoofflinequiz'] = 'Añadiendo preguntas a prueba fuera de línea {$a->name} (group {$a->group})';
+$string['addrandomquestiontopage'] = 'Añadir una pregunta aleatoria a la página {$a}';
+$string['addtoofflinequiz'] = 'Añadir a prueba fuera de línea';
+$string['addtoqueue'] = 'Agregar a cola de';
+$string['allinone'] = 'Ilimitado';
+$string['alllists'] = 'Todas las listas de';
+$string['allornothing'] = 'Todo o nada';
+$string['allresults'] = 'Mostrar todos los resultados';
+$string['allstudents'] = 'Mostrar todos los estudiantes';
+$string['alwaysavailable'] = 'Siempre disponible';
+$string['analysis'] = 'Análisis de artículo';
+$string['answerform'] = 'Formulario de respuestas';
+$string['answerformforgroup'] = 'Formulario de respuesta para grupo {$a}';
+$string['answerforms'] = 'Formas de respuestas';
+$string['answerpdfxy'] = 'Formulario de respuestas  ({$a}->maxquestions questions / {$a}->maxanswers options)';
+$string['areyousureremoveselected'] = '¿Está seguro que desea eliminar todas las preguntas?';
+$string['attemptexists'] = 'Existe tentativa';
+$string['attemptsexist'] = 'Ya no puede Agregar o quitar preguntas.';
+$string['attemptsnum'] = 'Resultados: {$a}';
+$string['attemptsonly'] = 'Muestra los estudiantes con resultados';
+$string['attendanceoverview'] = 'Resumen';
+$string['attendances'] = 'Asistencias';
+$string['attendancesheadline'] = 'Asistentes';
+$string['backtopreview'] = 'Vista previa';
+$string['basicideasofofflinequiz'] = 'Las ideas básicas para hacer cuestionarios offline';
+$string['bulksavegrades'] = 'Guardar las Calificaciones';
+$string['calibratescanner'] = 'Calibrar el Escáner';
+$string['cannoteditafterattempts'] = 'No puede añadir o eliminar preguntas porque ya hay resultados completados. ({$a})';
+$string['category'] = 'Categoría';
+$string['changed'] = 'Los resultados se han modificado.';
+$string['changeevaluationmode'] = 'Cambia la forma en la que se realiza la evaluación. Sólo es posible si está permitido por el administrador.';
+$string['checkparts'] = 'Marca los participantes seleccionados como presentes';
+$string['checkuserid'] = 'Comprobar ID del Grupo/Usuario';
+$string['chooseagroup'] = 'Elija un grupo...';
+$string['closebeforeopen'] = 'No se ha podido actualizar el cuestionario sin conexión. Se ha especificado una fecha de cierre previa a la fecha de apertura.';
+$string['closestudentview'] = 'Cerrar vista del estudiante';
+$string['closewindow'] = 'Cerrar ventana';
+$string['cmmissing'] = 'No se encuentra el módulo del curso con ID {$a} para el cuestionario offline';
+$string['configdecimalplaces'] = 'Número de dígitos decimales a mostrar a la hora de mostrar las calificaciones para el cuestionario offline.';
+$string['configdisableimgnewlines'] = 'Esta opción deshabilita los saltos de línea antes y después de las imágenes en el pdf de la hoja de preguntas.
+Atención: Esto puede causar problemas de formato.';
+$string['configexperimentalevaluation'] = 'Evaluación experimental de las hojas de respuesta';
+$string['configintro'] = 'Los valores que has especificado son usados como valores por defecto para los nuevos cuestionarios sin conexión.';
+$string['configkeepfilesfordays'] = 'Establecer cuántos días se mantendrán los ficheros de imagen cargados al servidor en almacenamiento temporal. Durante este plazo, los ficheros de imagen estarán disponibles en el informe para administradores de cuestionarios offline.';
+$string['configonlylocalcategories'] = 'No se permiten categorías de preguntas compartidas.';
+$string['configpapergray'] = 'Valor de blanco del papel, que es usado para la evaluación de las hojas de respuesta.';
+$string['configshuffleanswers'] = 'Barajar respuestas';
+$string['configshufflequestions'] = 'Si habilita esta opción, el orden de las preguntas en los cuestionarios offline de los grupos será mezclado aleatoriamente cada vez que usted genere una vista previa en la pestaña "Crear formularios".';
+$string['configshufflewithin'] = 'Si habilita esta opción, las opciones que componen las preguntas individuales serán barajadas aleatoriamente cuando los formularios de pregunta y de respuesta son creados.';
+$string['confirmremovequestion'] = '¿Seguro que quieres eliminar esta pregunta de tipo {$a}?';
+$string['copy'] = 'Copiar';
+$string['copyright'] = '<strong>Atención: los textos de esta página son sólo para su uso personal. Como otros textos en estas preguntas están bajo restricciones de copyright. ¡No tiene permiso para copiarlos o mostrarlos a otras personas!</strong>';
+$string['copyselectedtogroup'] = 'Añadir las preguntas seleccionadas al grupo {$a}';
+$string['copytogroup'] = 'Añadir todas las preguntas al cuestionario {$a}';
+$string['correct'] = 'corregir';
+$string['correctheader'] = 'Necesitan correcciones: ';
+$string['correcterror'] = 'resolver';
+$string['correctforgroup'] = 'Respuestas correctas para el grupo {$a}';
+$string['correctionerrors'] = 'Formularios con corrección de errores:';
+$string['correctionform'] = 'Corrección';
+$string['correctionforms'] = 'Formularios de corrección';
+$string['correctionoptionsheading'] = 'Opciones de corrección';
+$string['correctupdated'] = 'Formulario de corrección actualizado para el grupo {$a}.';
+$string['couldnotgrab'] = 'No se pudo seleccionar la imagen {$a}';
+$string['couldnotregister'] = 'No se pudo registrar el usuario {$a}';
+$string['createcategoryandaddrandomquestion'] = 'Crear categoría y añadir pregunta aleatoria';
+$string['createlistfirst'] = 'Añadir participantes';
+$string['createofflinequiz'] = 'Crear formularios';
+$string['createpartpdferror'] = 'El formulario PDF para la lista de participantes {$a} no se pudo crear. La lista puede estar vacía.';
+$string['createpdf'] = 'Formulario';
+$string['createpdferror'] = 'El formulario para el grupo {$a} no pudo ser creado. Es posible que no haya preguntas en el grupo.';
+$string['createpdffirst'] = 'Crear lista PDF en primer lugar.';
+$string['createpdfforms'] = 'Crear formularios';
+$string['createpdfs'] = 'Formularios';
+$string['createpdfsparticipants'] = 'Formularios';
+$string['createquestionandadd'] = 'Crear nueva pregunta y añadirla al cuestionario.';
 $string['createquiz'] = 'Crear formularios';
-$string['createpdferror'] = 'El formulario para la planilla {$a} no pudo ser creado. Es posible que no haya preguntas en la planilla.';
-$string['downloadpartpdf'] = 'Descargar el fichero PDF para la lista "{$a}" ';
-$string['disableimgnewlines'] = 'Eliminar líneas alrededor de imágenes';
-$string['disableimgnewlines_help'] = 'Este parámetro elimina las líneas en blanco antes y después de una imagen insertada en el texto de las preguntas.
-Debe usarse con precaución y verificar el resultado.';
-$string['editgroupquestions'] = 'Editar preguntas dla planilla';
-$string['editgroups'] = 'Editar planillas offline';
-$string['editingofflinequiz'] = 'Editando preguntas de la planilla';
-$string['emptygroups'] = 'Algunas de los planillas de cuestionario offline (sin conexión) están vacíos. Por favor añada algunas preguntas.';
-$string['forautoanalysis'] = 'Para corrección automatizada';
-$string['formforcorrection'] = 'Formulario de correción para la planilla {$a}';
-$string['formforgroup'] = 'Formulario de preguntas para la planilla {$a}';
-$string['formforgroupdocx'] = 'Formulario de preguntas para la planilla {$a} (DOCX)';
-$string['formforgrouplatex'] = 'Formulario de preguntas para la planilla {$a} (LATEX)';
-$string['formspreview'] = 'Previsualización de preguntas';
-$string['gradedscannedform'] = 'Planilla escaneada y puntos';
-$string['group'] = 'Planilla';
-$string['groupquestions'] = 'Planillas de preguntas';
-$string['idnumber'] = 'Nº de Identificación';
-$string['importerror13'] = 'No hay datos dla planilla';
+$string['csvfile'] = 'Archivo CSV';
+$string['csvformat'] = 'Fichero de texto de valores separados por coma (CSV)';
+$string['csvplus1format'] = 'Fichero de texto con datos en bruto (CSV)';
+$string['csvpluspointsformat'] = 'Fichero de texto con puntos (CSV)';
+$string['darkgray'] = 'Gris oscuro';
+$string['datanotsaved'] = 'No puede guardarse la configuración';
+$string['decimalplaces'] = 'Número de decimales';
+$string['decimalplaces_help'] = 'Número de cifras que deben ser mostradas después del punto decimal cuando se muestras las calificaciones del cuestionario offline (sin conexión).';
+$string['deletelistcheck'] = '¿Realmente quiere borrar la lista seleccionada y todos sus participantes?';
+$string['deletepagecheck'] = '¿Está seguro de que quiere borrar las páginas seleccionadas?';
+$string['deletepagesafterselected'] = 'Eliminar los saltos de página después de las preguntas seleccionadas';
+$string['deletepartcheck'] = '¿Estás seguro que deseas borrar a los participantes seleccionados?';
+$string['deleteparticipantslist'] = 'Borrar lista de participantes';
+$string['deletepdfs'] = 'Borrar documentos';
+$string['deleteresultcheck'] = '¿Está seguro de que desea borrar los resultados seleccionados?';
+$string['deleteselectedpart'] = 'Borrar a los participantes seleccionados';
+$string['deleteselectedresults'] = 'Borrar resultados seleccionados';
+$string['deletethislist'] = 'Borrar esta lista';
+$string['deleteupdatepdf'] = 'Borrar y actualizar los formularios PDF';
+$string['difficultytitle'] = 'Dificultad';
+$string['difficultytitlea'] = 'Dificultad A';
+$string['difficultytitleb'] = 'Dificultad B';
+$string['difficultytitlediff'] = 'Diferencia';
+$string['disableimgnewlines'] = 'Deshabilitar saltos de línea antes y después de las imágenes';
+$string['disableimgnewlines_help'] = 'Esta opción deshabilita nuevas líneas antes y después de las imágenes en el pdf de la hoja de preguntas.
+Atención: Esto puede causar problemas de formato.';
+$string['displayoptions'] = 'Opciones de visualización';
+$string['done'] = 'hecho';
+$string['downloadallzip'] = 'Descargar todos los ficheros en ZIP';
+$string['downloadpartpdf'] = 'Descargar el fichero PDF para la lista \'{$a}\\';
+$string['downloadpdfs'] = 'Formularios';
+$string['downloadresultsas'] = 'Descargar resultados como:';
+$string['dragtoafter'] = 'Después de {$a}';
+$string['dragtostart'] = 'Volver al principio';
+$string['editgroupquestions'] = 'Editar preguntas del grupo';
+$string['editgroups'] = 'Editar grupos offline';
+$string['editingofflinequiz'] = 'Editando preguntas de grupo';
+$string['editingofflinequiz_help'] = 'Cuando se crea un cuestionario offline (sin conexión), los conceptos principales son:
+<ul><li>El cuestionario offline, que contiene las preguntas en una o más páginas</li>
+<li>El banco de preguntas, que guarda copias de todas las preguntas organizadas en categorías</li></ul>';
+$string['editingofflinequizx'] = 'Preguntas';
+$string['editlist'] = 'Editar lista';
+$string['editlists'] = 'Listas de asistencia';
+$string['editmaxmark'] = 'Editar puntuación máxima';
+$string['editofflinequiz'] = 'Editar cuestionario offline (sin conexión):';
+$string['editofflinesettings'] = 'Editar configuración offline (sin conexión)';
+$string['editorder'] = 'Editar orden';
+$string['editparticipants'] = 'Editar participantes';
+$string['editquestion'] = 'Editar pregunta';
+$string['editquestionlistitem'] = '{$a} preguntas añadidas';
+$string['editquestions'] = 'Preguntas';
+$string['editscannedform'] = 'Editar formulario escaneado';
+$string['editthislist'] = 'Editar esta lista';
+$string['emptygroups'] = 'Algunos de los grupos de cuestionario offline (sin conexión) están vacíos. Por favor añada algunas preguntas.';
+$string['enroluser'] = 'Matricular usuario';
+$string['erroraccessingreport'] = 'No está autorizado para ver este informe.';
+$string['errorreport'] = 'Informe de errores de evaluación';
+$string['evaluation'] = 'Resultados';
+$string['evaluated'] = 'Evaluados: ';
+$string['eventattemptdeleted'] = 'Intento de cuestionario offline eliminado';
+$string['eventattemptpreviewstarted'] = 'intento de previsualización de cuestionario offline iniciado';
+$string['eventattemptreviewed'] = 'Resultados del cuestionario online revisados';
+$string['eventdocscreated'] = 'Formularios de preguntas y de respuestas para el cuestionario offline creados';
+$string['eventdocsdeleted'] = 'Formularios de preguntas y de respuestas para el cuestionario offline borrados';
+$string['eventquestionmanuallygraded'] = 'Pregunta calificada manualmente';
+$string['eventresultsregraded'] = 'Resultados del cuestionario online recalificados';
+$string['everythingon'] = 'habilitado';
+$string['excelformat'] = 'Hoja de cálculo Excel (XLSX)';
+$string['experimentalevaluation'] = 'Evaluación experimental de las hojas de respuesta';
+$string['experimentalevaluation_help'] = 'Evaluación experimental de las hojas de respuesta';
+$string['fileformat'] = 'Formato para las hojas de pregunta';
+$string['fileformat_help'] = 'Elija si quiere las hojas de preguntas en formato PDF, DOCX o TEX. Las hojas de los formularios de respuesta y los formularios de corrección son generados siempre en PDF.';
+$string['filesizetolarge'] = 'Algunos de sus archivos de imágenes son muy grandes. Las dimensiones serán ajustadas durante la decodificación. Por favor, intente escanear a una resolución entre 200 y 300 dpi y en modo blanco y negro. Esto acelerará la decodificación la próxima vez.';
+$string['fontsize'] = 'Tamaño de letra';
+$string['forautoanalysis'] = 'Para análisis automático';
+$string['formforcorrection'] = 'Formulario de correción para el grupo {$a}';
+$string['formforgroup'] = 'Formulario de preguntas para el grupo {$a}';
+$string['formforgroupdocx'] = 'Formulario de preguntas para el grupo {$a} (DOCX)';
+$string['formforgrouplatex'] = 'Formulario de preguntas para el grupo {$a} (LATEX)';
+$string['forms'] = 'Documentos imprimibles';
+$string['formsexist'] = 'Formularios ya creados.';
+$string['formsexistx'] = 'Los formularios se han creado (<a href="{$a}">Descargar formularios</a>)';
+$string['formsheetsettings'] = 'Ajustes de formulario';
+$string['formspreview'] = 'Vista previa para formularios';
+$string['formwarning'] = 'No hay formulario de respuesta definido. Por favor, contacte con su administrador.';
+$string['fromquestionbank'] = 'desde el banco de preguntas';
+$string['functiondisabledbysecuremode'] = 'Esta funcionalidad esta desactivadas actualmente';
+$string['generalfeedback'] = 'Realimentación general';
+$string['generalfeedback_help'] = 'La realimentación general es el texto que se muestra después de que una pregunta es contestada. Al contrario que la realimentación específica que depende de la respuesta dada, siempre se muestra la misma realimentación general.';
+$string['generatepdfform'] = 'Generar formulario PDF';
+$string['grade'] = 'Calificación';
+$string['gradedon'] = 'Calificado en';
+$string['gradedscannedform'] = 'Formulario escaneado con calificaciones';
+$string['gradeiszero'] = 'Nota: ¡La calificación máxima para este cuestionario offline es 0 puntos!';
+$string['gradeswarning'] = '¡Las puntuaciones de las preguntas deben ser numeros!';
+$string['gradewarning'] = '¡La puntuación de la pregunta debe ser un número!';
+$string['gradingofflinequiz'] = 'Calificaciones';
+$string['gradingofflinequizx'] = 'Calificaciones';
+$string['gradingoptionsheading'] = 'Opciones de calificación';
+$string['greeniscross'] = 'contado como una cruz';
+$string['group'] = 'Grupo';
+$string['groupoutofrange'] = 'El grupo estaba fuera de rango y remplazado por el grupo A.';
+$string['hasresult'] = 'El resultado existe';
+$string['idnumber'] = 'Número ID';
+$string['imagefile'] = 'Archivo de imagen';
+$string['imagenotfound'] = '¡Archivo de imagen: {$a} no encontrado!';
+$string['imagenotjpg'] = 'La imagen no es jpg o png: {$a}';
+$string['imagickwarning'] = 'No se encuentra imagemagick: Solicite al administrador de su sistema que instale la librería imagemagick y que compruebe la ruta para convertir binarios en los ajustes de su filtro de notación TeX. ¡No puede importar archivos TIF sin imagemagick!';
+$string['import'] = 'Evaluar';
+$string['importedon'] = 'Evaluado el';
+$string['importerror11'] = 'Existe otro resultado';
+$string['importerror12'] = 'Usuario no registrado';
+$string['importerror13'] = 'No hay datos del grupo';
+$string['importerror22'] = 'Marcaciones dudosas';
+$string['importerror23'] = 'El usuario no está en la lista';
+$string['importerror24'] = 'Lista no detectada';
+$string['importforms'] = 'Evaluar formularios de respuesta';
+$string['importfromto'] = 'Evaluando {$a->from} a {$a->to} de {$a->total}.';
+$string['importisfinished'] = 'La evaluación del cuestionario offline {$a} ha finalizado.';
+$string['importlinkresults'] = 'Enlace a los resultados: {$a}';
+$string['importlinkverify'] = 'Enlace a la verificación: {$a}';
+$string['importmailsubject'] = 'Aviso de evaluación de cuestionario offline';
+$string['importnew'] = 'Evaluar';
+$string['importnumberexisting'] = 'Número de formularios dobles: {$a}';
+$string['importnumberpages'] = 'Número de páginas evaluadas con éxito: {$a}';
+$string['importnumberresults'] = 'Número de evaluadas: {$a}';
+$string['importnumberverify'] = 'Número de formularios que necesitan verificación: {$a}';
+$string['importtimefinish'] = 'Proceso finalizado : {$a}';
+$string['importtimestart'] = 'Proceso iniciado: {$a}';
+$string['inconsistentdata'] = 'Datos inconsistentes: {$a}';
 $string['info'] = 'Información';
-//instruction1 strings with <br /> AND LF are interpeted as with two LF, two lines.
-$string['instruction1'] = 'Esta Hoja de Respuestas será escaneada automáticamente. Por favor, no la doble o la manche. 
-Use un bolígrafo azul o negro para marcar las respuestas con una X:';
-$string['instruction2'] = '¡Sólo las marcas claras pueden ser interpretadas correctamente! 
-Si quiere invalidar una marca, anularla, desmarcarla, rellene completamente la casilla con color. Este campo será interpretado como una casilla vacía:';
-$string['instruction3'] = 'Las casillas anuladas (rellenas, corregidas) no se pueden marcar otra vez. 
-Por favor, no escriba <b>nada</b> fuera de las casillas.';
-$string['invigilator'] = 'Profesor';
-$string['marks'] = 'Puntuación';
-$string['name'] = 'Examen';
-$string['noattempts'] = '¡No se han importado resultados!';
-$string['nopdfscreated'] = '¡No se han generado documentos!';
-$string['noquestions'] = 'Algunas planillas de cuestionario offline estas vacíos. Por favor, añada algunas preguntas.';
-$string['noquestionsfound'] = '¡No hay preguntas en la planilla {$a}!';
-$string['numbergroups'] = 'Número de planillas';
-$string['offlinequizisclosed'] = 'Examen cerrado';
-$string['offlinequizisclosedwillopen'] = 'Examen cerrado (se abre el {$a})';
-$string['offlinequizisopen'] = 'El Examen está abierto';
-$string['offlinequizisopenwillclose'] = 'Examen abierto (se cierra el {$a})';
+$string['infoshort'] = 'i';
+$string['insecuremarkings'] = 'Las marcas dudosas necesitan correciones manuales';
+$string['insecuremarkingsforquestion'] = 'Las marcas poco claras necesitan correciones manuales';
+$string['insertnumber'] = 'Por favor, escriba el número de identificación correcto marcado con el cuadro azul.';
+$string['instruction1'] = 'Este formulario de respuesta será escaneado automáticamente. Por favor, no lo doble o manche. Utilice bolígrafo negro o azul para marcar los campos:';
+$string['instruction2'] = '¡Sólo las marcas claras pueden ser interpretadas correctamente! Si quiere que se corrija una marca, rellene completamente la casilla con color. Este campo será interpretado como una casilla vacía:';
+$string['instruction3'] = 'Las casillas corregidas no pueden ser marcadas de nuevo. Por favor, no escriba nada fuera de las casillas.';
+$string['introduction'] = 'Introducción';
+$string['invalidnumberofdigits'] = 'Número inválido de cifras. Sólo se permiten de 1 a 9 cífras.';
+$string['invigilator'] = 'Vigilante';
+$string['ischecked'] = 'La participación está marcada';
+$string['isnotchecked'] = 'La participación no está marcada';
+$string['keepfilesfordays'] = 'Conservar archivospor días';
+$string['legend'] = 'Leyenda';
+$string['legenddone'] = 'Etapa completada con éxito (No requiere más acciones).';
+$string['legendnextitem'] = 'Etapas ulteriores a completar.';
+$string['legendnoaction'] = 'No requiere acciones.';
+$string['legendwarning'] = 'Etapa en curso (acción necesaria).';
+$string['letter'] = 'Letra';
+$string['lightgray'] = 'Gris claro';
+$string['linktoscannedform'] = 'Ver formulario escaneado';
+$string['listnotdetected'] = '¡No se ha podido detectar el código de barras para la lista!';
+$string['logdeleted'] = 'Entrada del registro {$a} borrada.';
+$string['logourl'] = 'URL del logo';
+$string['lowertrigger'] = 'Segundo límite inferior';
+$string['lowertriggerzero'] = 'El segundo límite inferior es cero';
+$string['lowerwarning'] = 'Primer límite inferior';
+$string['lowerwarningzero'] = 'El primer límite inferior es cero';
+$string['marginwarning'] = '¡Por favor, imprima los siguientes archivos PDF sin márgenes adicionales!<br /> Evite repartir fotocopias a los estudiantes. Si tiene alguna duda, solicite copias al equipo de soporte.';
+$string['marks'] = 'Puntos';
+$string['matrikel'] = 'número de estudiante';
+$string['maxgradewarning'] = '¡La calificación máxima debe ser un número!';
+$string['maxmark'] = 'Puntuación máxima';
+$string['membersinplist'] = '{$a->count} participantes en <a href="{$a->url}">{$a->name}</a>';
+$string['missingimagefile'] = 'Archivo de imagen no encontrado';
+$string['missingitemdata'] = 'Respuesta(s) ausentes para el usuario {$a}';
+$string['missingquestion'] = 'Parece que esta pregunta ya no existe';
+$string['missinguserid'] = '¡No se encuentra el número de identificación del usuario! ¡No se puede leer el código de barras!';
+$string['modulename'] = 'Cuestionario offline';
+$string['modulename_help'] = 'Este módulo permite al profesor diseñar cuestionarios offline compuestos por preguntas de opción múltiple.
+Estas preguntas son conservadas en el banco de preguntas de Moodle y pueden ser reutilizadas en el mismo curso e incluso en otros.
+Los cuestionarios offline pueden ser descargados como archivos PDF, DOCX o LaTeX. Los estudiantes marcan sus respuestas en formularios en papel. Los formularios en papel son escaneados y las respuestas importadas al sistema.';
+$string['modulenameplural'] = 'Cuestionarios offline';
+$string['moveselectedonpage'] = 'Mover las preguntas seleccionadas a la página: {$a}';
+$string['multianswersforsingle'] = 'Múltiples respuestas para una pregunta de una sola opción';
+$string['multichoice'] = 'Opción múltiple';
+$string['multipleanswers'] = 'Seleccione al menos una respuesta.';
+$string['name'] = 'Nombre del cuestionario offline';
+$string['neededcorrection'] = '<strong>Atención: Algunas de sus marcas requieren de correción manual. Revise los recuadros rojos en la siguiente imagen.
+<br />¡Esto implica la intervención manual de un profesor y el retraso en la publicación de los resultados del cuestionario offline (sin conexión)!</strong>';
+$string['newgrade'] = 'Calificado';
+$string['newpage'] = 'Página nueva';
+$string['noattemptexists'] = 'No existen resultados';
+$string['noattempts'] = '¡No hay resultados disponibles!';
+$string['noattemptsonly'] = 'Mostrar sólo estudiantes sin resultados';
+$string['nocourse'] = 'No se ha encontrado el curso con el id {$a->course} al que pertenece el cuestionario offline con ID {$a->offlinequiz}.';
+$string['nogradesseelater'] = 'Este cuestionario no ha sido calificacdo todavía para {$a}. Los resultados serán publicados aquí.';
+$string['nogroupdata'] = 'No hay datos de grupo para el usuario {$a}';
+$string['nomcquestions'] = '¡No hay preguntas de opción múltiple en {$a}!';
+$string['noofflinequiz'] = '¡No hay un cuestionario offline con el id {$a}!';
+$string['nopages'] = 'Ninguna página evaluada';
+$string['noparticipantsfound'] = 'No se encontraron participante';
+$string['nopdfscreated'] = '¡No se han creado documentos!';
+$string['noquestions'] = 'Algunos grupos de cuestionario offline estas vacíos. Por favor, añada algunas preguntas.';
+$string['noquestionselected'] = '¡No hay preguntas seleccionadas!';
+$string['noquestionsfound'] = '¡No hay preguntas en el grupo {$a}!';
+$string['noquestionsonpage'] = 'Página vacía';
+$string['noresults'] = 'No hay resultados.';
+$string['noreview'] = 'No tiene permisos para revisar este cuestionario offline';
+$string['noscannedpage'] = '¡No hay página escaneada con ID {$a}!';
+$string['nothingtodo'] = '¡Nada que hacer!';
+$string['notonattendancelist'] = 'No está en la lista de asistencia:';
+$string['notxtfile'] = '';
+$string['notyetgraded'] = 'No calificado aún';
+$string['numattempts'] = 'Número de resultados evaluados:  {$a}';
+$string['numattemptsqueue'] = '{$a} formulario de respuestas añadido a la cola. Se le enviará un correo electrónico cuando los datos sean procesados.';
+$string['numattemptsverify'] = 'Formularios escaneados esperando para corrección: {$a}';
+$string['numberformat'] = '¡El valor debe ser un número con {$a} cifras!';
+$string['numbergroups'] = 'Número de grupos';
+$string['numpages'] = '{$a} páginas evaluadas';
+$string['numquestionsx'] = 'Preguntas: {$a}';
+$string['numusersadded'] = '{$a} participantes añadidos';
+$string['odsformat'] = 'Hoja de cálculo OpenDocument (ODS)';
+$string['offlinequiz:addinstance'] = 'Añadir un cuestionario offline';
+$string['offlinequiz:createofflinequiz'] = 'Crear formularios de cuestionario offline';
+$string['offlinequiz:deleteattempts'] = 'Borrar resultados del cuestionario offline';
+$string['offlinequiz:grade'] = 'Calificar cuestionarios offline (sin conexión) manualmente';
+$string['offlinequiz:manage'] = 'Gestionar cuestionarios offline';
+$string['offlinequiz:preview'] = 'Vista previa de cuestionarios offline';
+$string['offlinequiz:view'] = 'Ver información del cuestionario offline';
+$string['offlinequiz:viewreports'] = 'Ver registros del cuestionario offline';
+$string['offlinequizcloses'] = 'El cuestionario offline se cierra';
+$string['offlinequizcloseson'] = 'La revisión para este cuestionario offline se cierra {$a}';
+$string['offlinequizcontent'] = 'Contenido del cuestionario offline';
+$string['offlinequizisclosed'] = 'Cuestionario offline cerrado)';
+$string['offlinequizisclosedwillopen'] = 'Cuestionario offline cerrado (se abre el {$a})';
+$string['offlinequizisopen'] = 'Este cuestionario offline esta abierto';
+$string['offlinequizisopenwillclose'] = 'Cuestionario offline (sin conexión) abierto (se cierra el {$a})';
+$string['offlinequizopenedon'] = 'Este cuestionario offline se abrió el {$a}';
+$string['offlinequizopens'] = 'El cuestionario offline se abre';
+$string['offlinequizsettings'] = 'Ajustes sin conexión';
+$string['offlinequizwillopen'] = 'El cuestionario offline se abre el {$a}';
+$string['oneclickenroldesc'] = 'Si se activa esta opción los profesores tienen la posibilidad de matricular usuarios con un clic mientras están corrigiendo los formularios de respuestas (error "El usuario no está en el curso").';
+$string['oneclickroledesc'] = 'Elija el rol usado para matriculación en un clic. Sólo pueden seleccionarse roles con el arquetipo "Estudiante".';
+$string['onlylocalcategories'] = 'Sólo categorías locales de preguntas';
+$string['orderandpaging'] = 'Orden y paginación';
+$string['orderandpaging_help'] = 'Los número 10, 20, 30, ... enfrente de cada preguntas indica el orden de las preguntas. Los números aumentan en intervalos de 10 para dejar espacio para insertar preguntas adicionales. Para reordenar las preguntas, cambie los números y pulse el botón "Reordenar preguntas".
 
-$string['participants_help'] = '<p>Las Listas de participantes se han diseñado para gestionar Exámenes con multitud de estudiantes. 
-Pueden ayudar al profesor a comprobar qué estudiantes se han presentado y si todos lso resultados se han importado correctamente.
+Para añadir saltos de página después de determinadas preguntas, marque las casillas junto a las preguntas y pulse el botón "Añadir saltos de página después de las preguntas seleccionadas".
 
-Se pueden añadir estudiantes a varias listas para el mismo Examen. Por ejemplo, cada lista puede corresponder a los convocados en un Aula concreta. 
-O pueden ser miembros de un grupo especial. Las listas de partcipantes se pueden descargar, imprimir y marcar con cruces (como la planilla de respuestas). 
-Posteriormente pueden ser escanedas e importadas para registrar la asistencia de cada estudiante. 
+Para repartir las preguntas en un número de páginas, pulse el botón de repaginación y seleccione el número deseado de preguntas por página.';
+$string['orderingofflinequiz'] = 'Orden y paginación';
+$string['otherresultexists'] = '¡Ya existe un resultado diferente para {$a}, evaluación ignorada! Borre el resultado primero.';
+$string['outof'] = '{$a->grade} fuera del máximo de {$a->maxgrade}';
+$string['overallfeedback'] = 'Realimentación general';
+$string['overview'] = 'Información del cuestionario';
+$string['overviewdownload_help'] = 'Descargar resumen';
+$string['page-mod-offlinequiz-edit'] = 'Editar página del cuestionario offline';
+$string['pagecorrected'] = 'Hoja corregida con lista de participantes evaluada';
+$string['pageimported'] = 'Hoja con lista de asistencia evaluada';
+$string['pagenotdetected'] = '¡No se puede detectar el código de barras de la página!';
+$string['pagesinprocessing'] = 'Procesando: ';
+$string['pagenumberimported'] = 'Hoja {$a} con lista de asistencia evaluada';
+$string['pagenumberupdate'] = 'Número de página actualizado';
+$string['pagesizeparts'] = 'Participantes mostrados por página:';
+$string['papergray'] = 'Valor de blanco del papel';
+$string['papergray_help'] = 'Si las partes blancas del fomulario de respuestas escaneado son muy oscuras puede corregirlo ajustando este valor a gris oscuro.';
+$string['partcheckedwithoutresult'] = '<a href="{$a->url}">{$a->count} participantes marcados sin resultado</a>';
+$string['partcheckedwithresult'] = '{$a} participantes marcados con resultado';
+$string['partial'] = 'parcial';
+$string['participants'] = 'Participantes';
+$string['participants_help'] = '<p>Las listas de participantes están diseñadas para grandes cuestionarios offline con muchos participantes.
+Ayudan al profesor a comprobar qué estudiantes participan en el cuestionario y si todos los resultados fueron importados correctamente.
+Puede añadir usuarios a diferentes listas. Cada lista puede contener, por ejemplo, los participantes en una habitación determinada. Los participantes pueden ser miembros de un grupo especial. Una herramienta de registro de grupos puede ser usada para crear estos grupos.
+Las listas de participantes pueden ser descargadas como documentos PDF, impresas y marcadas con cruces igual que los formularios de respuesta. Después pueden ser cargados y los estudiantes marcados se guardan como presentes en la base de datos.
+Por favor, evite manchas en el código de barras ya que estos son usados para identificar a los estudiantes.</p>';
+$string['participantsinlists'] = 'Participantes en listas';
+$string['participantslist'] = 'Lista de asistentes';
+$string['participantslists'] = 'Participantes';
+$string['partimportnew'] = 'Cargando listas de asistentes';
+$string['partuncheckedwithoutresult'] = '{$a} participantes desmarcados sin resultado';
+$string['partuncheckedwithresult'] = '<a href="{$a->url}">{$a->count} participantes desmarcados con resultado</a>';
+$string['pdfdeletedforgroup'] = 'Formulario para el grupo {$a} eliminado';
+$string['pdfintro'] = 'Información adicional';
+$string['pdfintro_help'] = 'Esta información será impresa en la primera página de la hoja de preguntas y debería contener información general sobre como rellenar el formulario de respuesta.';
+$string['pdfintrotext'] = '<b>¿Cómo debo marcar correctamente?</b><br /> Este formulario de respuesta será escaneado automáticamente. Por favor, no lo doble o manche. Use un bolígrafo negro o azul para marcar los campos. Si quiere corregir una marca, rellene completamente la casilla con color. Esta casilla será interpretada como una casilla vacía.';
+$string['pdfintrotoolarge'] = 'La introducción es demasiado larga (max. 2000 caracteres).';
+$string['pdfscreated'] = 'Los formularios PDF han sido creados';
+$string['pdfsdeletedforgroup'] = 'Formularios para el grupo {$a} eliminados';
+$string['pearlywhite'] = 'Blanco perlado';
+$string['pluginadministration'] = 'Administración del cuestionario offline';
+$string['point'] = 'punto';
+$string['preparation'] = 'Preparación';
+$string['present'] = 'presentado';
+$string['preventsamequestion'] = 'Prevenir el uso múltiple de la misma pregunta en grupos diferentes';
+$string['preview'] = 'Vista previa';
+$string['previewforgroup'] = 'Grupo {$a}';
+$string['previewquestion'] = 'Vista previa de la pregunta';
+$string['printstudycodefield'] = 'Añadir un campo para el código de estudio en la hoja de preguntas';
+$string['printstudycodefield_help'] = 'Si se marca, se añade un campo para el código de estudio en la primera página de la hoja de preguntas.';
+$string['privacy:metadata:offlinequiz:decimalpoints'] = 'La cantidad de puntos decimales para calcular las calificaciones.';
+$string['privacy:metadata:offlinequiz_p_lists:name'] = 'el nombre de la lista de participantes';
+$string['privacy:metadata:offlinequiz_p_lists:number'] = 'el número de la lista en el cuestionario offline';
+$string['privacy:metadata:offlinequiz_p_lists:offlinequizid'] = 'el cuestionario offline al que pertenece esta lista';
+$string['privacy:metadata:offlinequiz_queue:importuserid'] = 'El id de usuario del profesor que importó los archivos';
+$string['privacy:metadata:offlinequiz_queue:timecreated'] = 'La hora a la que estas hojas de cuestionario offline fueron importadas';
+$string['privacy:metadata:offlinequiz_scanned_p_pages:listnumber'] = 'El número de la lista';
+$string['questionanalysis'] = 'Análisis de preguntas';
+$string['questionanalysistitle'] = 'Tabla de análisis de preguntas';
+$string['questionandansweranalysis'] = 'Análisis de preguntas y respuestas';
+$string['questionbankcontents'] = 'Contenidos del banco de preguntas';
+$string['questionforms'] = 'Formularios de pregunta';
+$string['questioninfoanswers'] = 'Número de respuestas correctas';
+$string['questioninfocorrectanswer'] = 'respuesta correcta';
+$string['questioninfocorrectanswers'] = 'respuestas correctas';
+$string['questioninfonone'] = 'Nada';
+$string['questioninfoqtype'] = 'Tipo de pregunta';
+$string['questionname'] = 'Nombre de la pregunta';
+$string['questionpage'] = 'Página';
+$string['questionsheet'] = 'Hoja de preguntas';
+$string['questionsheetlatextemplate'] = '\\documentclass[12pt,a4paper]{article}
+\\textwidth 16truecm
+\\textheight 23truecm
+\\setlength{\\oddsidemargin}{0cm}
+\\setlength{\\evensidemargin}{0cm}
+\\setlength{\\topmargin}{-1cm}
+\\usepackage{amsmath} % for \\implies etc
+\\usepackage{amsfonts} % for \\mathbb etc
+\\usepackage{graphicx} % for including pictures
+\\renewcommand{\\familydefault}{\\sfdefault} % Font
+\\newcommand{\\lsim}{\\mbox{\\raisebox{-.3em}{$\\stackrel{<}{\\sim}$}}} % less or approximately equal
+\\newcommand{\\subs}{\\mbox{\\raisebox{-.5em}{$\\stackrel{\\subset}{\\neq}$}}}
+\\newcommand{\\sei}{\\mbox{\\raisebox{.0em}{$\\stackrel{!}{=}$}}}
+\\parindent 0pt % no indent on the beginning of a section
+\\usepackage{esvect} % long vector arrows, e.g. \\vv{AB}
+\\usepackage[colorlinks=true,urlcolor=dunkelrot,linkcolor=black]{hyperref} % For using of Hyperlinks
+\\renewcommand\\UrlFont{\\sf}
+\\usepackage{ulem} %  \\sout{horizontal cross out} \\xout{diagonal strike out}
+\\newcommand{\\abs}[1]{\\left\\lvert#1\\right\\rvert}
+\\usepackage{scrpage2} % For Header and Footer
+\\pagestyle{scrheadings}
+\\clearscrheadfoot
+\\ifoot{[Gruppe \\Group]}
+\\makeatletter %%% disable pagebreaks between answers
+\\@beginparpenalty=10000
+\\@itempenalty=10000
+\\makeatother
+%
+\\newcommand{\\answerIs}[1]{} %%%Disable showing the right answer
+% \\newcommand{\\answerIs}[1]{[#1]} %%%Enable showing the right answer
+%%%
 
-Por favor, evite escribir en los códigos de barras usados para identificar a cada estudiante, o no se podrá establecer correctamente la correspondencia a un usuario  de la plataforma.</p>';
-$string['partimportnew_help'] = '<p>
-Aquí puede subir las Listas de participantes rellenadas (mercadas). Puede subi runa única página como una imagen o múltiples páginas en un archivo ZIP. 
-Los nombres de ficheros NO son relevantes, pero NO deben contener espacios, letras acentuadas o caracteres especiales. 
+\\begin{document}
 
-Las imágenes deben ser GIFs, PNGs o TIFs. Se recomienda una resolución entre 200 y 300 ppp (dpi).</p>';
-$string['preventsamequestion'] = 'Prevenir el uso múltiple de la misma pregunta en planillas diferentes';
-$string['preview'] = 'Previsualización';
-$string['previewforgroup'] = 'Previsualización para la planilla {$a}';
-$string['printstudycodefield'] = 'Campo para código asignatura en la hoja de preguntas';
-$string['printstudycodefield_help'] = 'Si se marca, se añadirá espacio para incluir el código de asignatura la primera página de la hoja de preguntas.';
-$string['questioninfoanswers'] = 'Nª de respuestas correctas';
-$string['questioninfonone'] = 'Ninguna';
-$string['questionsingroup'] = 'Preguntas en planilla';
-$string['removeselected'] = 'Eliminar seleccionadas';
-$string['reordergroupquestions'] = 'Reordenar Planilla de Preguntas';
+
+% ===========================================================================================================
+%%% Data of the Course
+\\begin{center}{\\LARGE {$a->coursename}}\\end{center}
+\\begin{center}{Written Exam {$a->date}}\\end{center}
+%%%
+\\def\\Group{{$a->groupname}}
+\\begin{center}{\\Large Group \\Group}\\end{center}
+
+{\\bf Name:}\\\\
+{\\bf Matriculation number:}\\\\
+{\\bf Signature:}\\
+
+% ===========================================================================================================
+\\bigskip
+
+{$a->latexforquestions}
+
+
+\\end{document}';
+$string['questionsin'] = 'Preguntas en';
+$string['questionsingroup'] = 'Grupo';
+$string['questionsinthisofflinequiz'] = 'Preguntas en este cuestionario offline (fuera de línea)';
+$string['questiontextisempty'] = '[Texto de la pregunta vacío]';
+$string['quizdate'] = 'Fechas del cuestionario offline';
+$string['quizopenclose'] = 'Fechas de apertura y cierre';
+$string['quizopenclose_help'] = 'Los estudiantes sólo pueden ver sus intentos después de la fecha de apertura y antes de la fecha de cierre.';
+$string['qversioncannotupdate'] = 'La pregunta no puede ser actualizada. La versión de la pregunta no ha cambiado.';
+$string['qversionnumbersdiffer'] = 'El número de respuestas difiere entre la versión vieja y la nueva. Esto puede llevar a inconsistencias.';
+$string['qversionupdated'] = 'Pregunta actualizada. La versión de la pregunta ha cambiado.';
+$string['qversionupdatedwarning'] = 'Los formularios ya están creados con otra versión de esta pregunta. Por favor, compruebe si hubo cambios importantes.';
+$string['qversionupdateerror'] = 'Hubo un error al actualizar la versión de la pregunta.';
+$string['randomfromexistingcategory'] = 'Pregunta aleatoria de una categoría existente';
+$string['randomnumber'] = 'Número de preguntas aleatorias';
+$string['randomquestionusinganewcategory'] = 'Pregunta aleatoria usando una categoría nueva';
+$string['readjust'] = 'Reajuste';
+$string['reallydeletepdfs'] = '¿Está seguro de que quiere borrar los archivos de los formularios?';
+$string['reallydeleteupdatepdf'] = '¿Realmente quiere borrar y actualizar la lista de participantes?';
+$string['recordupdateanddocscreated'] = 'Las preguntas se actualizaron pero como los formularios ya están creados, la versión anterior de la pregunta todavía está activa. Para cambiar a la versión más reciente, elimine los formularios y cambie la versión manualmente.';
+$string['recordupdateanddocscreatedversion'] = 'Las preguntas fueron actualizadas  pero los formularios ya están creados. Por favor, compruebe si los cambios no introdujeron cambios que afecten la calificación.';
+$string['recreatepdfs'] = 'Rehacer PDFs';
+$string['recurse'] = 'Incluir también preguntas de subcategorías';
+$string['rediswrong'] = 'cruz equivocada o cruz perdida';
+$string['refreshpreview'] = 'Refrescar vista previa';
+$string['regrade'] = 'Recalificación';
+$string['regradedisplayexplanation'] = '<b>Atención:</b> ¡La recalificación no cambia las puntuaciones que han sido sobrescritas manualmente!';
+$string['regradinginfo'] = 'Si cambia la puntuación de una pregunta, debe recalificar el cuestionario offline para actualizar los resultados de los participantes.';
+$string['regradingquiz'] = 'Recalificando';
+$string['regradingresult'] = 'Resultado de la recalificación del usuario {$a}...';
+$string['reloadpreview'] = 'Recargar vista previa';
+$string['reloadquestionlist'] = 'Recargar la lista de preguntas';
+$string['remove'] = 'Eliminar';
+$string['removeemptypage'] = 'Eliminar página vacía';
+$string['removepagebreak'] = 'Eliminar salto de página';
+$string['removeselected'] = 'Eliminar seleccionado';
+$string['reordergroupquestions'] = 'Reordenar Grupo de Preguntas';
+$string['reorderquestions'] = 'Reordenar preguntas';
+$string['reordertool'] = 'Mostrar la herramienta de reordenación';
+$string['repaginate'] = 'Repaginar con preguntas {$a} por página';
 $string['repaginatecommand'] = 'Repaginar';
-$string['reviewbefore'] = 'Permite revisión cuando el Cuestionario está abierto';
-$string['reviewclosed'] = 'Solo después del cierre del cuestionario';
-$string['reviewimmediately'] = 'Inmediatamente después del intento';
-$string['reviewincludes'] = 'Visualización de ';
-$string['reviewofresult'] = 'Revisión del resultado';
-$string['reviewoptions'] = 'Información a estudiantes';
-$string['reviewoptionsheading'] = 'Opciones de revisión';
-$string['reviewoptions_help'] = 'Con estos parámetros puede controlar qué información se muestra a los estduiantes después de que se importen y procesen los resultados.
-También puede definir el periodo de aprtura y cierre del Informe de resultados. 
-Estas casillas controlan: 
-
-<table>
-<tr><td style="vertical-align: top;"><b>El intento</b></td><td>
-En texto de las cuestiones y respuestas se mostrará a los estudiantes. Podrá ver cada uno qué opción marcó, pero no se indicará la respuesta correcta.</td>
-</td></tr>
-<tr><td style="vertical-align: top;"><b>Si fuese correcta</b></td><td>
-Esta opción solo puede activarse si previamente se ha marcado "El intento". 
-Si se marca, los estudiantes verán cuál de las respuestas marcadas es correcta (fondo verde) o incorrecta (fondo rojo).
-</td></tr>
-<tr><td style="vertical-align: top;"><b>Puntuación</b></td><td>
-Se muestran la planilla usada (e.g. B), puntuaciones (puntuación bruta obtenida, total para todas las preguntas, porcentaje, e.g. 40/80 (50)) y la calificación final 
-(e.g. 5 de 10).
-Además, si también se ha marcado "El intento", entonces se muestra la puntuación alcanzada y la máxima posible para cada pregunta.
-</td></tr>
-<tr><td style="vertical-align: top;"><b>Respuesta correcta</b></td><td>
-Se muestran que opciones son correctas o incorrectas para cada pregunta. Este ajuste solo está disponible si se ha marcado previamente "El intento".
-</td></tr>
-<tr><td style="vertical-align: top;"><b>Planilla escaneada</b></td><td>
-Se muestra la hoja de respuestas escaneada. Las casillas marcadas se muestran con cuadrados verdes.
-</td></tr>
-<tr><td style="vertical-align: top;"><b>Planilla escaneada y puntos</b></td><td>
-Se muestra la hoja de respuestas escaneada. Las casillas marcadas se muestran con cuadrados verdes.
-Se resaltan las casillas marcadas incorrectas y las dejadas en blanco. 
-Además, una tabla muestra la punetuación máxima y la obtenida en cada una de las preguntas.
-</td></tr>
-</table>';
-
+$string['repaginatenow'] = 'Repaginar ahora';
+$string['reportends'] = 'Finaliza la revisión de resultados';
+$string['reportoverview'] = 'Resumen';
+$string['reportstarts'] = 'Empieza la revisión de resultados';
+$string['resetofflinequizzes'] = 'Reiniciar los datos del cuestionario offline';
+$string['resultexists'] = 'Ya existe un resultado igual para {$a}, evaluación ignorada';
+$string['resultimport'] = 'Cargar y corregir';
+$string['results'] = 'Resumen';
 $string['review'] = 'Revisión';
+$string['reviewbefore'] = 'Permitir revisión mientras el cuestionario offline esta abierto';
+$string['reviewclosed'] = 'Después de que el cuestionario offline está cerrado';
+$string['reviewcloses'] = 'Cierre de la revisión';
+$string['reviewimmediately'] = 'Inmediatamente después del intento';
+$string['reviewincludes'] = 'La revisión incluye';
+$string['reviewofresult'] = 'Revisión de resultados';
+$string['reviewopens'] = 'Apertura de la revisión';
+$string['reviewoptions'] = 'Los estudiantes pueden ver';
+$string['reviewoptionsheading'] = 'Opciones de revisión';
+$string['rimport'] = 'Subir/Corregir';
+$string['rotate'] = 'Rotar';
+$string['rotatingsheet'] = 'La hoja está rotada...';
 $string['save'] = 'Guardar';
-$string['scannedform'] = 'Planilla escaneada';
-$string['selectagroup'] = 'Seleccione una planilla';
-$string['showquestioninfo_help'] = 'Con este parámetro puede especifiar qué información adicional se imprime en la hoja de preguntas.
-Puede ser una de estas opciones:
-
+$string['saveandshow'] = 'Guardar y mostrar cambios al estudiante';
+$string['savescannersettings'] = 'Guardar ajustes de escaneo';
+$string['scannedform'] = 'Formulario escaneado';
+$string['scannerformfortype'] = 'Formulario para el tipo {$a}';
+$string['scanneroptions'] = 'Ajustes de escaneo';
+$string['scannerpdfs'] = 'Formularios vacíos';
+$string['scannerpdfstext'] = 'Descargar los siguientes formularios vacíos si quiere utilizar su propio programa de escaneo.';
+$string['scanningoptionsheading'] = 'Opciones de escaneo';
+$string['score'] = 'Puntuación';
+$string['select'] = 'Seleccione';
+$string['selectagroup'] = 'Seleccione un grupo';
+$string['selectall'] = 'Seleccionar todo';
+$string['selectcategory'] = 'Seleccione una categoría';
+$string['selectdifferentgroup'] = '¡Por favor, seleccione un grupo diferente!';
+$string['selectedattempts'] = 'Intentos seleccionados...';
+$string['selectformat'] = 'Seleccione formato...';
+$string['selectgroup'] = 'Seleccione un grupo';
+$string['selectlist'] = 'Por favor, seleccione una lista o intente reajustar la hoja:';
+$string['selectmultipletoolbar'] = 'Seleccione barra de herramientas multiple';
+$string['selectnone'] = 'Deseleccionar todo';
+$string['selectpage'] = 'Por favor, seleccione el número de página o intente reajustar la hoja:';
+$string['selectquestiontype'] = '-- Seleccione tipo de pregunta --';
+$string['showallparts'] = 'Mostrar todos los {$a} participantes';
+$string['showcopyright'] = 'Mostrar mensaje de copyright';
+$string['showcopyrightdesc'] = 'Si habilita esta opción , un mensaje de copyright será mostrado en la hoja de revisión de resultados del estudiante.';
+$string['showgrades'] = 'Imprimir puntuación de las preguntas';
+$string['showgrades_help'] = 'Esta opción controla si las puntuaciones máximas de las preguntas del cuestionario offline deben ser impresas en la hoja de preguntas.';
+$string['showmissingattemptonly'] = 'Mostrar todos los estudiantes marcados sin resultados';
+$string['showmissingcheckonly'] = 'Mostrar todos los estudiantes desmarcados con resultados';
+$string['shownumpartsperpage'] = 'Mostrar {$a} participantes por páginas';
+$string['showquestioninfo'] = 'Imprimir información sobre las preguntas';
+$string['showquestioninfo_help'] = 'Con esta opción puede controlar que información adicional sobre la pregunta es impresa en la hoja de preguntas.
+Puede seleccioner una de estas:
 <ul>
-<li> Ninguna
-<li> Tipo de pregunta - Dependiendo del tipo de pregunta, se imprimirá si se trata de una única respuesta correcta, varias posibles respuestas correctas o todo o nada.
-<li> Nº de respuestas correctas - El número exacto de opciones correctas.
+<li> Nada
+<li> Tipo de preguntas - Dependiendo del tipo de preguntas  será impreso una sóla opción, opción múltiple, opción multiple todo-nada.
+<li> Número de respuestas correctas - Será impreso el número de respuestas correctas.
 </ul>';
-$string['shufflequestionsselected'] = 'Se ha configurado "Barajar preguntas", 
-por lo tanto algunas acciones relativas a la paginación no están activas. 
-Para cambiar la configuración,  {$a}.';
-$string['statsoverview'] = 'Statistics Overview';
-$string['studycode'] = 'Cód. Asignatura';
-$string['studycodecourse'] = '{$a->shortname} - {$a->fullname}';
-// ecastro ULPGC
-$string['samefformat'] = 'Aplicar a hoja de respuestas correctas';
-$string['samefformat_help'] = 'Si se activa, la Hoja de Respuestas correctas estará en el mismo formato de archivos que la hoja de preguntas. 
-Si no, esta hoja será siempre un archivo PDF.';
-$string['questionspercolumn'] = 'Preguntas por columna';
-$string['questionspercolumn_help'] = 'El nº máximo de preguntas (filas de casillas) en cada columna de la Hoja de respuestas. 
-
-Si se emplea rotulación en bloques es mejor usar en número de preguntas divisible en el número de bloques empleado.';
-$string['labelblocks'] = 'Rotulación en bloques';
-$string['labelblocks_help'] = 'Agrupa las casillas en bloques con una fila de etiquetas identificadoras para facilitar el marcado correcto de las casillas. 
-El parámetro especifica el nº de bloques rotulados en los que se dividirá la columna. 
-
-En nº de preguntas por columna condiciona el nº de bloques rotulados que caben en la página. 
-Si hay 25 preguntas por columnas solo puede haber un (1) bloque. 2 bloques si 24 preguntas por columna,  3 si 21, o 4 si 20 preguntas por columna
-Para otras combinaciones aparecerá un mensaje de error si el nº de bloques es demasiado alto. ';
-$string['labelblockstoohigh'] = 'Nº de bloques demasiado elevado, reducir';
-$string['qsheetcols'] = 'Columnas en hoja de preguntas';
-$string['qsheetcols_help'] = 'Si se especifica, el número de columnas separadas empleadas para componer la hoja de preguntas.';
-$string['markcorrect'] = 'Correcto';
-$string['markinvalid'] = 'Anulada';
-$string['useridnumber'] = 'DNI';
-$string['usermid'] = 'MoodleID';
-$string['correctionsheet'] = 'Hoja de Preguntas con respuestas correctas';
+$string['showstudentview'] = 'Mostrar vista del estudiante';
+$string['showtutorial'] = 'Mostrar un tutorial del cuestionario offline a los estudiantes.';
+$string['showtutorial_help'] = 'Esta opción determina si los estudiantes pueden ver un tutorial básico sobre los cuestionarios offline.
+El tutorial proporciona información sobre cómo manejar los diferentes tipos de documentos en los cuestionarios offline. En una parte interactiva aprender cómo marcar su identificación de forma correcta.
+<b>Nota:</b><br />
+Si usted deja esta opción en "Sí" pero oculta el cuestionario offline, el enlace al tutorial no será visible. En este caso, puede añadir un enlace al tutorial en la página del curso.';
+$string['showtutorialdescription'] = 'Puede añadir un enlace al tutorial en la página del curso utilizando esta URL:';
+$string['shuffleanswers'] = 'Barajar respuestas';
+$string['shufflequestions'] = 'Barajar preguntas';
+$string['shufflequestionsanswers'] = 'Barajar preguntas y respuestas';
+$string['shufflequestionsselected'] = 'Barajar preguntas está activado, por tanto, algunas acciones relacionadas con las páginas no estas disponibles. Para cambiar la opción de barajar, {$a}.';
+$string['shufflewithin'] = 'Barajar opciones';
+$string['shufflewithin_help'] = 'Si se habilita, las partes que componen una pregunta serán barajadas aleatoriamente cada vez que se pulse el botón de recarga en el formulario de vista previa. NOTA: Este ajuste sólo se aplica a las preguntas que tiene activada la opción de barajar opciones.';
+$string['signature'] = 'Firma';
+$string['singlechoice'] = 'Respuesta única';
+$string['standard'] = 'Estándar';
+$string['starttutorial'] = 'Iniciar tutorial sobre el examen';
+$string['statistics'] = 'Estadística';
+$string['statisticsviewheader'] = 'Estadísticas';
+$string['statisticsplural'] = 'Estadísticas';
+$string['statsoverview'] = 'Resumen de estadísticas';
+$string['studycode'] = 'Código de estudio';
+$string['tabattendances'] = 'Asistentes';
+$string['tabattendancesoverview'] = 'Resumen';
+$string['tabdownloadparticipantsforms'] = 'Formularios';
+$string['tabdownloadquizforms'] = 'Formularios';
+$string['tabeditgrades'] = 'Calificaciones';
+$string['tabeditgroupquestions'] = 'Calificaciones';
+$string['tabeditparticipants'] = 'Participantes';
+$string['tabofflinequizcontent'] = 'Preparación';
+$string['tabofflinequizcorrect'] = 'Corregir';
+$string['tabofflinequizupload'] = 'Cargar y corregir';
+$string['tabparticipantlists'] = 'Lista de asistencia';
+$string['tabparticipantscorrect'] = 'Corregir';
+$string['tabparticipantsupload'] = 'Cargar y corregir';
+$string['tabpreview'] = 'Vista previa';
+$string['tabquestionandanswerstats'] = 'Análisis de preguntas y respuestas';
+$string['tabquestionstats'] = 'Análisis de preguntas';
+$string['tabregrade'] = 'Recalificación';
+$string['tabresults'] = 'Resultados';
+$string['tabresultsoverview'] = 'Resumen';
+$string['tabstatistics'] = 'Estadísticas';
+$string['tabstatsoverview'] = 'Información del cuestionario';
+$string['temporaryfiledeletiontask'] = 'Borrar archivos temporales';
+$string['theattempt'] = 'El intento';
+$string['timesup'] = '¡Se acabó el tiempo!';
+$string['totalmarksx'] = 'Total calificaciones: {$a}';
+$string['totalpointsx'] = 'Total calificaciones: {$a}';
+$string['totalquestionsinrandomqcategory'] = 'Total de {$a} preguntas en la categoría.';
+$string['trigger'] = 'límite inferior/superior';
+$string['tutorial'] = 'Tutorial para cuestionarios offline';
+$string['type'] = 'Tipo';
+$string['uncheckparts'] = 'Marcar participantes seleccionados como ausentes';
+$string['updatedsumgrades'] = 'La suma de todas las calificaciones del grupo {$a->letter} fue recalculada a {$a->grade}.';
+$string['upload'] = 'Cargar y corregir';
+$string['uploadpart'] = 'Cargar y corregir';
+$string['uppertrigger'] = 'Segundo límite mas alto';
+$string['uppertriggerzero'] = 'El segundo límite más alto es cero';
+$string['upperwarning'] = 'Primer límite más alto';
+$string['upperwarningzero'] = 'El primer límite más alto es cero';
+$string['useradded'] = 'Usuario {$a} añadido';
+$string['userdoesnotexist'] = 'El usuario {$a} no existe en el sistema';
+$string['useridentification'] = 'Identificación de usuario';
+$string['useridviolation'] = 'Múltiples usuarios encontrados';
+$string['userimported'] = 'Usuario {$a} evaluado y calificado';
+$string['usernotincourse'] = 'El usuario {$a} no está en el curso.';
+$string['usernotinlist'] = '¡Usuario no registrado en la lista!';
+$string['usernotregistered'] = 'El usuario {$a} no está registrado en el curso.';
+$string['userpageimported'] = 'Página individual evaluada para el usuario {$a}';
+$string['valuezero'] = 'El valor no debe ser cero';
+$string['viewresults'] = 'Ver resultados';
+$string['white'] = 'Blanco';
+$string['withselected'] = 'Con los seleccionados...';
+$string['zerogradewarning'] = 'Atención: ¡La calificación de su cuestionario offline (sin conexión) es 0.0!';
+$string['zipfile'] = 'Archivo ZIP';
+$string['zipok'] = 'Archivo ZIP cargado';

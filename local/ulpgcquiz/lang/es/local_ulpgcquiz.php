@@ -9,6 +9,7 @@
 
 $string['pluginname'] = 'Cuestionarios ULPGC';
 $string['[ulpgcquiz:manage'] = 'Gestionar Cuestionarios ULPGC';
+$string['ulpgcquiz:viewhiddenstatus'] = 'Ver estado de preguntas ocultas';
 
 // settings
 $string['quizsettings'] = 'Cuestionarios ULPGC';

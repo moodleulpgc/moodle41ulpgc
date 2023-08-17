@@ -77,25 +77,7 @@ class block_remote_courses extends block_base {
             
             // Fist recall common courses list
             if($this->config->courselist) {
-            /*
-                // using ULPGC call
-                // Function call is hard-coded.
-                $url = $this->config->remotesite
-                    . '/webservice/rest/server.php?wstoken='
-                    . $this->config->wstoken . '&wsfunction=local_ulpgccore_get_remote_courses_by_field';
-                $format = 'json';
-                // Params: we use the username to retrieve recent activity
-                $params = array('searchlist' => $this->config->courselist, 
-                                           'field' => $this->config->coursefield);
-                if($this->config->recentactivity) {
-                    $params['username'] = $USER->username;
-                    //$params['username'] = '42810976';
-                }
-                // Retrieve data.
-                $curl = new curl;
-                $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
-               */ 
-                $resp = $this->get_remote_courses_list();
+                $resp = $this->get_remote_courses('list');
                 
                 if (!is_null($resp) && is_array($resp) && count($resp) > 0) {
                     if(!empty($this->config->listheader)) {
@@ -106,19 +88,8 @@ class block_remote_courses extends block_base {
             }
             
             if($this->config->usercourses) {
-                // using ULPGC call
-                // Function call is hard-coded.
-                $url = $this->config->remotesite
-                    . '/webservice/rest/server.php?wstoken='
-                    . $this->config->wstoken . '&wsfunction=local_ulpgccore_get_remote_courses_by_username';
-                $format = 'json';
-                $params = array('username' => $USER->username, 
-                                           'catidnumber' => $this->config->catidnumber);
-                //$params['username'] = '42810976';
-                // Retrieve data.
-                $curl = new curl;
-                $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
-                
+                $resp = $this->get_remote_courses('user');
+
                 if (!is_null($resp) && is_array($resp) && count($resp) > 0) {
                     if(!empty($this->config->coursesheader)) {
                         $this->content->text .= $OUTPUT->heading($this->config->coursesheader, 5, 'listheader');
@@ -129,7 +100,7 @@ class block_remote_courses extends block_base {
 
         }
         
-        // Default content. Shown even if usser is NOT logged in
+        // Default content. Shown even if user is NOT logged in
         if (!empty($this->config->introtext)) {
             $this->content->text .= $this->config->introtext['text'];
         }
@@ -158,41 +129,73 @@ class block_remote_courses extends block_base {
         }
     }
     
-    
-    public function  get_remote_courses_list(): array  {
+
+    /**
+     * Returns a list of remote courses, an arry of course objects
+     *
+     * @param string $type wheter to return a list of fixed courses or courses for the user
+     * @return array
+     * @author ecastro ULPGC
+     */
+    public function  get_remote_courses(string $type = 'list' ): array  {
         global $USER;
         
-        $courses = [];
-        
-        if($this->config->courselist) {
-        
-            // using ULPGC call
-            // Function call is hard-coded.
-            $url = $this->config->remotesite
-                . '/webservice/rest/server.php?wstoken='
-                . $this->config->wstoken . '&wsfunction=local_ulpgccore_get_remote_courses_by_field';
-            $format = 'json';
-            // Params: we use the username to retrieve recent activity
-            $params = array('searchlist' => $this->config->courselist, 
-                                        'field' => $this->config->coursefield);
-            if($this->config->recentactivity) {
-                $params['username'] = $USER->username;
-                //$params['username'] = '42810976';
+        if($type == 'list') {
+            if($this->config->courselist) {
+                // using ULPGC call
+                // Function call is hard-coded.
+                $url = $this->config->remotesite
+                    . '/webservice/rest/server.php?wstoken='
+                    . $this->config->wstoken . '&wsfunction=local_ulpgccore_get_remote_courses_by_field';
+                $format = 'json';
+                // Params: we use the username to retrieve recent activity
+                $params = array('searchlist' => $this->config->courselist,
+                                            'field' => $this->config->coursefield);
+                if($this->config->recentactivity) {
+                    $params['username'] = $USER->username;
+                    //$params['username'] = '42810976';
+                }
+                // Retrieve data.
+                $curl = new curl;
+                $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
             }
-            // Retrieve data.
-            $curl = new curl;
-            $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
-                    
+
+            if(is_array($resp)) {
+                return $resp;
+            }
+
+        } elseif($type == 'user') {
+            if($this->config->usercourses) {
+                // using ULPGC call
+                // Function call is hard-coded.
+                $url = $this->config->remotesite
+                    . '/webservice/rest/server.php?wstoken='
+                    . $this->config->wstoken . '&wsfunction=local_ulpgccore_get_remote_courses_by_username';
+                $format = 'json';
+                $params = array('username' => $USER->username,
+                                            'catidnumber' => $this->config->catidnumber);
+                //$params['username'] = '42810976';
+                // Retrieve data.
+                $curl = new curl;
+                $resp = json_decode($curl->post($url. '&moodlewsrestformat='.$format.'&'.http_build_query($params, '', '&')));
+            }
+
+            if(is_array($resp)) {
+                return $resp;
+            }
         }
 
-        if(is_array($resp)) {
-            $courses = $resp;
-        }
-
-        return $courses;
+        return [];
     }
-    
-    
+
+    /**
+     * Construct list of course names with shortname and decoration
+     * Add course list to the content->text object of the block
+     *
+     * @param string $type wheter to return a list of fixed courses or courses for the user
+     * @return void
+     * @author ecastro ULPGC
+     */
     private function print_courses($courses, $listclass, $limit = 0) {
         global $OUTPUT; 
         $this->content->text .= '<ul class="'. $listclass  .'">';
@@ -227,6 +230,5 @@ class block_remote_courses extends block_base {
         }
         $this->content->text .= '</ul>';
     }
-    
-    
+
 }

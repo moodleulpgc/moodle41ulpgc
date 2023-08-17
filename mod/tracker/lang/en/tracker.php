@@ -24,6 +24,7 @@ $string['tracker:comment'] = 'Comment issues';
 $string['tracker:configure'] = 'Configure tracker options';
 $string['tracker:configurenetwork'] = 'Configure network features';
 $string['tracker:develop'] = 'Be choosen to resolve tickets';
+$string['tracker:editcomment'] = 'Edit issue comments';
 $string['tracker:manage'] = 'Manage issues';
 $string['tracker:managepriority'] = 'Manage priority of entries';
 $string['tracker:managewatches'] = 'Manage watches on ticket';

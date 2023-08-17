@@ -250,7 +250,14 @@ $string['switchtorolesettingjustmenu'] = 'User Menu';
 $string['switchtorolesettingjustcourse'] = 'Course panel';
 $string['switchtorolesettingboth'] = 'Both';
 
-// form theme boost_union
+// from theme boost_union
+
+// Capabilities.
+$string['moove:configure'] = 'To be able to configure the theme as non-admin';
+$string['moove:viewhintcourseselfenrol'] = 'To be able to see a hint for unrestricted self enrolment in a visible course.';
+$string['moove:viewhintinhiddencourse'] = 'To be able to see a hint in a hidden course.';
+$string['moove:viewregionheader'] = 'To be able to see the Header block region';
+$string['moove:editregionheader'] = 'To be able to edit the Header block region';
 
 // Settings: Navigation tab.
 $string['navigationtab'] = 'Navigation';
@@ -259,9 +266,14 @@ $string['primarynavigationheading'] = 'Primary navigation';
 // ... ... Settings: Hide nodes in primary navigation.
 $string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
 $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.';
-$string['mycoursesremotessetting'] = 'My remote courses';
-$string['mycoursesremotessetting_desc'] = 'If specified a value, then those remote courses retrieved by an existing instance of Remote course blocks will be added to My courses list. 
+$string['coursesremotessetting'] = 'My remote courses';
+$string['coursesremotessetting_desc'] = 'If specified a value, then those remote courses retrieved by an existing instance of Remote course blocks will be added to My courses list.
 This option allows to select which instance of Remote courses to use, or none at all (no remote course list adedd to My courses list). ';
+$string['remotestypesetting'] = 'Remote courses list';
+$string['remotestypesetting_desc'] = 'Which list of the Remote courses block will ne shown in the header menu.
+Either user courses or fixed list defined in Remote courses block.';
+$string['remotessettinguser'] = 'User courses';
+$string['remotessettinglist'] = 'Fixed list';
 // ... Section: Breadcrumbs.
 $string['breadcrumbsheading'] = 'Breadcrumbs';
 // ... ... Setting: Course category breadcrumb.

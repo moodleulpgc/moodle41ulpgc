@@ -74,9 +74,6 @@ function examregistrar_check_exam_session($exam) {
     return $class;
 }
 
-
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id'=>$cm->id,'edit'=>$edit));
-
 /// filter form parameters
 
 $sel_annuality  = optional_param('sannuality', '', PARAM_ALPHANUMEXT);
@@ -104,7 +101,7 @@ $selparams = array('id'=>$cm->id, 'edit' => $edit,
                        'venue'     => $bookedsite,
                       );
 
-$manageurl = new moodle_url($baseurl, $selparams);
+$manageurl = new moodle_url($baseurl, array_filter($selparams));
 
 /// Print heading & filter
 if (!$table->is_downloading()) {

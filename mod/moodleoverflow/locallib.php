@@ -131,7 +131,7 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
     $userrating = \mod_moodleoverflow\ratings::moodleoverflow_get_reputation($moodleoverflow->id, $USER->id, true);
     // updated grade
     moodleoverflow_update_user_grade($moodleoverflow, $userrating, $USER->id);
-    
+    // ecastro update user grades
     
     // Set the context.
     $context = context_module::instance($cm->id);
@@ -153,7 +153,7 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
     if ($canstartdiscussion) {
         $buttontext = get_string('addanewdiscussion', 'moodleoverflow');
         $buttonurl = new moodle_url('/mod/moodleoverflow/post.php', ['moodleoverflow' => $moodleoverflow->id]);
-        $button = new single_button($buttonurl, $buttontext, 'get');
+        $button = new single_button($buttonurl, $buttontext, 'get', true); // ecastro ULPGC make primary
         $button->class = 'singlebutton align-middle m-2';
         $button->formid = 'newdiscussionform';
         echo $OUTPUT->render($button);
@@ -168,20 +168,26 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
         $userstatsbutton = new single_button($userstatsbuttonurl, $userstatsbuttontext, 'get');
         $userstatsbutton->class = 'singlebutton align-middle m-2';
         echo $OUTPUT->render($userstatsbutton);
+    } else {
+        // this is a regular user, show his/her own stats
+        $counts = \mod_moodleoverflow\ratings::moodleoverflow_get_singleuser_stats($moodleoverflow);
+        if($counts) {
+            $counts = reset($counts);
+        } else {
+            $counts = new \stdClass();
+            $counts->posts = '';
+            $counts->answers = '';
+            $counts->votes = '';
+        }
+            $counts->totalrating = $userrating;
+            if($moodleoverflow->gradescalefactor > 1) {
+                $counts->totalrating .= '/'.$moodleoverflow->gradescalefactor;
+            }
+            echo $OUTPUT->container(get_string('singleuserstats', 'mod_moodleoverflow', $counts), 'singleuserstats');
     }
 
     // Get all the recent discussions the user is allowed to see.
     $discussions = moodleoverflow_get_discussions($cm, $page, $perpage);
-
-    // If we want paging.
-    if ($page != -1) {
-
-        // Get the number of discussions.
-        $numberofdiscussions = moodleoverflow_get_discussions_count($cm);
-
-        // Show the paging bar.
-        echo $OUTPUT->paging_bar($numberofdiscussions, $page, $perpage, "view.php?id=$cm->id");
-    }
 
     // Get the number of replies for each discussion.
     $replies = moodleoverflow_count_discussion_replies($cm);
@@ -208,6 +214,8 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
             ['class' => 'btn btn-secondary my-2']
         );
     }
+
+     echo $OUTPUT->container('', 'clearfix'); // ecastro ULPGC to separate statistics
 
     // Get all the recent discussions the user is allowed to see.
     $discussions = moodleoverflow_get_discussions($cm, $page, $perpage);
@@ -381,9 +389,8 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
             $preparedarray[$i]['lastpostuserlink'] = $CFG->wwwroot . '/user/view.php?id=' .
                 $discussion->usermodified . '&course=' . $moodleoverflow->course;
         }
-
         // Get the date of the latest post of the discussion.
-        $parenturl = (empty($discussion->lastpostid)) ? '' : '&parent=' . $discussion->lastpostid;
+        $parenturl = (empty($discussion->lastpostid)) ? '' : '#p' . $discussion->lastpostid; // ecastro ULPGC use anchor
         $preparedarray[$i]['lastpostdate'] = userdate($usedate, get_string('strftimerecentfull'));
         $preparedarray[$i]['lastpostlink'] = $preparedarray[$i]['subjectlink'] . $parenturl;
 
@@ -430,10 +437,21 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
         if(!isset($canmarksolved)) {
            $canmarksolved = has_capability('mod/moodleoverflow:marksolved', $context);
         }
-        if(!$canmarksolved) {
-            $preparedarray[$i]['locked'] = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_locked($moodleoverflow, $discussion->discussion, $statusteacher, $statusstarter);
+        $preparedarray[$i]['locked'] = false;
+        $preparedarray[$i]['needanswer'] = false;
+
+        if(!$canmarksolved && $moodleoverflow->lockdiscussions) {
+            $locked = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_locked($moodleoverflow, $discussion->discussion, $markedsolution, $markedhelpful);
+            if($locked) {
+                $preparedarray[$i]['locked'] = $locked;
+            } elseif($canreply = moodleoverflow_user_can_post($context, $firstpost, true, $USER->id)) {
+                // Check if the user can reply in this discussion.
+                if(!$answers = \mod_moodleoverflow\ratings::moodleoverflow_get_answers_by_discussion($discussion->discussion)) {
+                    $preparedarray[$i]['needsanswer'] = true;
+                }
+            }
         }
-        //ecastro ULPGC discussion blocking end// 
+        //ecastro ULPGC discussion blocking end//
 
         // Go to the next discussion.
         $i++;
@@ -1017,17 +1035,6 @@ function moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discuss
     // Check if the post was read.
     $postread = !empty($post->postread);
 
-    // ecastro ULPGC
-    // Print a button to reply to the discussion.
-    if ($canreply) {
-        $buttontext = get_string('addanewreply', 'moodleoverflow');
-        $buttonurl = new moodle_url('/mod/moodleoverflow/post.php', ['reply' => $post->id]);
-        $button = new single_button($buttonurl, $buttontext, 'get');
-        $button->class = 'singlebutton moodleoverflowaddnew';
-        $button->formid = 'newdiscussionform';
-        echo $OUTPUT->render($button);
-    }
-
     // Print the starting post.
     echo moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $course,
         $ownpost, $canreply, false, '', '', $postread, true, $istracked, 0, $usermapping, $multiplemarks); // ecastro ULPGC canreply
@@ -1039,6 +1046,18 @@ function moodleoverflow_print_discussion($course, $cm, $moodleoverflow, $discuss
         $answerstring = get_string('answers', 'moodleoverflow', $answercount);
     }
     echo "<br><h2>$answerstring</h2>";
+
+    // ecastro ULPGC
+    // Print a button to reply to the discussion.
+    if ($canreply) {
+        $buttontext = get_string('addanewreply', 'moodleoverflow');
+        $buttonurl = new moodle_url('/mod/moodleoverflow/post.php', ['reply' => $post->id]);
+        $button = new single_button($buttonurl, $buttontext, 'get', true);
+        $button->class = 'singlebutton moodleoverflowaddnew';
+        $button->formid = 'newdiscussionform';
+        echo $OUTPUT->render($button);
+    }
+
 
     echo '<div id="moodleoverflow-posts">';
 
@@ -1447,10 +1466,6 @@ function moodleoverflow_print_post($post, $discussion, $moodleoverflow, $cm, $co
             }
         }
     }
-    
-    if ($post->statusstarter) {
-        $postclass .= ' statusstarter'; // ecastro ULPGC ??? still needed???
-    }
     if ($post->markedhelpful) {
         $postclass .= ' markedhelpful';
     }
@@ -1729,7 +1744,8 @@ function moodleoverflow_save_editor_files($post, $moodleoverflow, $cm) {
     global $DB;
     
     $context = context_module::instance($cm->id);
-    $editoroptions = mod_moodleoverflow_post_form::editor_options($moodleoverflow);
+    $postid = (isset($post->id)) ? $post->id : null;
+    $editoroptions = mod_moodleoverflow_post_form::editor_options($moodleoverflow, $postid);
 
     $post->message = file_save_draft_area_files($post->messagedraftitemid, $context->id, 'mod_moodleoverflow', 'post', $post->id, $editoroptions, $post->message);
 
@@ -2175,7 +2191,7 @@ function moodleoverflow_update_user_grade_on_db($moodleoverflow, $postuserrating
     global $DB;
 
     // Calculate the posting user's updated grade.
-    $grade = $postuserrating / $moodleoverflow->gradescalefactor;
+    $grade = $postuserrating / $moodleoverflow->gradescalefactor * $moodleoverflow->grademaxgrade;
 
     if ($grade > $moodleoverflow->grademaxgrade) {
 
@@ -2259,4 +2275,3 @@ function moodleoverflow_update_all_grades() {
         moodleoverflow_update_all_grades_for_cm($cmid->id);
     }
 }
-

@@ -163,7 +163,7 @@ class offlinequiz_page_scanner {
         $this->contextid = $contextid;
         $this->offlinequizid = $offlinequiz->id;
 
-        /* // ecasyto ULPGC
+        /* // ecastro ULPGC
         if ($maxanswers > 5) {
             $this->formtype = 3;
         }
@@ -265,10 +265,9 @@ class offlinequiz_page_scanner {
         }
         */
         
-        
-        $col = 0;
-        $y = 926; 
 
+        $col = 0;
+        $y = 926;
 
         // ecastro ULPGC
         $offsetx = floor((210 - $colwidth/10*$this->formtype)/2 + 5) * 10 - 145; 
@@ -327,9 +326,9 @@ class offlinequiz_page_scanner {
             for ($j = 0; $j <= $length; $j++) {                 // XXXXXXX.
                 if ($start + $j >= 0 and $start + $j <= $a) {   // XXXXXXXX  length=8.
                     // This creates the line from upper left to lower right corner.
-                    $this->pattern[($start + $j)][$i] = 1;
+                    $this->pattern[round($start + $j)][$i] = 1;
                     // This creates the line from upper right to lower left corner.
-                    $this->pattern[($start + $j)][($a - $i)] = 1;
+                    $this->pattern[round($start + $j)][round($a - $i)] = 1;
                 }
             }
         }
@@ -338,10 +337,10 @@ class offlinequiz_page_scanner {
             $start = $i - $width;
             for ($j = 0; $j <= $length; $j++) {
                 if ($i + $j + $halfwidth <= $a and $i + $j + $halfwidth >= 0) {
-                    $this->pattern1[($i + $j + $halfwidth)][$i] = 1;
+                    $this->pattern1[round($i + $j + $halfwidth)][$i] = 1;
                 }
                 if ($start + $j <= $a and $start + $j >= 0) {
-                    $this->pattern1[($start + $j)][($a - $i)] = 1;
+                    $this->pattern1[round($start + $j)][round($a - $i)] = 1;
                 }
             }
         }
@@ -350,10 +349,10 @@ class offlinequiz_page_scanner {
             $start = $i - $width;
             for ($j = 0; $j <= $length; $j++) {
                 if ($j + $start - $width <= $a and $j + $start - $width >= 0) {
-                    $this->pattern2[($j + $start - $width)][$i] = 1;
+                    $this->pattern2[round($j + $start - $width)][$i] = 1;
                 }
                 if ($start + $j <= $a and $start + $j >= 0) {
-                    $this->pattern2[($start + $j)][($a - $i)] = 1;
+                    $this->pattern2[round($start + $j)][round($a - $i)] = 1;
                 }
             }
         }
@@ -362,10 +361,10 @@ class offlinequiz_page_scanner {
             $start = $i - $width;
             for ($j = 0; $j <= $length; $j++) {
                 if ($start + $j <= $a and $start + $j >= 0) {
-                    $this->pattern3[($start + $j)][$i] = 1;
+                    $this->pattern3[round($start + $j)][$i] = 1;
                 }
                 if ($i + $j + $halfwidth <= $a and $i + $j + $halfwidth >= 0) {
-                    $this->pattern3[($i + $j + $halfwidth)][($a - $i)] = 1;
+                    $this->pattern3[round($i + $j + $halfwidth)][round($a - $i)] = 1;
                 }
             }
         }
@@ -374,10 +373,10 @@ class offlinequiz_page_scanner {
             $start = $i - $width;
             for ($j = 0; $j <= $length; $j++) {
                 if ($start + $j <= $a and $start + $j >= 0) {
-                    $this->pattern4[($start + $j)][$i] = 1;
+                    $this->pattern4[round($start + $j)][$i] = 1;
                 }
                 if ($j + $start - $width <= $a and $j + $start - $width >= 0) {
-                    $this->pattern4[($j + $start - $width)][($a - $i)] = 1;
+                    $this->pattern4[round($j + $start - $width)][round($a - $i)] = 1;
                 }
             }
         }
@@ -626,7 +625,7 @@ class offlinequiz_page_scanner {
 
         $export = array();
         $factor = $width / imagesx($this->image);
-        
+
         //ecastro ULPGC
         $point = new oq_point(($this->hotspots['moodleid']->x + $this->offset->x) * $factor - 2 * $this->zoomx,
                 ($this->hotspots['moodleid']->y + $this->offset->y) * $factor - 2 * $this->zoomy);
@@ -953,27 +952,27 @@ class offlinequiz_page_scanner {
                 $numpoints++;
                 if ($this->pixel_is_black($x, $y)) {
                     $numblacks++;
-                    if (!empty($this->pattern[($x - $positionx)][($y - $positiony)])) {
+                    if (!empty($this->pattern[round($x - $positionx)][round($y - $positiony)])) {
                         $patternin[0]++;
                     } else {
                         $patternout[0]++;
                     }
-                    if (!empty($this->pattern1[($x - $positionx)][($y - $positiony)])) {
+                    if (!empty($this->pattern1[round($x - $positionx)][round($y - $positiony)])) {
                         $patternin[1]++;
                     } else {
                         $patternout[1]++;
                     }
-                    if (!empty($this->pattern2[($x - $positionx)][($y - $positiony)])) {
+                    if (!empty($this->pattern2[round($x - $positionx)][round($y - $positiony)])) {
                         $patternin[2]++;
                     } else {
                         $patternout[2]++;
                     }
-                    if (!empty($this->pattern3[($x - $positionx)][($y - $positiony)])) {
+                    if (!empty($this->pattern3[round($x - $positionx)][round($y - $positiony)])) {
                         $patternin[3]++;
                     } else {
                         $patternout[3]++;
                     }
-                    if (!empty($this->pattern4[($x - $positionx)][($y - $positiony)])) {
+                    if (!empty($this->pattern4[round($x - $positionx)][round($y - $positiony)])) {
                         $patternin[4]++;
                     } else {
                         $patternout[4]++;
@@ -1028,10 +1027,10 @@ class offlinequiz_page_scanner {
     public function mark_hotspot($point) {
         global $CFG;
 
-        $positionx = $point->x + $this->offset->x;
-        $positiony = $point->y + $this->offset->y;
-        $lastx = BOX_INNER_WIDTH * $this->zoomx + $positionx;
-        $lasty = BOX_INNER_WIDTH * $this->zoomy + $positiony;
+        $positionx = round($point->x + $this->offset->x);
+        $positiony = round($point->y + $this->offset->y);
+        $lastx = round(BOX_INNER_WIDTH * $this->zoomx + $positionx);
+        $lasty = round(BOX_INNER_WIDTH * $this->zoomy + $positiony);
         $color = imagecolorallocate($this->image, 255, 0, 0);
         imagerectangle($this->image, $positionx - 2, $positiony - 2, $lastx + 2, $lasty + 2, $color);
         imagerectangle($this->image, $positionx - 3, $positiony - 3, $lastx + 3, $lasty + 3, $color);
@@ -1187,10 +1186,10 @@ class offlinequiz_page_scanner {
     public function pixel_is_black($x, $y) {
         global $CFG;
 
-        if ($x >= imagesx($this->image) or $x >= imagesy($this->image)) { // Point is out of range.
+        if ($x >= imagesx($this->image) or $y >= imagesy($this->image)) { // Point is out of range.
             return false;
         }
-        $rgb = imagecolorsforindex($this->image, imagecolorat($this->image, $x, $y));
+        $rgb = imagecolorsforindex($this->image, imagecolorat($this->image, round($x), round($y)));
         $gray = $rgb['red'] + $rgb['green'] + $rgb['blue'];
 
         if ($gray > $this->papergray) {
@@ -1644,16 +1643,6 @@ class offlinequiz_page_scanner {
         $this->uppertrigger = min(100, $cross + ((100 - $cross) * 0.85)); // ecastro ULPGC
         
         $this->calibrated = true;
-
-        // debugging
-        /* 
-        echo s(print_r("SC " , true)).'<br />';
-        echo s(print_r("empty: $empty   cross: $cross " , true)).'<br />';
-        echo s(print_r("SClowerwarning = ". $this->lowerwarning, true)).'<br />';
-        echo s(print_r("SClowertrigger = ". $this->lowertrigger, true)).'<br />';
-        echo s(print_r("SCupperwarning = ". $this->upperwarning, true)).'<br />';
-        echo s(print_r("SCuppertrigger = ". $this->uppertrigger, true)).'<br />';    
-        */ 
     }
 
     /**
@@ -1668,7 +1657,7 @@ class offlinequiz_page_scanner {
         $usernumber = '';
         for ($i = 0; $i < $this->iddigits; $i++) {
             $found = 0;
-            $value = 'x';                   // If we cannot read the value, set it to X. // ecastro ULPGC lowcase
+            $value = 'X';                   // If we cannot read the value, set it to X.
             $insecure = false;
             for ($j = 0; $j <= 9; $j++) {
                 $spotvalue = $this->hotspot_value($this->hotspots["u$i$j"]);
@@ -1788,13 +1777,13 @@ class offlinequiz_page_scanner {
         if ($maxanswers > 12) {
             $this->formtype = 1;
         }
-        
+
         $this->numpages = ceil($this->maxquestions / ($this->formtype * 24));
         */ //ecastro ULPGC
         $this->formtype = offlinequiz_get_formtype($this->questionspercolumn, $this->maxquestions, $maxanswers);
         $this->numpages = ceil($this->maxquestions / ($this->formtype * $this->questionspercolumn));
         $this->questionsonpage = $this->questionspercolumn * $this->formtype;
-        
+
         $this->init_hotspots();
 
         $corners = $this->corners;

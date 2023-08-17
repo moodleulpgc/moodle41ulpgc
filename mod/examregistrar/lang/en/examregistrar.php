@@ -688,7 +688,7 @@ $string['voucherissued'] = ' Voucher issued on {$a} ';
 $string['voucheruser'] = ' The student {$a->firstname} {$a->lastname} with ID:{$a->idnumber} has a booking in this exam as: ';
 $string['voucherdisclaimer'] = 'This inscription voucher MUST be validated using the above codes.';
 $string['bookingdate'] = ' Exam booking reserved on {$a}. ';
-$string['taken'] = 'Exam Taken';
+$string['examtaken'] = 'Exam {$a} taken by students';
 $string['notbooked'] = 'Not Booked';
 $string['booked'] = 'Booked';
 $string['booking'] = 'Exam booking';
@@ -1166,3 +1166,5 @@ $string['examallow_databook_help'] = 'Allow to use datasheets,
 statistical tables or other additional materials';
 $string['examinstructionstext'] = 'Other';
 $string['examinstructionstext_help'] = 'Other Instructions';
+$string['brsettingregistrar'] = 'Include registrar';
+$string['brsettingexams'] = 'Include exams';
