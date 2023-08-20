@@ -1,5 +1,6 @@
 #!/bin/bash
 #Local plugins
+git submodule add git@bitbucket.org:moodleulpgc/moodle-local_attendancewebhook.git   local/attendancewebhook
 git submodule add https://github.com/catalyst/moodle-local_csp.git                             local/csp
 #git submodule add https://github.com/moodleuulm/moodle-local_boostnavigation.git   local/boostnavigation
 #git submodule add https://github.com/elearning-univie/moodle-local_contactlist.git      local/contactlist
@@ -20,7 +21,6 @@ git submodule add https://github.com/MorrisR2/moodle_local_unusedquestions.git  
 #cd local/vflibs && git checkout MOODLE_39_STABLE && cd ../../
 git submodule add https://github.com/valentineus/moodle-webhooks.git                     local/webhooks
 cd local/webhooks && git checkout v3.0.0-stable && cd ../../
-git submodule add git@bitbucket.org:moodleulpgc/moodle-local_attendancewebhook.git   local/attendancewebhook
 
 
 
@@ -306,6 +306,9 @@ git submodule add https://github.com/moodleou/moodle-qtype_varnumeric.git       
 git submodule add https://github.com/moodleou/moodle-qtype_varnumericset.git    question/type/varnumericset
 git submodule add https://github.com/moodleou/moodle-qtype_varnumunit.git       question/type/varnumunit
 
+#Question bank
+git submodule add git@github.com:maths/moodle-qbank_importasversion.git          question/bank/importasversion
+
 #Reports
 git submodule add https://github.com/marcusgreen/moodle-report_advancedgrading.git      report/advancedgrading
 git submodule add https://github.com/thepurpleblob/moodle-report_assign.git             report/assign
@@ -325,6 +328,9 @@ git submodule add https://github.com/dired-ufla/moodle-report_questionstats.git 
 git submodule add https://github.com/geogebra/moodle-repository_geogebratube.git    repository/geogebratube 
 git submodule add https://github.com/jpahullo/moodle-repository_searchable.git      repository/searchable
 
+#User profile fields
+git submodule add git@bitbucket.org:moodleulpgc/moodle-profilefield_callsummons.git    user/profile/field/callsummons 
+
 #Web Services
 git submodule add https://github.com/moodlehq/moodle-webservice_xmlrpc.git      webservice/xmlrpc
 #pumukit
@@ -341,13 +347,13 @@ git submodule add https://github.com/moodle-an-hochschulen/moodle-theme_boost_un
 #git submodule add 
 
 # Testing, temporal
-#git submodule add https://gitlab.com/adapta/moodle-tool_bulkchangeprofilefields.git            admin/tool/bulkchangeprofilefields
-#git submodule add https://github.com/moodlehq/moodle-tool_health.git                               admin/tool/health
-#git submodule add https://github.com/learnweb/moodle-tool_lifecycle.git                              admin/tool/lifecycle   
-#git submodule add https://github.com/brickfield/moodle-gradereport_markingguide.git            grade/report/markingguide
-#git submodule add https://github.com/brickfield/moodle-gradereport_rubrics.git                     grade/report/rubrics
-#git submodule add https://github.com/catalyst/moodle-assignsubmission_automaticextension.git 
-#git submodule add https://gricad-gitlab.univ-grenoble-alpes.fr/moodle-plugins/moodle-atto_code.git             lib/editor/atto/plugins/code
-#git submodule add https://gitlab.com/dne-elearning/moodle-magistere/moodle-atto_fontawesomepicker.git   lib/editor/atto/plugins/fontawesomepicker
+git submodule add https://gitlab.com/adapta/moodle-tool_bulkchangeprofilefields.git            admin/tool/bulkchangeprofilefields
+git submodule add https://github.com/moodlehq/moodle-tool_health.git                               admin/tool/health
+git submodule add https://github.com/learnweb/moodle-tool_lifecycle.git                              admin/tool/lifecycle
+git submodule add https://github.com/brickfield/moodle-gradereport_markingguide.git            grade/report/markingguide
+git submodule add https://github.com/brickfield/moodle-gradereport_rubrics.git                     grade/report/rubrics
+#git submodule add https://github.com/catalyst/moodle-assignsubmission_automaticextension.git     mod/assign/submission/automaticextension
+git submodule add https://gricad-gitlab.univ-grenoble-alpes.fr/moodle-plugins/moodle-atto_code.git             lib/editor/atto/plugins/code
+git submodule add https://gitlab.com/dne-elearning/moodle-magistere/moodle-atto_fontawesomepicker.git   lib/editor/atto/plugins/fontawesomepicker
 
 #git submodule add https://github.com/UNIMOODLE/moodle-mod_hybridteaching.git               mod/hybridteaching

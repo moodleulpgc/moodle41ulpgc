@@ -45,5 +45,6 @@ $string['qcreport_summary'] = 'Checks summary';
 $string['qcreport_config'] = 'Configuration checks';
 $string['qcreport_courses'] = 'Courses checks';
 $string['qcreport_users'] = 'Users checks';
+$string['qcreport_health'] = 'Moodle HQ Health';
 
 

@@ -597,8 +597,6 @@ class recording extends persistent {
         $this->refresh_metadata_if_required();
         $playbacks = $this->metadata_get('playbacks');
 
-        //print_object($playbacks);
-
         foreach ($playbacks as $playback) {
             if ($playback['type'] == $type) {
                 // ecastro ULPGC to address problem in recordings URL

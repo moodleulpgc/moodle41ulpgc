@@ -84,7 +84,7 @@ $settings = null;
 
 $ADMIN->add('modlibraryfolder', new admin_category('librarysourceplugins',
     new lang_string('librarysourceplugins', 'library'), !$module->is_enabled()));
-$ADMIN->add('librarysourceplugins', new admin_externalpage('managelibrarysources', get_string('managelibrarysources', 'library'), 
+$ADMIN->add('librarysourceplugins', new admin_externalpage('managelibrarysources', get_string('managelibrarysources', 'library'),
                                                             new moodle_url('/mod/library/adminmanageplugins.php', array('subtype'=>'librarysource'))));
 
 foreach (core_plugin_manager::instance()->get_plugins_of_type('librarysource') as $plugin) {

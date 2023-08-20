@@ -8364,15 +8364,7 @@ class assign {
                 $plugin->remove($submission);
             }
         }
-/*
-// not needed anynore ?????
-< HEAD
-        // ecastro ULPGC ensure submission status is deleted
-        $submission->status = ASSIGN_SUBMISSION_STATUS_NEW;
-        $this->update_submission($submission, $userid, false, $this->get_instance()->teamsubmission);
-        // ecastro ULPGC
-=======
-*/
+
         $completion = new completion_info($this->get_course());
         if ($completion->is_enabled($this->get_course_module()) &&
                 $this->get_instance()->completionsubmit) {

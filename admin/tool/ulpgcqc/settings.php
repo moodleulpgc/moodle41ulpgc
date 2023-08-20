@@ -47,8 +47,9 @@ if ($hassiteconfig) {
                                            get_string('qcreport_users', 'tool_ulpgcqc'),
                                            $CFG->wwwroot . '/admin/tool/ulpgcqc/index.php?report=users') );
 
-    
-
+    $ADMIN->add('tool_ulpgcqc_cat', new admin_externalpage('tool_ulpgcqc_report_health',
+                                           get_string('qcreport_health', 'tool_ulpgcqc'),
+                                           $CFG->wwwroot . '/admin/tool/health//index.php') );
 
     // Tools config settins in #Extensions.
     $settings = new admin_settingpage('tool_ulpgcqc_settings', new lang_string('pluginname', 'tool_ulpgcqc'));

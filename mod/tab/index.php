@@ -38,66 +38,49 @@ $PAGE->navbar->add($strpages);
 echo $OUTPUT->header();
 
 //log the view information
-$event = \mod_tab\event\course_module_instance_list_viewed::create(array(
-    'objectid' => $PAGE->cm->instance,
-    'context' => $PAGE->context,
-));
-$event->add_record_snapshot('course', $PAGE->course);
-$event->add_record_snapshot($PAGE->cm->modname, $tab);
+$event = \mod_tab\event\course_module_instance_list_viewed::create(array('context' => context_course::instance($course->id)));
+$event->add_record_snapshot('course', $course);
 $event->trigger();
 
 
-
-if (!$tabs = get_all_instances_in_course('tab', $course))
-{
+if (!$tabs = get_all_instances_in_course('tab', $course)) {
     notice(get_string('thereareno', 'moodle', $strpages), "$CFG->wwwroot/course/view.php?id=$course->id");
     exit;
 }
 
 $usesections = course_format_uses_sections($course->format);
 
-if ($usesections)
-{
+if ($usesections) {
     $sections = $modinfo->get_section_info_all($course->id);
 }
 
 $table = new html_table();
 $table->attributes['class'] = 'generaltable mod_index';
 
-if ($usesections)
-{
+if ($usesections) {
     $table->head = array($strsectionname, $strname, $strintro);
     $table->align = array('center', 'left', 'left');
-}
-else
-{
+} else {
     $table->head = array($strlastmodified, $strname, $strintro);
     $table->align = array('left', 'left', 'left');
 }
 
 
 $currentsection = '';
-foreach ($tabs as $tab)
-{
+foreach ($tabs as $tab) {
     $cm = $modinfo->cms[$tab->coursemodule];
-    if ($usesections)
-    {
+    if ($usesections) {
         $printsection = '';
-        if ($tab->section !== $currentsection)
-        {
-            if ($tab->section)
-            {
+        if ($tab->section !== $currentsection) {
+            if ($tab->section) {
                 $printsection = get_section_name($course, $sections[$tab->section]);
             }
-            if ($currentsection !== '')
-            {
+            if ($currentsection !== '') {
                 $table->data[] = 'hr';
             }
             $currentsection = $tab->section;
         }
-    }
-    else
-    {
+    } else {
         $printsection = '<span class="smallinfo">' . userdate($tab->timemodified) . "</span>";
     }
 

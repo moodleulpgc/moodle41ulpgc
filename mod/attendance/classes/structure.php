@@ -574,10 +574,6 @@ class mod_attendance_structure {
             $sess->automarkcmid = null;
         }
         // ecastro ULPGC
-        if (!isset($sess->seatblocking)) {
-            $sess->seatblocking = '';
-        }
-        
         if (!isset($sess->seatrows)) {
             $sess->seatrows = 0;
         }

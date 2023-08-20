@@ -1637,7 +1637,6 @@ class grade_structure {
             $a->name = get_string('modulename', $element['object']->itemmodule);
             $a->title = $titleunescaped;
             $title = get_string('linktoactivity', 'grades', $a);
-
                 $header = html_writer::link($url, $header, [
                     'title' => $title,
                     'class' => 'gradeitemheader ',
@@ -3997,4 +3996,3 @@ abstract class grade_helper {
         self::$aggregationstrings = null;
     }
 }
-

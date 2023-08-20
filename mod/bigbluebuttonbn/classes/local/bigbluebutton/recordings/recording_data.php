@@ -78,7 +78,7 @@ class recording_data {
             if (in_array('protect', $rowtools) && $recording->get('protected') === null) {
                 $rowtools = array_diff($rowtools, ['protect', 'unprotect']);
             }
-            $rowdata = self::row($instance, $recording, $rowtools);
+            $rowdata = self::row($instance, $recording, $rowtools) ;
             if (!empty($rowdata)) {
                 $data[] = $rowdata;
             }

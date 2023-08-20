@@ -41,3 +41,13 @@ $string['showhintcourseselfenrolstartcurrently'] = 'Este curso actualmente es vi
 $string['showhintcourseselfenrolstartfuture'] = 'Este curso actualmente es visible para todos y está planeado que sea posible la <strong>auto inscripción sin una clave de inscripción</strong>.';
 $string['showhintcourseselfenrolunlimited'] = 'La instancia de inscripción <strong>{$a->name}</strong> permite la auto inscripción sin restricciones indefinidamente.';
 $string['showhintcourseselfenroluntil'] = 'La instancia de inscripción <strong>{$a->name}</strong> permite la auto inscripción sin restricciones hasta {$a->until}.';
+
+$string['accessibility:decreasefont'] = 'Disminuir tamaño de letras';
+$string['accessibility:fontsize'] = 'Tamaño de letra';
+$string['accessibility:increasefont'] = 'Aumentar tamaño de letras';
+$string['accessibility:resetfont'] = 'Reiniciar tamaño de letras';
+$string['accessibility:resetsitecolor'] = 'Reiniciar color del sitio';
+$string['accessibility:sitecolor'] = 'Color del sitio';
+$string['accessibility:sitecolor2'] = 'Bajo contraste 1';
+$string['accessibility:sitecolor3'] = 'Bajo contraste 2';
+$string['accessibility:sitecolor4'] = 'Alto contraste';
