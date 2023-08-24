@@ -295,3 +295,7 @@ $string['myindexcleaned'] = 'Páginas My Index de usuario sin bloques adicionale
 $string['skipcap'] = 'Omitir permisos';
 $string['skip0'] = 'Ninguno';
 $string['skip1'] = 'Todos idénticos al Arquetipo';
+$string['rolecopy'] = 'Hacer los permisos del rol idénticos a los del Arquetipo';
+$string['rolereset'] = 'Resetear rol: volver a permisos por defecto';
+$string['rolecapaction'] = 'Accción';
+$string['copyarchcaps'] = 'Igualar';

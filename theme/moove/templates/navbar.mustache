@@ -62,7 +62,9 @@
         <span class="sr-only">{{#str}}sidepanel, core{{/str}}</span>
     </button>
 
-    <a href="{{{ config.homeurl }}}" class="navbar-brand d-none d-md-flex align-items-center m-0  p-0 aabtn">{{! ecastro ULPGC removed mr-4}} 
+    <a href="{{#parenthomeurl}}{{parenthomeurl}}{{/parenthomeurl}}{{^parenthomeurl}}{{{ config.homeurl }}}{{/parenthomeurl}}"
+                class="navbar-brand d-none d-md-flex align-items-center m-0  p-0 aabtn"
+                title="{{#str}}goparenturl, theme_moove{{/str}}">{{! ecastro ULPGC parenthome, title and removed mr-4}}
         {{# output.should_display_logo }}
             <img src="{{output.get_logo}}" class="logo mr-1" alt="{{sitename}}">
         {{/ output.should_display_logo }}

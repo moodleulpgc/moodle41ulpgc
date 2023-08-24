@@ -408,4 +408,7 @@ $string['check_customroles_details'] = 'Review custom roles';
 $string['skipcap'] = 'Skip capabilities';
 $string['skip0'] = 'None';
 $string['skip1'] = 'All identical to archetype';
-
+$string['rolecopy'] = 'Make role caps identical to archetype';
+$string['rolereset'] = 'Reset role';
+$string['rolecapaction'] = 'Action';
+$string['copyarchcaps'] = 'Make equal';

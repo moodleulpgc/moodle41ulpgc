@@ -137,7 +137,9 @@ class settings {
     public function frontpage_slideshow() {
         $templatecontext['slidercount'] = $this->slidercount;
 
-        $defaultimage = new \moodle_url('/theme/moove/pix/default_slide.jpg');
+        //$defaultimage = new \moodle_url('/theme/moove/pix/default_slide.jpg');
+        // ecastro ULPGC
+        $defaultimage = new \moodle_url('https://www.ulpgc.es/sites/default/files/styles/cabecera_equipo_gobierno/public/portada-minisitios-img/seden0.jpeg', ['itok' => 'Ekzgzm5T']);
         for ($i = 1, $j = 0; $i <= $templatecontext['slidercount']; $i++, $j++) {
             $sliderimage = "sliderimage{$i}";
             $slidertitle = "slidertitle{$i}";
@@ -199,7 +201,7 @@ class settings {
         if ($templatecontext['numbersfrontpage'] = $this->numbersfrontpage) {
             $templatecontext['numberscontent'] = $this->numbersfrontpagecontent ? format_text($this->numbersfrontpagecontent) : '';
             $templatecontext['numbersusers'] = $DB->count_records('user', ['deleted' => 0, 'suspended' => 0]) - 1;
-            $templatecontext['numberscourses'] = $DB->count_records('course', ['visible' => 1]) - 1;
+            $templatecontext['numberscourses'] = $DB->count_records('course', []) - 1; // ecastro ULPGC any course, visible or not
         }
 
         return $templatecontext;

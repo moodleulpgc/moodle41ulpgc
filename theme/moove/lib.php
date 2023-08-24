@@ -480,6 +480,10 @@ function theme_moove_union_settings(): array {
         }
     }
 
+    // logo
+    //$templatecontext['parenthomeurl'] = $config->parenthomerurl;
+    $templatecontext['parenthomeurl'] = 'https://www.ulpgc.es/';
+
     // footer
     $templatecontext['ulpgcfooter'] = $config->ulpgcfooter;
     foreach(array(1,2,3) as $i) {
