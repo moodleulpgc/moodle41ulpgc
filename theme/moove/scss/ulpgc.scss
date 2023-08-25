@@ -350,6 +350,17 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
 }
 
 
+@media (min-width: 768px) {
+  body.has-secondarynavigation .drawer-left, body.has-secondarynavigation .drawer-right {
+    top: calc(80px + 1px);
+  }
+}
+
+.drawer.drawer-left .drawertoggle,
+.drawer.drawer-right .drawertoggle {
+  padding: 0.15rem 0.75rem;
+}
+
 /*---------------------------------------
  * rules: Course page.
  --------------------------------------*/
@@ -768,6 +779,30 @@ span.unread,
 
 .path-backup .mform .normal_setting {
   padding: 0 !important;
+}
+
+.block_calendar_month .maincalendar .header {
+  font-size: 80%;
+}
+
+@media (min-width: 768px) {
+  section:not(#region-main) .block.block_calendar_month .maincalendar .calendarwrapper .current {
+    font-size: 90%;
+    font-stretch: condensed;
+    font-weight: 500;
+    font-variant: all-small-caps;
+  }
+}
+
+.calendar_filters ul li {
+  display: inline-block;
+}
+
+.calendar_filters ul li .eventname {
+  font-size: 80%;
+}
+.show > .btn-outline-secondary.dropdown-toggle {
+  color: #212529;
 }
 
 /*---------------------------------------

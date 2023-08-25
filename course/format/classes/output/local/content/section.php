@@ -137,6 +137,16 @@ class section implements named_templatable, renderable {
 
         $summary = new $this->summaryclass($format, $section);
 
+        // ecastro ULPGC // ULPGC ecastro disable managing mods in section 0
+        $canedit = true;
+        $context = context_course::instance($course->id);
+        if($this->format->enabledadminmods &&
+                (($this->section->section == 0) && !has_capability('local/ulpgccore:managesection0', $context))) {
+            $canedit = false;
+        }
+        // ecastro ULPGC
+
+
         $data = (object)[
             'num' => $section->section ?? '0',
             'id' => $section->id,
@@ -145,7 +155,7 @@ class section implements named_templatable, renderable {
             'summary' => $summary->export_for_template($output),
             'highlightedlabel' => $format->get_section_highlighted_name(),
             'sitehome' => $course->id == SITEID,
-            'editing' => $PAGE->user_is_editing()
+            'editing' => ($PAGE->user_is_editing() && $canedit) // ecastro ULPGC
         ];
 
         $haspartials = [];
@@ -286,6 +296,15 @@ class section implements named_templatable, renderable {
         }
 
         $course = $this->format->get_course();
+
+        // ecastro ULPGC // ULPGC ecastro disable editing section 0
+        $context = context_course::instance($course->id);
+        if($this->format->enabledadminmods &&
+                (($this->section->section == 0) && !has_capability('local/ulpgccore:editsection0', $context))) {
+            $this->hide_controls();
+        }
+        // ecastro ULPGC
+
         if (empty($this->hidecontrols)) {
             $controlmenu = new $this->controlmenuclass($this->format, $this->section);
             $data->controlmenu = $controlmenu->export_for_template($output);

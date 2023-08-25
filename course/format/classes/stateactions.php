@@ -76,6 +76,16 @@ class stateactions {
             $this->validate_sections($course, [$targetsectionid], __FUNCTION__);
         }
 
+        // ecastro ULPGC check if targetsection is NOT section 0
+        $enabledadminmods = false;
+        $message = [];
+        if($updates->get_enabledadminmods()) {
+            $enabledadminmods = true;
+            $targetsection = get_fast_modinfo($course)->get_section_info_by_id($targetsectionid, MUST_EXIST);
+            $coursecontext = context_course::instance($course->id);
+            $this->validate_section0_move($coursecontext, $targetsection, true, ['local/ulpgccore:managesection0']);
+        }
+
         // The origin sections must be updated as well.
         $originalsections = [];
 
@@ -84,6 +94,16 @@ class stateactions {
             // An updated $modinfo is needed on every loop as activities list change.
             $modinfo = get_fast_modinfo($course);
             $cm = $modinfo->get_cm($cmid);
+            // ecastro ULPGC // enforce local/ulpgccore:modmove
+            if($enabledadminmods && $cm->score) {
+                $modcontext = context_module::instance($cmid);
+                if($result = $this-> validate_cm_adminmods($cm, $modcontext, ['local/ulpgccore:modmove'])) {
+                    $message[] = $result;
+                    continue;
+                }
+            }
+            // ecastro ULPGC
+
             $currentsectionid = $cm->section;
             $targetsection = $modinfo->get_section_info_by_id($targetsectionid, MUST_EXIST);
             $beforecm = (!empty($beforecmdid)) ? $modinfo->get_cm($beforecmdid) : null;
@@ -106,6 +126,12 @@ class stateactions {
 
         foreach (array_keys($originalsections) as $sectionid) {
             $updates->add_section_put($sectionid);
+        }
+
+        // ecastro ULPGC
+        $message = array_filter($message);
+        if(!empty($message)) {
+            throw new moodle_exception('illegalmodmove', 'local_ulpgccore', null, implode('<br />', $message));
         }
     }
 
@@ -170,10 +196,29 @@ class stateactions {
         $this->validate_sections($course, [$targetsectionid], __FUNCTION__);
         $targetsection = $modinfo->get_section_info_by_id($targetsectionid, MUST_EXIST);
 
+        // ecastro ULPGC check if targetsection is NOT section 0
+        $enabledadminmods = false;
+        $message = [];
+        if($updates->get_enabledadminmods()) {
+            $enabledadminmods = true;
+            $this->validate_section0_move($coursecontext, $targetsection, true);
+        }
+        // ecastro ULPGC
+
         $affectedsections = [$targetsection->section => true];
 
         $sections = $this->get_section_info($modinfo, $ids);
         foreach ($sections as $section) {
+            // ecastro ULPGC
+            if($enabledadminmods && ($section->section > 0)) {
+                if($result = $this->validate_section0_move($coursecontext, $section)) {
+                    $message[] = $result;
+                    $key = array_seach($section->id, $ids);
+                    unset($ids[$key]);
+                    continue;
+                }
+            }
+            // ecastro ULPGC
             $affectedsections[$section->section] = true;
             move_section_to($course, $section->section, $targetsection->section);
         }
@@ -192,6 +237,12 @@ class stateactions {
         }
         // The section order is at a course level.
         $updates->add_course_put();
+
+        // ecastro ULPGC
+        $message = array_filter($message);
+        if(!empty($message)) {
+            throw new moodle_exception('illegalsectionmove', 'local_ulpgccore', null, "ss cc " .implode('<br />', $message) . " xx yy ");
+        }
     }
 
     /**
@@ -228,10 +279,23 @@ class stateactions {
         $format = course_get_format($course->id);
         $affectedsections = [$targetsectionid => true];
 
+        $message = []; // ecastro ULPGC
         foreach ($ids as $id) {
             // An update section_info is needed as section numbers can change on every section movement.
             $modinfo = get_fast_modinfo($course);
             $section = $modinfo->get_section_info_by_id($id, MUST_EXIST);
+
+            // ecastro ULPGC
+            if($updates->get_enabledadminmods()) {
+                if($result = $this->validate_section0_move($coursecontext, $section)) {
+                    $message[] = $result;
+                    $key = array_seach($section->id, $ids);
+                    unset($ids[$key]);
+                    continue;
+                }
+            }
+            // ecastro ULPGC
+
             $targetsection = $modinfo->get_section_info_by_id($targetsectionid, MUST_EXIST);
             $affectedsections[$section->id] = true;
             $format->move_section_after($section, $targetsection);
@@ -252,6 +316,12 @@ class stateactions {
         }
         // The section order is at a course level.
         $updates->add_course_put();
+
+        // ecastro ULPGC
+        $message = array_filter($message);
+        if(!empty($message)) {
+            throw new moodle_exception('illegalsectionmove', 'local_ulpgccore', null, implode('<br />', $message));
+        }
     }
 
     /**
@@ -585,7 +655,17 @@ class stateactions {
 
         // Duplicate course modules.
         $affectedcmids = [];
+        $message = []; // ecastro ULPGC
         foreach ($cms as $cm) {
+            // ecastro ULPGC // enforce local/ulpgccore:modduplicate
+            if($updates->get_enabledadminmods()  && $cm->score) {
+                $modcontext = context_module::instance($cm->id);
+                if($result = $this-> validate_cm_adminmods($cm, $modcontext, ['local/ulpgccore:modduplicate'])) {
+                    $message[] = $result;
+                    continue;
+                }
+            }
+            // ecastro ULPGC
             if ($newcm = duplicate_module($course, $cm)) {
                 if ($targetsection) {
                     moveto_module($newcm, $targetsection, $beforecm);
@@ -599,6 +679,11 @@ class stateactions {
             $this->section_state($updates, $course, [$targetsection->id]);
         } else {
             $this->cm_state($updates, $course, $affectedcmids);
+        }
+        // ecastro ULPGC
+        $message = array_filter($message);
+        if(!empty($message)) {
+            throw new moodle_exception('illegalmodduplicate', 'local_ulpgccore', null, implode('<br />', $message));
         }
     }
 
@@ -626,7 +711,17 @@ class stateactions {
         $affectedsections = [];
 
         $cms = $this->get_cm_info($modinfo, $ids);
+        $message = []; // ecastro ULPGC
         foreach ($cms as $cm) {
+            // ecastro ULPGC // enforce not deletabel admin modules
+            if($updates->get_enabledadminmods()  && $cm->score) {
+                $modcontext = context_module::instance($cm->id);
+                if($result = $this-> validate_cm_adminmods($cm, $modcontext)) {
+                    $message[] = $result;
+                    continue;
+                }
+            }
+            // ecastro ULPGC
             $section = $cm->get_section_info();
             $affectedsections[$section->id] = $section;
             $format->delete_module($cm, true);
@@ -635,6 +730,12 @@ class stateactions {
 
         foreach ($affectedsections as $sectionid => $section) {
             $updates->add_section_put($sectionid);
+        }
+
+        // ecastro ULPGC
+        $message = array_filter($message);
+        if(!empty($message)) {
+            throw new moodle_exception('illegalmoddelete', 'local_ulpgccore', null, implode('<br />', $message));
         }
     }
 
@@ -995,5 +1096,61 @@ class stateactions {
                 require_all_capabilities($capabilities, $modcontext);
             }
         }
+    }
+
+    /**
+     * Checks related to course section: verifies permissions by ULPGC
+     *
+     * @param stateupdates $updates the affected course elements track
+     * @param object $context course context  to validate.
+     * @param array $capabilities optional capabilities checks per each cm context.
+     * @author ecastro ULPGC
+     * @return mixed null|string
+     */
+    protected function validate_section0_move($context, $section, $moveto = false, array $capabilities = []): ?string {
+        if($section->section == 0) {
+            $validated = true;
+            $label = 'sectioncannotmove';
+            if($moveto) {
+                if(empty($capabilities)) {
+                    $capabilities[] = 'local/ulpgccore:editsection0';
+                }
+                $label = 'sectioncannotreceive';
+            } else {
+                $capabilities[] = 'local/ulpgccore:editsection0';
+            }
+            if(!empty($capabilities)) {
+                $validated = has_all_capabilities($capabilities, $context);
+            }
+            if(!$validated) {
+                if($moveto) {
+                    throw new moodle_exception('sectioncannotreceive', 'local_ulpgccore', null, $section->name);
+                }
+                return get_string($label, 'local_ulpgccore', $section->name);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks related to course modules: verifies permissions by ULPGC
+     *
+     * @param stateupdates $updates the affected course elements track
+     * @param object $cm course module  to validate.
+     * @param array $capabilities optional capabilities checks per each cm context.
+     * @author ecastro ULPGC
+     * @return mixed null / strigs
+     */
+    protected function validate_cm_adminmods($cm, $modcontext, array $capabilities = []): ?string {
+        if($cm->score) {
+            $validated = false;
+            if(!empty($capabilities)) {
+                $validated = has_all_capabilities($capabilities, $modcontext);
+            }
+            if(!$validated) {
+                return get_string('modnotallowedaction', 'local_ulpgccore', $cm->name);
+            }
+        }
+        return null;
     }
 }

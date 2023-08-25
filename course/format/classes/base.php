@@ -109,6 +109,8 @@ abstract class base {
         if(get_config('local_ulpgccore', 'activityindentationenabled')) { // ecastro ULPGC
             $this->activityindentationenabled = 1;
         }
+        $this->enabledadminmods = get_config('local_ulpgccore','enabledadminmods');
+
     }
 
     /**

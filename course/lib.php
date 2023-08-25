@@ -1668,12 +1668,11 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
         $hasmodedit = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modedit', $modcontext): true; // ecastro ULPGC adminmods restrictions on editing mode
         //$hasmoddelete = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:moddelete', $modcontext): true;
         $hasmoddelete = ($adminmods && $mod->score) ? false: true;
-        //$hasmodmove = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modmove', $modcontext): true;
+        $hasmodmove = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modmove', $modcontext): true;
         $hasmodduplicate = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modduplicate', $modcontext): true;
         $hasmodroles = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modroles', $modcontext): true;
     // adminmods restrictions
-    
-    
+
     if (!isset($str)) {
         $str = get_strings(array('delete', 'move', 'moveright', 'moveleft',
             'editsettings', 'duplicate', 'modhide', 'makeavailable', 'makeunavailable', 'modshow'), 'moodle');
@@ -1701,7 +1700,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
     }
 
     // Move (only for component compatible formats).
-    if ($usecomponents) {
+    if ($usecomponents && $hasmodmove) { // ecastro ULPGC adminmods enforce modmove
         $actions['move'] = new action_menu_link_secondary(
             new moodle_url($baseurl, [
                 'sesskey' => sesskey(),

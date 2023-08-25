@@ -223,4 +223,14 @@ class stateupdates implements JsonSerializable {
         ];
     }
 
+    /**
+     * Returns enabledadminmods from course format, to check ulpgccore mod permissions
+     * To be used by stateactions class
+     *
+     * @author ecastro ULPGC
+     * @return bool enabledadminmods
+     */
+    public function get_enabledadminmods() {
+        return $this->format->enabledadminmods;
+    }
 }
