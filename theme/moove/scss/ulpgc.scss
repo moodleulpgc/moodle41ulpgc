@@ -673,6 +673,9 @@ span.unread,
 
 .tertiary-navigation .tertiary-navigation-selector .dropdown-toggle {
   font-size: 1.2rem;
+    padding: 0 1.0rem;
+    background-color: $color-gray-5;
+    border-bottom: solid $color-blue 2px;
 }
 
 .path-grade-report-grader .gradeparent .highlightable.cell {
