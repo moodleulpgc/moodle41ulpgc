@@ -59,8 +59,8 @@ class groupmanager {
             $userid = $USER->id;
         }
 
-        if (!empty($this->rtq->getRTQ()->grouping)) {
-            return groups_get_all_groups($this->rtq->getCourse()->id, $userid, $this->rtq->getRTQ()->grouping);
+        if (!empty($this->rtq->getRTQ()->teamsgrouping)) {
+            return groups_get_all_groups($this->rtq->getCourse()->id, $userid, $this->rtq->getRTQ()->teamsgrouping);
         } else {
             return array(); // return empty array when there is no grouping
         }

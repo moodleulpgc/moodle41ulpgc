@@ -731,6 +731,7 @@ $string['loadsessioncontrol'] = 'Session control files';
 $string['loadsessionresponses'] = 'Load Response files';
 $string['responsefiles_help'] = 'Response files names <strong>must</strong> start with course shortname code followed by a "-", then any other itentificative text.';
 $string['deleteresponsefiles'] = 'Delete response files';
+$string['deletedresponsefiles'] = 'Deleted response files: {$a}';
 $string['examresponsefiles'] = 'Load/Edit Exam response files';
 $string['generateroomspdfs'] = 'Generate rooms PDFs';
 $string['roomspdfsgenerated'] = 'ZIP files for Rooms generated as: <br> {$a}';

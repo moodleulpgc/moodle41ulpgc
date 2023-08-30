@@ -54,7 +54,16 @@ class utils extends \local_o365\feature\coursesync\utils {
         
         return [(bool)$createteams, (bool)$createusergroups, (bool)$teamsprivatechannels];
     }    
-    
+
+    /**
+     * Check if the Moodle site is connected to Microsoft 365 services using the integration.
+     *
+     * @return bool
+     */
+    public static function is_connected() {
+        return \local_o365\utils::is_connected();
+    }
+
     /**
      * Create connection to graph.
      * @return false|object Graph api.

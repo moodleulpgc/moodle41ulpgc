@@ -1220,10 +1220,14 @@ function examregistrar_loadcsv_sessions($examregistrar, $data, $ignoremodified, 
     }
 
     /// now specific items
-    $tz = usertimezone();
-    $record->examdate = strtotime($record->examdate.' '.$tz);
+    $tz = get_user_timezone();
+    $record->examdate = strtotime($record->examdate . " $tz");
+
     if(isset($record->visible)) {
         $record->visible = (int)$record->visible;
+    }
+    if(!isset($record->timeslot)) {
+        $record->timeslot = '10.00';
     }
     if(!isset($record->duration)) {
         $record->duration = 2*60*60;

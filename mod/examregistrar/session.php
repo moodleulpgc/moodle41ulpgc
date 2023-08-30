@@ -69,8 +69,23 @@ if(isset($configdata->insertcontrolq) && $configdata->insertcontrolq && $DB->rec
 $output = $PAGE->get_renderer('mod_examregistrar', 'session');
 ///////////////////////////////////////////////////////////////////////////////
 
+    /// prepare event log
+    $eventdata = array();
+    //$eventdata['objectid'] = $examregistrar->id;
+    $eventdata['context'] = $context;
+    $eventdata['userid'] = $USER->id;
+    $eventdata['other'] = array();
+    $eventdata['other']['tab'] = $tab;
+    $eventdata['other']['examregid'] = $examregistrar->examregprimaryid;
+    $eventdata['other']['session'] = $session;
+    if($bookedsite) {
+        $eventdata['other']['bookedsite'] = $bookedsite;
+    }
 
 /// process forms actions
+
+
+
 
 if($action == 'assignseats_venues') {
     // get venues and heck for single room
@@ -176,15 +191,22 @@ if($action == 'assignseats_venues') {
     }
 } elseif(($action == 'session_files') && $session) {
     if($del = optional_param('deleteresponsefiles', '', PARAM_ALPHANUMEXT)) {
-        $success = false;
+        $success = [];
         $fs = get_file_storage();
         if($files = $fs->get_directory_files($context->id, 'mod_examregistrar', 'sessionresponses', $session, '/', false, false)) {
             foreach($files as $file) {
-                $success = $file->delete();
+                if($file->delete()) {
+                    $success[] = $file->get_filename();
+                }
             }
         }
-        if($success)  {
-            add_to_log($course->id, 'examregistrar', 'delete session files', 'view.php?id='.$cm->id, $examregistrar->name, $cm->id);
+        if(!empty($success))  {
+            $updated = implode(', ', $success);
+            $eventdata['other']['files'] = $updated;
+            $event = \mod_examregistrar\event\responses_deleted::create($eventdata);
+            $event->trigger();
+            //add_to_log($course->id, 'examregistrar', 'delete session files', 'view.php?id='.$cm->id, $examregistrar->name, $cm->id);
+            \core\notification::success(get_string('deletedresponsefiles', 'examregistrar', $updated));
         }
         $baseurl->param('action', 'session_files');
         redirect($baseurl);
@@ -205,7 +227,9 @@ if($action == 'assignseats_venues') {
         if ($formdata = $mform->get_data()) {
             if(!isset($formdata->deleteresponsefiles)) {
                 $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $context, 'mod_examregistrar', $data->area, $session);
-                add_to_log($course->id, 'examregistrar', 'edit session files', 'view.php?id='.$cm->id, $examregistrar->name, $cm->id);
+                $event = \mod_examregistrar\event\responses_uploaded::create($eventdata);
+                $event->trigger();
+                //add_to_log($course->id, 'examregistrar', 'edit session files', 'view.php?id='.$cm->id, $examregistrar->name, $cm->id);
             }
         } elseif(!$formdata) {
             $sessionname = '';
@@ -250,7 +274,9 @@ if($action == 'assignseats_venues') {
     if (!$mform->is_cancelled()) {
         if ($formdata = $mform->get_data()) {
             $formdata = file_postupdate_standard_filemanager($formdata, 'files', $options, $ccontext, 'mod_examregistrar', 'responses', $data->examfile);
-            add_to_log($course->id, 'examregistrar', 'edit response files', 'view.php?id='.$cm->id, $examregistrar->name, $cm->id);
+            $event = \mod_examregistrar\event\responses_uploaded::create($eventdata);
+            $event->trigger();
+            //add_to_log($course->id, 'examregistrar', 'edit response files', 'view.php?id='.$cm->id, $examregistrar->name, $cm->id);
         } elseif(!$formdata) {
             $sessionname = '';
             if($session) {

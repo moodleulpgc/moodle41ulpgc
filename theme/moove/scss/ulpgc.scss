@@ -89,6 +89,12 @@ padding-right: 0.2rem;
 /*---------------------------------------
  * rules: navbar navigation
  --------------------------------------*/
+
+.atto-fullscreen .d-print-none {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   margin-top: 86px;
 }

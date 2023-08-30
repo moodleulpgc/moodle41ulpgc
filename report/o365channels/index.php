@@ -248,7 +248,7 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
     }
 }
 
-if($apiconfigured && ($teamsenabled || $usergroupsenable)) {
+if($apiconfigured && ($teamsenabled || $usergroupsenabled)) {
     // obtain course groups
     $params = ['courseid' => $courseid];
     $groupingwhere = '';
@@ -322,7 +322,7 @@ $strgrouping         = get_string('grouping', 'group');
 $strnotingrouping    = get_string('notingrouping', 'group');
 $strnogrouping       = get_string('nogrouping', 'group');
 
-if(!$apiconfigured || !($teamsenabled || $usergroupsenable)) {
+if(!$apiconfigured || !($teamsenabled || $usergroupsenabled)) {
     echo $output->notification(get_string('notavailable', 'report_o365channels'), 'notifyproblem');
 } else {
     // Get all groupings and present selection menu.

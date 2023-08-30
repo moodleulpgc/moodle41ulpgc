@@ -116,10 +116,10 @@ class mod_activequiz_mod_form extends moodleform_mod {
         $mform->setDefault('workedingroups', 0);
 
 
-        $mform->addElement('select', 'grouping', get_string('grouping', 'activequiz'), $coursegroupings);
-        $mform->disabledIf('grouping', 'workedingroups');
-        $mform->setType('grouping', PARAM_INT);
-        $mform->addHelpButton('grouping', 'grouping', 'activequiz');
+        $mform->addElement('select', 'teamsgrouping', get_string('grouping', 'activequiz'), $coursegroupings); // ecastro ULPGC teamgrouping
+        $mform->disabledIf('teamsgrouping', 'workedingroups');
+        $mform->setType('teamsgrouping', PARAM_INT);
+        $mform->addHelpButton('teamsgrouping', 'grouping', 'activequiz');
 
         $mform->addElement('advcheckbox', 'groupattendance', get_string('groupattendance', 'activequiz'));
         $mform->addHelpButton('groupattendance', 'groupattendance', 'activequiz');
@@ -128,7 +128,7 @@ class mod_activequiz_mod_form extends moodleform_mod {
 
         if ($changegroups == false || empty($coursegroupings)) {
             $mform->freeze('workedingroups');
-            $mform->freeze('grouping');
+            $mform->freeze('teamgrouping');
             $mform->freeze('groupattendance');
         }
 

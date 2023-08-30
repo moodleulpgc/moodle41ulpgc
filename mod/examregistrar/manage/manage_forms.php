@@ -571,6 +571,10 @@ class examregistrar_uploadcsv_confirm_form extends examregistrar_manageform_base
     function definition() {
         global $COURSE, $USER, $OUTPUT;
 
+        $examreg = $this->_customdata['exreg'];
+        $exreg = $this->get_primaryid();
+        unset($this->_customdata['exreg']);
+
         $mform =& $this->_form;
         if($customdata = $this->_customdata) {
             foreach($customdata as $key => $value) {
@@ -607,14 +611,13 @@ class examregistrar_uploadcsv_confirm_form extends examregistrar_manageform_base
                 $rows[] = implode(', ', $record);
                 $index += 1 ;
             }
-
         }
 
         $mform->addElement('html',  get_string('uploadtableexplain', 'examregistrar'));
         $mform->addElement('html',  $OUTPUT->box(implode(', ', $columns).'<br />'.implode('<br />', $rows), ' generalbox informationbox centerbox centeredbox' ));
         $mform->addElement('html',  get_string('uploadconfirm', 'examregistrar'));
 
-        $this->add_standard_hidden_fields($this->_customdata['edit']);        
+        $this->add_standard_hidden_fields($this->_customdata['edit']);
         $this->add_action_buttons(true, get_string('confirm'));
     }
 }

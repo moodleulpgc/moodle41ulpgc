@@ -43,7 +43,7 @@ class responses_uploaded extends responses_approved {
     public function get_description() {
         $user = $this->usertext();
         $site = $this->get_site(); 
-        return "The $user has uoloaded response files '{$this->other['files']}' for session '{$this->other['session']}' exam '{$this->other['examid']}' 
+        return "The $user has uploaded response files '{$this->other['files']}' for session '{$this->other['session']}' exam '{$this->other['examid']}'
                 $site 
                 in the Exam registrar with course module id '$this->contextinstanceid'. ";
     }

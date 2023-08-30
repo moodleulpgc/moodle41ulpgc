@@ -181,21 +181,32 @@ function xmldb_activequiz_upgrade($oldversion) {
     }
 
     // ecastro ULPGC to change from 3.9 to 4.1
-    if( $oldversion < 2017010402.01 ) {
+    if( $oldversion < 2017010402.03 ) {
         $table = new xmldb_table('activequiz');
-        $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
 
         if ($dbman->field_exists($table, $field)) {
-            $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $DB->set_field_select('activequiz', 'teamsgrouping', 0, "((teamsgrouping IS NULL) OR (teamsgrouping = ''))", []);
+            $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
             $dbman->change_field_default($table, $field);
+            $field = new xmldb_field('teamsgrouping', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $dbman->change_field_notnull($table, $field);
         }
 
+        $field = new xmldb_field('grouping', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
         if ($dbman->field_exists($table, $field)) {
-            $dbman->rename_field($table, $field, 'grouping');
+            //$DB->set_field_select('activequiz', 'grouping', 0, "((grouping IS NULL) OR (grouping = ''))", []);
+            $field = new xmldb_field('grouping', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+            $dbman->change_field_default($table, $field);
+            $field = new xmldb_field('grouping', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+            $dbman->change_field_notnull($table, $field);
+            $dbman->rename_field($table, $field, 'teamsgrouping');
         }
+
+        $DB->set_field_select('activequiz', 'teamsgrouping', 0, "((teamsgrouping IS NULL) OR (teamsgrouping = ''))", []);
 
         // Activequiz savepoint reached.
-        upgrade_mod_savepoint(true, 2017010402.01, 'activequiz');
+        upgrade_mod_savepoint(true, 2017010402.03, 'activequiz');
     }
 
 

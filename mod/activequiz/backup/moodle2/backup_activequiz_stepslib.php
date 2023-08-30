@@ -45,7 +45,7 @@ class backup_activequiz_activity_structure_step extends backup_questions_activit
 
         $activequiz = new backup_nested_element('activequiz', array('id'), array(
             'name', 'intro', 'introformat', 'graded', 'scale', 'grademethod', 'workedingroups',
-            'grouping', 'groupattendance', 'reviewoptions', 'timecreated', 'timemodified', 'defaultquestiontime',
+            'teamsgrouping', 'groupattendance', 'reviewoptions', 'timecreated', 'timemodified', 'defaultquestiontime', // ecastro ULPGC teamsgrouping
             'waitforquestiontime', 'questionorder'
         ));
 
