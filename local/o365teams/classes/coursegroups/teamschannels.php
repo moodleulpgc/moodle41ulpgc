@@ -26,15 +26,62 @@
 namespace local_o365teams\coursegroups;
 
 use context_course;
+use local_o365teams\rest\unified;
+use local_o365\feature\coursesync\main as coursessync;
 
 defined('MOODLE_INTERNAL') || die();
+
+define('o365API_CALL_RETRY_LIMIT', 5);
 
 global $CFG;
 
 /**
  * Course sync to group / team class.
  */
-class teamschannels extends \local_o365\feature\coursesync\main {
+class teamschannels { // extends \local_o365\feature\coursesync\main {
+    /**
+     * @var unified a graph API client.
+     */
+    private $graphclient;
+    /**
+     * @var bool whether the debug is turned on.
+     */
+    private $debug;
+    /**
+     * @var bool whether the tenant has education license.
+     */
+    private $haseducationlicense = false;
+
+
+    /**
+     * Constructor.
+     *
+     * @param unified $graphclient A graph API client to use.
+     * @param bool $debug Whether to output debug messages.
+     */
+    public function __construct(unified $graphclient, bool $debug = false) {
+        $this->graphclient = $graphclient;
+        $this->debug = $debug;
+        if ($graphclient->has_education_license()) {
+            $this->haseducationlicense = true;
+        }
+    }
+
+    /**
+     * Optionally run mtrace() based on $this->debug setting.
+     *
+     * @param string $msg The debug message.
+     * @param int $level
+     * @param string $eol
+     */
+    protected function mtrace(string $msg, int $level = 0, string $eol = "\n") {
+        if ($this->debug === true) {
+            if ($level) {
+                $msg = str_repeat('...', $level) . ' ' . $msg;
+            }
+            mtrace($msg, $eol);
+        }
+    }
 
     /**
      * Get the Group description by cleaning & shortening the course summary
@@ -154,7 +201,7 @@ class teamschannels extends \local_o365\feature\coursesync\main {
                 $channelobject = $this->create_group_channel($teamsobjectid, $owners, $group);
                 if (!empty($channelobject->objectid)) {
                     $retrycounter = 0;
-                    while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+                    while ($retrycounter <= o365API_CALL_RETRY_LIMIT) {
                         if ($retrycounter) {
                             $this->mtrace('..... Retry #' . $retrycounter);
                             sleep(10);
@@ -205,7 +252,7 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         // Create channel first.
         $response = null;
         $retrycounter = 0;
-        while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+        while ($retrycounter <= o365API_CALL_RETRY_LIMIT) {
             if ($retrycounter) {
                 $this->mtrace('..... Retry #' . $retrycounter);
                 sleep(10);
@@ -255,9 +302,9 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         
         
         foreach ($toadd as $userid => $userobjectid) {
-            $this->mtrace('... Adding '.$userobjectid.' (muserid: '.$userid.')...', '');
+            $this->mtrace(' Adding '.$userobjectid.' (muserid: '.$userid.')...', 2);
             $retrycounter = 0;
-            while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+            while ($retrycounter <= o365API_CALL_RETRY_LIMIT) {
                 // Add member of o365 channel.
                 if ($retrycounter) {
                     $this->mtrace('...... Retry #' . $retrycounter);
@@ -423,7 +470,7 @@ class teamschannels extends \local_o365\feature\coursesync\main {
             // update membership, temporal
             if (!empty($teamschannelrec->objectid)) {
                 $retrycounter = 0;
-                while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+                while ($retrycounter <= o365API_CALL_RETRY_LIMIT) {
                     if ($retrycounter) {
                         $this->mtrace('..... Retry #' . $retrycounter);
                         sleep(10);
@@ -629,9 +676,9 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         }
 
         //Check if channel object is created
-        $this->mtrace('... Checking if channel is setup ...', '');
+        $this->mtrace(' Checking if channel is setup ...', 2);
         $retrycounter = 0;
-        while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+        while ($retrycounter <= o365API_CALL_RETRY_LIMIT) {
             try {
                 if ($retrycounter) {
                     $this->mtrace('...... Retry #' . $retrycounter);
@@ -663,7 +710,7 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         $this->mtrace('Users to remove: '.count($toremove));
         // we dot not have moodle userid for remote current users
         foreach ($toremove as $userobjectid) {
-            $this->mtrace('... Removing '.$userobjectid.'...', '');
+            $this->mtrace(' Removing '.$userobjectid.'...', 2);
             $result = $this->graphclient->remove_member_from_channel($teamsobjectid, $channelobjectid, $userobjectid);
             if ($result === true) {
                 $this->mtrace('Success!');
@@ -684,9 +731,9 @@ class teamschannels extends \local_o365\feature\coursesync\main {
             $this->mtrace($addtype.'s to add: '.count($toadd));
             $owner = ($addtype == 'owner');
             foreach ($toadd as $userobjectid) {
-                $this->mtrace('... Adding '.$userobjectid.' as '.$addtype.' ...', '');
+                $this->mtrace(' Adding '.$userobjectid.' as '.$addtype.' ...', 2);
                 $retrycounter = 0;
-                while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+                while ($retrycounter <= o365API_CALL_RETRY_LIMIT) {
                     // Add member of o365 channel.
                     if ($retrycounter) {
                         $this->mtrace('...... Retry #' . $retrycounter);
@@ -732,26 +779,44 @@ class teamschannels extends \local_o365\feature\coursesync\main {
     public function update_course_group_name_extended(\stdClass $course, string $groupobjectid, string $groupo365name = null, \stdClass $group = null) : bool {
         global $DB;
     
+        $group365 = $this->graphclient->get_group($groupobjectid);
+        if(empty($group365)) {
+            $this->mtrace("Cannot obtain Group $groupobjectid with name $groupo365name");
+            return false;
+        }
+
         $groupname = utils::get_group_display_name($course, $group);
         $mailalias = utils::get_group_mail_alias($course, $group);
-        // only update if need
-        if($groupname != $groupo365name) {
+
+        $update = false;
+        if($group365->displayName == $groupname) {
+            // case name updated but not stored
+            if($groupname != $groupo365name) {
+                $update = true;
+            }
+        } else {
             $updatedexistinggroup = [
                 'id' => $groupobjectid,
                 'displayName' => $groupname,
-                'mailNickname' => $mailalias,
+                //'mailNickname' => $mailalias,
             ];
-        
-            $this->graphclient->update_group($updatedexistinggroup);
-            
+            if($this->graphclient->update_group($updatedexistinggroup)) {
+                // above we update group
+                $update = true;
+            }
+        }
+
+        // only update if need
+        if($update) {
             $objectrecord = new \stdClass;
             $objectrecord->id = $course->oid;
             $objectrecord->o365name = $teamname;
             $objectrecord->timemodified = time();
             $DB->update_record('local_o365_objects', $objectrecord);
+            return true;
         }
 
-        return true;    
+        return false;
     }
     
     
@@ -767,18 +832,37 @@ class teamschannels extends \local_o365\feature\coursesync\main {
     public function update_course_team_name_extended(\stdClass $course, string $courseobjectid, string $courseo365name = null) : bool {
         global $DB;
         
+        $team = $this->get_team($courseobjectid);
+
+        if(empty($team)) {
+            $this->mtrace("Cannot obtain Teams $courseobjectid with name $courseo365name");
+            return false;
+        }
+
         $teamname = utils::get_team_display_name($course);
-        // only updat eid need
-        if($teamname != $courseo365name) {
-            $this->graphclient->update_team_name($courseobjectid, $teamname);    
+
+        $update = false;
+
+        if($team->displayName == $teamname) {
+            // case name updated but not stored
+            if($teamname != $courseo365name) {
+                $update = true;
+            }
+        } elseif($this->graphclient->update_team_name($courseobjectid, $teamname)) {
+            // above we update team
+            $update = true;
+        }
+
+        if($update) {
             $objectrecord = new \stdClass;
             $objectrecord->id = $course->oid;
             $objectrecord->o365name = $teamname;
             $objectrecord->timemodified = time();
             $DB->update_record('local_o365_objects', $objectrecord);
+            return true;
         }
 
-        return true;    
+        return false;
     }
     
     
@@ -1139,9 +1223,6 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         $this->mtrace('Start syncing channels.');
         $this->mtrace('Tenant has education license: ' . ($this->haseducationlicense ? 'yes' : 'no'));
 
-        // Process courses with channels that have been "soft-deleted".
-        //$this->restore_soft_deleted_channels();
-
         // Process courses having teams but not channels.
         $this->process_courses_without_channels();
 
@@ -1167,9 +1248,9 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         $sql = "SELECT g.*, ct.objectid AS courseteamid, tg.objectid AS teamfromgroup
                   FROM {groups} g
              LEFT JOIN {local_o365_objects} obj ON obj.type = :type1 AND obj.subtype = :subtype1 AND obj.moodleid = g.id 
-             LEFT JOIN {local_o365_objects} ct ON ct.type = :type2 AND ct.subtype = courseteam AND ct.moodleid = g.courseid
-             LEFT JOIN {local_o365_objects} tg ON tg.type = :type3 AND tg.subtype = teamfromgroup AND tg.moodleid = g.courseid
-             LEFT JOIN {local_o365_objects} sds ON sds.type = :type4 AND sds.subtype = ? AND sds.moodleid = g.courseid
+             LEFT JOIN {local_o365_objects} ct ON ct.type = :type2 AND ct.subtype = :subtype2 AND ct.moodleid = g.courseid
+             LEFT JOIN {local_o365_objects} tg ON tg.type = :type3 AND tg.subtype = :subtype3 AND tg.moodleid = g.courseid
+             LEFT JOIN {local_o365_objects} sds ON sds.type = :type4 AND sds.subtype = :subtype4 AND sds.moodleid = g.courseid
                  WHERE g.idnumber != '' AND obj.objectid IS NULL AND sds.id IS NULL  
                    AND (ct.objectid IS NOT NULL OR tg.objectid IS NOT NULL) 
                    AND NOT (ct.objectid IS NULL AND tg.objectid IS NULL)
@@ -1246,9 +1327,11 @@ class teamschannels extends \local_o365\feature\coursesync\main {
 
         $courses = $DB->get_recordset_sql($sql, $params);
         if($courses->valid()) {
+            $coursessync = new coursessync($this->graphclient, $this->debug);
+
             foreach($courses as $course) {
                 try {
-                    $this->resync_group_owners_and_members($course->courseid, $course->objectid);    
+                    $coursessync->resync_group_owners_and_members($course->courseid, $course->objectid);
     
                 } catch (\Exception $e) {
                     // Do nothing.
@@ -1361,37 +1444,75 @@ class teamschannels extends \local_o365\feature\coursesync\main {
         global $DB;    
     
         $sitelabel = get_config('local_o365teams', 'sitelabel');
+        $updatecourses = get_config('local_o365teams', 'namesupdate');
         $this->mtrace("Changing o365 course/groups names to extended names");            
     
-        if(!$sitelabel) {
-            mtrace("    NO sitealbel, nothing to do.");        
+        if(!$updatecourses && !$sitelabel) {
+            $this->mtrace("    NO sitealbel and not all, nothing to do.");
             return true;
         }
-    
+
+        // Preparation work - get list of courses that have course sync enabled.
+        $coursesyncsetting = get_config('local_o365', 'coursesync');
+        if ($coursesyncsetting === 'onall' || $coursesyncsetting === 'oncustom') {
+            $coursesenabled = utils::get_enabled_courses();
+            if (empty($coursesenabled)) {
+                $this->mtrace('Custom group creation is enabled, but no courses are enabled.');
+                return false;
+            }
+        }
+
         // Get course groups without sitelabel in o365 name
         list($insql, $params) = $DB->get_in_or_equal(['course','courseteam', 'teamfromgroup']);
-        $notsitelabel = $DB->sql_like('o.o365name', '?', true, true, true);
-        $params[] = "%$sitelabel%";
+        $wheresitelabel = '';
+        if($updatecourses) {
+            $notsitelabel = ($updatecourses == 'site') ? false : true;
+            $wheresitelabel = 'AND ' . $DB->sql_like('o.o365name', '?', true, true, $notsitelabel);
+            $params[] = "%$sitelabel%";
+        }
+
         $sql = "SELECT o.id as oid, o.objectid, o.subtype, o.o365name, o.moodleid AS id, c.fullname, c.shortname, c.idnumber
                   FROM {local_o365_objects} o 
                   JOIN {course} c ON c.id = o.moodleid
-                 WHERE o.type = 'group' AND o.subtype $insql 
-                   AND $notsitelabel ";
-    
+                 WHERE o.type = 'group' AND o.subtype $insql $wheresitelabel ";
+
+        [$coursesinsql, $coursesparams] = $DB->get_in_or_equal($coursesenabled);
+        if (!empty($coursesinsql)) {
+            //$sql .= ' AND c.id ' . $coursesinsql;
+            //$params = array_merge($params, $coursesparams);
+        }
+
         $courses = $DB->get_recordset_sql($sql, $params);    
         if($courses->valid()) {
+            $coursesprocessed = 0;
+            $courselimit = get_config('local_o365', 'courses_per_task');
+            if (!$courselimit) {
+                $courselimit = 20;
+            }
+
             foreach($courses as $course) {
+                if ($coursesprocessed > $courselimit) {
+                    $this->mtrace('Course processing limit of ' . $courselimit . ' reached. Exit.');
+                    break;
+                }
+
                 try {
+
                     if($course->subtype == 'course') {
-                        $this->update_course_group_name_extended($course, $course->objectid, $course->o365name); 
-                    } elseif($course->subtype == 'courseteam' || $course->subtype == 'teamfromgroup') { 
-                        $this->update_course_team_name_extended($course, $course->objectid, $course->o365name); 
+                        if($this->update_course_group_name_extended($course, $course->objectid, $course->o365name)) {
+                            $coursesprocessed++;
+                        }
+                    } elseif($course->subtype == 'courseteam' || $course->subtype == 'teamfromgroup') {
+                        if($this->update_course_team_name_extended($course, $course->objectid, $course->o365name)) {
+                            $coursesprocessed++;
+                        }
                     }
-                    
+
+
                 } catch (\Exception $e) {
                     // Do nothing.
-                    $this->mtrace("    ...   name change failed.  " . $e->getMessage());
-                }                
+                    $this->mtrace("    ...   name change failed for '{$course->subtype}' named '{$course->o365name}': " . $e->getMessage() );
+                }
             }
             $courses->close();
         } else {

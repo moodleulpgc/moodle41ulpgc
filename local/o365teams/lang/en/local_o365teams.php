@@ -80,7 +80,11 @@ $string['settings_header_usersmatch'] = 'User Matching';
 $string['settings_header_usersmatch_desc'] = 'The following settings control user matching synchronization between Microsoft 365 and Moodle.';
 $string['settings_sitelabel'] = 'Site label';
 $string['settings_sitelabel_details'] = 'A  label to include in all Group/Teams names. Allow to identify site/annuality when several moodle platforms connected to the same MS-Office tenant.';
+$string['settings_namesupdate'] = 'Courses to update Teams name';
+$string['settings_namesupdate_desc'] = 'Which courses to process for updating Teams name (searching on Teams name). ';
 
+$string['namesupdate_site'] = 'Containing site label';
+$string['namesupdate_not'] = 'NOT containing site label';
 $string['settings_teams_privatechannels'] = 'Create private channels';
 $string['settings_teams_privatechannels_details'] = 'If enabled, a private channel wil be created for each moodle group.';
 $string['settings_teams_channel_pattern'] = 'IDnumber pattern for channel';

@@ -53,8 +53,18 @@ class unified extends \local_o365\rest\unified {
         $message = $response['error']['code'] . '. ' . $response['error']['message'];
         \core\notification::add($message, 
                         \core\output\notification::NOTIFY_ERROR);    
-    }    
+    }
     
+    /**
+     * @param string API $response array
+     *
+     * @return nothing
+     */
+    public static function debugging_error($message) {
+        mtrace("Estoy en local_o365teams\\rest\\unified $message  ");
+    }
+
+
     /**
      * Create a private channel for agroup in a Teams.
      *
