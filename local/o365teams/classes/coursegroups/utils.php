@@ -52,7 +52,7 @@ class utils extends \local_o365\feature\coursesync\utils {
         $createusergroups = get_config('local_o365teams', 'createusergroups');
         $teamsprivatechannels = get_config('local_o365teams', 'teamsprivatechannels');
         
-        return [(bool)$createteams, (bool)$createusergroups, (bool)$teamsprivatechannels];
+        return [(bool)$createteams, (bool)$teamsprivatechannels, (bool)$createusergroups];
     }    
 
     /**
@@ -380,7 +380,7 @@ class utils extends \local_o365\feature\coursesync\utils {
                 }
                 $coursepart = $course->shortname.'-'.$sitelabel;
                 $coursepart .= $course->fullname;
-                $sitelabel = '';            
+                $sitelabel = '';
 /*            
                 if (empty($group) ) {   
                     //this is a name for a course

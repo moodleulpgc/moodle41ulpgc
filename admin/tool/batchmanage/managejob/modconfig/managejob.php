@@ -298,6 +298,7 @@ class batchmanage_managejob_modconfig extends batchmanage_managejob_plugin {
             
             $oldcourse = clone($COURSE);
             $COURSE = $course;
+            include_once($CFG->dirroot.'/mod/'.$modselector->module.'/mod_form.php');
             $mformclassname = 'mod_'.$modselector->module.'_mod_form';
             $mform = new $mformclassname($moduleinfo, $mod->cwsection, null, $course);
             $mform->set_data($moduleinfo);

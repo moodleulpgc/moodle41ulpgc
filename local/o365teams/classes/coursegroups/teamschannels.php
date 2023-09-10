@@ -789,17 +789,27 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
         $mailalias = utils::get_group_mail_alias($course, $group);
 
         $update = false;
-        if($group365->displayName == $groupname) {
-            // case name updated but not stored
-            if($groupname != $groupo365name) {
-                $update = true;
+        $updatedexistinggroup = [];
+        // 365 API get_group() returns array, not obsject
+        if(isset($group365['displayName'])) {
+            if($group365['displayName'] != $groupname) {
+                $updatedexistinggroup['displayName'] = $groupname;
             }
-        } else {
-            $updatedexistinggroup = [
-                'id' => $groupobjectid,
-                'displayName' => $groupname,
-                //'mailNickname' => $mailalias,
-            ];
+            if($group365['displayName'] == $groupname) {
+                // case name updated but not stored
+                if($groupname != $groupo365name) {
+                    $update = true;
+                }
+            }
+        }
+        if(isset($group365['mailNickname'])) {
+            if($group365['mailNickname'] != $mailalias) {
+                $updatedexistinggroup['mailNickname'] = $mailalias;
+            }
+        }
+
+        if(!empty($updatedexistinggroup)) {
+            $updatedexistinggroup['id'] = $groupobjectid;
             if($this->graphclient->update_group($updatedexistinggroup)) {
                 // above we update group
                 $update = true;
@@ -810,7 +820,7 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
         if($update) {
             $objectrecord = new \stdClass;
             $objectrecord->id = $course->oid;
-            $objectrecord->o365name = $teamname;
+            $objectrecord->o365name = $groupname;
             $objectrecord->timemodified = time();
             $DB->update_record('local_o365_objects', $objectrecord);
             return true;
@@ -1054,8 +1064,8 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
             return false;
         }
 
-        $o365groupdisplayname = \local_o365\feature\coursesync\utils::get_group_display_name($courserec, $grouprec);
-        $o365groupmailalias = \local_o365\feature\coursesync\utils::get_group_mail_alias($courserec, $grouprec);
+        $o365groupdisplayname = \local_o365teams\coursegroups\utis::get_group_display_name($courserec, $grouprec);
+        $o365groupmailalias = \local_o365teams\coursegroups\utils::get_group_mail_alias($courserec, $grouprec);
 
         $extra = [
             'description' => $grouprec->description

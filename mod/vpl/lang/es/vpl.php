@@ -20,11 +20,11 @@
 $string['about'] = 'Acerca de';
 $string['acceptcertificates'] = 'Aceptar certificados auto firmados';
 $string['acceptcertificates_description'] = 'Si sus servidores de ejecución NO están usando certificados auto firmados desmarque';
-$string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.</p>
+$string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.<p/>
 <p>Para usar una conexión cifrada con los servidores de ejecución usted debe aceptar sus certificados de seguridad.</p>
 <p>Si no quiere aceptar los certificados o tiene problemas con ese proceso, puede
 probar a usar una conexión http (no cifrada) u otro navegador.</p>
-<p>Por favor, pulse sobre los siguientes enlaces (Servidor #) y acepte los certificados ofrecidos.</p>';
+<p>Por favor, pulse sobre los siguientes enlaces (Sevidor #) y acepte los certificados ofrecidos.</p>';
 $string['addfile'] = 'Añadir fichero';
 $string['advanced'] = 'Avanzado';
 $string['allfiles'] = 'Todos los ficheros';
@@ -37,6 +37,9 @@ $string['autodetect'] = 'Autodetectar';
 $string['averageperiods'] = 'Periodos promedio {$a}';
 $string['averagetime'] = 'Tiempo promedio {$a}';
 $string['basedon'] = 'Basado en';
+$string['basedon_missed'] = 'Error: Se perdió la actividad "basado en" al restaurar o importar. Por favor, incluya "{$a}"';
+$string['basedon_chain_broken'] = 'Error: La cadena de actividades "basado en" está rota. Revise dichas actividades.';
+$string['basedon_deleted'] = 'Error: Se perdió la actividad "basado en". Puede que se borrara. Establezca una actividad "basado en';
 $string['basic'] = 'Básico';
 $string['binaryfile'] = 'Fichero binario';
 $string['breakpoint'] = 'Punto de parada';
@@ -265,6 +268,7 @@ $string['scanningdir'] = 'Examinando el directorio ...';
 $string['scanoptions'] = 'Opciones de búsqueda';
 $string['scanother'] = 'Buscar similaridad en otras fuentes';
 $string['scanzipfile'] = 'Fichero zip';
+$string['search:activity'] = 'Virtual Programming Lab - información de la actividad (nombre y descripción)';
 $string['sebkeys'] = 'Clave(s) de examen SEB';
 $string['sebkeys_help'] = 'Las claves de examen SEB se obtienen de los ficheros .seb<br>Este mecanismo es más seguro que sólo comprobar el navegador.<br>https://safeexambrowser.org';
 $string['sebrequired'] = 'Se requiere navegador SEB';
@@ -310,7 +314,8 @@ $string['use_xmlrpc_description'] = 'Si se establece, el sistema usara XML-RPC e
 $string['usevariations'] = 'Usar variaciones';
 $string['usewatermarks'] = 'Usar marcas de agua';
 $string['usewatermarks_description'] = 'Añade marcas de agua a los ficheros de los estudiantes (sólo en lenguajes soportados)';
-$string['variation'] = 'Variación {$a}';
+$string['variation_n'] = 'Variación {$a}';
+$string['variation_n_i'] = 'Variación {$a->number}: {$a->identification}';
 $string['variation_options'] = 'Opciones de variación';
 $string['variations'] = 'Variaciones';
 $string['variations_unused'] = 'Esta actividad tiene variaciones, pero están desactivadas';

@@ -26,7 +26,9 @@
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 // For that reason, we can't even rely on $CFG->admin being available here.
 
+// @codeCoverageIgnoreStart
 require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
+// @codeCoverageIgnoreEnd
 
 use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
 
@@ -53,10 +55,6 @@ class behat_availability_coursecompleted extends behat_base {
         $ccompletion->mark_complete(time());
         $task = new \core\task\completion_regular_task();
         ob_start();
-        $task->execute();
-        // Hopefully, some day MDL-33320 will be fixed and all these sleeps
-        // and double cron calls in behat and unit tests will be removed.
-        sleep(1);
         $task->execute();
         ob_end_clean();
     }

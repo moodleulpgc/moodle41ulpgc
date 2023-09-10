@@ -21,6 +21,12 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('tracker/closingdays', get_string('closingdays', 'tracker'),
                        get_string('configclosingdays', 'tracker'), 3, PARAM_INT));
 
+    $settings->add(new admin_setting_configtext('tracker/archivedays', get_string('archivedays', 'tracker'),
+                       get_string('configarchivedays', 'tracker'), 30, PARAM_INT));
+
+    $settings->add(new admin_setting_configtext('tracker/archivedate', get_string('archivedate', 'tracker'),
+                       get_string('configarchivedate', 'tracker'), '', PARAM_ALPHANUMEXT));
+
     $settings->add(new admin_setting_configtext('tracker/reportmaxfiles', get_string('reportmaxfiles', 'tracker'),
                        get_string('configreportmaxfiles', 'tracker'), 3, PARAM_INT));
 

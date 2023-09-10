@@ -64,13 +64,17 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
             //$coursenode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'courselog', new pix_icon('i/report', ''));
             //$url = new moodle_url('/report/loglive/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
             //$coursenode->add(get_string('pluginname', 'report_loglive'), $url, navigation_node::TYPE_SETTING, null, 'courseloglive', new pix_icon('i/report', ''));
-
-            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin', 'contextlocking'];
+            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin', 'contextlocking', 'tool_lifecycle'];
             $name = get_string('archivereuse', 'local_ulpgccore');
             local_ulpgccore_regroup_nav_nodes($coursenode, $links, $name, 'course_archive_reuse');
+
+            if ($node = $PAGE->navigation->find('contentbank', navigation_node::TYPE_CUSTOM)) {
+                $node->set_force_into_more_menu(false);
+                $coursenode->add_node($node, 'users');
+            }
         }
     }
-    
+
    if ($settingsnode = $nav->find('users', navigation_node::TYPE_CONTAINER)) {
         $url = new moodle_url('/local/ulpgccore/exportusers.php', array('id'=>$PAGE->course->id));
         $node = $settingsnode->create(get_string('exportusers', 'local_ulpgccore'), $url, navigation_node::TYPE_SETTING, null, 'exportusers', new pix_icon('i/export', ''));
@@ -144,6 +148,7 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
 
     //print_object($PAGE->navigation->get_children_key_list());
     //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->navigation));
+    //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($nav));
 /*
     print_object("Estoy en localulpgccore");
     print_object($PAGE->primarynav->get_children_key_list());
@@ -209,12 +214,15 @@ function local_ulpgccore_boostnav_get_all_childrenkeys(navigation_node $navigati
     } else {
         // Get own own children keys.
         $childrennodeskeys = $navigationnode->get_children_key_list();
+        print_object($childrennodeskeys);
+
         // Get all children keys of our children recursively.
         foreach ($childrennodeskeys as $ck) {
             print_object("start key: $ck");
             $n = $navigationnode->get($ck);
             $ch = local_ulpgccore_boostnav_get_all_childrenkeys($navigationnode->get($ck));
-            print_object($ch);
+            //$ch = $n->get_children_key_list();
+            //print_object($ch);
             print_object("key end: $ck  -- name {$n->text}  type: {$n->type} ---------------------------");
             $allchildren = array_merge($allchildren, $ch);
         }

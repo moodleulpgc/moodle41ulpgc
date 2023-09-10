@@ -612,6 +612,11 @@ $string['required'] = 'Required';
 $string['requiredelement'] = 'Required field that cannot be left blank';
 $string['lastcomment'] = 'Comments';
 $string['closeissue'] = 'Close issue';
+$string['archivedays'] = 'Archive days lag';
+$string['configarchivedays'] = 'If a value is set then issues in testing state will be closed after these days, even if NOT seen by user.';
+$string['archivedate'] = 'Archive date';
+$string['configarchivedate'] = 'If set, issues in testing state will be closed after this date if modified before the date.<br>
+Use ISO 8601 format YYYY-MM-DAY or any other format parseable by PHP <i>strtotime</i> function ';
 $string['closingdays'] = 'Closing days lag';
 $string['configclosingdays'] = 'If a value is set then issues in testing state and already seen by users will be closed after these days.';
 $string['resolvingdays'] = 'Resolving days';

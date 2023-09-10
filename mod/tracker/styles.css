@@ -10,7 +10,7 @@
 .path-mod-tracker .timelabel{
     text-align: left;
     vertical-align: bottom;
-    font-size : 0.9em;
+    /* font-size : 0.9em; */
     color: #808080;
     width: 15%;
     max-width: 10rem;
@@ -114,19 +114,19 @@
 .path-mod-tracker .list_priority{
     text-align: center;
     vertical-align: bottom;
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
 }
 
 .path-mod-tracker .list_issuenumber{
     text-align: left;
     vertical-align: bottom;
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
 }
 
 .path-mod-tracker .list_summary{
     text-align: left ;
     vertical-align: bottom;
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
     max-width: 40%;
     min-width: 20%;
 }
@@ -134,7 +134,7 @@
 .path-mod-tracker .list_reportedby{
     text-align: left;
     vertical-align: bottom;
-    font-size: 0.9em ;
+    /* font-size: 0.9em ; */
     color: #4D4D4D;
     width:10%;
     min-width: 8rem;
@@ -143,7 +143,7 @@
 .path-mod-tracker .list_assignedto{
     text-align: left;
     vertical-align: bottom;
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
     color: #4D4D4D;
     width: 10%;
     min-width: 9rem;
@@ -225,7 +225,7 @@
 .tracker-issue table td {border:1px solid #DDD; border-collapse:collapse;}
 
 .tracker-issue .visiblediv td h2 {
-    font-size: 1.3em;
+    /* font-size: 1.3em; */
     font-weight: bold;
     line-height: 1.5em;
 }
@@ -251,7 +251,7 @@
 .tracker-issue-summary{
     background-color:#fcfcfc;
     border:1px solid #f0f0f0;
-    font-size:1.9em;
+    /* font-size:1.9em; */
     padding:10px;
 }
 

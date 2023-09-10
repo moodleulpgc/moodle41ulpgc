@@ -60,12 +60,17 @@ class close_answered extends \core\task\scheduled_task {
             $resolved = RESOLVED;
             $testing = TESTING;
             $days = get_config('tracker', 'closingdays');
+            $userlimit = strtotime("-{$days} days"); //time() - 86400;
+            $days = get_config('tracker', 'archivedays');
             $timelimit = strtotime("-{$days} days"); //time() - 86400;
+            $timedate = strtotime(get_config('tracker', 'archivedate'));
             foreach($trackers as $tracker) {
-                $select = " trackerid = ? AND status = ? AND (userlastseen > resolvermodified AND resolvermodified > usermodified AND resolvermodified < ?)  ";
-                $DB->set_field_select('tracker_issue', 'status', $resolved, $select, array($tracker->id, $testing, $timelimit));
-                mtrace("...closing answered and viewed issues older than ".userdate($timelimit). " on tracker {$tracker->id} " );
-            }        
+                $select = " trackerid = ? AND status = ? AND (((userlastseen > resolvermodified) AND (userlastseen < ?))
+                            OR ((resolvermodified >= usermodified) AND (resolvermodified < ?))
+                            OR ((resolvermodified >= usermodified) AND (resolvermodified < ?)) )  ";
+                $DB->set_field_select('tracker_issue', 'status', $resolved, $select, array($tracker->id, $testing, $userlimit, $timelimit, $timedate));
+                mtrace("...closing answered and viewed issues older than ".userdate($userlimit). " /  " .userdate($timelimit)." on tracker {$tracker->id} " );
+            }
         }
     }
 }

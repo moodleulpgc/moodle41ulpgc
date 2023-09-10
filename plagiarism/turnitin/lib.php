@@ -1654,6 +1654,10 @@ class plagiarism_plugin_turnitin extends plagiarism_plugin {
         global $CFG;
 
         // Create module object.
+        // ecastro ULPGC to suuport adhoc modconfig non aborting
+        if($cmid == 0 && empty($modname)) {
+            return;
+        }
         $moduleclass = "turnitin_".$modname;
         $moduleobject = new $moduleclass;
 
