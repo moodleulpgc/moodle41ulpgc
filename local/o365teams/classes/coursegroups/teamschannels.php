@@ -292,14 +292,7 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
         $this->mtrace('Adding owners as members too, into newly created channel');
         foreach($owners as $memberid) {
             $this->graphclient->add_member_to_channel($teamsobjectid, $channelobjectrec['objectid'], $memberid);
-            
-            
-            
-            
-            
         }
-        
-        
         
         foreach ($toadd as $userid => $userobjectid) {
             $this->mtrace(' Adding '.$userobjectid.' (muserid: '.$userid.')...', 2);
@@ -399,10 +392,14 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
         }
 
         if (\local_o365\utils::is_configured() !== true || \local_o365\feature\coursesync\utils::is_enabled() !== true) {
+            $msg = 'o365 not configured or enabled';
+            \local_o365\utils::debug($msg, $caller);
             return false;
         }
 
         if (empty($this->graphclient)) {
+            $msg = 'Could not find Graphclient';
+            \local_o365\utils::debug($msg, $caller);
             return false;
         }
         

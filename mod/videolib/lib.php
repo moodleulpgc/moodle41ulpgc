@@ -337,6 +337,19 @@ function videolib_check_updates_since(cm_info $cm, $from, $filter = array()) {
 }
 
 /**
+ *
+ * @param object $videolib
+ * @return plugin videolibsource class subtype
+ */
+function videolib_get_source_plugin($videolib, $parameters = null) {
+    global $CFG;
+    include_once($CFG->dirroot.'/mod/videolib/source/'.$videolib->source.'/source.php');
+    $classname = 'videolibsource_'.$videolib->source;
+
+    return new $classname($videolib, $parameters);
+}
+
+/**
  * This function receives a calendar event and returns the action associated with it, or null if there is none.
  *
  * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event

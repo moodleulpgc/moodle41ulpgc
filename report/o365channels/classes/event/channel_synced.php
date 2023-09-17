@@ -52,8 +52,8 @@ class channel_synced extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        $o365id = $this->['other']['o365objectid'];
-        $type = isset($this->['other']['subtype']) ? $this->['other']['subtype'] : 'Team channel';
+        $o365id = $this->other['o365objectid'];
+        $type = isset($this->other['subtype']) ? $this->other['subtype'] : 'Team channel';
         return "The user with id '$this->userid' has synced membership in $type object with id '{$this->objectid}',
                 related to o365 resource '{$o365id}'. ";
     }

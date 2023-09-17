@@ -494,7 +494,7 @@ class utils extends \local_o365\feature\coursesync\utils {
     public static function get_teams_object(int $courseid, string $type = '') {
         global $DB;
         
-        $subtypes = ['courseteam', 'teamforgroup'];
+        $subtypes = ['courseteam', 'teamfromgroup'];
         if($type) {
             $subtypes = [$type];
         }
@@ -503,7 +503,7 @@ class utils extends \local_o365\feature\coursesync\utils {
         $params[] = 'group';
         $params[] = $courseid;
 
-        $object = $DB->get_record_select('local_o365_objects', $select, $params, IGNORE_MULTIPLE);
+        $object = $DB->get_record_select('local_o365_objects', $select, $params, '*', IGNORE_MULTIPLE);
         if (empty($object)) {
             return false;
         }

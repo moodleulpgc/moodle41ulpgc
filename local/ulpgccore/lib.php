@@ -783,7 +783,7 @@ function local_ulpgccore_exportuser_row($row) {
 function local_ulpgccore_course_recent_activity($course, $username = '' ) {
     global $CFG, $DB, $USER;
 
-    if(!$username) {
+    if($username) {
         $user = $DB->get_record('user', ['username' => $username], 'id, idnumber, lastlogin, lastaccess');
         if(empty($user)) {
             return false;
@@ -798,7 +798,7 @@ function local_ulpgccore_course_recent_activity($course, $username = '' ) {
     } else {
         $user = $USER;
     }
-    
+
     if(!isset($user->ulpgclastactivity)) {
         $user->ulpgclastactivity = array();
         $user->ulpgclastactivity[$course->id] = 0;

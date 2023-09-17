@@ -52,7 +52,7 @@ class team_synced extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        $o365id = $this->['other']['o365objectid'];
+        $o365id = $this->other['o365objectid'];
         return "The user with id '$this->userid' has updated membership in Team object with id '{$this->objectid}',
                 related to o365 resource '{$o365id}'. ";
     }

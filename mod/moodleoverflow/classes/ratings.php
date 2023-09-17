@@ -653,15 +653,19 @@ class ratings {
             $userid = $USER->id;
         }
 
+        //return [];
+
         $sql = "SELECT p.userid, COUNT(p.id) AS posts,
                         (SELECT COUNT(p.id)
                            FROM {moodleoverflow_posts} p2
                            JOIN {moodleoverflow_discussions} d2 ON p2.discussion = d2.id AND p2.parent = d.firstpost
                           WHERE  d2.moodleoverflow = :moid2 AND p2.userid = :userid2
+                       GROUP BY p2.userid
                         ) AS answers,
                         (SELECT COUNT(r.id)
                            FROM {moodleoverflow_ratings} r
                           WHERE  r.moodleoverflowid = :moid3 AND r.userid = :userid3 AND (r.rating > 1 AND r.rating < 10)
+                       GROUP BY r.userid
                         ) AS votes
                     FROM {moodleoverflow_posts} p
                     JOIN {moodleoverflow_discussions} d ON p.discussion = d.id
@@ -673,8 +677,6 @@ class ratings {
                     'userid1' => $userid, 'userid2' => $userid, 'userid3' => $userid];
         return $DB->get_records_sql($sql, $params);
     }
-
-
 
     /**
      * Get the reputation of a user within a course.

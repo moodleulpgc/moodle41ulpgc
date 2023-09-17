@@ -62,7 +62,7 @@ class view implements \renderable, \templatable {
 
         $data = [
             'wwwroot' => $CFG->wwwroot,
-            'intro' => $intro,
+            'intro' => '', //$intro, // ecastro ULPGC, intro in activity header
             'showMenu' => $tab->displaymenu,
             'menu' => $this->getTabMenuContent(),
             'tabs' => $this->getTabContent()
