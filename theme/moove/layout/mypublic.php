@@ -49,6 +49,20 @@ $userimg->size = 100;
 
 $context = context_course::instance(SITEID);
 
+// ecastro ULPGC enforce user image protection
+$u = $userimg->user;
+// only check permissions when viewable picture
+if($u->picture && !$u->imagealt && $hidepicture = get_config('local_ulpgccore', 'hidepicture')) {
+    $ctx = ($courseid > 1) ? context_course::instance($courseid) : $context;
+    if(!has_capability('moodle/course:viewhiddenuserfields', $ctx)) {
+        $userimg->user->picture = 0;
+    }
+}
+if($userimg->user->picture) {
+    $userimg->size = 160;
+}
+// ecastro ULPGC enforce user image protection
+
 $extraclasses = [];
 $secondarynavigation = false;
 $overflow = '';

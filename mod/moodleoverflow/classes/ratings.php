@@ -653,8 +653,6 @@ class ratings {
             $userid = $USER->id;
         }
 
-        //return [];
-
         $sql = "SELECT p.userid, COUNT(p.id) AS posts,
                         (SELECT COUNT(p.id)
                            FROM {moodleoverflow_posts} p2

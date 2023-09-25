@@ -239,6 +239,23 @@ class assign {
         $this->enabledadvancedassign = get_config('local_ulpgcassign', 'enabledadvancedassign'); // ecastro ULPGC cache advanced assign interface
 
         $this->hidegradingpanel = get_user_preferences('assign_hidegradingpanel', false); // ecastro ULPGC 
+
+        $this->showgradingpanel = get_string('gradeverb');
+        if(!empty($this->enabledadvancedassign)) {
+            $this->showgradingpanel = false;
+            $allownewui = get_config('local_ulpgcassign', 'allownewui');
+            $allowedui =  $allownewui ? explode(',', $allownewui) : array();
+            $enabledplugins = [];
+            foreach ($this->submissionplugins as $plugin) {
+                if ($plugin->is_enabled() && $plugin->is_visible()) {
+                    $enabledplugins[] = $plugin->get_type();
+                }
+            }
+            //print_object(($enabledplugins));
+            if(array_intersect($allowedui, $enabledplugins)) {
+                $this->showgradingpanel = get_string('onlineassess', 'local_ulpgcassign');
+            }
+        }
     }
 
     /**
@@ -5849,7 +5866,9 @@ class assign {
                 $course->startdate,
                 $this->can_grade(),
                 $isvisible,
-                $this->get_course_module()
+                $this->get_course_module(),
+                // ecastro ULPGC
+                $this->showgradingpanel
             );
         } else {
             // The active group has already been updated in groups_print_activity_menu().
@@ -5871,7 +5890,9 @@ class assign {
                 $course->startdate,
                 $this->can_grade(),
                 $isvisible,
-                $this->get_course_module()
+                $this->get_course_module(),
+                // ecastro ULPGC
+                $this->showgradingpanel
             );
         }
 
@@ -5989,7 +6010,7 @@ class assign {
         }
 
         if ($this->can_view_grades()) {
-            $actionbuttons = new \mod_assign\output\actionmenu($this->get_course_module()->id);
+            $actionbuttons = new \mod_assign\output\actionmenu($this->get_course_module()->id, $this->showgradingpanel); // ecastro ULPGC
             $o .= $this->get_renderer()->submission_actionmenu($actionbuttons);
 
             $summary = $this->get_assign_grading_summary_renderable();

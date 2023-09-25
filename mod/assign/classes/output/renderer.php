@@ -395,16 +395,14 @@ class renderer extends \plugin_renderer_base {
             $urlparams = array('id' => $summary->coursemoduleid, 'action' => 'grader');
             $url = new \moodle_url('/mod/assign/view.php', $urlparams);
             $gradestr = get_string('gradeverb');
-            if($ulpgc = get_config('local_ulpgcassign')) { // ecastro ULPGC
-                $allowedui =  $ulpgc->allownewui ? explode(',', $ulpgc->allownewui) : array();
-                $thistype = 0;
-                if($ulpgc->enabledadvancedassign &&  $allowedui && in_array($thistype, $allowedui)) {
-                    $gradestr =  get_string('onlineassess', 'local_ulpgcassign');
-                }
-            }
 
-            $o .= \html_writer::link($url, $gradestr, 
-                ['class' => 'btn btn-primary ml-1']); // ecastro ULPGC
+            if($summary->showgradingpanel) { // ecastro ULPGC
+                if(is_string($summary->showgradingpanel)) {
+                    $gradestr = $summary->showgradingpanel;
+                }
+                $o .= \html_writer::link($url, $gradestr,
+                    ['class' => 'btn btn-primary ml-1']); // ecastro ULPGC
+            }
         }
         $o .= $this->output->container_end();
 

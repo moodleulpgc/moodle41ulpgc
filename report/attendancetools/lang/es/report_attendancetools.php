@@ -29,10 +29,10 @@ $string['attendancetools:view'] = 'Ver Herramientas de Asistencia';
 $string['pluginname'] = 'Herramientas de Asistencia';
 $string['autosession'] = 'Sesión directa';
 $string['instantconfig'] = 'Parámetros de sesión directa ';
-$string['milista'] = 'Milista';
-$string['asistencia'] = 'External CRUE';
+$string['milista'] = 'MiLista';
+$string['asistenciacrue'] = 'AsistenciaULPGC';
 $string['enabled'] = 'Habilitado';
-$string['enabled_desc'] = 'If enabled, Instant sessions could be added and per session settings adjusted.';
+$string['enabled_desc'] = 'Si se activa, se podrán agregar Sesiones directas según los ajustes de sesión configurados.';
 $string['sessionstart'] = 'Inicio nominal de la sesión';
 $string['sessionstart_desc'] = 'Las sesiones directas se registrarán como empezando a una hora nominal, no la hora actual. 
 Ests ajuste indica el momento del círculo horario: horas enteras, medias horas o cuartos. ';

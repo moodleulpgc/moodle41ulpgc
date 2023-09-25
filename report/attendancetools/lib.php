@@ -95,19 +95,23 @@ function report_attendancetools_extend_navigation_module(navigation_node $naviga
                 $node = $settingsnode->create(get_string('autosession', 'report_attendancetools'), $url, navigation_node::TYPE_SETTING, null, 'autosession');
                 $navigation->add_node($node, 'roleassign');
                
+                // add asistencia.ulpgc.es
+                if($cm->idnumber == 'local_attendancewebhook') {
+                    $url = new moodle_url('https://asistencia.ulpgc.es/#/calendar', array('c'=>'profesor', 'shortname'=>$PAGE->course->shortname));
+                    $name = get_string('asistenciacrue', 'report_attendancetools');
+                    $icon = new pix_icon('i/enrolusers', $name, 'moodle', array('class' => 'iconsmall'));
+                    $navigation->add($name, $url, navigation_node::TYPE_SETTING, null, 'crueasistencia', $icon);
+                }
+                
+                $name = get_string('milista', 'report_attendancetools');
+                $icon = new pix_icon('i/permissions', 'loading', 'moodle', array('class' => 'iconsmall'));
+                $url = new moodle_url('https://www.milista.ulpgc.es/moodle.php', array('c'=>'profesor', 'shortname'=>$PAGE->course->shortname));
+                $navigation->add($name, $url, navigation_node::TYPE_SETTING, null, 'milista', $icon);
+
                 if (has_capability('mod/attendance:managetemporaryusers', $context)) {
                     $url = new moodle_url('/mod/attendance/tempusers.php', ['id'=>$cm->id]);
                     $navigation->add(get_string('tempusers', 'attendance'), $url, navigation_node::TYPE_SETTING, null, 'tempusers');
                 }
-                
-                // TODO // TODO  // TODO
-                // add assistancia.ulpgc.es
-                $url = new moodle_url('https://asistencia.ulpgc.es/moodle.php', array('c'=>'profesor', 'shortname'=>$PAGE->course->shortname));
-                $icon = ''; //html_writer::tag('i', '', ['class' => 'icon fa fa-external-link- fa-fw iconsmall']);
-                //$navigation->add(get_string('asistencia', 'report_attendancetools').$icon, $url, navigation_node::TYPE_SETTING, null, 'crueasistencia');
-                
-                $url = new moodle_url('https://www.milista.ulpgc.es/moodle.php', array('c'=>'profesor', 'shortname'=>$PAGE->course->shortname));
-                $navigation->add(get_string('milista', 'report_attendancetools').$icon, $url, navigation_node::TYPE_SETTING, null, 'milista');
 
                 $url = new moodle_url('/report/attendancetools/index.php', array('id'=>$cm->id, 'action' => 'config' ));
                 $navigation->add(get_string('instantconfig', 'report_attendancetools'), $url, navigation_node::TYPE_SETTING, null, 'attendancetoolsconfig', new pix_icon('i/duration', 'core'));
