@@ -26,7 +26,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later$this->hotquestion->instance->questionlabel
  */
 
-use \mod_hotquestion\event\course_module_viewed;
+use mod_hotquestion\event\course_module_viewed;
 
 require_once("../../config.php");
 require_once("lib.php");
@@ -39,7 +39,7 @@ if (! $cm = get_coursemodule_from_id('hotquestion', $id)) {
     throw new moodle_exception(get_string('incorrectmodule', 'hotquestion'));
 }
 
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 
 
 // Construct hotquestion instance.
@@ -79,7 +79,7 @@ if ($gradestable->is_downloading()) {
 }
 
 // Start print page.
-$hotquestionname = format_string($hq->instance->name, true, array('context' => $context));
+$hotquestionname = format_string($hq->instance->name, true, ['context' => $context]);
 echo $output->header();
 echo $output->heading($hotquestionname);
 

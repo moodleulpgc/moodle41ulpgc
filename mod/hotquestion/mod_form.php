@@ -51,14 +51,14 @@ class mod_hotquestion_mod_form extends moodleform_mod {
     public function definition() {
 
         global $COURSE, $CFG;
-        $mform =& $this->_form;
+        $mform = $this->_form;
         $hotquestionconfig = get_config('mod_hotquestion');
 
         // Adding the "general" fieldset, where all the common settings are shown.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         // Adding the standard "name" field.
-        $mform->addElement('text', 'name', get_string('hotquestionname', 'hotquestion'), array('size' => '64'));
+        $mform->addElement('text', 'name', get_string('hotquestionname', 'hotquestion'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -81,7 +81,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->addElement('header', 'entrieshdr', get_string('entries', 'hotquestion'));
 
         // Add submit instruction text field here.
-        $mform->addElement('text', 'submitdirections', get_string('inputquestion', 'hotquestion'), array('size' => '64'));
+        $mform->addElement('text', 'submitdirections', get_string('inputquestion', 'hotquestion'), ['size' => '64']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('submitdirections', PARAM_TEXT);
         } else {
@@ -93,7 +93,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->addRule('submitdirections', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
         // Add Questions label text field here.
-        $mform->addElement('text', 'questionlabel', get_string('questionlabel', 'hotquestion'), array('size' => '20'));
+        $mform->addElement('text', 'questionlabel', get_string('questionlabel', 'hotquestion'), ['size' => '20']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('questionlabel', PARAM_TEXT);
         } else {
@@ -110,11 +110,12 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->setDefault('teacherpriorityvisibility', '1');
 
         // Add Priority label text field here.
-        $mform->addElement('text',
-                           'teacherprioritylabel',
-                           get_string('teacherprioritylabel', 'hotquestion'),
-                           array('size' => '20')
-                           );
+        $mform->addElement(
+            'text',
+            'teacherprioritylabel',
+            get_string('teacherprioritylabel', 'hotquestion'),
+            ['size' => '20']
+        );
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('teacherprioritylabel', PARAM_TEXT);
         } else {
@@ -131,7 +132,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->setDefault('heatvisibility', '1');
 
         // Add Heat label text field here.
-        $mform->addElement('text', 'heatlabel', get_string('heatlabel', 'hotquestion'), array('size' => '20'));
+        $mform->addElement('text', 'heatlabel', get_string('heatlabel', 'hotquestion'), ['size' => '20']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('heatlabel', PARAM_TEXT);
         } else {
@@ -144,7 +145,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
 
         // Add Heat limit select field here.
         // Add a dropdown slector for heatlimit. 05/25/2020.
-        $tlimit = array();
+        $tlimit = [];
         for ($i = 0; $i <= 10; $i++) {
             $tlimit[] = $i;
         }
@@ -168,7 +169,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->setDefault('approval', '0');
 
         // Add Approval label text field here.
-        $mform->addElement('text', 'approvallabel', get_string('approvallabel', 'hotquestion'), array('size' => '20'));
+        $mform->addElement('text', 'approvallabel', get_string('approvallabel', 'hotquestion'), ['size' => '20']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('approvallabel', PARAM_TEXT);
         } else {
@@ -180,7 +181,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->addRule('approvallabel', get_string('maximumchars', '', 20), 'maxlength', 20, 'client');
 
         // Add Remove label text field here.
-        $mform->addElement('text', 'removelabel', get_string('removelabel', 'hotquestion'), array('size' => '20'));
+        $mform->addElement('text', 'removelabel', get_string('removelabel', 'hotquestion'), ['size' => '20']);
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('removelabel', PARAM_TEXT);
         } else {
@@ -202,16 +203,26 @@ class mod_hotquestion_mod_form extends moodleform_mod {
         $mform->addElement('header', 'availabilityhdr', get_string('availability'));
 
         $mform->addElement('date_time_selector', 'timeopen',
-                            get_string('hotquestionopentime', 'hotquestion'),
-                            array('optional' => true, 'step' => 1));
+            get_string('hotquestionopentime', 'hotquestion'),
+            ['optional' => true, 'step' => 1]
+        );
+
         $mform->addElement('date_time_selector', 'timeclose',
-                            get_string('hotquestionclosetime', 'hotquestion'),
-                            array('optional' => true, 'step' => 1));
+            get_string('hotquestionclosetime', 'hotquestion'),
+            ['optional' => true, 'step' => 1]
+        );
+
         // Contrib by Kemmotar83.
         $mform->addElement('selectyesno', 'viewaftertimeclose',
-                            get_string('viewaftertimeclose', 'hotquestion'));
+            get_string('viewaftertimeclose', 'hotquestion')
+        );
         $mform->addHelpButton('viewaftertimeclose', 'viewaftertimeclose', 'hotquestion');
-        $mform->disabledIf('viewaftertimeclose', 'timeclose[enabled]');
+        if ($hotquestionconfig->viewaftertimeclose) {
+            $mform->setDefault('viewaftertimeclose', $hotquestionconfig->viewaftertimeclose);
+            $mform->hideIf('viewaftertimeclose', 'timeclose[enabled]');
+        } else {
+            $mform->setDefault('viewaftertimeclose', '');
+        }
 
         // Contrib by ecastro ULPGC.
         // Add standard grading elements, common to all modules.
@@ -256,23 +267,40 @@ class mod_hotquestion_mod_form extends moodleform_mod {
      * @return array Array of string IDs of added items, empty array if none.
      */
     public function add_completion_rules() {
-        $mform =& $this->_form;
+        global $CFG;
 
-        $group = array();
-        $group[] =& $mform->createElement('checkbox', 'completionpostenabled', '', get_string('completionpost', 'hotquestion'));
-        $group[] =& $mform->createElement('text', 'completionpost', '', array('size' => 3));
-        $mform->setType('completionpost', PARAM_INT);
-        $mform->addGroup($group, 'completionpostgroup', get_string('completionpostgroup', 'hotquestion'), array(' '), false);
-        $mform->disabledIf('completionpost', 'completionpostenabled', 'notchecked');
+        $mform = $this->_form;
 
-        $group = array();
-        $group[] =& $mform->createElement('checkbox', 'completionvoteenabled', '', get_string('completionvote', 'hotquestion'));
-        $group[] =& $mform->createElement('text', 'completionvote', '', array('size' => 3));
-        $mform->setType('completionvote', PARAM_INT);
-        $mform->addGroup($group, 'completionvotegroup', get_string('completionvotegroup', 'hotquestion'), array(' '), false);
-        $mform->disabledIf('completionvote', 'completionvoteenabled', 'notchecked');
+        // 20230926 Changed code for Moodle 4.3.
+        if ($CFG->branch < 403) {
+            $suffix = '';
+        } else {
+            $suffix = $this->get_suffix();
+        }
 
-        return array('completionpostgroup', 'completionvotegroup');
+        $completionpostgroup = 'completionpostgroup'.$suffix;
+        $completionpostenabled = 'completionpostenabled'.$suffix;
+        $completionpostel = 'completionpost'.$suffix;
+
+        $group = [];
+        $group[] = $mform->createElement('checkbox', $completionpostenabled, '', get_string('completionpost', 'hotquestion'));
+        $group[] = $mform->createElement('text', $completionpostel, '', ['size' => 3]);
+        $mform->setType($completionpostel, PARAM_INT);
+        $mform->addGroup($group, $completionpostgroup, get_string('completionpostgroup', 'hotquestion'), [' '], false);
+        $mform->disabledIf($completionpostel, $completionpostenabled, 'notchecked');
+
+        $completionvotegroup = 'completionvotegroup'.$suffix;
+        $completionvoteenabled = 'completionvoteenabled'.$suffix;
+        $completionvoteel = 'completionvote'.$suffix;
+
+        $group = [];
+        $group[] = $mform->createElement('checkbox', $completionvoteenabled, '', get_string('completionvote', 'hotquestion'));
+        $group[] = $mform->createElement('text', $completionvoteel, '', ['size' => 3]);
+        $mform->setType($completionvoteel, PARAM_INT);
+        $mform->addGroup($group, $completionvotegroup, get_string('completionvotegroup', 'hotquestion'), [' '], false);
+        $mform->disabledIf($completionvoteel, $completionvoteenabled, 'notchecked');
+
+        return [$completionpostgroup, $completionvotegroup];
     }
 
     /**
@@ -282,6 +310,21 @@ class mod_hotquestion_mod_form extends moodleform_mod {
      * @return bool True if one or more rules is enabled, false if none are.
      */
     public function completion_rule_enabled($data) {
+        global $CFG;
+
+        // 20230926 Changed code for Moodle 4.3.
+        if ($CFG->branch < 403) {
+            $suffix = '';
+        } else {
+            $suffix = $this->get_suffix();
+        }
+
+        $completionpostenabled = 'completionpostenabled'.$suffix;
+        $completionpostel = 'completionpost' . $suffix;
+
+        $completionvoteenabled = 'completionvoteenabled'.$suffix;
+        $completionvoteel = 'completionvote'.$suffix;
+
         return (!empty($data['completionpostenabled']) && $data['completionpost'] != 0) ||
             (!empty($data['completionvoteenabled']) && $data['completionvote'] != 0);
     }
@@ -347,9 +390,9 @@ class hotquestion_form extends moodleform {
 
         list($allowanonymous, $cm) = $this->_customdata;
 
-        $temp = $DB->get_record('hotquestion', array('id' => $cm->instance));
+        $temp = $DB->get_record('hotquestion', ['id' => $cm->instance]);
 
-        $mform =& $this->_form;
+        $mform = $this->_form;
 
         // 20210218 Changed using a text editor instead of textarea.
         // $mform->addElement('editor', 'text_editor', $temp->submitdirections, 'wrap="virtual" rows="5"');
@@ -365,10 +408,10 @@ class hotquestion_form extends moodleform {
         $mform->addElement('hidden', 'id', $cm->id, 'id="hotquestion_courseid"');
         $mform->setType('id', PARAM_INT);
 
-        $submitgroup = array();
-        $submitgroup[] =& $mform->createElement('submit', 'submitbutton', get_string('postbutton', 'hotquestion'));
+        $submitgroup = [];
+        $submitgroup[] = $mform->createElement('submit', 'submitbutton', get_string('postbutton', 'hotquestion'));
         if ($allowanonymous) {
-            $submitgroup[] =& $mform->createElement('checkbox', 'anonymous', '', get_string('displayasanonymous', 'hotquestion'));
+            $submitgroup[] = $mform->createElement('checkbox', 'anonymous', '', get_string('displayasanonymous', 'hotquestion'));
             $mform->setType('anonymous', PARAM_BOOL);
         }
         $mform->addGroup($submitgroup);

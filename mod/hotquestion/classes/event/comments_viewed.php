@@ -61,8 +61,15 @@ class comments_viewed extends \core\event\comments_viewed {
      * @return array
      */
     protected function get_legacy_logdata() {
-        return(array($this->courseid, 'hotquestion', 'comments',
-            'comments.php?pageid=' . $this->objectid, $this->objectid, $this->contextinstanceid));
+        return(
+            [
+                $this->courseid,
+                'hotquestion',
+                'comments',
+                'comments.php?pageid=' . $this->objectid,
+                $this->objectid, $this->contextinstanceid,
+            ]
+        );
     }
 
     /**
@@ -71,7 +78,6 @@ class comments_viewed extends \core\event\comments_viewed {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url("/mod/hotquestion/view.php",
-                array('eid' => $this->objectid));
+        return new \moodle_url("/mod/hotquestion/view.php", ['eid' => $this->objectid]);
     }
 }

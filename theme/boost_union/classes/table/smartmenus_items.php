@@ -39,6 +39,21 @@ require_once($CFG->libdir.'/tablelib.php');
 class smartmenus_items extends \table_sql {
 
     /**
+     * @var int $count Smart menu items count.
+     */
+    private $count;
+
+    /**
+     * @var int $totalmenuitems Total menu items count.
+     */
+    private $totalmenuitems;
+
+    /**
+     * @var int $menuid Menu ID.
+     */
+    private $menuid;
+
+    /**
      * Setup table.
      *
      * @param int $menuid The menu ID.
@@ -77,6 +92,17 @@ class smartmenus_items extends \table_sql {
         // Initialize values for the updown feature.
         $this->count = 0;
         $this->totalmenuitems = $DB->count_records('theme_boost_union_menuitems');
+    }
+
+    /**
+     * Title column.
+     *
+     * @param stdclass $row Data of the item.
+     * @return string Language formatted title of item.
+     */
+    public function col_title($row) {
+        // Return the title after filter.
+        return format_string($row->title);
     }
 
     /**

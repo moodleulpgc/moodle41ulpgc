@@ -24,20 +24,20 @@
  */
 
 use mod_hotquestion\local\results;
-use \mod_hotquestion\event\course_module_instance_list_viewed;
+use mod_hotquestion\event\course_module_instance_list_viewed;
 
 require(__DIR__ . "/../../config.php");
 require_once(__DIR__ . '/locallib.php');
 
 $id = required_param('id', PARAM_INT);   // Course.
 
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 require_course_login($course);
 
 // Header.
 $strhotquestions = get_string("modulenameplural", "hotquestion");
 $PAGE->set_pagelayout('incourse');
-$PAGE->set_url('/mod/hotquestion/index.php', array('id' => $id));
+$PAGE->set_url('/mod/hotquestion/index.php', ['id' => $id]);
 $PAGE->navbar->add($strhotquestions);
 $PAGE->set_title($strhotquestions);
 $PAGE->set_heading($course->fullname);
@@ -64,8 +64,8 @@ $timenow = time();
 // Table data.
 $table = new html_table();
 
-$table->head = array();
-$table->align = array();
+$table->head = [];
+$table->align = [];
 
 if ($usesections) {
     $table->head[] = get_string('sectionname', 'format_'.$course->format);
@@ -148,7 +148,7 @@ echo "<br />";
 echo html_writer::table($table);
 
 // Trigger course module instance list event.
-$params = array('context' => context_course::instance($course->id));
+$params = ['context' => context_course::instance($course->id)];
 $event = course_module_instance_list_viewed::create($params);
 $event->add_record_snapshot('course', $course);
 $event->trigger();

@@ -132,7 +132,7 @@ function hotquestion_update_instance($hotquestion) {
 function hotquestion_delete_instance($id) {
     global $DB;
 
-    if (! $hotquestion = $DB->get_record('hotquestion', array('id' => $id))) {
+    if (! $hotquestion = $DB->get_record('hotquestion', ['id' => $id])) {
         return false;
     }
 
@@ -148,7 +148,7 @@ function hotquestion_delete_instance($id) {
     }
     \core_completion\api::update_completion_date_event($cm->id, 'hotquestion', $hotquestion->id, null);
     // Contrib by ecastro ULPGC.
-    if (! $DB->delete_records('hotquestion', array('id' => $hotquestion->id))) {
+    if (! $DB->delete_records('hotquestion', ['id' => $hotquestion->id])) {
         return false;
     }
 
@@ -164,24 +164,24 @@ function hotquestion_delete_instance($id) {
 function reset_instance($hotquestionid) {
     global $DB;
     // 20220810 Added to fix git hub issue #65.
-    $hotquestion = $DB->get_record('hotquestion', array('id' => $hotquestionid));
-    $questions = $DB->get_records('hotquestion_questions', array('hotquestion' => $hotquestionid));
+    $hotquestion = $DB->get_record('hotquestion', ['id' => $hotquestionid]);
+    $questions = $DB->get_records('hotquestion_questions', ['hotquestion' => $hotquestionid]);
     foreach ($questions as $question) {
-        if (! $DB->delete_records('hotquestion_votes', array('question' => $question->id))) {
+        if (! $DB->delete_records('hotquestion_votes', ['question' => $question->id])) {
             return false;
         }
     }
 
-    if (! $DB->delete_records('hotquestion_questions', array('hotquestion' => $hotquestionid))) {
+    if (! $DB->delete_records('hotquestion_questions', ['hotquestion' => $hotquestionid])) {
         return false;
     }
 
-    if (! $DB->delete_records('hotquestion_rounds', array('hotquestion' => $hotquestionid))) {
+    if (! $DB->delete_records('hotquestion_rounds', ['hotquestion' => $hotquestionid])) {
         return false;
     }
 
     // Contrib by ecastro ULPGC.
-    if (! $DB->delete_records('hotquestion_grades', array('hotquestion' => $hotquestionid))) {
+    if (! $DB->delete_records('hotquestion_grades', ['hotquestion' => $hotquestionid])) {
         return false;
     }
 
@@ -198,12 +198,12 @@ function reset_instance($hotquestionid) {
  */
 function get_question_list($hotquestionid) {
     global $CFG, $USER, $DB;
-    $params = array();
-    $toreturn = array();
+    $params = [];
+    $toreturn = [];
     $questionstblname = $CFG->prefix."hotquestion_questions";
     $userstblname = $CFG->prefix."user";
     $sql = 'SELECT COUNT(*) FROM {hotquestion_questions} WHERE userid>0';
-    return $DB->get_records_sql($sql, array($USER->id));
+    return $DB->get_records_sql($sql, [$USER->id]);
 }
 
 /**
@@ -253,7 +253,7 @@ function hotquestion_user_complete($course, $user, $mod, $hotquestion) {
 function hotquestion_print_recent_activity($course, $viewfullnames, $timestart) {
     global $CFG, $USER, $DB, $OUTPUT;
 
-    $dbparams = array($timestart, $course->id, 'hotquestion');
+    $dbparams = [$timestart, $course->id, 'hotquestion'];
     $userfieldsapi = \core_user\fields::for_userpic();
     $namefields = $userfieldsapi->get_sql('u', false, '', 'userid', false)->selects;
 
@@ -279,8 +279,8 @@ function hotquestion_print_recent_activity($course, $viewfullnames, $timestart) 
     $newentries = $DB->get_records_sql($sql, $dbparams);
 
     $modinfo = get_fast_modinfo($course);
-    $show = array();
-    $grader = array();
+    $show = [];
+    $grader = [];
     $showrecententries = get_config('hotquestion', 'showrecentactivity');
 
     foreach ($newentries as $anentry) {
@@ -391,14 +391,16 @@ function hotquestion_get_participants($hotquestionid) {
 function hotquestion_reset_userdata($data) {
     global $DB;
 
-    $status = array();
+    $status = [];
     if (!empty($data->reset_hotquestion)) {
-        $instances = $DB->get_records('hotquestion', array('course' => $data->courseid));
+        $instances = $DB->get_records('hotquestion', ['course' => $data->courseid]);
         foreach ($instances as $instance) {
             if (reset_instance($instance->id)) {
-                $status[] = array('component' => get_string('modulenameplural', 'hotquestion')
-                , 'item' => get_string('resethotquestion', 'hotquestion')
-                .': '.$instance->name, 'error' => false);
+                $status[] = [
+                    'component' => get_string('modulenameplural', 'hotquestion'),
+                    'item' => get_string('resethotquestion', 'hotquestion').': '.$instance->name,
+                    'error' => false,
+                ];
             }
         }
     }
@@ -490,13 +492,13 @@ function hotquestion_comment_validate($commentparam) {
     if ($commentparam->commentarea != 'hotquestion_questions') {
         throw new comment_exception('invalidcommentarea');
     }
-    if (!$record = $DB->get_record('hotquestion_questions', array('id' => $commentparam->itemid))) {
+    if (!$record = $DB->get_record('hotquestion_questions', ['id' => $commentparam->itemid])) {
         throw new comment_exception('invalidcommentitemid');
     }
-    if (!$hotquestion = $DB->get_record('hotquestion', array('id' => $record->hotquestion))) {
+    if (!$hotquestion = $DB->get_record('hotquestion', ['id' => $record->hotquestion])) {
         throw new comment_exception('invalidid', 'data');
     }
-    if (!$course = $DB->get_record('course', array('id' => $hotquestion->course))) {
+    if (!$course = $DB->get_record('course', ['id' => $hotquestion->course])) {
         throw new comment_exception('coursemisconf');
     }
     if (!$cm = get_coursemodule_from_instance('hotquestion', $hotquestion->id, $course->id)) {
@@ -513,7 +515,7 @@ function hotquestion_comment_validate($commentparam) {
     }
     // Validation for comment deletion.
     if (!empty($commentparam->commentid)) {
-        if ($comment = $DB->get_record('comments', array('id' => $commentparam->commentid))) {
+        if ($comment = $DB->get_record('comments', ['id' => $commentparam->commentid])) {
             if ($comment->commentarea != 'hotquestion_questions') {
                 throw new comment_exception('invalidcommentarea');
             }
@@ -548,7 +550,7 @@ function hotquestion_comment_validate($commentparam) {
  * @return array
  */
 function hotquestion_comment_permissions($commentparam) {
-    return array('post' => true, 'view' => true);
+    return ['post' => true, 'view' => true];
 }
 
 /**
@@ -556,11 +558,13 @@ function hotquestion_comment_permissions($commentparam) {
  * @return array
  */
 function hotquestion_get_extra_capabilities() {
-    return array('moodle/comment:post',
-                 'moodle/comment:view',
-                 'moodle/site:viewfullnames',
-                 'moodle/site:trustcontent',
-                 'moodle/site:accessallgroups');
+    return [
+        'moodle/comment:post',
+        'moodle/comment:view',
+        'moodle/site:viewfullnames',
+        'moodle/site:trustcontent',
+        'moodle/site:accessallgroups',
+    ];
 }
 
 // Contrib by ecastro ULPGC.
@@ -573,15 +577,13 @@ function hotquestion_get_extra_capabilities() {
  * @param stdClass $cm Course-module
  * @param int $userid User ID
  * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
- * @author 2022 Enrique Castro
  * @return bool True if completed, false if not. (If no conditions, then return
  *   value depends on comparison type)
  */
 function hotquestion_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
-    global $CFG;
+    global $DB, $CFG;
 
-    $hotquestion = $DB->get_record('hotquestion', array('id' => $cm->instance), '*', MUST_EXIST);
+    $hotquestion = $DB->get_record('hotquestion', ['id' => $cm->instance], '*', MUST_EXIST);
     if (!$hotquestion->completionpost && !$hotquestion->completionvote && !$hotquestion->completionpass) {
         return $type;
     }
@@ -591,7 +593,11 @@ function hotquestion_get_completion_state($course, $cm, $userid, $type) {
     // Check if the user has used up all attempts.
     if ($hotquestion->completionpost) {
         $value = $hotquestion->completionpost <=
-                 $DB->count_records('hotquestion_questions', array('hotquestion' => $hotquestion->id, 'userid' => $userid));
+            $DB->count_records('hotquestion_questions', [
+                'hotquestion' => $hotquestion->id,
+                'userid' => $userid,
+            ]
+        );
         if ($type == COMPLETION_AND) {
             $result = $result && $value;
         } else {
@@ -605,7 +611,10 @@ function hotquestion_get_completion_state($course, $cm, $userid, $type) {
                   FROM {hotquestion_votes} v
                   JOIN {hotquestion_questions} q ON q.id = v.question
                  WHERE q.hotquestion = :hotquestion AND v.voter = :userid ";
-        $params = array('hotquestion' => $hotquestion->id, 'userid' => $userid);
+        $params = [
+            'hotquestion' => $hotquestion->id,
+            'userid' => $userid,
+        ];
         $value = $hotquestion->completionvote <= $DB->count_records_sql($sql, $params);
         if ($type == COMPLETION_AND) {
             $result = $result && $value;
@@ -617,10 +626,15 @@ function hotquestion_get_completion_state($course, $cm, $userid, $type) {
     // Check for passing grade.
     if ($hotquestion->completionpass) {
         require_once($CFG->libdir . '/gradelib.php');
-        $item = grade_item::fetch(array('courseid' => $course->id, 'itemtype' => 'mod',
-                'itemmodule' => 'hotquestion', 'iteminstance' => $cm->instance, 'outcomeid' => null));
+        $item = grade_item::fetch([
+            'courseid' => $course->id,
+            'itemtype' => 'mod',
+            'itemmodule' => 'hotquestion',
+            'iteminstance' => $cm->instance,
+            'outcomeid' => null,
+        ]);
         if ($item) {
-            $grades = grade_grade::fetch_users_grades($item, array($userid), false);
+            $grades = grade_grade::fetch_users_grades($item, [$userid], false);
             if (!empty($grades[$userid])) {
                 return $grades[$userid]->is_passed($item);
             }
@@ -755,7 +769,7 @@ function hotquestion_grade_item_update($hotquestion, $grades=null) {
     require_once($CFG->libdir.'/gradelib.php');
 
     // Hot Question does not use the Moodle rating, only the whole Hot Question grade.
-    $item = array();
+    $item = [];
     $item['itemname'] = clean_param($hotquestion->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
 
@@ -857,13 +871,14 @@ function hotquestion_grade_item_delete($hotquestion) {
     require_once($CFG->libdir.'/gradelib.php');
 
     return grade_update('mod/hotquestion',
-                        $hotquestion->course,
-                        'mod',
-                        'hotquestion',
-                        $hotquestion->id,
-                        1,
-                        null,
-                        array('deleted' => 1));
+        $hotquestion->course,
+        'mod',
+        'hotquestion',
+        $hotquestion->id,
+        1,
+        null,
+        ['deleted' => 1]
+    );
 }
 
 
@@ -881,7 +896,7 @@ function hotquestion_rescale_activity_grades(stdClass $course, stdClass $cm, flo
         float $oldmax, float $newmin, float $newmax): bool {
     global $DB;
 
-    $dbparams = array('id' => $cm->instance);
+    $dbparams = ['id' => $cm->instance];
     $hotquestion = $DB->get_record('hotquestion', $dbparams);
     $hotquestion->cmid = $cm->id;
     $hotquestion->cmidnumber = $cm->idnumber;

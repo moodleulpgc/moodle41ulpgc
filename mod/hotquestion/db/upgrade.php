@@ -75,7 +75,7 @@ function xmldb_hotquestion_upgrade($oldversion=0) {
         $result = $result && $table->add_field($table, $field);
 
         // Define index course (not unique) to be added to hotquestion.
-        $result = $result && $table->add_index('course', XMLDB_INDEX_NOTUNIQUE, array('course'));
+        $result = $result && $table->add_index('course', XMLDB_INDEX_NOTUNIQUE, ['course']);
     }
 
     if ($result && $oldversion < 2007040200) {

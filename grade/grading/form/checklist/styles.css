@@ -1,4 +1,8 @@
-.gradingform_checklist {overflow:auto;padding-bottom:1.25em;max-width:720px;position:relative;}
+.gradingform_checklist {
+    overflow: auto;
+    padding-bottom: 1.25em;
+    position: relative;
+}
 
 .gradingform_checklist.editor .group .controls,
 .gradingform_checklist .group .description,

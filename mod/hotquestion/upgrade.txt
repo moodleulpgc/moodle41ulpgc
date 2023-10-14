@@ -8,6 +8,34 @@ This files describes changes in the Hot Question code.
     Activity completion should reflect that. See the ticket for details.
 20220821 HotQuestion_911 - Need to see about including grades in the Export tool.
 20230120 HotQuestion_995 - The grade table needs more info included in the download. 
+20230601 HotQuestion_1051 - $hotquestion->viewaftertimeclose in view.php at line 167
+    does not appear to work correctly.
+
+
+
+=== 4.1.8 === 2023101000
+20230926 HotQuestion_1076 - Need to implement suffix on mod_for.php for Moodle 4.3.
+    Added needed code to the mod_form.php file for both add_completion_rules and for
+    completion_rule_enabled. Made code changes as needed. See ticket for details.
+20231008 HotQuestion_1091 - Latest codechecker says "Import statements must not begin
+    with a leading backslash". Made code changes as needed. See ticket for details.
+20231008 HotQuestion_1092 - Latest codechecker requires convert from long array(),
+    to short array []. Made code changes as needed. See ticket for details.
+20231010 HotQuestion_1094 - Using v4.1.8 on IONOS moodle311 test site students cannot
+    vote/unvote. Did find in grades.php line 42 the closing bracket was missing.
+    Wound up replaceing the two HQ activities and HQ works as expected. Was due
+    to a mismatch between timeclose and viewaftertimeclose.
+20231011 HotQuestion_1095 - Need to add a viewaftertimeclose setting definition to
+    settings.php. Added at about line 132 of settings.php file.
+20231011 HotQuestion_1096 - Non-ed teacher cannot see questions if activity is closed.
+    Modified capability checks in two places in the view.php file. Down around line
+    343 and line 244.
+20231011 HotQuestion_1097 - Non-editing teacher cannot remove questions or change the
+    approval status of a question. Made code modifications for capability to rate,
+    at two places in the renderer.php file. Down around line 365 and 502. Also added
+    rate capability check at line 220 of the view.php file.
+
+
 
 
 === 4.1.7 === 2023052500 Only for M3.11 and above.

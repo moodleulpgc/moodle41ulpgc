@@ -46,7 +46,7 @@ class mod_vpl_edit {
      * @return array contents indexed by filenames
      */
     public static function filesfromide(& $postfiles) {
-        $files = Array ();
+        $files = [];
         foreach ($postfiles as $file) {
             if ( $file->encoding == 1 ) {
                 $files[$file->name] = base64_decode( $file->contents );
@@ -64,7 +64,7 @@ class mod_vpl_edit {
      * @return array of stdClass
      */
     public static function filestoide(& $from) {
-        $files = Array ();
+        $files = [];
         foreach ($from as $name => $data) {
             $file = new stdClass();
             $file->name = $name;
@@ -86,12 +86,12 @@ class mod_vpl_edit {
      * @return string[][]
      */
     public static function files2object(& $arrayfiles) {
-        $files = array ();
+        $files = [];
         foreach ($arrayfiles as $name => $data) {
-            $file = array (
+            $file = [
                     'name' => $name,
-                    'data' => $data
-            );
+                    'data' => $data,
+            ];
             $files[] = $file;
         }
         return $files;
@@ -129,11 +129,11 @@ class mod_vpl_edit {
         }
         $errormessage = '';
         if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
-            \mod_vpl\event\submission_uploaded::log( array (
+            \mod_vpl\event\submission_uploaded::log( [
                     'objectid' => $subid,
                     'context' => $vpl->get_context(),
-                    'relateduserid' => ($USER->id != $userid ? $userid : null)
-            ) );
+                    'relateduserid' => ($USER->id != $userid ? $userid : null),
+            ] );
             $response->version = $subid;
             $response->saved = true;
             return $response;
@@ -208,7 +208,7 @@ class mod_vpl_edit {
         $vplinstance = $vpl->get_instance();
         if ( $submissionid !== false ) {
             // Security checks.
-            $parms = array('id' => $submissionid, 'vpl' => $vplinstance->id);
+            $parms = ['id' => $submissionid, 'vpl' => $vplinstance->id];
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
             $res = $DB->get_records('vpl_submissions', $parms);
             if ( count($res) == 1 ) {
@@ -239,7 +239,7 @@ class mod_vpl_edit {
     }
 
     /**
-     * Request the execution (run|debug|evaluate) of a user's submission
+     * Request the execution (run|debug|evaluate|test_evaluate) of a user's submission or test_evaluate
      * @param mod_vpl $vpl
      * @param int $userid
      * @param string $action
@@ -247,28 +247,21 @@ class mod_vpl_edit {
      * @throws Exception
      * @return Object with execution information
      */
-    public static function execute($vpl, $userid, $action, $options = array()) {
+    public static function execute($vpl, $userid, $action, $options = []) {
         global $USER;
         $example = $vpl->get_instance()->example;
-        if ($action == 'test_evaluate') {
-            $lastsub = new stdClass();
-            $lastsub->vpl = $vpl->get_instance()->id;
-            $lastsub->id = 0;
-            $lastsub->userid = $USER->id;
-        } else {
-            $lastsub = $vpl->last_user_submission($userid);
-        }
-        if (! $lastsub && ! $example) {
+        $lastsub = $vpl->last_user_submission($userid);
+        if (! $lastsub && ! $example && $action != 'test_evaluate') {
             throw new Exception( get_string( 'nosubmission', VPL ) );
         }
-        if ($example) {
+        if ($example || ! $lastsub) {
             $submission = new mod_vpl_example_CE( $vpl );
         } else {
             $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         }
         $code = ['run' => 0, 'debug' => 1, 'evaluate' => 2, 'test_evaluate' => 3];
         $traslate = ['run' => 'run', 'debug' => 'debugged',
-                     'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated'];
+                     'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated', ];
         $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
         $eventclass::log( $submission );
         return $submission->run( $code[$action], $options );
@@ -293,9 +286,10 @@ class mod_vpl_edit {
         }
         $lastsub = $vpl->last_user_submission( $userid );
         if (! $lastsub) {
-            throw new Exception( get_string( 'nosubmission', VPL ) );
+            $submission = new mod_vpl_example_CE($vpl);
+        } else {
+            $submission = new mod_vpl_submission_CE($vpl, $lastsub);
         }
-        $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         return $submission->retrieveResult($processid);
     }
 
@@ -309,11 +303,8 @@ class mod_vpl_edit {
     public static function cancel($vpl, $userid, int $processid) {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission( $userid );
-        if (! $lastsub && ! $example) {
-            return get_string( 'nosubmission', VPL );
-        }
         try {
-            if ($example) {
+            if ($example || ! $lastsub) {
                 $submission = new mod_vpl_example_CE( $vpl );
             } else {
                 $submission = new mod_vpl_submission_CE( $vpl, $lastsub );

@@ -4,8 +4,14 @@ moodle-theme_boost_union
 Changes
 -------
 
-### Unreleased
+### v4.1-r13
 
+* 2023-10-01 - Bugfix: Omit PHP deprecation warnings on PHP 8.2, solves #411.
+* 2023-10-01 - Bugfix: Smart menus did not support multilanguage filters, solves #376.
+* 2023-09-28 - Release: Make sure that Smart Menu SCSS does not affect installations which do not use smart menus, solves #380.
+* 2023-09-22 - Bugfix: Transition in second level in user menu was wrong, solves #397
+* 2023-09-22 - Improvement: Smartmenus.js is only be added to the page if smart menus are really used, solves #357
+* 2023-09-22 - Bugfix: Smart menu language restriction did not respect switching language with the language switcher, solves #358.
 * 2023-09-22 - Make codechecker happier
 * 2023-09-24 - Test: Behat scenario 'Show hint for self enrolment without an enrolment key' was broken, solves #398.
 * 2023-09-22 - Improvement: Reuse Moodle core function remove_dir(), solves #369.

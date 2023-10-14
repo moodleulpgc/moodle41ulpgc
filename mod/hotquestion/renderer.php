@@ -80,7 +80,7 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
         global $DB, $CFG, $USER;
 
         $output = '';
-        $toolbuttons = array();
+        $toolbuttons = [];
         $roundp = new stdClass();
         $round = ''; // Initialize current round.
         $roundn = ''; // Initialize next round.
@@ -89,26 +89,29 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
 
         // Print export to .csv file toolbutton.
         if ($shownew) {
-            $options = array();
+            $options = [];
             $options['id'] = $this->hotquestion->cm->id;
             $options['action'] = 'download';
             $url = new moodle_url('/mod/hotquestion/view.php', $options);
             $toolbuttons[] = html_writer::link($url, $this->pix_icon('a/download_all'
                 , get_string('csvexport', 'hotquestion'))
-                , array('class' => 'toolbutton'));
+                , ['class' => 'toolbutton']);
         }
 
         // Print prev/next round toolbuttons.
         if ($this->hotquestion->get_prevround() != null) {
             $roundp = $this->hotquestion->get_prevround()->id;
             $roundn = '';
-            $url = new moodle_url('/mod/hotquestion/view.php', array('id' => $this->hotquestion->cm->id, 'round' => $roundp));
-            $toolbuttons[] = html_writer::link($url, $this->pix_icon('t/collapsed_rtl'
-                , get_string('previousround', 'hotquestion'))
-                , array('class' => 'toolbutton'));
+            $url = new moodle_url('/mod/hotquestion/view.php', ['id' => $this->hotquestion->cm->id, 'round' => $roundp]);
+            $toolbuttons[] = html_writer::link($url, $this->pix_icon('t/collapsed_rtl',
+                get_string('previousround', 'hotquestion')),
+                ['class' => 'toolbutton']
+            );
         } else {
-            $toolbuttons[] = html_writer::tag('span', $this->pix_icon('t/collapsed_empty_rtl', '')
-                , array('class' => 'dis_toolbutton'));
+            $toolbuttons[] = html_writer::tag('span',
+                $this->pix_icon('t/collapsed_empty_rtl', ''),
+                ['class' => 'dis_toolbutton']
+            );
         }
 
         // 20200215 Text added to show x of n display in toolbar.
@@ -124,17 +127,17 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
         if ($this->hotquestion->get_nextround() != null) {
             $roundn = $this->hotquestion->get_nextround()->id;
             $roundp = '';
-            $url = new moodle_url('/mod/hotquestion/view.php', array('id' => $this->hotquestion->cm->id, 'round' => $roundn));
+            $url = new moodle_url('/mod/hotquestion/view.php', ['id' => $this->hotquestion->cm->id, 'round' => $roundn]);
             $toolbuttons[] = html_writer::link($url, $this->pix_icon('t/collapsed'
-                , get_string('nextround', 'hotquestion')), array('class' => 'toolbutton'));
+                , get_string('nextround', 'hotquestion')), ['class' => 'toolbutton']);
         } else {
-            $toolbuttons[] = html_writer::tag('span', $this->pix_icon('t/collapsed_empty', ''), array('class' => 'dis_toolbutton'));
+            $toolbuttons[] = html_writer::tag('span', $this->pix_icon('t/collapsed_empty', ''), ['class' => 'dis_toolbutton']);
         }
 
         // Print new round toolbutton.
         // Added new round confirm 6/24/19.
         if ($shownew) {
-            $options = array();
+            $options = [];
             $options['id'] = $this->hotquestion->cm->id;
             $options['action'] = 'newround';
             if ($CFG->branch > 32) {
@@ -154,7 +157,7 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
         // Print remove round toolbutton.
         // Added remove round confirm 2/10/19.
         if ($shownew) {
-            $options = array();
+            $options = [];
             $options['id'] = $this->hotquestion->cm->id;
             $options['action'] = 'removeround';
             $options['round'] = $this->hotquestion->get_currentround()->id;
@@ -175,11 +178,11 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
         }
 
         // Print refresh toolbutton.
-        $url = new moodle_url('/mod/hotquestion/view.php', array('id' => $this->hotquestion->cm->id));
-        $toolbuttons[] = html_writer::link($url, $this->pix_icon('t/reload', get_string('reload')), array('class' => 'toolbutton'));
+        $url = new moodle_url('/mod/hotquestion/view.php', ['id' => $this->hotquestion->cm->id]);
+        $toolbuttons[] = html_writer::link($url, $this->pix_icon('t/reload', get_string('reload')), ['class' => 'toolbutton']);
 
         // Return all available toolbuttons.
-        $output .= html_writer::alist($toolbuttons, array('id' => 'toolbar'));
+        $output .= html_writer::alist($toolbuttons, ['id' => 'toolbar']);
         return $output;
     }
 
@@ -226,7 +229,7 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
             $table->cellpadding = 10;
             $table->class = 'generaltable';
             $table->width = '100%';
-            $table->align = array ('left', 'center', 'center', 'center', 'center');
+            $table->align = ['left', 'center', 'center', 'center', 'center'];
 
             // 20200611 If teacher changes heat setting to lower than the number of heat
             // votes already applied by a user, those users will see an error message.
@@ -239,9 +242,11 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
             // Admin, manager and teachers headings for questions, priority, heat, remove and approved headings.
             if (has_capability('mod/hotquestion:manageentries', $context)) {
                 // 20210924 Changed to format_text questionlabel column setting.
-                $table->head = array(format_text($this->hotquestion->instance->questionlabel,
-                                     $format = FORMAT_MOODLE, $options = null,
-                                     $courseiddonotuse = null));
+                $table->head = [
+                    format_text($this->hotquestion->instance->questionlabel,
+                    $format = FORMAT_MOODLE, $options = null,
+                    $courseiddonotuse = null),
+                ];
                 // Check teacher priority column visibilty settings.
                 if ($teacherpriorityvisibility) {
                     // Priority column is visible, so show the label.
@@ -281,10 +286,14 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
             } else {
                 // Students only see headings for questions, priority, and heat columns.
                 // 20210924 Changed to format_text questionlabel column setting.
-                $table->head = array(format_text($this->hotquestion->instance->questionlabel,
-                                                 $format = FORMAT_MOODLE,
-                                                 $options = null,
-                                                 $courseiddonotuse = null));
+                $table->head = [
+                    format_text(
+                        $this->hotquestion->instance->questionlabel,
+                        $format = FORMAT_MOODLE,
+                        $options = null,
+                        $courseiddonotuse = null
+                    ),
+                ];
                 // Check teacher priority column visibilty settings.
                 if ($teacherpriorityvisibility) {
                     // 20210924 Changed to format_text prioritylabel column setting.
@@ -340,10 +349,10 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
 
             // 20230519 Process all questions based on new seeunapproved question preference.
             foreach ($questions as $question) {
-                $line = array();
+                $line = [];
                 $formatoptions->para = false;
                 $content = format_text($question->content, FORMAT_MOODLE, $formatoptions);
-                $user = $DB->get_record('user', array('id' => $question->userid));
+                $user = $DB->get_record('user', ['id' => $question->userid]);
                 // If groups is set to all participants or matches current group, show the question.
                 if ((! $groups) || (groups_is_member($groups, $user->id))) {
                     // Process the question part of the row entry.
@@ -353,7 +362,8 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
                         (($question->approved)
                             && (get_user_preferences('hotquestion_seeunapproved'.$question->hotquestion) == 2))
                         // OR User is a manager and user preference is set to see unapproved questions.
-                        || ((has_capability('mod/hotquestion:manageentries', $context))
+                        || ((has_capability('mod/hotquestion:manageentries', $context)
+                            || has_capability('mod/hotquestion:rate', $context))
                             && (get_user_preferences('hotquestion_seeunapproved'.$question->hotquestion) == 1))
                         // OR Question is approved and user is NOT a manager and user preference is set to see unapproved questions.
                         || (($question->approved)
@@ -490,7 +500,8 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
                             $rtemp = $this->pix_url('t/delete');
                         }
                         // Print the remove and approve case option for teacher and manager.
-                        if (has_capability('mod/hotquestion:manageentries', $context)) {
+                        if (has_capability('mod/hotquestion:manageentries', $context)
+                            || has_capability('mod/hotquestion:rate', $context)) {
                             // Process remove column.
                             // Added delete confirm 2/8/19.
                             $remove .= '&nbsp;<a onclick="return confirm(\''
@@ -578,9 +589,12 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
     public function hotquestion_get_question_comment_count($question, $cm) {
         global $DB;
         $context = context_module::instance($cm->id);
-        if ($count = $DB->count_records('comments', array('itemid' => $question->id,
-                                                          'commentarea' => 'hotquestion_question',
-                                                          'contextid' => $context->id))) {
+        if ($count = $DB->count_records('comments', [
+            'itemid' => $question->id,
+            'commentarea' => 'hotquestion_question',
+            'contextid' => $context->id,
+            ]
+        )) {
             return $count;
         } else {
             return 0;

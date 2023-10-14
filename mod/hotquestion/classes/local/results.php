@@ -35,8 +35,8 @@ use html_writer;
 use context_module;
 use calendar_event;
 use comment;
-use \mod_hotquestion\event\comments_viewed;
-use \mod_hotquestion\event\add_question;
+use mod_hotquestion\event\comments_viewed;
+use mod_hotquestion\event\add_question;
 
 /**
  * Utility class for Hot Question results.
@@ -69,7 +69,12 @@ class results {
             $event->type = empty($hotquestion->timeclose) ? CALENDAR_EVENT_TYPE_ACTION : CALENDAR_EVENT_TYPE_STANDARD;
         }
         if ($event->id = $DB->get_field('event', 'id',
-            array('modulename' => 'hotquestion', 'instance' => $hotquestion->id, 'eventtype' => $event->eventtype))) {
+            [
+                'modulename' => 'hotquestion',
+                'instance' => $hotquestion->id,
+                'eventtype' => $event->eventtype,
+                ]
+            )) {
             if ((!empty($hotquestion->timeopen)) && ($hotquestion->timeopen > 0)) {
                 // Calendar event exists so update it.
                 $event->name = get_string('calendarstart', 'hotquestion', $hotquestion->name);
@@ -112,7 +117,12 @@ class results {
         }
         $event->eventtype = HOTQUESTION_EVENT_TYPE_CLOSE;
         if ($event->id = $DB->get_field('event', 'id',
-            array('modulename' => 'hotquestion', 'instance' => $hotquestion->id, 'eventtype' => $event->eventtype))) {
+            [
+                'modulename' => 'hotquestion',
+                'instance' => $hotquestion->id,
+                'eventtype' => $event->eventtype,
+            ]
+        )) {
             if ((!empty($hotquestion->timeclose)) && ($hotquestion->timeclose > 0)) {
                 // Calendar event exists so update it.
                 $event->name = get_string('calendarend', 'hotquestion', $hotquestion->name);
@@ -165,7 +175,7 @@ class results {
                   JOIN {modules} m ON m.id = cm.module
                  WHERE cm.instance = :hqid
                    AND m.name = 'hotquestion'";
-        $params = array();
+        $params = [];
         $params = ['hqid' => $hotquestionid];
         return $DB->get_record_sql($sql, $params);
     }
@@ -204,7 +214,7 @@ class results {
                            AND hr.endtime=0
                            AND hq.time>=hr.starttime
                            AND hq.userid>0";
-                $params = array();
+                $params = [];
                 $params = ['hqid' => $hotquestion->id] + ['gidid' => $gid->id];
                 $hotquestions = $DB->get_records_sql($sql, $params);
             }
@@ -226,7 +236,7 @@ class results {
                        AND hq.time >= hr.starttime
                        AND hq.userid = :userid";
 
-            $params = array();
+            $params = [];
             $params = ['hqid' => $hotquestion->id] + ['userid' => $USER->id];
             $hotquestions = $DB->get_records_sql($sql, $params);
 
@@ -241,7 +251,7 @@ class results {
                        AND hr.endtime = 0
                        AND hq.time >= hr.starttime
                        AND hq.userid > 0";
-            $params = array();
+            $params = [];
             $params = ['hqid' => $hotquestion->id];
             $hotquestions = $DB->get_records_sql($sql, $params);
         }
@@ -271,9 +281,13 @@ class results {
         // 20210313 Not in use yet. Part of future development.
         global $DB;
 
-        if ($count = $DB->count_records('comments', array('itemid' => $question->id,
-                                                          'commentarea' => 'hotquestion_questions',
-                                                          'contextid' => $cm->id))) {
+        if ($count = $DB->count_records('comments',
+            [
+                'itemid' => $question->id,
+                'commentarea' => 'hotquestion_questions',
+                'contextid' => $cm->id,
+            ]
+        )) {
             return $count;
         } else {
             return 0;
@@ -329,7 +343,7 @@ class results {
      * @return array
      */
     public static function hotquestion_comment_permissions($commentparam) {
-         return array('ask' => true, 'view' => true);
+         return ['ask' => true, 'view' => true];
     }
 
     /**
@@ -343,23 +357,23 @@ class results {
         $maxfiles = 99; // TODO: add some setting.
         $maxbytes = $course->maxbytes; // TODO: add some setting.
 
-        $editoroptions = array(
+        $editoroptions = [
             'trusttext' => true,
             'maxfiles' => $maxfiles,
             'maxbytes' => $maxbytes,
             'context' => $context,
-            'subdirs' => false
-        );
-        $attachmentoptions = array(
+            'subdirs' => false,
+        ];
+        $attachmentoptions = [
             'subdirs' => false,
             'maxfiles' => $maxfiles,
-            'maxbytes' => $maxbytes
-        );
+            'maxbytes' => $maxbytes,
+        ];
 
-        return array(
+        return [
             $editoroptions,
-            $attachmentoptions
-        );
+            $attachmentoptions,
+        ];
     }
 
     /**
@@ -389,10 +403,10 @@ class results {
         if (!empty($newentry->content)) {
             // If there is some actual content, then create a new record.
             $DB->insert_record('hotquestion_questions', $newentry);
-            $params = array(
+            $params = [
                 'objectid' => $hq->cm->id,
                 'context' => $context,
-            );
+            ];
             $event = add_question::create($params);
             $event->trigger();
 

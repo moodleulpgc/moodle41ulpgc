@@ -136,6 +136,11 @@ class primary extends \core\navigation\output\primary {
         $usermenu = $this->get_user_menu($output);
         $this->build_usermenus($usermenu, $locationusermenus);
 
+        // Check if any of the smartmenus are going to be included on the page.
+        // This is used as flag to include the smart menu's JS file in mustache templates later
+        // as well as for controlling the smart menu SCSS.
+        $includesmartmenu = (!empty($mainmenu) || !empty($menubarmenus) || !empty($locationusermenus) || !empty($locationbottom));
+
         return [
             'mobileprimarynav' => $mobileprimarynav,
             'moremenu' => $moremenu->export_for_template($output),
@@ -143,6 +148,7 @@ class primary extends \core\navigation\output\primary {
             'lang' => !isloggedin() || isguestuser() ? $languagemenu->export_for_template($output) : [],
             'user' => $usermenu ?? [],
             'bottombar' => $bottombardata ?? false,
+            'includesmartmenu' => $includesmartmenu ? true : false,
         ];
     }
 
@@ -178,6 +184,16 @@ class primary extends \core\navigation\output\primary {
             if (isset($menu->submenuid)) {
                 $children = $menu->children;
 
+                // Add the second level menus list before the course list to the user menu.
+                // This will have the effect that, when opening the third level submenus, the transition will go to the right.
+                $submenu = [
+                    'id' => $menu->submenuid,
+                    'title' => $menu->title ?: $menu->text,
+                ];
+                $usermenu['submenus'][] = (object) $submenu;
+                // The key of this submenu which helps later to include its children after including the necessary data.
+                $lastkey = array_key_last($usermenu['submenus']);
+
                 // Update the dividers item type.
                 array_walk($children, function(&$value) use (&$usermenu, $menu) {
                     if (isset($value['divider'])) {
@@ -196,6 +212,7 @@ class primary extends \core\navigation\output\primary {
                             'id' => $uniqueid,
                             'returnid' => $menu->submenuid, // Return the third level submenus back to its parent section.
                             'title' => $value['title'],
+                            'text' => strip_tags($value['text']), // Remove the item icon from the submenus title.
                             'items' => $value['children'],
                         ];
 
@@ -206,13 +223,9 @@ class primary extends \core\navigation\output\primary {
                     }
                 });
 
-                $submenu = [
-                    'id' => $menu->submenuid,
-                    'title' => $menu->title,
-                    'items' => $children,
-                ];
+                // Update the children elements for the submenu.
+                $usermenu['submenus'][$lastkey]->items = $children;
                 $usermenu['items'][] = $menu;
-                $usermenu['submenus'][] = (object) $submenu;
             }
         }
 

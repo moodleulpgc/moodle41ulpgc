@@ -39,6 +39,16 @@ require_once($CFG->libdir.'/tablelib.php');
 class smartmenus_menus extends \table_sql {
 
     /**
+     * @var int $count Smart menu menus count.
+     */
+    private $count;
+
+    /**
+     * @var int $totalmenus Total menu count.
+     */
+    private $totalmenus;
+
+    /**
      * Setup table.
      *
      * @throws \coding_exception
@@ -75,6 +85,28 @@ class smartmenus_menus extends \table_sql {
         // Initialize values for the updown feature.
         $this->count = 0;
         $this->totalmenus = $DB->count_records('theme_boost_union_menus');
+    }
+
+    /**
+     * Title column.
+     *
+     * @param stdclass $row Data of the menu.
+     * @return string Language formatted title of menu.
+     */
+    public function col_title($row) {
+        // Return the title after filter.
+        return format_string($row->title);
+    }
+
+    /**
+     * Description column.
+     *
+     * @param stdclass $row Data of the menu.
+     * @return string Language formatted description of menu.
+     */
+    public function col_description($row) {
+        // Return the description after filter.
+        return format_string($row->description);
     }
 
     /**

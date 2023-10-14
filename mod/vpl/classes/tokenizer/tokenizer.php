@@ -67,29 +67,29 @@ class tokenizer extends tokenizer_base {
      * Keys of this array are the token's names, and
      * values the list of all data types associated.
      */
-    protected const TOKENTYPES = array(
+    protected const TOKENTYPES = [
         "token"                 => ["string", "array_string"],
         "regex"                 => ["string"],
         "next"                  => ["string"],
-        "default_token"         => ["string"]
-    );
+        "default_token"         => ["string"],
+    ];
 
     /**
      * Group of rule's options which must be defined together.
      * This was defined in order to avoid no-sense definitions.
      */
-    protected const REQUIREDGROUPRULEOPTIONS = array(
+    protected const REQUIREDGROUPRULEOPTIONS = [
         "token"         => ["regex"],
         "regex"         => ["token"],
-    );
+    ];
 
     /**
      * List of all VPL token types used at override_tokens
      */
-    protected const VPLTOKENTYPES = array(
+    protected const VPLTOKENTYPES = [
         "vpl_identifier", "vpl_literal", "vpl_operator",
-        "vpl_reserved", "vpl_other", "vpl_null"
-    );
+        "vpl_reserved", "vpl_other", "vpl_null",
+    ];
 
     /**
      * Available names for tokens based on TextMate and ACE editor.
@@ -103,7 +103,7 @@ class tokenizer extends tokenizer_base {
      * For more information about the meaning of some names, see
      * https://macromates.com/manual/en/language_grammars at Naming Conventions section
      */
-    protected array $availabletokens = array(
+    protected array $availabletokens = [
         "comment" => null,
         "comment.line" => null,
         "comment.line.double-slash" => null,
@@ -185,7 +185,7 @@ class tokenizer extends tokenizer_base {
         "vpl_reserved" => token_type::RESERVED,
         "vpl_other" => token_type::OTHER,
         "vpl_null" => null, // Same as "" at JSON files.
-    );
+    ];
 
     /**
      * @codeCoverageIgnore
@@ -291,19 +291,17 @@ class tokenizer extends tokenizer_base {
             // @codeCoverageIgnoreEnd
         }
 
-        $tokensprepared = array();
+        $tokensprepared = [];
 
         foreach ($tokens as $dataofline) {
             foreach ($dataofline['tokens'] as $token) {
-                $cond = in_array($token->type, array_keys($this->availabletokens));
+                $cond = array_key_exists($token->type, $this->availabletokens);
                 assertf::assert($cond, null, 'token ' . $token->type . ' is not valid');
                 $type = $this->availabletokens[$token->type];
 
                 if (is_null($type) === false) {
                     if (strlen(trim($token->value)) > 0) {
-                        $tokensprepared[] = new token(
-                            $type, trim($token->value), $token->line
-                        );
+                        $tokensprepared[] = new token($type, trim($token->value), $token->line);
                     }
                 }
             }
@@ -332,7 +330,7 @@ class tokenizer extends tokenizer_base {
         $extensionsstr = implode(',', $this->extension);
         assertf::assert($hasvalidext, $this->name, $filename . ' must end with one of the extensions ' . $extensionsstr);
 
-        $infolines = array();
+        $infolines = [];
         $state = 'start';
         $numline = 0;
 
@@ -365,7 +363,7 @@ class tokenizer extends tokenizer_base {
     public function get_line_tokens(string $line, string $startstate, int $numline): array {
         $startstate = !isset($startstate) ? "" : $startstate;
         $currentstate = strcmp($startstate, "") === 0 ? "start" : $startstate;
-        $tokens = array();
+        $tokens = [];
 
         if (!isset($this->states[$currentstate])) {
             $currentstate = "start";
@@ -392,7 +390,8 @@ class tokenizer extends tokenizer_base {
                 while ($numchars < strlen($line)) {
                     self::add_token($tokens, $token, $numchars, $line);
                     $overflowval = substr($line, $lastindex, 500);
-                    $token = new token("overflow", $overflowval, $numline);
+                    // Fixes by JC 'overflow' => 'vpl_literal' 20230929.
+                    $token = new token("vpl_literal", $overflowval, $numline);
                     $lastindex += 500;
                 }
 
@@ -494,7 +493,7 @@ class tokenizer extends tokenizer_base {
     // (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js).
     private function prepare_tokenizer(string $rulefilename): void {
         foreach ($this->states as $statename => $rules) {
-            $ruleregexpr = array();
+            $ruleregexpr = [];
             $matchtotal = 0;
 
             $this->matchmappings[$statename] = [ "default_token" => "text" ];
@@ -641,8 +640,7 @@ class tokenizer extends tokenizer_base {
             $rawsrc = $inherittokenizer->get_raw_override_tokens();
 
             foreach (array_keys($rawsrc) as $tokename) {
-                $tokentype = $src[$tokename];
-                $this->availabletokens[$tokename] = $tokentype;
+                $this->availabletokens[$tokename] = $src[$tokename];
             }
         }
     }
@@ -739,11 +737,10 @@ class tokenizer extends tokenizer_base {
 
             $numstate = 0;
 
-            foreach (array_keys(get_object_vars($jsonobj->states)) as $statename) {
+            foreach (get_object_vars($jsonobj->states) as $statename => $state) {
                 assertf::assert(is_string($statename), $rulefilename, 'name for state ' . $numstate . ' must be a string');
                 assertf::assert(strcmp(trim($statename), "") != 0, $rulefilename, 'state ' . $numstate . ' must have a name');
 
-                $state = $jsonobj->states->$statename;
                 assertf::assert(is_array($state), $rulefilename, 'state ' . $numstate . ' must be an array');
                 $this->check_rules($rulefilename, $statename, $state, $numstate, 0);
 
@@ -762,18 +759,17 @@ class tokenizer extends tokenizer_base {
 
     private function check_rules(string $rulefilename, string $statename, array $state, int $nstate, int $nrule): void {
         foreach ($state as $rule) {
-            $errmssg = "rule " . $nrule . " of state \"" . $statename . "\" nº" . $nstate . " must be an object";
+            $errmssg = "rule " . $nrule . " of state \"" . $statename . "\" no. " . $nstate . " must be an object";
             assertf::assert(is_object($rule), $rulefilename, $errmssg);
 
             $optionsdefined = [];
 
-            foreach (array_keys(get_object_vars($rule)) as $optionname) {
+            foreach (get_object_vars($rule) as $optionname => $optionvalue) {
                 $errmssg = "invalid option " . $optionname . " at rule " . $nrule . " of state \"";
-                $errmssg .= $statename . "\" nº" . $nstate;
+                $errmssg .= $statename . "\" no. " . $nstate;
                 assertf::assert(array_key_exists($optionname, self::TOKENTYPES), $rulefilename, $errmssg);
 
                 $optionsdefined[] = $optionname;
-                $optionvalue = $rule->$optionname;
                 $istypevalid = false;
 
                 foreach (self::TOKENTYPES[$optionname] as $typevalue) {
@@ -786,12 +782,12 @@ class tokenizer extends tokenizer_base {
                 }
 
                 $errmssg = "invalid data type for " . $optionname . " at rule " . $nrule . " of state \"";
-                $errmssg .= $statename . "\" nº" . $nstate;
+                $errmssg .= $statename . "\" no. " . $nstate;
                 assertf::assert($istypevalid, $rulefilename, $errmssg);
 
                 if (strcmp($optionname, "token") == 0) {
-                    $errmssg = "invalid token at rule " . $nrule . " of state \"" . $statename . "\" nº" . $nstate;
-                    $cond = tokenizer_base::check_token($rule->$optionname, array_keys($this->availabletokens));
+                    $errmssg = "invalid token at rule " . $nrule . " of state \"" . $statename . "\" no. " . $nstate;
+                    $cond = tokenizer_base::check_token($optionvalue, $this->availabletokens);
                     assertf::assert($cond, $rulefilename, $errmssg);
                 }
             }
@@ -800,7 +796,7 @@ class tokenizer extends tokenizer_base {
                 if (in_array($optionrequired, $optionsdefined)) {
                     foreach ($group as $optiong) {
                         $errmssg = "option " . $optionrequired . " must be defined next to " . $optiong . " at rule ";
-                        $errmssg .= $nrule . " of state \"" . $statename . "\" nº" . $nstate;
+                        $errmssg .= $nrule . " of state \"" . $statename . "\" no. " . $nstate;
                         assertf::assert(in_array($optiong, $optionsdefined), $rulefilename, $errmssg);
                     }
                 }
@@ -808,7 +804,7 @@ class tokenizer extends tokenizer_base {
 
             if (in_array("default_token", $optionsdefined)) {
                 $errmssg = "option default_token must be alone at rule " . $nrule . " of state \"";
-                $errmssg .= $statename . "\" nº" . $nstate;
+                $errmssg .= $statename . "\" no. " . $nstate;
                 assertf::assert(count($optionsdefined) == 1, $rulefilename, $errmssg);
             }
 
@@ -823,8 +819,7 @@ class tokenizer extends tokenizer_base {
 
             foreach ($src as $srcname => $srcvalue) {
                 if (!isset($this->states[$srcname])) {
-                    $newstate = [$srcname => $srcvalue];
-                    $this->states = array_merge($this->states, $newstate);
+                    $this->states[$srcname] = $srcvalue;
                 } else {
                     foreach ($srcvalue as $rulesrc) {
                         if (!tokenizer_base::contains_rule($this->states[$srcname], $rulesrc)) {

@@ -1,6 +1,6 @@
 @mod @mod_hotquestion
 Feature: Set entry visibility after close time for HotQuestion
-  In order to control if a student can HotQuestion entries after closing time
+  In order to control if a student can see HotQuestion entries after closing time
   As a teacher
   I need to be able to set availability dates and viewaftertimeclose flag for a hotquestion.
 

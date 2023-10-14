@@ -27,14 +27,14 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use \mod_hotquestion\event\remove_vote;
-use \mod_hotquestion\event\update_vote;
-use \mod_hotquestion\event\add_question;
-use \mod_hotquestion\event\add_round;
-use \mod_hotquestion\event\remove_question;
-use \mod_hotquestion\event\remove_round;
-use \mod_hotquestion\event\download_questions;
-use \mod_hotquestion\local\results;
+use mod_hotquestion\event\remove_vote;
+use mod_hotquestion\event\update_vote;
+use mod_hotquestion\event\add_question;
+use mod_hotquestion\event\add_round;
+use mod_hotquestion\event\remove_question;
+use mod_hotquestion\event\remove_round;
+use mod_hotquestion\event\download_questions;
+use mod_hotquestion\local\results;
 
 defined('MOODLE_INTERNAL') || die(); // @codingStandardsIgnoreLine
 define('HOTQUESTION_EVENT_TYPE_OPEN', 'open');
@@ -79,8 +79,8 @@ class mod_hotquestion {
     public function __construct($cmid, $roundid = -1) {
         global $DB;
         $this->cm = get_coursemodule_from_id('hotquestion', $cmid, 0, false, MUST_EXIST);
-        $this->course = $DB->get_record('course', array('id' => $this->cm->course), '*', MUST_EXIST);
-        $this->instance = $DB->get_record('hotquestion', array('id' => $this->cm->instance), '*', MUST_EXIST);
+        $this->course = $DB->get_record('course', ['id' => $this->cm->course], '*', MUST_EXIST);
+        $this->instance = $DB->get_record('hotquestion', ['id' => $this->cm->instance], '*', MUST_EXIST);
         $this->set_currentround($roundid);
 
         // Contrib by ecastro ULPGC, for grades callbacks.
@@ -101,7 +101,7 @@ class mod_hotquestion {
         if ($user == -1) {
             $user = $USER->id;
         }
-        return $DB->record_exists('hotquestion_votes', array('question' => $question, 'voter' => $user));
+        return $DB->record_exists('hotquestion_votes', ['question' => $question, 'voter' => $user]);
     }
 
     /**
@@ -114,14 +114,14 @@ class mod_hotquestion {
         global $CFG, $DB, $USER;
         $votes = new StdClass();
         $context = context_module::instance($this->cm->id);
-        $question = $DB->get_record('hotquestion_questions', array('id' => $question));
+        $question = $DB->get_record('hotquestion_questions', ['id' => $question]);
 
         if ($question && $this->can_vote_on($question)) {
             // Trigger and log a vote event.
-            $params = array(
+            $params = [
                 'objectid' => $this->cm->id,
                 'context' => $context,
-            );
+            ];
             $event = update_vote::create($params);
             $event->trigger();
 
@@ -130,7 +130,7 @@ class mod_hotquestion {
                 $votes->voter = $USER->id;
                 $DB->insert_record('hotquestion_votes', $votes);
             } else {
-                $DB->delete_records('hotquestion_votes', array('question' => $question->id, 'voter' => $USER->id));
+                $DB->delete_records('hotquestion_votes', ['question' => $question->id, 'voter' => $USER->id]);
             }
             // Update viewed completion state for current user.
             $this->update_completion_state();
@@ -150,14 +150,14 @@ class mod_hotquestion {
         global $CFG, $DB, $USER;
         $votes = new StdClass();
         $context = context_module::instance($this->cm->id);
-        $question = $DB->get_record('hotquestion_questions', array('id' => $question));
+        $question = $DB->get_record('hotquestion_questions', ['id' => $question]);
         if ($question && $this->can_vote_on($question)) {
 
             // Trigger and log a remove_vote event.
-            $params = array(
+            $params = [
                 'objectid' => $this->cm->id,
                 'context' => $context,
-            );
+            ];
             $event = remove_vote::create($params);
             $event->trigger();
 
@@ -166,7 +166,7 @@ class mod_hotquestion {
                 $votes->voter = $USER->id;
                 $DB->insert_record('hotquestion_votes', $votes);
             } else {
-                $DB->delete_records('hotquestion_votes', array('question' => $question->id, 'voter' => $USER->id));
+                $DB->delete_records('hotquestion_votes', ['question' => $question->id, 'voter' => $USER->id]);
             }
             // Update viewed completion state for current user.
             $this->update_completion_state();
@@ -185,14 +185,14 @@ class mod_hotquestion {
         global $USER, $DB;
 
         if (is_int($question)) {
-            $question = $DB->get_record('hotquestion_questions', array('id' => $question));
+            $question = $DB->get_record('hotquestion_questions', ['id' => $question]);
         }
         if (empty($user)) {
             $user = $USER;
         }
 
         // Is this question in last round?
-        $rounds = $DB->get_records('hotquestion_rounds', array('hotquestion' => $this->instance->id), 'id DESC', '*', 0, 1);
+        $rounds = $DB->get_records('hotquestion_rounds', ['hotquestion' => $this->instance->id], 'id DESC', '*', 0, 1);
         $lastround = reset($rounds);
         $inlastround = $question->time >= $lastround->starttime;
 
@@ -209,7 +209,11 @@ class mod_hotquestion {
     public function heat_tally($hq, $user = null) {
         global $USER, $CFG, $DB;
 
-        $params = array($hq->currentround->id, $hq->currentround->hotquestion, $USER->id);
+        $params = [
+            $hq->currentround->id,
+            $hq->currentround->hotquestion,
+            $USER->id,
+        ];
 
         $sql = "SELECT hqq.id AS questionid,
                        COUNT(hqv.voter) AS heat,
@@ -249,7 +253,7 @@ class mod_hotquestion {
         global $USER, $CFG, $DB;
 
         // Close the latest round.
-        $rounds = $DB->get_records('hotquestion_rounds', array('hotquestion' => $this->instance->id), 'id DESC', '*', 0, 1);
+        $rounds = $DB->get_records('hotquestion_rounds', ['hotquestion' => $this->instance->id], 'id DESC', '*', 0, 1);
         $old = array_pop($rounds);
         $old->endtime = time();
         $DB->update_record('hotquestion_rounds', $old);
@@ -263,10 +267,10 @@ class mod_hotquestion {
         $rid = $DB->insert_record('hotquestion_rounds', $new);
 
         // Trigger add new round event.
-        $params = array(
+        $params = [
             'objectid' => $this->cm->id,
             'context' => $context,
-        );
+        ];
         $event = add_round::create($params);
         $event->trigger();
     }
@@ -279,7 +283,7 @@ class mod_hotquestion {
         global $DB;
 
         // Get all the rounds for this Hot Question.
-        $rounds = $DB->get_records('hotquestion_rounds', array('hotquestion' => $this->instance->id), 'id ASC');
+        $rounds = $DB->get_records('hotquestion_rounds', ['hotquestion' => $this->instance->id], 'id ASC');
 
         // 20210214 Get total number of rounds for the current Hot Question activity.
         $this->roundcount = (count($rounds));
@@ -382,7 +386,11 @@ class mod_hotquestion {
         if ($this->currentround->endtime == 0) {
             $this->currentround->endtime = 0xFFFFFFFF;  // Hack.
         }
-        $params = array($this->instance->id, $this->currentround->starttime, $this->currentround->endtime);
+        $params = [
+            $this->instance->id,
+            $this->currentround->starttime,
+            $this->currentround->endtime,
+        ];
         // 20210306 Added format to the selection.
         return $DB->get_records_sql('SELECT q.id, q.hotquestion, q.content, q.format, q.userid, q.time,
             q.anonymous, q.approved, q.tpriority, count(v.voter) as votecount
@@ -409,28 +417,28 @@ class mod_hotquestion {
         $data->hotquestion = $this->instance->id;
         $context = context_module::instance($this->cm->id);
         // Trigger remove_question event.
-        $params = array(
+        $params = [
             'objectid' => $this->cm->id,
             'context' => $context,
-        );
+        ];
         $event = remove_question::create($params);
         $event->trigger();
 
         if (null !== (required_param('q', PARAM_INT))) {
             $questionid = required_param('q', PARAM_INT);
             $itemid = required_param('q', PARAM_INT);
-            $dbquestion = $DB->get_record('hotquestion_questions', array('id' => $questionid));
+            $dbquestion = $DB->get_record('hotquestion_questions', ['id' => $questionid]);
 
             // Contrib by ecastro ULPGC.
             $users = $this->get_question_voters($questionid);
             $users[] = $dbquestion->userid;
             // Contrib by ecastro ULPGC.
-            $DB->delete_records('hotquestion_questions', array('id' => $dbquestion->id));
+            $DB->delete_records('hotquestion_questions', ['id' => $dbquestion->id]);
             // 20220510 Deleted $dbvote line of code.
             // Delete all votes on the question that was just deleted.
-            $DB->delete_records('hotquestion_votes', array('question' => $dbquestion->id));
+            $DB->delete_records('hotquestion_votes', ['question' => $dbquestion->id]);
             // 20220510 Delete all comments on the question that was just deleted.
-            $DB->delete_records('comments', array('itemid' => $itemid, 'component' => 'mod_hotquestion'));
+            $DB->delete_records('comments', ['itemid' => $itemid, 'component' => 'mod_hotquestion']);
 
             // Update completion state for question creator.
             $this->update_completion_state($dbquestion->userid);
@@ -458,10 +466,10 @@ class mod_hotquestion {
         $data->hotquestion = $this->instance->id;
         $context = context_module::instance($this->cm->id);
         // Trigger remove_question event.
-        $params = array(
+        $params = [
             'objectid' => $this->cm->id,
             'context' => $context,
-        );
+        ];
         $event = remove_round::create($params);
         $event->trigger();
 
@@ -469,7 +477,11 @@ class mod_hotquestion {
         if ($this->currentround->endtime == 0) {
             $this->currentround->endtime = 0xFFFFFFFF;  // Hack.
         }
-        $params = array($this->instance->id, $this->currentround->starttime, $this->currentround->endtime);
+        $params = [
+            $this->instance->id,
+            $this->currentround->starttime,
+            $this->currentround->endtime,
+        ];
         $questions = $DB->get_records_sql('SELECT q.id, q.hotquestion, q.content, q.userid, q.time,
             q.anonymous, q.approved, q.tpriority, count(v.voter) as votecount
             FROM {hotquestion_questions} q
@@ -485,15 +497,15 @@ class mod_hotquestion {
         if ($questions) {
             foreach ($questions as $q) {
                 $questionid = $q->id; // Get id of first question on the page to delete.
-                $dbquestion = $DB->get_record('hotquestion_questions', array('id' => $questionid));
+                $dbquestion = $DB->get_record('hotquestion_questions', ['id' => $questionid]);
                 // Contrib by ecastro ULPGC.
                 $users = $this->get_question_voters($questionid);
                 $users[] = $dbquestion->userid;
                 // Contrib by ecastro ULPGC.
-                $DB->delete_records('hotquestion_questions', array('id' => $dbquestion->id));
+                $DB->delete_records('hotquestion_questions', ['id' => $dbquestion->id]);
                 // Get an array of all votes on the question that was just deleted, then delete them.
-                $dbvote = $DB->get_records('hotquestion_votes', array('question' => $questionid));
-                $DB->delete_records('hotquestion_votes', array('question' => $dbquestion->id));
+                $dbvote = $DB->get_records('hotquestion_votes', ['question' => $questionid]);
+                $DB->delete_records('hotquestion_votes', ['question' => $dbquestion->id]);
 
                 // Update completion state for question creator.
                 $this->update_completion_state($dbquestion->userid);
@@ -505,15 +517,15 @@ class mod_hotquestion {
                 $this->update_users_grades($users);
             }
             // Now that all questions and votes are gone, remove the round.
-            $dbround = $DB->get_record('hotquestion_rounds', array('id' => $roundid));
-            $DB->delete_records('hotquestion_rounds', array('id' => $dbround->id));
+            $dbround = $DB->get_record('hotquestion_rounds', ['id' => $roundid]);
+            $DB->delete_records('hotquestion_rounds', ['id' => $dbround->id]);
         } else {
             // This round is empty so delete without having to remove questions and votes.
-            $dbround = $DB->get_record('hotquestion_rounds', array('id' => $roundid));
-            $DB->delete_records('hotquestion_rounds', array('id' => $dbround->id));
+            $dbround = $DB->get_record('hotquestion_rounds', ['id' => $roundid]);
+            $DB->delete_records('hotquestion_rounds', ['id' => $dbround->id]);
         }
         // Now we need to see if we need a new round or have one we can still use.
-        $rounds = $DB->get_records('hotquestion_rounds', array('hotquestion' => $this->instance->id), 'id DESC');
+        $rounds = $DB->get_records('hotquestion_rounds', ['hotquestion' => $this->instance->id], 'id DESC');
 
         foreach ($rounds as $rnd) {
             if ($rnd->endtime == 0) {
@@ -547,10 +559,10 @@ class mod_hotquestion {
         $context = context_module::instance($this->cm->id);
 
         // Trigger download_questions event.
-        $params = array(
+        $params = [
             'objectid' => $this->cm->id,
             'context' => $context,
-        );
+        ];
         $event = download_questions::create($params);
         $event->trigger();
 
@@ -558,7 +570,7 @@ class mod_hotquestion {
         // Add filename details based on course and HQ activity name.
         $csv = new csv_export_writer();
         $strhotquestion = get_string('hotquestion', 'hotquestion');
-        $fields = array();
+        $fields = [];
 
         if (is_siteadmin($USER->id)) {
             // For an admin, we want every hotquestion activity.
@@ -573,23 +585,24 @@ class mod_hotquestion {
             $csv->filename .= clean_filename(($this->instance->name));
         }
             // Add fields with the column labels for ONLY the current HQ activity.
-        $fields = array(get_string('firstname'),
-                        get_string('lastname'),
-                        get_string('userid', 'hotquestion'),
-                        get_string('hotquestion', 'hotquestion').' ID',
-                        get_string('question', 'hotquestion').' ID',
-                        get_string('time', 'hotquestion'),
-                        get_string('anonymous', 'hotquestion'),
-                        $this->instance->teacherprioritylabel,
-                        $this->instance->heatlabel,
-                        $this->instance->approvallabel,
-                        $this->instance->questionlabel,
-                        get_string('comments')
-                        );
+        $fields = [
+            get_string('firstname'),
+            get_string('lastname'),
+            get_string('userid', 'hotquestion'),
+            get_string('hotquestion', 'hotquestion').' ID',
+            get_string('question', 'hotquestion').' ID',
+            get_string('time', 'hotquestion'),
+            get_string('anonymous', 'hotquestion'),
+            $this->instance->teacherprioritylabel,
+            $this->instance->heatlabel,
+            $this->instance->approvallabel,
+            $this->instance->questionlabel,
+            get_string('comments'),
+        ];
         $csv->filename .= clean_filename(get_string('exportfilenamep2', 'hotquestion').gmdate("Ymd_Hi").'GMT.csv');
 
         // Now add this instance id that's needed in the sql for teachers and managers downloads.
-        $fields = array($fields, 'thisinstid' => $this->instance->id);
+        $fields = [$fields, 'thisinstid' => $this->instance->id];
 
         if ($CFG->dbtype == 'pgsql') {
             $sql = "SELECT hq.id AS question,
@@ -660,26 +673,34 @@ class mod_hotquestion {
                 $currenthqhotquestion = '';
             }
             foreach ($hqs as $q) {
-                $fields2 = array(get_string('firstname'),
-                                 get_string('lastname'),
-                                 get_string('userid', 'hotquestion'),
-                                 get_string('hotquestion', 'hotquestion').' ID',
-                                 get_string('question', 'hotquestion').' ID',
-                                 get_string('time', 'hotquestion'),
-                                 get_string('anonymous', 'hotquestion'),
-                                 $q->teacherprioritylabel,
-                                 $q->heatlabel,
-                                 $q->approvallabel,
-                                 $q->questionlabel,
-                                 get_string('comments')
-                                );
+                $fields2 = [
+                    get_string('firstname'),
+                    get_string('lastname'),
+                    get_string('userid', 'hotquestion'),
+                    get_string('hotquestion', 'hotquestion').' ID',
+                    get_string('question', 'hotquestion').' ID',
+                    get_string('time', 'hotquestion'),
+                    get_string('anonymous', 'hotquestion'),
+                    $q->teacherprioritylabel,
+                    $q->heatlabel,
+                    $q->approvallabel,
+                    $q->questionlabel,
+                    get_string('comments'),
+                ];
+
                 // 20220818 Initialize variable for any comments for the next question.
                 $comment = '';
                 // 20220818 If there are any, get the comments for each question to add in the export file.
                 // 20221124 Modified to include the component.
-                if ($cmts = $DB->get_records('comments', ['itemid' => $q->question,
-                                             'component' => 'mod_hotquestion'],
-                                             'userid, content, timecreated')) {
+                if ($cmts = $DB->get_records('comments', [
+                    'itemid' => $q->question,
+                    'component' => 'mod_hotquestion',
+                    ],
+                    'userid,
+                    content,
+                    timecreated'
+                    )) {
+
                     $temp = count($cmts);
                     $comment .= '('.$temp.' '.get_string('comments').') ';
                     foreach ($cmts as $cmt) {
@@ -692,22 +713,37 @@ class mod_hotquestion {
                     // 20220819 Add the course shortname and the HQ activity name to our data array.
                     $currentcrsname = $DB->get_record('course', ['id' => $q->course], 'shortname');
                     $currenthqname = $DB->get_record('hotquestion', ['id' => $q->hotquestion], 'name');
-                    $blankrow = array(' ', null);
+                    $blankrow = [' ', null];
 
                     // 20220820 Only include filename, date, and URL only on the first row of the export.
                     // 20220820 Add a blank line before each HQ activity output, except for the first HQ activity.
                     if (!$firstrowflag) {
                         $csv->add_data($blankrow);
-                        $activityinfo = array(get_string('course').': '.$currentcrsname->shortname,
-                            get_string('activity').': '.$currenthqname->name);
+                        $activityinfo = [
+                            get_string('course').': '.$currentcrsname->shortname,
+                            get_string('activity').': '.$currenthqname->name,
+                        ];
                     } else {
-                        $activityinfo = array(null, null, null, null, null, null, null, null, null, null,
-                                              get_string('exportfilenamep2', 'hotquestion').
-                                              gmdate("Ymd_Hi").get_string('for', 'hotquestion').
-                                              $CFG->wwwroot);
+                        $activityinfo = [
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            get_string('exportfilenamep2', 'hotquestion').
+                                gmdate("Ymd_Hi").get_string('for', 'hotquestion').
+                                $CFG->wwwroot,
+                        ];
                         $csv->add_data($activityinfo);
-                        $activityinfo = array(get_string('course').': '.$currentcrsname->shortname,
-                                              get_string('activity').': '.$currenthqname->name);
+                        $activityinfo = [
+                            get_string('course').': '.$currentcrsname->shortname,
+                            get_string('activity').': '.$currenthqname->name,
+                        ];
                     }
                     $csv->add_data($activityinfo);
                     $csv->add_data($fields2);
@@ -717,8 +753,20 @@ class mod_hotquestion {
                 $cleanedcontent = format_string($q->content,
                                                 $striplinks = true,
                                                 $options = null);
-                $output = array($q->firstname, $q->lastname, $q->userid, $q->hotquestion, $q->question, $q->time,
-                                $q->anonymous, $q->tpriority, $q->heat, $q->approved, $cleanedcontent, $comment);
+                $output = [
+                    $q->firstname,
+                    $q->lastname,
+                    $q->userid,
+                    $q->hotquestion,
+                    $q->question,
+                    $q->time,
+                    $q->anonymous,
+                    $q->tpriority,
+                    $q->heat,
+                    $q->approved,
+                    $cleanedcontent,
+                    $comment,
+                ];
                 $csv->add_data($output);
             }
         }
@@ -736,7 +784,7 @@ class mod_hotquestion {
     public function approve_question($question) {
         global $CFG, $DB, $USER;
         $context = context_module::instance($this->cm->id);
-        $question = $DB->get_record('hotquestion_questions', array('id' => $question));
+        $question = $DB->get_record('hotquestion_questions', ['id' => $question]);
 
         if ($question->approved) {
             // If currently approved, toggle to disapproved.
@@ -761,7 +809,7 @@ class mod_hotquestion {
         global $CFG, $DB, $USER;
 
         $context = context_module::instance($this->cm->id);
-        $question = $DB->get_record('hotquestion_questions', array('id' => $question));
+        $question = $DB->get_record('hotquestion_questions', ['id' => $question]);
 
         if ($u) {
             // If priority flag is 1, increase priority by 1.

@@ -25,12 +25,12 @@
 
 namespace mod_hotquestion\output;
 
-use \table_sql;
-use \context_module;
-use \moodle_url;
-use \html_writer;
-use \user_picture;
-use \grade_item;
+use table_sql;
+use context_module;
+use moodle_url;
+use html_writer;
+use user_picture;
+use grade_item;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -155,29 +155,30 @@ class viewgrades extends table_sql {
         global $CFG, $DB;
         // 20220503 Changed votes to heatgiven. Added teacher priority and heatreceived.
         // 20220504 Added teacherpriority.
-        $tablecolumns = array('userpic',
-                              'fullname',
-                              'questions',
-                              'teacherpriority',
-                              'heatgiven',
-                              'heatreceived',
-                              'rawrating',
-                              'finalgrade'
-                              );
+        $tablecolumns = [
+            'userpic',
+            'fullname',
+            'questions',
+            'teacherpriority',
+            'heatgiven',
+            'heatreceived',
+            'rawrating',
+            'finalgrade',
+        ];
 
         // 20220716 Get the grade point setting for this Hot Question.
         $finalgrade = $this->hotquestion->instance->grade;
         // If HotQuestion is set for None or Points, then skip ahead.
         // If set for Scale, then figure out the scale index and entry for the maximum score.
         if ($finalgrade < 0) {
-            if ($scale = $DB->get_record('scale', array('id' => -($this->hotquestion->instance->grade)))) {
+            if ($scale = $DB->get_record('scale', ['id' => -($this->hotquestion->instance->grade)])) {
                 $this->cache['scale'] = make_menu_from_list($scale->scale);
             }
             $finalgrade = count($this->cache['scale']);
             $finalgrade .= '='.($this->cache['scale'][$finalgrade]);
         }
 
-        $tableheaders = array(
+        $tableheaders = [
             get_string('userpic'),
             get_string('fullnameuser'),
             format_string(get_string('inputquestionlabel', 'hotquestion')).' ('.($this->hotquestion->instance->postmaxgrade).')',
@@ -186,7 +187,7 @@ class viewgrades extends table_sql {
             get_string('heatreceived', 'hotquestion').' ('.($this->hotquestion->instance->factorvote).'%)',
             get_string('grading', 'hotquestion' ),
             get_string('finalgrade', 'hotquestion').' ('.($finalgrade).')',
-        );
+        ];
 
         $context = $this->get_context();
 
@@ -305,7 +306,7 @@ class viewgrades extends table_sql {
     public function col_userpic($row) {
         global $OUTPUT;
         $user = user_picture::unalias($row, [], $this->useridfield);
-        return $OUTPUT->user_picture($user, array('courseid' => $this->hotquestion->cm->course));
+        return $OUTPUT->user_picture($user, ['courseid' => $this->hotquestion->cm->course]);
     }
 
     /**
@@ -613,11 +614,13 @@ class viewgrades extends table_sql {
         if ($this->gradeitem) {
             return $this->gradeitem;
         }
-        $params = array('itemtype' => 'mod',
-                        'itemmodule' => 'hotquestion',
-                        'iteminstance' => $this->hotquestion->instance->id,
-                        'courseid' => $this->hotquestion->instance->course,
-                        'itemnumber' => 0);
+        $params = [
+            'itemtype' => 'mod',
+            'itemmodule' => 'hotquestion',
+            'iteminstance' => $this->hotquestion->instance->id,
+            'courseid' => $this->hotquestion->instance->course,
+            'itemnumber' => 0,
+        ];
         $this->gradeitem = grade_item::fetch($params);
         if (!$this->gradeitem) {
             throw new coding_exception(get_string('improperuseviewgradesclass', 'hotquestion'));
@@ -634,7 +637,7 @@ class viewgrades extends table_sql {
     public function display_grade($grade) {
         global $DB;
 
-        static $scalegrades = array();
+        static $scalegrades = [];
 
         $o = '';
 
@@ -655,7 +658,7 @@ class viewgrades extends table_sql {
         } else {
             // If using scale and the Scale is missing go here.
             if (empty($this->cache['scale'])) {
-                if ($scale = $DB->get_record('scale', array('id' => -($this->hotquestion->instance->grade)))) {
+                if ($scale = $DB->get_record('scale', ['id' => -($this->hotquestion->instance->grade)])) {
                     $this->cache['scale'] = make_menu_from_list($scale->scale);
                 } else {
                     $o .= '-';

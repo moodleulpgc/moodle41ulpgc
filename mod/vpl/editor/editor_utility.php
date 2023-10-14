@@ -113,6 +113,17 @@ class vpl_editor_util {
                 class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
+    <div id="vpl_ide_dialog_renamedir" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_renamedirectory">
+                <?php p(get_string('rename'));?></label> <input
+                type="text" id="vpl_ide_input_renamedirectory"
+                name="vpl_ide_input_renamedirectory" value=""
+                class="ui-widget-content ui-corner-all" autofocus />
+                <input type="hidden" id="vpl_ide_input_olddirectoryname" value=""/>
+        </fieldset>
+    </div>
     <div id="vpl_ide_dialog_rename" class="vpl_ide_dialog"
         style="display: none;">
         <fieldset>
@@ -261,7 +272,7 @@ class vpl_editor_util {
      * Get the list of i18n translations for the editor
      */
     public static function i18n() {
-        $vplwords = array (
+        $vplwords = [
                 'about',
                 'acceptcertificates',
                 'acceptcertificatesnote',
@@ -285,6 +296,7 @@ class vpl_editor_util {
                 'delete',
                 'delete_file_fq',
                 'delete_file_q',
+                'directory_not_renamed',
                 'download',
                 'edit',
                 'evaluate',
@@ -300,6 +312,7 @@ class vpl_editor_util {
                 'find_replace',
                 'fullscreen',
                 'incorrect_file_name',
+                'incorrect_directory_name',
                 'keyboard',
                 'maxfilesexceeded',
                 'new',
@@ -315,6 +328,7 @@ class vpl_editor_util {
                 'regularscreen',
                 'rename',
                 'rename_file',
+                'rename_directory',
                 'resetfiles',
                 'retrieve',
                 'run',
@@ -340,6 +354,7 @@ class vpl_editor_util {
                 'lists',
                 'math',
                 'text',
+                'shrightpanel',
                 'start',
                 'startanimate',
                 'stop',
@@ -350,8 +365,8 @@ class vpl_editor_util {
                 'selectbreakpoint',
                 'removebreakpoint',
                 'maxpostsizeexceeded',
-        );
-        $words = array (
+        ];
+        $words = [
                 'cancel',
                 'closebuttontitle',
                 'error',
@@ -367,9 +382,9 @@ class vpl_editor_util {
                 'deleteselected',
                 'selectall',
                 'deselectall',
-                'reset'
-        );
-        $list = Array ();
+                'reset',
+        ];
+        $list = [];
         foreach ($vplwords as $word) {
             $list[$word] = get_string( $word, VPL );
         }
@@ -385,13 +400,13 @@ class vpl_editor_util {
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
         global $PAGE;
-        $options = Array ();
+        $options = [];
         $options['ajaxurl'] = $ajaxurl;
         $options['nexturl'] = $nexturl;
-        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', array($options) );
+        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', [$options] );
     }
     public static function generate_batch_evaluate_sript($ajaxurls) {
-        $options = Array ();
+        $options = [];
         $options['ajaxurls'] = $ajaxurls;
         $joptions = json_encode( $options );
         self::print_js_i18n();

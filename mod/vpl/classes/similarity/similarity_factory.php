@@ -40,6 +40,7 @@ class similarity_factory {
         'C' => 'cpp',
         'cpp' => 'cpp',
         'cs' => 'cpp', // C# as C++.
+        'php' => 'cpp', // PHP as C++.
         'ads' => 'ada',
         'adb' => 'ada',
         'ada' => 'ada',
@@ -51,7 +52,7 @@ class similarity_factory {
         'py' => 'python',
         'm' => 'matlab',
         'html' => 'html',
-        'htm' => 'html'
+        'htm' => 'html',
     ];
 
     /**

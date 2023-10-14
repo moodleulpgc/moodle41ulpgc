@@ -41,6 +41,8 @@
             {
                 "id": 13,
                 "description": "Show your motivation to rock climbing",
+                "numitems": 10,
+                "numitemschecked": 5,
                 "items": [
                     {
                         "criterionid": 13,
@@ -50,12 +52,14 @@
                     }
                 ],
             }
-        ]
+        ],
+        "numitems": 10,
+        "numitemschecked": 5,
     }
 }}
 <form id="gradingform_checklist-{{uniqid}}">
     <input type="hidden" name="instanceid" value="{{instanceid}}">
-    <div id="checklist-advancedgrading-{{uniqid}}" class="criterion">
+    <div id="checklist-advancedgrading-{{uniqid}}" class="criterion gradingform_checklist">
         {{#criteria}}
             <div class="mb-3">
                 <div class="d-flex align-items-center mb-2">
@@ -76,7 +80,7 @@
                             </span>
                     </button>
                 </div>
-                <div class="collapse show" id="criteria-{{id}}" role="radiogroup" aria-labelledby="criterion-description-{{id}}">
+                <div class="collapse show criterion" id="criteria-{{id}}" role="radiogroup" aria-labelledby="criterion-description-{{id}}">
                     {{#items}}
                         <div class="form-check">
                             <input class="form-check-input item"
@@ -84,6 +88,7 @@
                                    name="advancedgrading[groups][{{criterionid}}][items][{{id}}][id]"
                                    id="advancedgrading-groups-{{criterionid}}-items-{{id}}-id-input"
                                    value="{{id}}"
+                                   score="{{score}}"
                                 {{#checked}}
                                    aria-checked="true"
                                    tabindex="0"
@@ -98,13 +103,16 @@
                                 <span>
                                     {{{definition}}}
                                 </span>
-                                <span class="pull-right">
-                                    {{#str}}scorepostfix, gradingform_checklist, {{score}}{{/str}}
-                                </span>
+                                {{#options.showpoints}}
+                                    <span class="pull-right">
+                                        {{#str}}scorepostfix, gradingform_checklist, {{score}}{{/str}}
+                                    </span>
+                                {{/options.showpoints}}
                             </label>
                         </div>
+                        {{#options.showitemfeedback}}
                             <div class="form-group">
-                                <label class="text-muted" for="advancedgrading-groups-{{criterionid}}-items-{{id}}-remark-input">{{#str}} additionalfeedback, core_grades {{/str}}</label>
+                                <label class="text-muted hiddenelement" for="advancedgrading-groups-{{criterionid}}-items-{{id}}-remark-input">{{#str}} additionalfeedback, core_grades {{/str}}</label>
                                 <textarea class="form-control"
                                        name="advancedgrading[groups][{{criterionid}}][items][{{id}}][remark]"
                                        id="advancedgrading-groups-{{criterionid}}-items-{{id}}-remark-input"
@@ -114,14 +122,53 @@
                                        data-auto-rows="true"
                                 >{{{remark}}}</textarea>
                             </div>
+                        {{/options.showitemfeedback}}
                     {{/items}}
+                    {{#options.showgroupfeedback}}
+                        <label class="hiddenelement" for="advancedgrading-groups-{{id}}-items-0-remark">{{#str}}groupremark, gradingform_checklist, {{description}} {{/str}}</label>
+                        <textarea class="form-control"
+                                  name="advancedgrading[groups][{{id}}][items][0][remark]"
+                                  id="advancedgrading-groups-{{id}}-items-0-remark"
+                                  cols="10"
+                                  rows="5"
+                                  data-max-rows="5"
+                                  data-auto-rows="true"
+                        >{{{groupfeedback}}}</textarea>
+                    {{/options.showgroupfeedback}}
+                {{#options.showpoints}}
+                    <div id="pointsgroup-{{id}}" class="pointsgroup">
+                        <strong>
+                            <span>{{#str}} grouppoints, gradingform_checklist {{/str}}: <span class="scoredpoints">{{grouppoints}}</span>/<span class="outofpoints">{{maxgrouppoints}}</span></span>
+                        </strong>
+                    </div>
+                {{/options.showpoints}}
                 </div>
             </div>
         {{/criteria}}
+        {{#options.showpoints}}
+            <div id="pointstotals">
+                <strong>
+                    <span>{{#str}} overallpoints, gradingform_checklist {{/str}}: <span class="scoredpoints">{{points}}</span>/<span class="outofpoints">{{maxpoints}}</span></span>
+                </strong>
+            </div>
+        {{/options.showpoints}}
     </div>
 </form>
 {{#js}}
     require(['core/auto_rows'], function(AutoRows) {
-    AutoRows.init(document.getElementById('gradingform_checklist-{{uniqid}}'));
+        AutoRows.init(document.getElementById('gradingform_checklist-{{uniqid}}'));
+        $('.form-check-input.item').change(function () {
+            let criterion = $(this).closest('.criterion');
+            let grouppoints = 0;
+            criterion.find('.form-check-input.item:checked').each(function() {
+                grouppoints += parseInt($(this).attr('score'), 10) || 0;
+            });
+            criterion.find('.pointsgroup').find('.scoredpoints').text(grouppoints);
+            let totalpoints = 0;
+            $('.form-check-input.item:checked').each(function() {
+                totalpoints += parseInt($(this).attr('score'), 10) || 0;
+            });
+            $('#pointstotals').find('.scoredpoints').text(totalpoints);
+        });
     });
 {{/js}}

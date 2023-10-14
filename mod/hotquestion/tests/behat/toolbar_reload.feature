@@ -1,4 +1,4 @@
-@mod @mod_hotquestion
+67@mod @mod_hotquestion
 Feature: When viewing pevious rounds users can follow reload to go to current round
   In order to ensure I am on current round
   As a user
