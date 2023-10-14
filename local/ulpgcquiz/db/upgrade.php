@@ -25,9 +25,12 @@ function xmldb_local_ulpgcquiz_upgrade($oldversion) {
 
     if ($oldversion < 2016020100) {
     
-    
-    
          upgrade_plugin_savepoint(true, 2016020100, 'local', 'ulpgcquiz');
+    }
+
+    if ($oldversion < 2023080101) {
+
+         upgrade_plugin_savepoint(true, 2023080101, 'local', 'ulpgcquiz');
     }
 
     return true;

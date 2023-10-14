@@ -85,11 +85,11 @@ $PAGE->set_pagelayout('report');
 
 
 // Print the header.
-//$navlinks = array();
+$navlinks = array();
 $strtutorial = get_string("tutorial", "offlinequiz");
-//if (empty($offlinequiz)) {
+if (empty($offlinequiz)) {
     $PAGE->navbar->add($strtutorial);
-//}
+}
 
 echo $OUTPUT->header();
 
@@ -102,9 +102,9 @@ if (!file_exists($CFG->dirroot."/mod/offlinequiz/tutorial/$lang/page-$page.html"
 }
 
 echo '<table cellspacing=4 cellpadding=10 border=0>
-          <tr><td width="20%" valign="top">';
+          <tr><td width="200px" valign="top">';
 require($CFG->dirroot."/mod/offlinequiz/tutorial/$lang/menu.html");
-echo '</td><td width="75%">';
+echo '</td><td width="400px">';
 
 $answer = optional_param('answer', null, PARAM_RAW);
 if (!empty($answer)) {

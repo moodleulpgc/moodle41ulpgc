@@ -39,6 +39,10 @@
       "function": "f",
       "globalyforbiddenvariable": true
   },
+  "%_ce_expedite": {
+      "function": "f",
+      "globalyforbiddenvariable": true
+  },
   "%ERR": {
       "variable": "f"
   },
@@ -487,8 +491,7 @@
       "variable": "f"
   },
   "adapth_depth": {
-      "globalyforbiddenvariable": true,
-      "variable": "f"
+      "variable": "s"
   },
   "add_edge": {
       "function": "?"
@@ -3243,6 +3246,10 @@
   "horner": {
       "function": "s"
   },
+  "hstep": {
+      "function": "s",
+      "built-in": true
+  },
   "hypergeometric": {
       "function": "s"
   },
@@ -5603,6 +5610,10 @@
       "evfun": "s",
       "function": "s"
   },
+  "polarform_simp": {
+      "evfun": "s",
+      "function": "s"
+  },
   "polartorect": {
       "function": "s"
   },
@@ -6092,15 +6103,15 @@
       "built-in": true
   },
   "random_subset": {
-      "function": "f",
+      "function": "t",
       "random": true
   },
   "random_subset_n": {
-      "function": "f",
+      "function": "t",
       "random": true
   },
   "random_ne_subset": {
-      "function": "f",
+      "function": "t",
       "random": true
   },
   "random_bernoulli": {
@@ -6730,6 +6741,9 @@
   "run_viewer": {
       "globalyforbiddenvariable": true,
       "variable": "f"
+  },
+  "s_assert": {
+      "function": "t"
   },
   "save": {
       "function": "f",
@@ -8037,7 +8051,8 @@
       "built-in": true
   },
   "unit_step": {
-      "function": "f"
+      "function": "s",
+      "built-in": true
   },
   "unit_vectors": {
       "variable": "f"
@@ -8375,6 +8390,9 @@
   "xthru": {
       "function": "s"
   },
+  "xtics": {
+      "variable": "s"
+  },
   "xtics_axis": {
       "variable": "f"
   },
@@ -8401,6 +8419,9 @@
   },
   "y_voxel": {
       "variable": "f"
+  },
+  "ytics": {
+      "variable": "s"
   },
   "yaxis": {
       "variable": "f"

@@ -23,7 +23,7 @@ function showEnergy() {
 	
   var  y =  (_modelname.split("= ")[3].split(" ")[1] - (-162)) * 10
   var  x = (_frameid % 1000000) / 35.0 * (_width - 40) + 20
-  draw [@{x-5}  @y] [@x @y]
+  draw [@{x-5}  @{y/4}] [@x @{y/4}]
   if (_frameid == 1000001 || _frameid == 1000035) { 
     animation off
   if (_frameid == 1000001) {

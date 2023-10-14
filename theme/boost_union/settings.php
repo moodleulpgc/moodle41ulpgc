@@ -94,6 +94,7 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Require the necessary libraries.
         require_once($CFG->dirroot . '/theme/boost_union/lib.php');
         require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
+        require_once($CFG->dirroot . '/course/lib.php');
 
         // Prepare options array for select settings.
         // Due to MDL-58376, we will use binary select settings instead of checkbox settings throughout this theme.
@@ -216,8 +217,9 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $page->add($tab);
 
 
-        // Create branding tab.
-        $tab = new admin_settingpage('theme_boost_union_look_branding', get_string('brandingtab', 'theme_boost_union', null, true));
+        // Create site branding tab.
+        $tab = new admin_settingpage('theme_boost_union_look_sitebranding',
+                get_string('sitebrandingtab', 'theme_boost_union', null, true));
 
         // Create logos heading.
         $name = 'theme_boost_union/logosheading';
@@ -335,6 +337,37 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
+        // Create navbar heading.
+        $name = 'theme_boost_union/navbarheading';
+        $title = get_string('navbarheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Navbar color.
+        $name = 'theme_boost_union/navbarcolor';
+        $title = get_string('navbarcolorsetting', 'theme_boost_union', null, true);
+        $description = get_string('navbarcolorsetting_desc', 'theme_boost_union', null, true);
+        $navbarcoloroptions = array(
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT =>
+                        get_string('navbarcolorsetting_light', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_DARK =>
+                        get_string('navbarcolorsetting_dark', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYLIGHT =>
+                        get_string('navbarcolorsetting_primarylight', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYDARK =>
+                        get_string('navbarcolorsetting_primarydark', 'theme_boost_union'));
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT,
+                $navbarcoloroptions);
+        $tab->add($setting);
+
+        // Add tab to settings page.
+        $page->add($tab);
+
+
+        // Create activity branding tab.
+        $tab = new admin_settingpage('theme_boost_union_look_activitybranding',
+                get_string('activitybrandingtab', 'theme_boost_union', null, true));
+
         // Create activity icon colors heading.
         $name = 'theme_boost_union/activityiconcolorsheading';
         $title = get_string('activityiconcolorsheading', 'theme_boost_union', null, true);
@@ -389,28 +422,95 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
-        // Create navbar heading.
-        $name = 'theme_boost_union/navbarheading';
-        $title = get_string('navbarheading', 'theme_boost_union', null, true);
+        // Create activity icons purpose heading.
+        $name = 'theme_boost_union/activitypurposeheading';
+        $title = get_string('activitypurposeheading', 'theme_boost_union', null, true);
+        $description = get_string('activitypurposeheading_desc', 'theme_boost_union', null, true).'<br /><br />'.
+                get_string('activitypurposeheadingtechnote', 'theme_boost_union',
+                        get_string('githubissueslink', 'theme_boost_union', null, true),
+                true);
+        $setting = new admin_setting_heading($name, $title, $description);
+        $tab->add($setting);
+
+        // Prepare activity purposes.
+        $purposesoptions = array(
+                MOD_PURPOSE_ADMINISTRATION => get_string('activitypurposeadministration', 'theme_boost_union'),
+                MOD_PURPOSE_ASSESSMENT => get_string('activitypurposeassessment', 'theme_boost_union'),
+                MOD_PURPOSE_COLLABORATION => get_string('activitypurposecollaboration', 'theme_boost_union'),
+                MOD_PURPOSE_COMMUNICATION => get_string('activitypurposecommunication', 'theme_boost_union'),
+                MOD_PURPOSE_CONTENT => get_string('activitypurposecontent', 'theme_boost_union'),
+                MOD_PURPOSE_INTERFACE => get_string('activitypurposeinterface', 'theme_boost_union'),
+                MOD_PURPOSE_OTHER => get_string('activitypurposeother', 'theme_boost_union')
+        );
+        // Get installed activity modules.
+        $installedactivities = get_module_types_names();
+        // Iterate over all existing activities.
+        foreach ($installedactivities as $modname => $modinfo) {
+            // Get default purpose of activity module.
+            $defaultpurpose = plugin_supports('mod', $modname, FEATURE_MOD_PURPOSE, MOD_PURPOSE_OTHER);
+            // If the plugin does not have any default purpose.
+            if (!$defaultpurpose) {
+                // Fallback to "other" purpose.
+                $defaultpurpose = MOD_PURPOSE_OTHER;
+            }
+
+            // Create the setting.
+            $name = 'theme_boost_union/activitypurpose'.$modname;
+            $title = get_string('modulename', $modname, null, true);
+            $description = '';
+            $setting = new admin_setting_configselect($name, $title, $description, $defaultpurpose, $purposesoptions);
+            $setting->set_updatedcallback('theme_reset_all_caches');
+            $tab->add($setting);
+        }
+
+        // Create activity icons heading.
+        $name = 'theme_boost_union/modicons';
+        $title = get_string('modiconsheading', 'theme_boost_union', null, true);
         $setting = new admin_setting_heading($name, $title, null);
         $tab->add($setting);
 
-        // Setting: Navbar color.
-        $name = 'theme_boost_union/navbarcolor';
-        $title = get_string('navbarcolorsetting', 'theme_boost_union', null, true);
-        $description = get_string('navbarcolorsetting_desc', 'theme_boost_union', null, true);
-        $navbarcoloroptions = array(
-                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT =>
-                        get_string('navbarcolorsetting_light', 'theme_boost_union'),
-                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_DARK =>
-                        get_string('navbarcolorsetting_dark', 'theme_boost_union'),
-                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYLIGHT =>
-                        get_string('navbarcolorsetting_primarylight', 'theme_boost_union'),
-                THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYDARK =>
-                        get_string('navbarcolorsetting_primarydark', 'theme_boost_union'));
-        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_NAVBARCOLOR_LIGHT,
-                $navbarcoloroptions);
+        // Setting: Enable custom icons for activities and resources.
+        $name = 'theme_boost_union/modiconsenable';
+        $title = get_string('modiconsenablesetting', 'theme_boost_union', null, true);
+        $description = get_string('modiconsenablesetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $setting->set_updatedcallback('theme_boost_union_check_mod_icons_cleanup');
         $tab->add($setting);
+
+        // Setting: Custom icon files.
+        $name = 'theme_boost_union/modiconsfiles';
+        $title = get_string('modiconsfiles', 'theme_boost_union', null, true);
+        $description = get_string('modiconsfiles_desc', 'theme_boost_union', null, true).'<br /><br />'.
+                get_string('modiconsfileshowto', 'theme_boost_union', null, true).'<br /><br />'.
+                get_string('modiconsfilestech', 'theme_boost_union', null, true);
+        // Use our enhanced implementation of admin_setting_configstoredfile to circumvent MDL-59082.
+        // This can be changed back to admin_setting_configstoredfile as soon as MDL-59082 is fixed.
+        $setting = new admin_setting_configstoredfilealwayscallback($name, $title, $description, 'modicons', 0,
+                array('maxfiles' => -1, 'subdirs' => 1, 'accepted_types' => ['.png', '.svg']));
+        $setting->set_updatedcallback('theme_boost_union_place_mod_icons');
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/modiconsfiles', 'theme_boost_union/modiconsenable', 'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES);
+
+        // Information: Custom icons files list.
+        // If there is at least one file uploaded and if custom icons are enabled (unfortunately, hide_if does not
+        // work for admin_setting_description up to now, that's why we have to use this workaround).
+        $modiconsenableconfig = get_config('theme_boost_union', 'modiconsenable');
+        if ($modiconsenableconfig == THEME_BOOST_UNION_SETTING_SELECT_YES &&
+                !empty(get_config('theme_boost_union', 'modiconsfiles'))) {
+            // Prepare the widget.
+            $name = 'theme_boost_union/modiconlist';
+            $title = get_string('modiconlistsetting', 'theme_boost_union', null, true);
+            $description = get_string('modiconlistsetting_desc', 'theme_boost_union', null, true);
+
+            // Append the file list to the description.
+            $templatecontext = array('files' => theme_boost_union_get_modicon_templatecontext());
+            $description .= $OUTPUT->render_from_template('theme_boost_union/settings-modicon-filelist', $templatecontext);
+
+            // Finish the widget.
+            $setting = new admin_setting_description($name, $title, $description);
+            $tab->add($setting);
+        }
 
         // Add tab to settings page.
         $page->add($tab);
@@ -972,6 +1072,28 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
+        // Create breadcrumbs heading.
+        $name = 'theme_boost_union/breadcrumbsheading';
+        $title = get_string('breadcrumbsheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Display the category breadcrumb in the course header.
+        $categorybreadcrumbsoptions = array(
+            // Don't use string lazy loading (= false) because the string will be directly used and would produce a
+            // PHP warning otherwise.
+                THEME_BOOST_UNION_SETTING_COURSEBREADCRUMBS_DONTCHANGE =>
+                        get_string('dontchange', 'theme_boost_union', null, false),
+                THEME_BOOST_UNION_SETTING_SELECT_YES => get_string('yes'),
+                THEME_BOOST_UNION_SETTING_SELECT_NO => get_string('no')
+        );
+        $name = 'theme_boost_union/categorybreadcrumbs';
+        $title = get_string('categorybreadcrumbs', 'theme_boost_union', null, true);
+        $description = get_string('categorybreadcrumbs_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_COURSEBREADCRUMBS_DONTCHANGE, $categorybreadcrumbsoptions);
+        $tab->add($setting);
+
         // Create navigation heading.
         $name = 'theme_boost_union/navigationheading';
         $title = get_string('navigationheading', 'theme_boost_union', null, true);
@@ -1157,6 +1279,14 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
                 THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH, $outsideregionswidthoptions);
         $tab->add($setting);
 
+        // Setting: Block region width for Footer region.
+        $name = 'theme_boost_union/blockregionfooterwidth';
+        $title = get_string('blockregionfooterwidth', 'theme_boost_union', null, true);
+        $description = get_string('blockregionfooterwidth_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH, $outsideregionswidthoptions);
+        $tab->add($setting);
+
         // Setting: Outside regions horizontal placement.
         $outsideregionsplacementoptions = array(
             // Don't use string lazy loading (= false) because the string will be directly used and would produce a
@@ -1170,31 +1300,54 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('outsideregionsplacement_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configselect($name, $title, $description,
                 THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEXTMAINCONTENT, $outsideregionsplacementoptions);
-        // Creat site home right-hand blocks drawer behaviour heading.
+        $tab->add($setting);
+
+        // Create site home right-hand blocks drawer behaviour heading.
         $name = 'theme_boost_union/sitehomerighthandblockdrawerbehaviour';
         $title = get_string('sitehomerighthandblockdrawerbehaviour', 'theme_boost_union', null, true);
         $setting = new admin_setting_heading($name, $title, null);
         $tab->add($setting);
 
-        // Setting: Show site home right-hand blocks drawer when logged out users visit.
+        // Setting: Show right-hand block drawer of site home on visit.
         $name = 'theme_boost_union/showsitehomerighthandblockdraweronvisit';
         $title = get_string('showsitehomerighthandblockdraweronvisitsetting', 'theme_boost_union', null, true);
         $description = get_string('showsitehomerighthandblockdraweronvisitsetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
         $tab->add($setting);
 
-        // Setting: Show site home right-hand blocks drawer when user logs in for the very first time.
+        // Setting: Show right-hand block drawer of site home on first login.
         $name = 'theme_boost_union/showsitehomerighthandblockdraweronfirstlogin';
         $title = get_string('showsitehomerighthandblockdraweronfirstloginsetting', 'theme_boost_union', null, true);
         $description = get_string('showsitehomerighthandblockdraweronfirstloginsetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
         $tab->add($setting);
 
-        // Setting: Show site home right-hand blocks drawer when user logs in as guest.
+        // Setting: Show right-hand block drawer of site home on guest login.
         $name = 'theme_boost_union/showsitehomerighthandblockdraweronguestlogin';
         $title = get_string('showsitehomerighthandblockdraweronguestloginsetting', 'theme_boost_union', null, true);
         $description = get_string('showsitehomerighthandblockdraweronguestloginsetting_desc', 'theme_boost_union', null, true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Add tab to settings page.
+        $page->add($tab);
+
+
+        // Create links tab.
+        $tab = new admin_settingpage('theme_boost_union_feel_links', get_string('linkstab', 'theme_boost_union', null, true));
+
+        // Create Special Links Markup heading.
+        $name = 'theme_boost_union/speciallinksmarkupheading';
+        $title = get_string('speciallinksmarkupheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Mark external links.
+        $name = 'theme_boost_union/markexternallinks';
+        $title = get_string('markexternallinkssetting', 'theme_boost_union', null, true);
+        $description = get_string('markexternallinkssetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
         // Add tab to settings page.

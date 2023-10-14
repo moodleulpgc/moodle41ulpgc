@@ -1594,8 +1594,8 @@ function xmldb_offlinequiz_upgrade($oldversion = 0) {
         
         // Offlinequiz savepoint reached.
         upgrade_mod_savepoint(true, 2020060804, 'offlinequiz');
-    }        
-        
+    }  
+
     if ($oldversion < 2021070801.01) {
         // Define field completionpass to be added to offlinequiz.
         $table = new xmldb_table('offlinequiz');
@@ -1609,7 +1609,7 @@ function xmldb_offlinequiz_upgrade($oldversion = 0) {
         // Offlinequiz savepoint reached.
         upgrade_mod_savepoint(true, 2021070801.01, 'offlinequiz');
     }
-    
+
     if ($oldversion < 2021070801.03) {
 
         // Changing precision of field info on table offlinequiz_scanned_pages to (255).
@@ -1622,6 +1622,21 @@ function xmldb_offlinequiz_upgrade($oldversion = 0) {
         // Offlinequiz savepoint reached.
         upgrade_mod_savepoint(true, 2021070801.03, 'offlinequiz');
     }
+    if ($oldversion < 2023022000) {
+
+        // Define field participantsusage to be added to offlinequiz.
+        $table = new xmldb_table('offlinequiz');
+        $field = new xmldb_field('participantsusage', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'grade');
+
+        // Conditionally launch add field participantsusage.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Offlinequiz savepoint reached.
+        upgrade_mod_savepoint(true, 2023022000, 'offlinequiz');
+    }
+
 
     return true;
 }

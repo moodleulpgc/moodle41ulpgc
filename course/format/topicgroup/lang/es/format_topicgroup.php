@@ -50,7 +50,8 @@ $string['restrictedroles'] = 'Roles restringidos';
 $string['restrictedroles_desc'] = 'Los usuarios con estos roles no pueden acceder a todos los grupos.';
 
 $string['restrictsection'] = 'Restringir la sección al agrupamiento';
-$string['editrestrictsection'] = 'Modificar la restricción por agrupamientos';
+$string['changerestrictsection'] = 'Modificar la restricción al agrupamiento actual ({$a})';
+$string['editrestrictsection'] = 'Modificar la restricción por agrupamiento';
 $string['unrestrictsection'] = 'Eliminar restricción al agrupamiento ';
 $string['restrictedsectionlbl'] = 'Accesible solo por miembros de {$a} ';
 $string['manageactivities'] = 'Restringir gestión de actividades';

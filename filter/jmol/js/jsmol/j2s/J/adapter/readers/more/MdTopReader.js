@@ -1,8 +1,10 @@
 Clazz.declarePackage ("J.adapter.readers.more");
-Clazz.load (["J.adapter.readers.more.ForceFieldReader"], "J.adapter.readers.more.MdTopReader", ["java.lang.Boolean", "JU.Lst", "J.adapter.smarter.Atom", "JU.Logger"], function () {
+Clazz.load (["J.adapter.readers.more.ForceFieldReader"], "J.adapter.readers.more.MdTopReader", ["java.lang.Boolean", "JU.Lst", "J.adapter.smarter.Atom", "$.Bond", "JU.Logger"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nAtoms = 0;
 this.ac = 0;
+this.bonds1 = null;
+this.bonds2 = null;
 this.$atomTypes = null;
 this.group3s = null;
 Clazz.instantialize (this, arguments);
@@ -18,6 +20,8 @@ if (this.line.indexOf ("%FLAG ") != 0) return true;
 this.line = this.line.substring (6).trim ();
 if (this.line.equals ("POINTERS")) this.getPointers ();
  else if (this.line.equals ("ATOM_NAME")) this.getAtomNames ();
+ else if (this.line.equals ("BONDS_INC_HYDROGEN")) this.readBonds ();
+ else if (this.line.equals ("BONDS_WITHOUT_HYDROGEN")) this.readBonds ();
  else if (this.line.equals ("CHARGE")) this.getCharges ();
  else if (this.line.equals ("RESIDUE_LABEL")) this.getResidueLabels ();
  else if (this.line.equals ("RESIDUE_POINTER")) this.getResiduePointers ();
@@ -25,8 +29,18 @@ if (this.line.equals ("POINTERS")) this.getPointers ();
  else if (this.line.equals ("MASS")) this.getMasses ();
 return false;
 });
+Clazz.defineMethod (c$, "readBonds", 
+ function () {
+if (this.bonds1 == null) {
+this.bonds1 = this.getDataBlock ();
+return;
+}if (this.bonds2 == null) {
+this.bonds2 = this.getDataBlock ();
+}});
 Clazz.overrideMethod (c$, "finalizeSubclassReader", 
 function () {
+this.createBonds (this.bonds1);
+this.createBonds (this.bonds2);
 this.finalizeReaderASCR ();
 var atoms = this.asc.atoms;
 var atom;
@@ -57,6 +71,15 @@ for (var i = 0; i < this.nAtoms; i++) this.asc.addAtom (atoms2[i]);
 this.setModelPDB (true);
 this.htParams.put ("defaultType", "mdcrd");
 });
+Clazz.defineMethod (c$, "createBonds", 
+ function (bonds) {
+if (bonds == null) return;
+for (var i = 0; i < bonds.length; i++) {
+var a1 = Clazz.doubleToInt (Integer.parseInt (bonds[i++]) / 3);
+var a2 = Clazz.doubleToInt (Integer.parseInt (bonds[i++]) / 3);
+if (a1 < this.asc.ac && a2 < this.asc.ac) this.asc.addBond ( new J.adapter.smarter.Bond (a1, a2, 1));
+}
+}, "~A");
 Clazz.defineMethod (c$, "getDataBlock", 
  function () {
 var vdata =  new JU.Lst ();

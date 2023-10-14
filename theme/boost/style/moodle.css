@@ -12713,9 +12713,19 @@ a.text-dark:hover, a.text-dark:focus {
 .dir-rtl .custom-select {
   background-position: 0.75rem center;
 }
-
 .dir-rtl .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   transform: translateX(-0.9375rem);
+}
+.dir-rtl .tooltip.bs-tooltip-left .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=left] .arrow, .dir-rtl .tooltip.bs-tooltip-right .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=right] .arrow {
+  transform: rotate(180deg);
+}
+.dir-rtl .tooltip.bs-tooltip-left .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=left] .arrow {
+  left: auto;
+  right: 0;
+}
+.dir-rtl .tooltip.bs-tooltip-right .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=right] .arrow {
+  left: 0;
+  right: auto;
 }
 
 /**
@@ -12726,6 +12736,7 @@ a.text-dark:hover, a.text-dark:focus {
  * Please do not override any Bootstrap variables here, custom Bootstrap variable should go in
  * preset files instead.
  */
+/* ecastro ULPGC max 96 */
 /* core.less */
 #region-main {
   overflow-y: visible;
@@ -13136,8 +13147,15 @@ form.popupform div {
 }
 
 .no-overflow > .generaltable {
-  position: relative;
   margin-bottom: 0;
+}
+
+.no-overflow .generaltable .sr-only,
+.no-overflow .generaltable .accesshide,
+.table-responsive .generaltable .sr-only,
+.table-responsive .generaltable .accesshide {
+  position: relative;
+  display: block;
 }
 
 .accesshide {
@@ -13854,53 +13872,137 @@ tr.flagged-tag a {
   .mod-indent-1 {
     width: 30px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-1 {
+    margin-left: 30px;
+  }
   .mod-indent-2 {
     width: 60px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-2 {
+    margin-left: 60px;
   }
   .mod-indent-3 {
     width: 90px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-3 {
+    margin-left: 90px;
+  }
   .mod-indent-4 {
     width: 120px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-4 {
+    margin-left: 120px;
   }
   .mod-indent-5 {
     width: 150px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-5 {
+    margin-left: 150px;
+  }
   .mod-indent-6 {
     width: 180px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-6 {
+    margin-left: 180px;
   }
   .mod-indent-7 {
     width: 210px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-7 {
+    margin-left: 210px;
+  }
   .mod-indent-8 {
     width: 240px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-8 {
+    margin-left: 240px;
   }
   .mod-indent-9 {
     width: 270px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-9 {
+    margin-left: 270px;
+  }
   .mod-indent-10 {
     width: 300px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-10 {
+    margin-left: 300px;
   }
   .mod-indent-11 {
     width: 330px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-11 {
+    margin-left: 330px;
+  }
   .mod-indent-12 {
     width: 360px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-12 {
+    margin-left: 360px;
   }
   .mod-indent-13 {
     width: 390px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-13 {
+    margin-left: 390px;
+  }
   .mod-indent-14 {
     width: 420px;
+  }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-14 {
+    margin-left: 420px;
   }
   .mod-indent-15 {
     width: 450px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-15 {
+    margin-left: 450px;
+  }
   .mod-indent-16 {
     width: 480px;
   }
+  /* ecastro ULPGC  enforce  activityindentationenabled */
+  /* Also creates a series of .activity-indent-# rules based on same criteria. */
+  .activity-indent-16 {
+    margin-left: 480px;
+  }
   .mod-indent-huge {
     width: 480px;
+  }
+  /* ecastro ULPGC */
+  .activity-indent-huge {
+    margin-left: 480px;
   }
 }
 /* Audio player size in 'block' mode (can only change width, height is hardcoded in JS) */
@@ -14792,7 +14894,7 @@ a.disabled {
   text-decoration: none;
   cursor: default;
   font-style: italic;
-  color: #808080;
+  color: #6a737b;
 }
 
 body.lockscroll {
@@ -14896,11 +14998,6 @@ h3.sectionname .inplaceeditable.inplaceeditingon .editinstructions {
 }
 .chart-area .chart-table.accesshide .chart-table-data {
   display: block;
-}
-
-ul {
-  padding-left: 1rem;
-  -webkit-margin-start: 0.2rem; /* stylelint-disable-line */
 }
 
 /* YUI 2 Tree View */
@@ -15884,6 +15981,7 @@ blockquote {
 .activityiconcontainer .activityicon,
 .activityiconcontainer .icon {
   margin: 0;
+  font-size: 24px;
   height: 24px;
   width: 24px;
 }
@@ -17594,6 +17692,8 @@ table.calendartable caption {
 
 .section-modchooser {
   clear: both;
+  /*margin-top: map-get($spacers, 1); */
+  /* ecastro ULPGC */
   margin-top: 0.25rem;
 }
 
@@ -18287,6 +18387,10 @@ span.editinstructions .alert-link {
   font-weight: 700;
 }
 
+.coursebox .content .coursefile {
+  max-width: 100px;
+}
+
 .coursebox .content .courseimage img {
   max-width: 100px;
   max-height: 100px;
@@ -18414,6 +18518,9 @@ span.editinstructions .alert-link {
 #course-category-listings .listitem[data-selected="1"] {
   border-left: calc(1px + 5px) solid #0f6cbf;
   padding-left: calc(1.25rem - 5px);
+}
+#course-category-listings .listitem:hover {
+  z-index: 2;
 }
 #course-category-listings .item-actions {
   margin-right: 1em;
@@ -18971,6 +19078,63 @@ span.editinstructions .alert-link {
   margin-top: 0;
 }
 
+.activity:focus-within + .activity div.divider button,
+.course-section-header:focus-within + .content .section .activity:first-child div.divider button,
+.content .section .activity:focus-within div.divider button {
+  visibility: visible;
+}
+
+.activity div.divider {
+  height: 2rem;
+  margin-top: -1.25rem;
+  margin-bottom: -0.75rem;
+  z-index: 5;
+}
+.activity div.divider button {
+  border-radius: 100%;
+  width: 2rem;
+  height: 2rem;
+  position: relative;
+  left: 50%;
+  opacity: 0;
+  visibility: hidden;
+  transition: visibility 0.1s;
+  margin: 0;
+  padding: 0;
+}
+.activity div.divider button i.icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  font-size: 1.5rem;
+  position: absolute;
+  left: calc(0.25rem - 1px);
+  top: calc(0.25rem - 0.5px);
+}
+.activity:not(.dragging) div.divider:hover button, .activity:not(.dragging) div.divider:focus button, .activity:not(.dragging) div.divider:focus-within button {
+  opacity: 1;
+  visibility: visible;
+}
+
+.bulkenabled .bulk-hidden {
+  display: none !important;
+}
+
+.activity-item .bulkselect {
+  position: absolute;
+  left: -2rem;
+}
+
+.course-section-header .bulkselect {
+  left: -2rem;
+  position: relative;
+  width: 0;
+}
+
+@media (max-width: 767.98px) {
+  .bulkenabled .course-content {
+    margin-left: 2rem;
+  }
+}
 /* Anchor link offset fix. This makes hash links scroll 60px down to account for the fixed header. */
 :target {
   scroll-margin-top: 70px;
@@ -24365,6 +24529,9 @@ p.arrow_button {
   box-shadow: inset 0 0 0 2px #343a40;
 }
 
+.gradetreebox {
+  margin: 20px 0 30px 0;
+}
 .gradetreebox h4 {
   font-size: 0.9375rem;
 }
@@ -24584,101 +24751,105 @@ p.arrow_button {
   display: block;
 }
 
-.path-grade-edit-tree .setup-grades h4 {
+.path-grade-edit-tree .gradetree-wrapper {
+  padding: 10px 10px;
+  background-color: #f8f9fa;
+}
+.path-grade-edit-tree .gradetree-wrapper .setup-grades h4 {
   margin: 0;
 }
-.path-grade-edit-tree .setup-grades .column-rowspan {
+.path-grade-edit-tree .gradetree-wrapper .setup-grades .column-rowspan {
   padding: 0;
   width: 24px;
   min-width: 24px;
   max-width: 24px;
 }
-.path-grade-edit-tree .setup-grades .category td.column-name {
-  padding-left: 0;
-}
-.path-grade-edit-tree .setup-grades td.column-name {
-  padding-left: 24px;
-}
-.path-grade-edit-tree .setup-grades td.movehere {
-  padding: 0;
-}
-.path-grade-edit-tree .setup-grades td.movehere a.movehere {
-  display: block;
-  width: 100%;
-  height: 2rem;
-  border: 2px dashed #343a40;
-}
-.path-grade-edit-tree .setup-grades .category input[type=text],
-.path-grade-edit-tree .setup-grades .category .column-range,
-.path-grade-edit-tree .setup-grades .categoryitem,
-.path-grade-edit-tree .setup-grades .courseitem {
-  font-weight: bold;
-}
-.path-grade-edit-tree .setup-grades .emptyrow {
+.path-grade-edit-tree .gradetree-wrapper .setup-grades .emptyrow {
   display: none;
 }
-.path-grade-edit-tree .setup-grades .gradeitemdescription {
+.path-grade-edit-tree .gradetree-wrapper .setup-grades .gradeitemdescription {
   font-weight: normal;
   padding-left: 24px;
 }
-.path-grade-edit-tree .setup-grades .column-weight {
-  white-space: nowrap;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.spacer {
+  height: 0.5rem;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level3 {
-  padding-left: 37px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr[data-hidden=true] {
+  display: none;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level4 {
-  padding-left: 66px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr th {
+  vertical-align: bottom;
+  border: none;
+  text-align: left;
+  background-color: #f8f9fa;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level5 {
-  padding-left: 95px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr th.rowspan {
+  padding: 0;
+  width: 24px;
+  min-width: 24px;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level6 {
-  padding-left: 124px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td {
+  min-width: 4.5em;
+  background-color: #f8f9fa;
+  border: none;
+  vertical-align: middle;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level7 {
-  padding-left: 153px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.column-name {
+  padding-left: 38px;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level8 {
-  padding-left: 182px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.column-name .small {
+  font-size: 70%;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level9 {
-  padding-left: 211px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.column-name .itemicon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
-.path-grade-edit-tree .setup-grades .column-weight.level10 {
-  padding-left: 240px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.column-weight {
+  min-width: 15em;
 }
-.path-grade-edit-tree .setup-grades .column-range.level2 {
-  padding-left: 37px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.column-weight .weightoverride {
+  margin-right: 5px;
 }
-.path-grade-edit-tree .setup-grades .column-range.level3 {
-  padding-left: 66px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.column-actions .dropdown-toggle::after {
+  display: none;
 }
-.path-grade-edit-tree .setup-grades .column-range.level4 {
-  padding-left: 95px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.movehere {
+  padding: 0;
 }
-.path-grade-edit-tree .setup-grades .column-range.level5 {
-  padding-left: 124px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.movehere a.movehere {
+  display: block;
+  width: 100%;
+  margin: 5px 0 5px 0;
+  padding: 3px 0 3px 0;
 }
-.path-grade-edit-tree .setup-grades .column-range.level6 {
-  padding-left: 153px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.movehere a.movehere hr {
+  border-top: 2px dashed #8f959e;
+  margin: 0;
 }
-.path-grade-edit-tree .setup-grades .column-range.level7 {
-  padding-left: 182px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr td.movehere a.movehere:hover hr {
+  border-top: 2px dashed #0f6cbf;
 }
-.path-grade-edit-tree .setup-grades .column-range.level8 {
-  padding-left: 211px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td {
+  background-color: white;
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
 }
-.path-grade-edit-tree .setup-grades .column-range.level9 {
-  padding-left: 240px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td:first-child {
+  border-left: 1px solid #dee2e6;
 }
-.path-grade-edit-tree .setup-grades .column-range.level10 {
-  padding-left: 269px;
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td:last-child {
+  border-right: 1px solid #dee2e6;
 }
-.path-grade-edit-tree .setup-grades.generaltable .levelodd {
-  background-color: rgba(0, 0, 0, 0.03);
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name {
+  padding-left: 10px;
+  font-weight: bold;
 }
-
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name div {
+  display: flex;
+  min-height: 30px;
+  align-items: center;
+}
 .path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.category td.column-name div a.toggle-category {
   height: 24px;
   width: 24px;
@@ -24696,11 +24867,35 @@ p.arrow_button {
   color: #1d2125;
   margin: 0;
 }
-
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item td {
+  background-color: white;
+  border-top: 3px solid #f8f9fa;
+}
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item.categoryitem td, .path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item.courseitem td {
+  min-width: 4.5em;
+  background-color: #f8f9fa;
+  border: none;
+  vertical-align: middle;
+}
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item.categoryitem td.column-name, .path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item.courseitem td.column-name {
+  padding-left: 0;
+}
+.path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item.categoryitem td:not(.column-actions), .path-grade-edit-tree .gradetree-wrapper .setup-grades.generaltable tr.item.courseitem td:not(.column-actions) {
+  font-weight: bold;
+}
+.path-grade-edit-tree .gradetree-wrapper .badge-light {
+  color: #1d2125;
+  background-color: #ced4da;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
+}
 
 /**
  * Grader report.
  */
+.path-grade-report-grader .gradeparent {
+  z-index: 5;
+}
 .path-grade-report-grader .gradeparent tr .cell,
 .path-grade-report-grader .gradeparent .floater .cell {
   background-color: #fff;
@@ -24727,7 +24922,6 @@ p.arrow_button {
 .path-grade-report-grader .gradeparent tr.lastrow {
   position: sticky;
   bottom: 0;
-  z-index: 1;
 }
 .path-grade-report-grader .gradeparent tr.lastrow td,
 .path-grade-report-grader .gradeparent tr.lastrow th {
@@ -24735,7 +24929,17 @@ p.arrow_button {
 }
 .path-grade-report-grader .gradeparent th.header {
   position: sticky;
-  left: -3rem;
+  z-index: 1;
+}
+@media (max-width: 767.98px) {
+  .path-grade-report-grader .gradeparent th.header {
+    left: 0;
+  }
+}
+@media (min-width: 768px) {
+  .path-grade-report-grader .gradeparent th.header {
+    left: -3rem;
+  }
 }
 .path-grade-report-grader .gradeparent td.noborder {
   border-right: transparent;
@@ -24774,6 +24978,14 @@ p.arrow_button {
   float: right;
 }
 .path-grade-report-singleview .reporttable .dropdown-toggle::after {
+  display: none;
+}
+
+.gradereport-grader-table input[name^=grade] {
+  width: 80px;
+  display: inline-block;
+}
+.gradereport-grader-table .dropdown-toggle::after {
   display: none;
 }
 
@@ -25162,12 +25374,13 @@ body {
   position: fixed;
   right: 0;
   left: 0;
-  height: 61px;
-  bottom: -60px;
+  height: max(72px, 0.9375rem * 3);
+  bottom: calc(max(72px, 0.9375rem * 3) * -1);
   transition: bottom 0.5s;
   z-index: 1000;
   overflow: hidden;
   box-shadow: 0 0 1rem rgba(0, 0, 0, 0.15);
+  font-size: calc(0.9375rem * 1.00); /* ecastro font 1.0 */
 }
 
 .hasstickyfooter .stickyfooter {
@@ -25177,6 +25390,10 @@ body {
 /* Standard components fixes for sticky footer. */
 .stickyfooter ul.pagination {
   margin-bottom: 0.25rem;
+}
+
+.stickyfooter .btn {
+  font-size: calc(0.9375rem * 1.10);
 }
 
 /* Breakpoints fixes. */
@@ -26626,6 +26843,10 @@ div.editor_atto_toolbar button .icon {
 
 .pagelayout-embedded #page {
   margin-top: 0;
+}
+
+:root {
+  --navbar-height: 60px;
 }
 
 /**

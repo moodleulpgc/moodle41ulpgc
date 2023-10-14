@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/mod/offlinequiz/documentlib.php');
             \PhpOffice\PhpWord\Autoloader::register();
             include_once($CFG->libdir.'/phpword/PhpWord/Laminas/Escaper.php');
     } else {
-        require_once($CFG->dirroot . '/mod/offlinequiz/lib/phpwordinit.php');
+require_once($CFG->dirroot . '/mod/offlinequiz/lib/phpwordinit.php');
     }
 // ecastro ULPGC
 
@@ -51,12 +51,12 @@ require_once($CFG->dirroot . '/mod/offlinequiz/documentlib.php');
  * @param PHPWord_Numbering_AbstractNumbering $numbering The numbering used for the list item
  * @param int $depth The depth in the enumeration (0 for questions, 1 for answers).
  */
-function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $depth = 0, $paragraphstyle = '') {
+function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $depth = 0, $paragraphstyle = '') { // ecastro ULPGC
     // We skip leading newlines.
     while ($blocks[0]['type'] == 'newline') {
         array_shift($blocks);
     }
-    
+
     // First print the list item string.
     if (!empty($numbering)) {
         $itemstring = ' ';
@@ -70,7 +70,7 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
         }
 
         $listItemRun = $section->addListItemRun($depth, 'questionnumbering');
-        $listItemRun->addText(htmlspecialchars(html_entity_decode($itemstring)), $style, , $paragraphstyle); // ecastro
+        $listItemRun->addText(htmlspecialchars(html_entity_decode($itemstring)), $style, $paragraphstyle); // ecastro
         // We also skip the first sequential newline because we got a newline with addListItem.
         if (!empty($blocks) && $blocks[0]['type'] == 'newline') {
             array_shift($blocks);
@@ -93,11 +93,11 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
                     continue;
                 }
                 $block['value'] = html_entity_decode($block['value']); // ecastro ULPGC entinties problem
-                
+
                 if (array_key_exists('style', $block) && !empty($block['style'])) {
                     $textrun->addText(htmlspecialchars($block['value']), $block['style'], $paragraphstyle);
                 } else {
-                    $textrun->addText(htmlspecialchars($block['value']), 'nStyle', $paragraphstyle); 
+                    $textrun->addText(htmlspecialchars($block['value']), 'nStyle', $paragraphstyle);
                 }
             } else if ($block['type'] == 'newline') {
                 if (empty($numbering)) {
@@ -146,12 +146,11 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
  *
  * @param string $text
  */
-function offlinequiz_convert_u_text_docx($text) { // ecastro ULPGC
+function offlinequiz_convert_underline_text_docx($text) {
     $search  = array('&quot;', '&amp;', '&gt;', '&lt;');
     $replace = array('"', '&', '>', '<');
 
     // Now add the remaining text after the image tag.
-    //$parts = preg_split("/<u>/i", $text);
     $parts = preg_split('/<span style="text-decoration: underline;">|<u>/i', $text);
     $span_u = preg_match('<span style="text-decoration: underline;">', $text); // Is it the span-underline?
     $result = array();
@@ -163,48 +162,7 @@ function offlinequiz_convert_u_text_docx($text) { // ecastro ULPGC
     }
 
     foreach ($parts as $part) {
-        if ($closetagpos = strpos($part, '</u>')) {
-            $textremain = strip_tags(substr($part, $closetagpos + 4));
-        } else {
-            $closetagpos = strlen($part) - 1;
-            $textremain = '';
-        }
-        $subtext = strip_tags(substr($part, 0, $closetagpos));
-
-        $result[] = array('type' => 'string', 'value' => str_ireplace($search, $replace, $subtext), 'style' => 'uStyle');
-        if (!empty($textremain)) {
-            $result[] = array('type' => 'string', 'value' => str_ireplace($search, $replace, $textremain));
-        }
-    }
-    return $result;
-}
-
-
-/**
- * Function to convert underline characters (HTML <span ...> tags) into string blocks with underline style.
- *
- * @param string $text
- */
-function offlinequiz_convert_underline_text_docx($text) {
-    $search  = array('&quot;', '&amp;', '&gt;', '&lt;');
-    $replace = array('"', '&', '>', '<');
-
-    // Now add the remaining text after the image tag.
-    $parts = preg_split('/<span style="text-decoration: underline;">/i', $text);
-    $result = array();
-
-    $firstpart = array_shift($parts);
-    if (!empty($firstpart)) {
-        $result = offlinequiz_convert_u_text_docx($firstpart); // ecastro ULPGC
-    }
-
-    foreach ($parts as $part) {
-        $closetagpos = strpos($part, '</span>');
-
-        $underlinetext = strip_tags(substr($part, 0, $closetagpos));
-        //$underlineremain = strip_tags(substr($part, $closetagpos + 7));
-        $underlineremain = (substr($part, $closetagpos + 7));
-        if ($closetagpos = strpos($part, '</span>')) {
+        if ($span_u && $closetagpos = strpos($part, '</span>')) {
             $underlineremain = substr($part, $closetagpos + 7);
         } else if ($closetagpos = strpos($part, '</u>')) {
             $underlineremain = substr($part, $closetagpos + 4);
@@ -216,9 +174,7 @@ function offlinequiz_convert_underline_text_docx($text) {
 
         $result[] = array('type' => 'string', 'value' => str_ireplace($search, $replace, $underlinetext), 'style' => 'uStyle');
         if (!empty($underlineremain)) {
-            //$result[] = array('type' => 'string', 'value' => str_ireplace($search, $replace, strip_tags($underlineremain)));
-            $remainblocks = offlinequiz_convert_u_text_docx($underlineremain); // ecastro ULPGC
-            $result = array_merge($result, $remainblocks);
+            $result[] = array('type' => 'string', 'value' => str_ireplace($search, $replace, strip_tags($underlineremain)));
         }
     }
     return $result;
@@ -374,8 +330,8 @@ function offlinequiz_convert_newline_docx($text) {
 
     $firstpart = array_shift($parts);
     // If the original text was only a newline, we don't have a first part.
-    if (!empty($firstpart) || $firstpart == '0') { // ecastro ULPGC prevent blocks empty 
-        if($firstpart == '0') { 
+    if (!empty($firstpart) || $firstpart == '0') { // ecastro ULPGC prevent blocks empty
+        if($firstpart == '0') {
             $result[] = array('type' => 'string', 'value' => '0');
         } elseif ($firstpart == '<br/>' || $firstpart == '<br />') {
             $result = array(array('type' => 'newline'));
@@ -391,7 +347,6 @@ function offlinequiz_convert_newline_docx($text) {
             $result = array_merge($result, $newlineremainblocks);
         }
     }
-    
     return $result;
 }
 
@@ -452,7 +407,6 @@ function offlinequiz_convert_image_docx($text) {
             $result = array_merge($result, $remainingblocks);
         }
     }
-    
     return $result;
 }
 
@@ -461,7 +415,6 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
     $attempt = $templateusage->get_question_attempt($slot);
     $order = $slotquestion->get_order($attempt);  // Order of the answers.
 
-    
     foreach ($order as $key => $answer) {
         $answertext = $question->options->answers[$answer]->answer;
         $correctanswer = false;
@@ -469,11 +422,14 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
         if ($correction) {
             // ecastro ULPGC reduce print load for revision. Only correct, right, options graded.
             if($question->options->answers[$answer]->fraction != 0) {
-                $answertext .= "  (".round($question->options->answers[$answer]->fraction * 100)."%)©";
+                $answertext .= "  (".round($question->options->answers[$answer]->fraction * 100)."%)";
+                if($question->options->answers[$answer]->fraction > 0) {
+                    $answertext .= " ©";
+                }
                 $parstyle = $correction;
             }
-        }        
-        
+        }
+
         $unfilter = $answertext;
         // Filter only for tex formulas.
         if (!empty($texfilter)) {
@@ -490,7 +446,6 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
             'answer', $answer, 0.6, 200, $offlinequiz->disableimgnewlines, 'docx');
 
         $blocks = offlinequiz_convert_image_docx($answertext);
-        
         offlinequiz_print_blocks_docx($section, $blocks, $answernumbering, 1, $parstyle);
     }
     $infostr = offlinequiz_get_question_infostring($offlinequiz, $question);
@@ -513,7 +468,7 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
  * @return stored_file instance, the generated DOCX file.
  */
 function offlinequiz_create_docx_question(question_usage_by_activity $templateusage, $offlinequiz, $group,
-                                          $courseid, $context, $correction = false, $format = OFFLINEQUIZ_DOCX_FORMAT) {
+                                          $courseid, $context, $correction = false, $format = OFFLINEQUIZ_DOCX_FORMAT) { // ecastroULPGC
     global $CFG, $DB, $OUTPUT;
 
     $letterstr = 'abcdefghijklmnopqrstuvwxyz';
@@ -559,16 +514,16 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         $correctanswer = clone($answerstyle);
         $correctanswer->setShading(array('fill' => 'ffff00'));
     }
-     
+
     // ecastro ULPGC
     $docx->addParagraphStyle('questionTab', array(
             'tabs' => array(
                 new \PhpOffice\PhpWord\Style\Tab('left', 360)
             )
     ));
-    
+
     // Define table style arrays.
-    $tablestyle = array('borderSize' => 1, 'borderColor' => '000000', 'cellMargin' => 20, 
+    $tablestyle = array('borderSize' => 1, 'borderColor' => '000000', 'cellMargin' => 20,
                         'width' => 100 * 50, 'unit' => 'pct', 'align' => 'center', 'layout' => 'autofit');  // ecastro ULPGC
     $firstrowstyle = array('borderBottomSize' => 0, 'borderBottomColor' => 'FFFFFF', 'bgColor' => 'FFFFFF');
     $docx->addTableStyle('tableStyle', $tablestyle, $firstrowstyle);
@@ -604,9 +559,9 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
                             'colsNum' => 1,
                             'headerHeight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
                             );
-                            
+
     offlinequiz_set_course_info($courseid, $docx); // ecastro ULPGC
-    
+
     $section = $docx->addSection($title_section_style); // ecastro ULPGC
 
     $title = offlinequiz_str_html_docx($offlinequiz->name);
@@ -620,7 +575,7 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
             $title = substr($title, 0, 37) . ' ...';
         }
     }
-    $title .= ",  " . offlinequiz_str_html_docx(get_string('group', 'offlinequiz') . " $groupletter"); // ecastro ULPGC
+    $title .= ",  " . offlinequiz_str_html_docx(get_string('group', 'offlinequiz') . " $groupletter");
 
     // Add a header.
     $header = $section->addHeader();
@@ -638,24 +593,24 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
     $formatoptions->trusted = true;
     $formatoptions->noclean = true;
     $formatoptions->filter = true;
-    $formatoptions->para = false;    
-    $formatoptions->context = $context;    
-    
+    $formatoptions->para = false;
+    $formatoptions->context = $context;
+
     // Print title page.
     // // ecastro ULPGC print constant information
-    $section->addText(offlinequiz_str_html_docx(get_string('questionsheet', 'offlinequiz') . ' - ' . get_string('group', 'offlinequiz') . 
+    $section->addText(offlinequiz_str_html_docx(get_string('questionsheet', 'offlinequiz') . ' - ' . get_string('group', 'offlinequiz') .
                                                 " $groupletter"), 'hStyle', 'cStyle');
     $section->addTextBreak(2);
     //$width = \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3); // ecastro ULPGC
     $width= 10 * 50; // table width is set in % unit is 1/50 of %
     $height = \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1.0); // ecastro ULPGC
     $table = $section->addTable($tablestyle);
-    
+
     $cellstyle2 =  $cellstyle;
     if (!$correction) {
         $cellstyle2 = $cellstyle + array('gridSpan' => 2);
     }
-    
+
     $table->addRow((($offlinequiz->fontsize+4)*2) * 20);
     $text = offlinequiz_str_html_docx(get_string('studycode', 'offlinequiz'));
     $table->addCell($width*1.2, $cellstyle)->addText($text . ':  ', 'nStyle', 'rStyle');
@@ -671,14 +626,14 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
     $table->addCell($width*1.2, $cellstyle)->addText($text . ':  ', 'nStyle', 'rStyle');
     $text = $offlinequiz->time ? '  ' . userdate($offlinequiz->time) : '';
     $table->addCell($width*8.8, $cellstyle2)->addText($text, 'bStyle');
-    
+
     if (!$correction) {
         $table->addRow($height);
         $text = offlinequiz_str_html_docx(get_string('firstname'));
         $table->addCell($width*1.2, $cellstyle)->addText($text . ':  ', 'nStyle', 'rStyle');
         $table->addCell($width*7, $cellstyle)->addText('  ', 'bStyle');
         $text = offlinequiz_str_html_docx(get_string('signature', 'offlinequiz'));
-        $table->addCell($width*1.8, array('vMerge' => 'restart', 'valign' => 'bottom') + 
+        $table->addCell($width*1.8, array('vMerge' => 'restart', 'valign' => 'bottom') +
                         $cellstyle)->addText($text, 'subStyle', 'cStyle');
         $table->addRow($height);
         $text = offlinequiz_str_html_docx(get_string('lastname'));
@@ -691,20 +646,6 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         $text = '    ' . str_pad('', 9*8, '|_______') . '|';
         $table->addCell($width*7, array('valign' => 'bottom') + $cellstyle)->addText($text, 'subStyle');
         $table->addCell(null, array('vMerge' => 'continue'));
-        
-        /* removed ecastro ULPGC
-        $section->addText(offlinequiz_str_html_docx(get_string('questionsheet', 'offlinequiz') . ' - ' . get_string('group', 'offlinequiz') .
-                                                    " $groupletter"), 'hStyle', 'cStyle');
-        $section->addTextBreak(2);
-
-        $table = $section->addTable('tableStyle');
-        $table->addRow();
-        $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('name')) . ':  ', 'brStyle');
-
-        $table->addRow();
-        $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('idnumber', 'offlinequiz')) .
-                                                          ':  ', 'brStyle');
-        */
 
         if ($offlinequiz->printstudycodefield) {
             $table->addRow($height);
@@ -712,9 +653,9 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
             $table->addCell($width*1.2, $cellstyle)->addText($text . ':  ', 'nStyle', 'rStyle');
             $table->addCell($width*8.8, $cellstyle2);
         }
-        
+
         $section->addTextBreak(2);
-        
+
         // The DOCX intro text can be arbitrarily long so we have to catch page overflows.
         if (!empty($offlinequiz->pdfintro)) {
             /*
@@ -725,12 +666,12 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
             $html = format_text($offlinequiz->pdfintro, FORMAT_HTML, $formatoptions);
             $html = str_replace('<br>', '<br />', $offlinequiz->pdfintro);
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false); // ecastro ULPGC
-        }        
+        }
     }
 
     // Create a second page
     $section->addPageBreak();
-    
+
     // Load all the questions needed for this offline quiz group.
     $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark
               FROM {offlinequiz_group_questions} ogq
@@ -771,7 +712,7 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         ['format' => 'lowerLetter', 'text' => '%2)', 'left' => 10, 'hanging' => 10, 'tabPos' => 250],
     )
     ]);
-    
+
     // ecastro ULPGC new section if two columns
     if($offlinequiz->qsheetcols > 1) {
         $questions_section_style = array('orientation' => 'portrait',
@@ -779,11 +720,11 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
                                 'marginBottom' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
                                 'marginLeft' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1.4),
                                 'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1.4),
-                                'colsNum' => $offlinequiz->qsheetcols, 
+                                'colsNum' => $offlinequiz->qsheetcols,
                                 'colsSpace' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
                                 'headerHeight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
-                                );    
-        
+                                );
+
         $section = $docx->addSection($questions_section_style);
 
         // Add a header for this section.
@@ -797,10 +738,10 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         $footer->addImage($CFG->dirroot . '/mod/offlinequiz/pix/line.png', array('width' => $width/20, 'height' => 5, 'align' => 'center'));
         $footer->addPreserveText($title . ' SS |  ' . get_string('page') . ' ' . '{PAGE} / {NUMPAGES}', array('size' => 8), 'cStyle');
     }
-    
+
+
     // If shufflequestions has been activated we go through the questions in the order determined by
     // the template question usage.
-    
     if ($offlinequiz->shufflequestions) {
         foreach ($slots as $slot) {
 
@@ -869,7 +810,6 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
             // Print the question.
             $questiontext = $question->questiontext;
 
-            
             // Filter only for tex formulas.
             if (!empty($texfilter)) {
                 $questiontext = $texfilter->filter($questiontext);
@@ -931,7 +871,7 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
         $ext = '.odt';
         $writeformat = 'ODText';
     }
-    
+
     $tempfilename = $CFG->tempdir . '/offlinequiz/' . $unique . $ext; // ecastro ULPGC
     check_dir_exists($CFG->tempdir . '/offlinequiz', true, true);
 
@@ -986,7 +926,7 @@ function offlinequiz_str_html_docx($input) {
     // First replace the plugin image tags.
     $output = str_replace('[', '(', $output);
     $output = str_replace(']', ')', $output);
-    
+
     $output = strip_tags($output);
 
     $search  = array('&quot;', '&amp;', '&gt;', '&lt;');
@@ -1056,11 +996,11 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
                 new \PhpOffice\PhpWord\Style\Tab('left', 360)
             )
     ));
-    
+
     // Define table style arrays.
-    $tablestyle = array('borderSize' => 1, 'borderColor' => 'FF0000', 'cellMargin' => 20, 
+    $tablestyle = array('borderSize' => 1, 'borderColor' => 'FF0000', 'cellMargin' => 20,
                         'width' => 100 * 50, 'unit' => 'pct', 'align' => 'center', 'layout' => 'autofit');
-    
+
     $firstrowstyle = array('borderBottomSize' => 0, 'borderBottomColor' => 'FFFFFF', 'bgColor' => 'FFFFFF');
     $docx->addTableStyle('tableStyle', $tablestyle, $firstrowstyle);
 
@@ -1094,7 +1034,7 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
                             'colsNum' => 1,
                             'headerHeight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
                             );
-    
+
     $section = $docx->addSection($title_section_style);
 
     $title = offlinequiz_str_html_docx($offlinequiz->name);
@@ -1112,7 +1052,7 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
 
     // Add a header.
     $header = $section->addHeader();
-    
+
     $width = $section->getStyle()->getPageSizeW() - $section->getStyle()->getMarginLeft() - $section->getStyle()->getMarginRight();
     $header->addText($title, array('size' => 10), 'cStyle' );
     $header->addImage($CFG->dirroot . '/mod/offlinequiz/pix/line.png', array('width' => $width/20, 'height' => 5, 'align' => 'center'));
@@ -1126,9 +1066,9 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
         $formatoptions->trusted = true;
         $formatoptions->noclean = true;
         $formatoptions->filter = true;
-        $formatoptions->para = false;    
+        $formatoptions->para = false;
         $formatoptions->context = $context;
-    
+
     // Print title page.
     if (!$correction) {
         $section->addText(offlinequiz_str_html_docx(get_string('questionsheet', 'offlinequiz') . ' - ' . get_string('group') .
@@ -1140,37 +1080,37 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
         $table = $section->addTable($tablestyle);
         $table->addRow($height);
         $table->addCell($width, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('name')) . ':  ', 'brStyle', 'rStyle');
-        $table->addCell($width*4, $cellstyle)->addText($width);     
-        
+        $table->addCell($width*4, $cellstyle)->addText($width);
+
 
         $table->addRow($height);
         $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('idnumber', 'offlinequiz')) .
                                                           ':  ', 'brStyle', 'rStyle');
-        $table->addCell(200, $cellstyle);                                                          
+        $table->addCell(200, $cellstyle);
 
         if ($offlinequiz->printstudycodefield) {
             $table->addRow($height);
             $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('studycode', 'offlinequiz')) .
                                                           ':  ', 'brStyle', 'rStyle');
-                                                          $table->addCell(200, $cellstyle);                           
+                                                          $table->addCell(200, $cellstyle);
         }
 
         $table->addRow($height*2);
         $table->addCell(200, $cellstyle)->addText(offlinequiz_str_html_docx(get_string('signature', 'offlinequiz')) .
                                                           ':  ', 'brStyle', 'rStyle');
-                                                          $table->addCell(200, $cellstyle);                           
+                                                          $table->addCell(200, $cellstyle);
 
         $section->addTextBreak(2);
 
-        
+
         // \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false); // ecastro ULPGC
         // The DOCX intro text can be arbitrarily long so we have to catch page overflows.
         if (!empty($offlinequiz->pdfintro)) {
             $html = format_text($offlinequiz->pdfintro, FORMAT_HTML, $formatoptions);
             $html = str_replace('<br>', '<br />', $offlinequiz->pdfintro);
-            
+
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false); // ecastro ULPGC
-        
+
             $section->addTextBreak(2);
         //mb_decode_numericentity() -
             //$blocks = offlinequiz_convert_image_docx($offlinequiz->pdfintro);
@@ -1185,16 +1125,16 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
 
         // Create a second page
         $section->addPageBreak();
-    
+
     // Load all the questions needed for this offline quiz group.
     $sql = "SELECT q.*, c.contextid, ogq.page, ogq.slot, ogq.maxmark
-              FROM {offlinequiz_group_questions} ogq,
-                   {question} q,
-                   {question_categories} c
+              FROM {offlinequiz_group_questions} ogq
+              JOIN {question} q ON ogq.questionid = q.id
+              JOIN {question_versions} qv ON qv.questionid = q.id
+              JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+              JOIN {question_categories} c ON qbe.questioncategoryid = c.id
              WHERE ogq.offlinequizid = :offlinequizid
                AND ogq.offlinegroupid = :offlinegroupid
-               AND q.id = ogq.questionid
-               AND q.category = c.id
           ORDER BY ogq.slot ASC ";
     $params = array('offlinequizid' => $offlinequiz->id, 'offlinegroupid' => $group->id);
 
@@ -1227,25 +1167,25 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
     )
     ]);
 
-    
+
     $questions_section_style = array('orientation' => 'portrait',
                             'marginTop' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(0),
                             'marginBottom' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
                             'marginLeft' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1.5),
                             'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1.5),
-                            'colsNum' => 1, 
+                            'colsNum' => 1,
                             'colsSpace' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
                             'headerHeight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(1),
-                            );    
-    
+                            );
+
     $section = $docx->addSection($questions_section_style);
-    
+
     // If shufflequestions has been activated we go through the questions in the order determined by
     // the template question usage.
-    
+
     //$attempt = $templateusage->get_question_attempt($slot);
     $doptions = mod_offlinequiz_display_options::make_from_offlinequiz($offlinequiz);
-    
+
     if ($offlinequiz->shufflequestions) {
         foreach ($slots as $slot) {
 
@@ -1254,7 +1194,7 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
             $html = $qtoutput->formulation_export($attempt, $doptions);
             $html = str_replace('<br>', '<br />', $html);
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false); // ecastro ULPGC
-        
+
         /*
             $slotquestion = $templateusage->get_question($slot);
             $myquestion = $slotquestion->id;
@@ -1267,13 +1207,13 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
 
             //$questiontext = format_text($question->questiontext, $question->questiontextformat, $formatoptions);
 
-            
+
             // Filter only for tex formulas.
             if (!empty($texfilter)) {
                 $questiontext = $texfilter->filter($questiontext);
             }
-            
-            
+
+
 
             // Remove all HTML comments (typically from MS Office).
             $questiontext = preg_replace("/<!--.*?--\s*>/ms", "", $questiontext);
@@ -1332,12 +1272,12 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
             \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html, false, false); // ecastro ULPGC
             $section->addTextBreak();
             $number++;
-/*            
+/*
             // Print the question.
             $questiontext =  $question->questiontext;
             //$questiontext = format_text($question->questiontext, $question->questiontextformat, $formatoptions);
 
-            
+
             // Filter only for tex formulas.
             if (!empty($texfilter)) {
                 $questiontext = $texfilter->filter($questiontext);
@@ -1380,7 +1320,7 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
                 $number++;
                 // End if multichoice.
             }
-*/            
+*/
         } // End forall questions.
     } // End else no shufflequestions.
 
@@ -1400,7 +1340,7 @@ function offlinequiz_create_odt_question(question_usage_by_activity $templateusa
         //$ext = '.odt';
         //$writeformat = 'ODText';
     }
-    
+
     //$tempfilename = $CFG->dataroot . '/temp/offlinequiz/' . $unique . '.docx';
     $tempfilename = $CFG->dataroot . '/temp/offlinequiz/' . $unique . $ext;
     check_dir_exists($CFG->dataroot . '/temp/offlinequiz', true, true);

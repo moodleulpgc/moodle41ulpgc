@@ -39,7 +39,7 @@
 
 }}
 {{< core/popover_region }}
-    {{$classes}}popover-region-notifications{{/classes}}
+    {{$classes}}popover-region-notifications ulpgc{{/classes}}
     {{$attributes}}id="nav-ulpgc-notification-popover-container" data-userid="{{userid}}"{{/attributes}}
 
     {{$togglelabel}}{{!
@@ -47,7 +47,7 @@
         }}{{#unreadcount}} {{#str}} shownotificationwindowwithcount, message, {{.}} {{/str}} {{/unreadcount}} {{!
     }}{{/togglelabel}}
     {{$togglecontent}}
-        {{#pix}} i/bullhorn, core, {{#str}} togglenotificationmenu, message {{/str}} {{/pix}}
+        {{#pix}}i/bullhorn, core, {{#str}} togglenotificationmenu, message {{/str}}{{/pix}}
         <div
             class="count-container {{^unreadcount}}hidden{{/unreadcount}}"
             data-region="count-container"

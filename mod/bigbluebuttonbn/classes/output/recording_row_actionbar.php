@@ -16,6 +16,7 @@
 
 namespace mod_bigbluebuttonbn\output;
 
+use mod_bigbluebuttonbn\local\config; // ecastro ULPGC recordings URL
 use mod_bigbluebuttonbn\recording;
 use pix_icon;
 use renderable;
@@ -82,7 +83,7 @@ class recording_row_actionbar implements renderable, templatable {
         'import' => [
             'action' => 'import',
             'icon' => 'import',
-        ]
+        ],
     ];
 
     /**
@@ -153,9 +154,12 @@ class recording_row_actionbar implements renderable, templatable {
                     $actionlink = new \action_link(new \moodle_url('#'), $iconortext, null, $linkattributes);
                     $context->tools[] = $actionlink->export_for_template($output);
                 }
-
             }
         }
+
+        // ecastro ULPGC download action button
+        $context->downloads = $this->actionbar_download_button($output);
+
         return $context;
     }
 
@@ -175,5 +179,48 @@ class recording_row_actionbar implements renderable, templatable {
                 $buttonpayload['disabled'] = $value;
             }
         }
+    }
+
+    /**
+     * Construct the download button data, if needed
+     *
+     * @param renderer_base $output
+     * @return array
+     * @author ecastro ULPGC
+     */
+    private function actionbar_download_button(renderer_base $output) : array {
+        $downloads = [];
+        if(!$this->recording->get('imported')) {
+            // not imported, we can check for mp4
+            if($mp4url = $this->recording->get_remote_download_url()) {
+                // mp4 url exists, contruct button
+                $rid = $this->recording->get('id');
+                $playbacks = $this->recording->get('playbacks');
+                $mp4str = get_string('view_recording_actionbar_mp4', 'bigbluebuttonbn');
+                $tooltipstr = get_string('view_recording_list_actionbar_download', 'bigbluebuttonbn');
+                if ($playbacks) {
+                    foreach ($playbacks as $playback) {
+                        $url = new \moodle_url($playback['url']);
+                        $url->param('action', 'download');
+                        $url->param('rtype', 'download');
+                        $linkattributes = [
+                            'id' => "recording-play-{$playback['type']}-{$rid}",
+                            'data-action' => 'download',
+                        ];
+                        $actionlink = new \single_button(
+                            $url,
+                            $mp4str,
+                            'post',
+                            null,
+                            $linkattributes
+                        );
+                        $actionlink->tooltip = $tooltipstr;
+                        $downloads[] = $actionlink->export_for_template($output);
+                    }
+                }
+            }
+        }
+
+        return $downloads;
     }
 }

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 use \mod_scheduler\model\scheduler;
 use \mod_scheduler\permission\scheduler_permissions;
 
-require_once($CFG->dirroot . '/mod/assign/locallib.php');
+//require_once($CFG->dirroot . '/mod/scheduler/locallib.php');
 
 /**
  * A custom renderer class that extends the plugin_renderer_base and is used by the scheduler module.

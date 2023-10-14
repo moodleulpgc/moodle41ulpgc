@@ -30,6 +30,77 @@ require_once($CFG->libdir.'/pdflib.php');
 class makeexam_pdf extends pdf {
 
 
+    public function print_exam_header($programme, $coursename, $annuality, $period, $examname, $scope) {
+        global $USER;
+
+        // set document information
+        $this->SetCreator('Moodle mod_quiz');
+        $this->SetAuthor(fullname($USER));
+        $this->SetTitle($examname);
+        $this->SetSubject($coursename);
+        $this->SetKeywords('moodle, quiz');
+
+        // set default header/footer data
+        $this->setPrintHeader(true);
+        $this->setPrintFooter(true);
+        $this->SetHeaderData('', 0, $coursename, '');
+        $this->setHeaderFont(array('helvetica', '', 8));
+        $this->setFooterFont(array('helvetica', '', 8));
+
+        // set margins
+        $topmargin = 10;
+        $leftmargin = 15;
+        $rightmargin = 15;
+        $this->SetMargins($leftmargin, $topmargin, $rightmargin);
+        $this->SetHeaderMargin(5);
+        $this->SetFooterMargin(10);
+
+        // set auto page breaks
+        $this->SetAutoPageBreak(TRUE, 25);
+
+        // set image scale factor
+        $this->setImageScale(1.25);
+
+        // set font
+        $this->SetFont('helvetica', '', 10);
+
+        // add titlepage
+        $header = $this->get_exam_header($programme, $coursename, $annuality, $period, $scope);
+        $this->AddPage('', '', true);
+        $this->Ln(1);
+        $this->writeHTML($header, false, false, true, false, '');
+        $this->Ln(12);
+
+//         $text = " &#8594;  &rarr;  &#9829; &hearts;  x&nbsp;x    &#8694;  &#8649;  &#9745; &#9872; &#9873; &#169;";
+//         $this->writeHTML($text, false, false, true, false, '');
+//         $this->Ln(12);
+
+
+    }
+
+    public function get_exam_header($programme, $coursename, $annuality, $period, $scope) {
+        $headstyle = ' style="text-align:right; font-weight: bold;"';
+        $headalign = ' style="vertical-align:middle;  line-height: 8.0em; border: 1px solid black;" ';
+        $header = '<table cellspacing="0" cellpadding="4" border="1"  width:100%;  style="  border: 1px solid black; border-collapse: collapse; table-layout:fixed; ">';
+        $header .= "<tr $headalign ><td $headstyle  width=\"15%\" >".get_string('programme', 'examregistrar').'</td><td colspan="5">'.$programme.'</td></tr>';
+        $header .= "<tr $headalign ><td $headstyle  >".get_string('course', 'examregistrar').'</td><td colspan="5">'.$coursename.'</td></tr>';
+        $headalign = ' style="vertical-align:middle;  line-height: 10.0em;" ';
+        $header .= "<tr $headalign ><td $headstyle  >".get_string('perioditem', 'examregistrar').'</td><td width="29%" colspan="1">'.$period.'</td>'.
+                   "<td $headstyle colspan=\"1\"> ".get_string('scopeitem', 'examregistrar').' </td><td width="17%" colspan="1">'.$scope.'</td>';
+
+        $headstyle = ' style="text-align:right; font-weight: bold;" width="12%"';
+        $header .= "<td $headstyle colspan=\"1\"> ".get_string('annualityitem', 'examregistrar').' </td><td  width="8.7%" >'.$annuality.'</td></tr>';
+
+        $headstyle = ' style="text-align:right; font-weight: bold;" ';
+        $headalign = ' style="vertical-align:middle;  line-height: 18.0em:  border: 1px solid black;" ';
+        $header .= "<tr $headalign ><td $headstyle >".get_string('lastname').'</td><td colspan="5"></td></tr>';
+        $header .= "<tr $headalign ><td $headstyle ".'   >'.get_string('firstname').'</td><td colspan="2"></td>'.
+                   "<td $headstyle >".get_string('idnumber').'</td><td colspan="2"></td></tr>';
+        $header .= '</table>';
+
+        return $header;
+    }
+
     /**
      * Puts a moodle image in the page.
      * Delegates to parent Image method for all other images

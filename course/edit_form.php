@@ -441,10 +441,17 @@ class course_edit_form extends moodleform {
             $courseformat = course_get_format((object)$params);
 
             $elements = $courseformat->create_edit_form_elements($mform);
+            /*
             for ($i = 0; $i < count($elements); $i++) {
                 $mform->insertElementBefore($mform->removeElement($elements[$i]->getName(), false),
                         'addcourseformatoptionshere');
+            } */ 
+            // ecastro ULPGC // avoid error due to some indexes ara not used, elements keys are not continuous integers
+            foreach ($elements as $key => $element) {
+                $mform->insertElementBefore($mform->removeElement($element->getName(), false),
+                        'addcourseformatoptionshere');
             }
+            // ecastro ULPGC
 
             // Remove newsitems element if format does not support news.
             if (!$courseformat->supports_news()) {

@@ -68,11 +68,15 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $usort = optional_param('usort', '', PARAM_ALPHANUMEXT);
 $rsort = optional_param('rsort', '', PARAM_ALPHANUMEXT);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit));
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'tab'=>'session'));
+$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit, 'tab'=>'session')));
+examregistrar_url_update($baseurl);
+
 $params =  array('id' => $cm->id, 'edit'=>$edit, 'session'=>$session, 'venue'=>$bookedsite);
 $allocurl = new moodle_url('/mod/examregistrar/manage/assignseats.php', $params);
+examregistrar_url_update($allocurl);
+
 $actionurl = new moodle_url('/mod/examregistrar/manage/action.php', $params);
+examregistrar_url_update($actionurl);
 $actionurl->param('examsession', $session);
 
 $courseurl = new moodle_url('/course/search.php');
@@ -89,7 +93,6 @@ $PAGE->set_activity_record($examregistrar);
 
 $output = $PAGE->get_renderer('mod_examregistrar');
 if($edit) {
-    //$baseurl->param('edit', $edit);
     $PAGE->navbar->add(get_string($edit, 'examregistrar'), $baseurl);
 } else {
     $PAGE->navbar->add(get_string('managesession', 'examregistrar'), $baseurl);
@@ -108,6 +111,20 @@ $canmanage = $caneditelements || $canmanageperiods || $canmanageexams || $canman
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+    /// prepare event log
+    $eventdata = array();
+    //$eventdata['objectid'] = $examregistrar->id;
+    $eventdata['context'] = $context;
+    $eventdata['userid'] = $USER->id;
+    $eventdata['other'] = array();
+    $eventdata['other']['examregid'] = $examregistrar->examregprimaryid;
+    $eventdata['other']['session'] = $session;
+    if($bookedsite) {
+        $eventdata['other']['bookedsite'] = $bookedsite;
+    }
+    $eventdata['other']['action'] = 'Manage assign seats';
+
 /// process forms actions
 
 if($action) {
@@ -128,22 +145,20 @@ if($action) {
         //print_object("  -- allocation ----");
         if($action == 'unallocateall') {
             $DB->set_field('examregistrar_session_seats', 'roomid', 0, array('examsession'=>$session, 'bookedsite'=>$bookedsite));
+            $eventdata['other']['action'] = 'Assign seats: unallocate all';
+            $eventdata['other']['extra'] = "bookedsite:  $bookedsite";
         } elseif($action == 'refreshallocation') {
            examregistrar_session_seats_makeallocation($session, $bookedsite);
+            $eventdata['other']['action'] = 'Assign seats: Refresh all allocations';
+            $eventdata['other']['extra'] = "bookedsite:  $bookedsite";
         } elseif($action == 'assignseats') {
             if($allocation->numusers && $allocation->fromexam && ($allocation->fromroom != $allocation->toroom)) {
                 $params = array('examsession'=>$session, 'bookedsite'=>$bookedsite,
                                 'examid'=>$allocation->fromexam, 'roomid'=>$allocation->fromroom, 'additional'=>0 );
                 $sort = ($allocation->fromroom) ? ' id DESC ' : ' id ASC';
                 examregistrar_update_usersallocations($session, $bookedsite, $params, $allocation->toroom, $sort, 0, $allocation->numusers);
-                /*
-                if($users = $DB->get_records_menu('examregistrar_session_seats', $params, $sort, 'id, userid', 0, $allocation->numusers)) {
-                    list($insql, $inparams) = $DB->get_in_or_equal(array_keys($users));
-                    $select = " id $insql ";
-                    $DB->set_field_select('examregistrar_session_seats', 'roomid', $allocation->toroom, $select, $inparams);
-                }
-                    /// TODO TODO check for new extras al cambiar de room
-                    */
+                $eventdata['other']['action'] = 'Assign exam seats';
+                $eventdata['other']['extra'] = " | exam: {$allocation->fromexam} and room: $allocation->fromroom";
             }
         } else {
             $room = optional_param('room', 0, PARAM_INT);
@@ -153,6 +168,8 @@ if($action) {
                     $params = array('examsession'=>$session, 'bookedsite'=>$bookedsite,
                                         'roomid'=>$room);
                     examregistrar_update_usersallocations($session, $bookedsite, $params, 0);
+                    $eventdata['other']['action'] = 'Assign seats: empty room';
+                    $eventdata['other']['extra'] = " | room: $room";
                     //$DB->set_field('examregistrar_session_seats', 'roomid', 0, $params);
                 }
             } elseif($action == 'emptyexam') {
@@ -160,6 +177,8 @@ if($action) {
                     $params = array('examsession'=>$session, 'bookedsite'=>$bookedsite,
                                         'examid'=>$exam, 'additional'=>0);
                     examregistrar_update_usersallocations($session, $bookedsite, $params, 0);
+                    $eventdata['other']['action'] = 'Assign seats: empty exam';
+                    $eventdata['other']['extra'] = " | exam: $exam";
                     //$DB->set_field('examregistrar_session_seats', 'roomid', 0, $params);
                 }
             } elseif($action == 'allocateexam') {
@@ -167,6 +186,8 @@ if($action) {
                     $params = array('examsession'=>$session, 'bookedsite'=>$bookedsite,
                                         'roomid'=>0, 'examid'=>$exam, 'additional'=>0);
                     examregistrar_update_usersallocations($session, $bookedsite, $params, $room);
+                    $eventdata['other']['action'] = 'Assign seats: allocate exam';
+                    $eventdata['other']['extra'] = " | exam: $exam in room: $room";
                     /*
                     $sort = ' id ASC ';
                     if($users = $DB->get_records_menu('examregistrar_session_seats', $params, $sort, 'id, userid')) {
@@ -207,6 +228,8 @@ if($action) {
                         }*/
                     //$DB->set_field('examregistrar_session_seats', 'locationid', $room, $params);
                     }
+                    $eventdata['other']['action'] = 'Assign seats: allocate exams';
+                    $eventdata['other']['extra'] = " | exams: " .implode(', ', $exams). " into room: $room";
                 }
             } elseif($action == 'unallocateexam') {
                 if($room && $exam) {
@@ -214,9 +237,13 @@ if($action) {
                                         'roomid'=>$room, 'examid'=>$exam);
                     examregistrar_update_usersallocations($session, $bookedsite, $params, 0);
                     //$DB->set_field('examregistrar_session_seats', 'locationid', 0, $params);
+                    $eventdata['other']['action'] = 'Assign seats: unallocate exam';
+                    $eventdata['other']['extra'] = " | exam: $exam from room: $room";
                 }
             }
         }
+        $event = \mod_examregistrar\event\manage_action::create($eventdata);
+        $event->trigger();
     }
 }
 
@@ -330,7 +357,7 @@ if($session && $bookedsite) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-add_to_log($course->id, 'examregistrar', 'manage assignseats', "manage.php?id={$cm->id}&edit=assignseats", $examregistrar->name, $cm->id);
+//add_to_log($course->id, 'examregistrar', 'manage assignseats', "manage.php?id={$cm->id}&edit=assignseats", $examregistrar->name, $cm->id);
 
 /// Print the page header, Output starts here
 echo $output->header();

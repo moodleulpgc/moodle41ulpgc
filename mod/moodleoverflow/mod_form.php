@@ -179,7 +179,9 @@ class mod_moodleoverflow_mod_form extends moodleform_mod {
         $mform->addElement('text', 'gradescalefactor', get_string('scalefactor', 'moodleoverflow'));
         $mform->addHelpButton('gradescalefactor', 'scalefactor', 'moodleoverflow');
         $mform->setType('gradescalefactor', PARAM_INT);
+        $mform->setDefault('gradescalefactor', 1);
         $mform->addRule('gradescalefactor', get_string('scalefactorerror', 'moodleoverflow'), 'regex', '/^[0-9]+$/', 'client');
+        $mform->addRule('gradescalefactor', get_string('scalefactorerror', 'moodleoverflow'), 'nonzero', null, 'client');
 
         if ($this->_features->gradecat) {
             $mform->addElement(
@@ -237,6 +239,11 @@ class mod_moodleoverflow_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'repcountvotes', get_string('repcountvotes', 'moodleoverflow'));
         $mform->addHelpButton('repcountvotes', 'repcountvotes', 'moodleoverflow');
         $mform->setDefault('repcountvotes', MOODLEOVERFLOW_RATING_ALLOW);
+
+        // Allow multiple marks of helpful/solved.
+        $mform->addElement('advcheckbox', 'allowmultiplemarks', get_string('allowmultiplemarks', 'moodleoverflow'));
+        $mform->addHelpButton('allowmultiplemarks', 'allowmultiplemarks', 'moodleoverflow');
+        $mform->setDefault('allowmultiplemarks', 0);
 
         $mform->addElement('advcheckbox', 'repcountposts', get_string('repcountposts', 'moodleoverflow'));
         $mform->addHelpButton('repcountposts', 'repcountposts', 'moodleoverflow');
@@ -328,6 +335,9 @@ class mod_moodleoverflow_mod_form extends moodleform_mod {
         if (empty($default_values['completioncomments'])) {
             $default_values['completioncomments']=1;
         }
+
+        $default_values['completionsuccessenabled']=
+            !empty($default_values['completionsuccess']) ? 1 : 0;
         if (empty($default_values['completionsuccess'])) {
             $default_values['completionsuccess']=1;
         }
@@ -363,13 +373,13 @@ class mod_moodleoverflow_mod_form extends moodleform_mod {
         $mform->disabledIf('completioncomments','completioncommentsenabled','notchecked');
 
         $group=array();
-        $group[] =& $mform->createElement('checkbox', 'completiosuccessenabled', '', get_string('completiosuccess','moodleoverflow'));
-        $group[] =& $mform->createElement('text', 'completiosuccess', '', array('size'=>3));
-        $mform->setType('completiosuccess',PARAM_INT);
-        $mform->addGroup($group, 'completiosuccessgroup', get_string('completiosuccessgroup','moodleoverflow'), array(' '), false);
-        $mform->disabledIf('completiosuccess','completiosuccessenabled','notchecked');
+        $group[] =& $mform->createElement('checkbox', 'completionsuccessenabled', '', get_string('completionsuccess','moodleoverflow'));
+        $group[] =& $mform->createElement('text', 'completionsuccess', '', array('size'=>3));
+        $mform->setType('completionsuccess',PARAM_INT);
+        $mform->addGroup($group, 'completionsuccessgroup', get_string('completionsuccessgroup','moodleoverflow'), array(' '), false);
+        $mform->disabledIf('completionsuccess','completionsuccessenabled','notchecked');
         
-        return array('completiondiscussionsgroup','completionanswersgroup','completioncommentsgroup', 'completiosuccessgroup');
+        return array('completiondiscussionsgroup','completionanswersgroup','completioncommentsgroup', 'completionsuccessgroup');
     }
 
     function completion_rule_enabled($data) {
@@ -405,7 +415,7 @@ class mod_moodleoverflow_mod_form extends moodleform_mod {
             if (empty($data->completioncommentsenabled) || !$autocompletion) {
                 $data->completioncomments = 0;
             }
-            if (empty($data->completioncommentsenabled) || !$autocompletion) {
+            if (empty($data->completionsuccessenabled) || !$autocompletion) {
                 $data->completionsuccess = 0;
             }
         }

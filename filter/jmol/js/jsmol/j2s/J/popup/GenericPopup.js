@@ -70,6 +70,9 @@ if ("-".equals (item)) {
 this.menuAddSeparator (menu);
 this.helper.menuAddButtonGroup (null);
 continue;
+}if (",".equals (item)) {
+this.menuAddSeparator (menu);
+continue;
 }var label = popupResourceBundle.getWord (item);
 var newItem = null;
 var script = "";
@@ -288,11 +291,12 @@ var key = entry.getKey ();
 var item = entry.getValue ();
 var basename = key.substring (0, key.indexOf (":"));
 var b = this.appGetBooleanProperty (basename);
+var updateShow = this.updatingForShow;
 this.updatingForShow = true;
 if (item.isSelected () != b) {
 item.setSelected (b);
 this.isTainted = true;
-}this.updatingForShow = false;
+}this.updatingForShow = updateShow;
 }
 });
 Clazz.overrideMethod (c$, "jpiGetMenuAsString", 
@@ -362,4 +366,10 @@ function (num) {
 if (num <= 9223372036854251519) num += 524288;
 return (Clazz.doubleToInt (num / (1048576)));
 }, "~N");
+Clazz.overrideMethod (c$, "jpiDispose", 
+function () {
+this.popupMenu = this.thisPopup = null;
+this.helper.dispose (this.popupMenu);
+this.helper = null;
+});
 });

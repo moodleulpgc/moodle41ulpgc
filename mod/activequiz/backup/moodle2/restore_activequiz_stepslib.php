@@ -75,7 +75,7 @@ class restore_activequiz_activity_structure_step extends restore_questions_activ
 
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $data->timemodified = $this->apply_date_offset($data->timemodified);
-        $data->grouping = $this->get_mappingid('grouping', $data->grouping);
+        $data->teamsgrouping = $this->get_mappingid('grouping', $data->teamsgrouping); // ecastro ULPGC teamsgrouping
         $this->oldquestionorder = $data->questionorder;
         $data->questionorder = null; // set to null,  This will be updated in after_execute
 

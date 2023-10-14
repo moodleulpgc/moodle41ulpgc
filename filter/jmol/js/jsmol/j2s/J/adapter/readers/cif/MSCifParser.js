@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.adapter.readers.cif");
-Clazz.load (["J.adapter.readers.cif.MSRdr"], "J.adapter.readers.cif.MSCifParser", ["java.lang.Character", "$.Double", "JU.M3", "$.Matrix", "$.PT", "J.adapter.readers.cif.Cif2DataParser"], function () {
+Clazz.load (["J.adapter.readers.cif.MSRdr"], "J.adapter.readers.cif.MSCifParser", ["java.lang.Double", "JU.M3", "$.Matrix", "$.PT", "J.adapter.readers.cif.Cif2DataParser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.field = null;
 this.comSSMat = null;
@@ -45,19 +45,23 @@ var c = NaN;
 var w = NaN;
 var fid = null;
 var n = cr.cifParser.getColumnCount ();
+var sep = "_";
 for (var i = 0; i < n; ++i) {
 switch (tok = this.fieldProperty (cr, i)) {
 case 0:
 pt[0] = pt[1] = pt[2] = 0;
 type_id = "F_";
 fid = this.field;
+sep = "";
 break;
 case 1:
 cr.haveCellWaveVector = true;
+sep = "";
 case 41:
 case 42:
 case 43:
 pt[0] = pt[1] = pt[2] = 0;
+sep = "";
 case 14:
 case 26:
 case 51:
@@ -68,25 +72,28 @@ case 46:
 switch (tok) {
 case 1:
 type_id = "W_";
+sep = "";
 break;
 case 41:
 case 42:
 case 43:
 fid = "?" + this.field;
 pt[2] = 1;
+sep = "_";
 continue;
 case 44:
 case 45:
 case 46:
 atomLabel = axis = "*";
+sep = "_";
 case 14:
 case 26:
 case 51:
 case 36:
-type_id = Character.toUpperCase (J.adapter.readers.cif.MSCifParser.modulationFields[tok].charAt (11)) + "_";
+type_id = J.adapter.readers.cif.MSCifParser.modulationFields[tok].substring (11, 12).toUpperCase ();
 break;
 }
-type_id += this.field;
+type_id += sep + this.field;
 break;
 case 47:
 type_id = "J_O";
@@ -141,7 +148,7 @@ case 8:
 q = J.adapter.readers.cif.Cif2DataParser.getArrayFromStringList (this.field, this.modDim);
 break;
 default:
-var f = cr.parseFloatStr (this.field);
+var f = this.parseDouble (this.field);
 switch (tok) {
 case 65:
 case 72:
@@ -149,8 +156,8 @@ case 69:
 pt[0] = f;
 if (f != 0) pt[2] = 0;
 break;
-case 28:
 case 32:
+case 28:
 case 16:
 case 53:
 case 38:
@@ -185,12 +192,12 @@ pt[2] = 1;
 break;
 case 71:
 case 75:
-case 27:
 axis = "0";
 case 64:
 case 68:
 case 3:
 case 6:
+case 27:
 case 18:
 case 30:
 case 55:
@@ -231,42 +238,43 @@ for (var j = 0, nzero = q.length; j < q.length; j++) if (Double.isNaN (q[j]) || 
 ok = false;
 }
 if (!ok) continue;
-this.addMod ("F_coefs_", fid, q);
+this.addMod (key, "F_coefs_", fid, q);
 pt[0] = NaN;
 }for (var j = 0, nzero = pt.length; j < pt.length; j++) if (Double.isNaN (pt[j]) || pt[j] > 1e100 || pt[j] == 0 && --nzero == 0) {
 ok = false;
 break;
 }
 if (!ok) continue;
-switch (type_id.charAt (0)) {
+var tchar = type_id.charAt (0);
+switch (tchar) {
 case 'C':
 case 'D':
 case 'O':
 case 'M':
 case 'U':
 case 'J':
-if (atomLabel == null || axis == null) continue;
+if (atomLabel == null || axis == null && tchar != 'O') continue;
 if (type_id.equals ("D_S") || type_id.equals ("M_T")) {
 if (Double.isNaN (c) || Double.isNaN (w)) continue;
-if (pt[0] != 0) this.addMod (type_id + "#x;" + atomLabel, fid,  Clazz.newDoubleArray (-1, [c, w, pt[0]]));
-if (pt[1] != 0) this.addMod (type_id + "#y;" + atomLabel, fid,  Clazz.newDoubleArray (-1, [c, w, pt[1]]));
-if (pt[2] != 0) this.addMod (type_id + "#z;" + atomLabel, fid,  Clazz.newDoubleArray (-1, [c, w, pt[2]]));
+if (pt[0] != 0) this.addMod (key, type_id + "#x;" + atomLabel, fid,  Clazz.newDoubleArray (-1, [c, w, pt[0]]));
+if (pt[1] != 0) this.addMod (key, type_id + "#y;" + atomLabel, fid,  Clazz.newDoubleArray (-1, [c, w, pt[1]]));
+if (pt[2] != 0) this.addMod (key, type_id + "#z;" + atomLabel, fid,  Clazz.newDoubleArray (-1, [c, w, pt[2]]));
 continue;
 }if (type_id.indexOf ("_L") == 1) {
 if (type_id.startsWith ("U")) type_id += Clazz.doubleToInt (pt[1]);
  else axis += Clazz.doubleToInt (pt[1]);
-}type_id += "#" + axis + ";" + atomLabel;
+}type_id += "#" + (axis == null ? "*" : axis) + ";" + atomLabel;
 break;
 }
-this.addMod (type_id, fid, pt);
+this.addMod (key, type_id, fid, pt);
 }
 return 1;
 });
 Clazz.defineMethod (c$, "addMod", 
- function (id, fid, params) {
-if (fid != null) id += fid;
-this.addModulation (null, id, params, -1);
-}, "~S,~S,~A");
+ function (key, id, fid, params) {
+var k = (fid == null ? id : id + fid);
+this.addModulation (null, k, params, -1);
+}, "~S,~S,~S,~A");
 Clazz.defineMethod (c$, "processSubsystemLoopBlock", 
  function () {
 var cr = this.cr;
@@ -290,10 +298,19 @@ if ((p = this.fieldProperty (cr, i)) < 0 || !(key = cr.cifParser.getColumnName (
 var tokens = JU.PT.split (key, "_");
 var r = cr.parseIntStr (tokens[tokens.length - 2]);
 var c = cr.parseIntStr (tokens[tokens.length - 1]);
-if (r > 0 && c > 0) a[r - 1][c - 1] = cr.parseFloatStr (this.field);
+if (r > 0 && c > 0) a[r - 1][c - 1] = this.parseDouble (this.field);
 }
 return m;
 }, "J.adapter.readers.cif.CifReader,~S,~N,~N");
+Clazz.defineMethod (c$, "parseDouble", 
+ function (field) {
+var d = this.cr.parseFloatStr (field);
+return this.fixDouble (d);
+}, "~S");
+Clazz.defineMethod (c$, "fixDouble", 
+ function (d) {
+return d;
+}, "~N");
 Clazz.defineMethod (c$, "fieldProperty", 
  function (cr, i) {
 return ((this.field = cr.cifParser.getColumnData (i)).length > 0 && this.field.charAt (0) != '\0' ? cr.col2key[i] : -1);
@@ -314,10 +331,10 @@ Clazz.defineStatics (c$,
 "FWV_DISP_LABEL", 12,
 "FWV_DISP_AXIS", 13,
 "FWV_DISP_SEQ_ID", 14,
-"FWV_DISP_COS", 15,
-"FWV_DISP_SIN", 16,
-"FWV_DISP_MODULUS", 17,
-"FWV_DISP_PHASE", 18,
+"FPARAM_DISP_COS", 15,
+"FPARAM_DISP_SIN", 16,
+"FPARAM_DISP_MODULUS", 17,
+"FPARAM_DISP_PHASE", 18,
 "DISP_SPEC_LABEL", 19,
 "DISP_SAW_AX", 20,
 "DISP_SAW_AY", 21,
@@ -326,35 +343,35 @@ Clazz.defineStatics (c$,
 "DISP_SAW_W", 24,
 "FWV_OCC_LABEL", 25,
 "FWV_OCC_SEQ_ID", 26,
-"FWV_OCC_COS", 27,
-"FWV_OCC_SIN", 28,
-"FWV_OCC_MODULUS", 29,
-"FWV_OCC_PHASE", 30,
+"FPARAM_OCC_COS", 27,
+"FPARAM_OCC_SIN", 28,
+"FPARAM_OCC_MODULUS", 29,
+"FPARAM_OCC_PHASE", 30,
 "OCC_SPECIAL_LABEL", 31,
 "OCC_CRENEL_C", 32,
 "OCC_CRENEL_W", 33,
 "FWV_U_LABEL", 34,
 "FWV_U_TENS", 35,
 "FWV_U_SEQ_ID", 36,
-"FWV_U_COS", 37,
-"FWV_U_SIN", 38,
-"FWV_U_MODULUS", 39,
-"FWV_U_PHASE", 40,
+"FPARAM_U_COS", 37,
+"FPARAM_U_SIN", 38,
+"FPARAM_U_MODULUS", 39,
+"FPARAM_U_PHASE", 40,
 "FD_ID", 41,
 "FO_ID", 42,
 "FU_ID", 43,
-"FDP_ID", 44,
-"FOP_ID", 45,
-"FUP_ID", 46,
+"FDPARAM_ID", 44,
+"FOPARAM_ID", 45,
+"FUPARAM_ID", 46,
 "JANA_OCC_ABS_LABEL", 47,
 "JANA_OCC_ABS_O_0", 48,
 "FWV_SPIN_LABEL", 49,
 "FWV_SPIN_AXIS", 50,
 "FWV_SPIN_SEQ_ID", 51,
-"FWV_SPIN_COS", 52,
-"FWV_SPIN_SIN", 53,
-"FWV_SPIN_MODULUS", 54,
-"FWV_SPIN_PHASE", 55,
+"FPARAM_SPIN_COS", 52,
+"FPARAM_SPIN_SIN", 53,
+"FPARAM_SPIN_MODULUS", 54,
+"FPARAM_SPIN_PHASE", 55,
 "SPIN_SPEC_LABEL", 56,
 "SPIN_SAW_AX", 57,
 "SPIN_SAW_AY", 58,
@@ -379,5 +396,6 @@ Clazz.defineStatics (c$,
 "DEPR_FU_COS", 77,
 "DEPR_FU_SIN", 78,
 "modulationFields",  Clazz.newArray (-1, ["*_fourier_wave_vector_seq_id", "_cell_wave_vector_seq_id", "_cell_wave_vector_x", "_cell_wave_vector_y", "_cell_wave_vector_z", "*_fourier_wave_vector_x", "*_fourier_wave_vector_y", "*_fourier_wave_vector_z", "*_fourier_wave_vector_q_coeff", "*_fourier_wave_vector_q1_coeff", "*_fourier_wave_vector_q2_coeff", "*_fourier_wave_vector_q3_coeff", "*_displace_fourier_atom_site_label", "*_displace_fourier_axis", "*_displace_fourier_wave_vector_seq_id", "*_displace_fourier_param_cos", "*_displace_fourier_param_sin", "*_displace_fourier_param_modulus", "*_displace_fourier_param_phase", "*_displace_special_func_atom_site_label", "*_displace_special_func_sawtooth_ax", "*_displace_special_func_sawtooth_ay", "*_displace_special_func_sawtooth_az", "*_displace_special_func_sawtooth_c", "*_displace_special_func_sawtooth_w", "*_occ_fourier_atom_site_label", "*_occ_fourier_wave_vector_seq_id", "*_occ_fourier_param_cos", "*_occ_fourier_param_sin", "*_occ_fourier_param_modulus", "*_occ_fourier_param_phase", "*_occ_special_func_atom_site_label", "*_occ_special_func_crenel_c", "*_occ_special_func_crenel_w", "*_u_fourier_atom_site_label", "*_u_fourier_tens_elem", "*_u_fourier_wave_vector_seq_id", "*_u_fourier_param_cos", "*_u_fourier_param_sin", "*_u_fourier_param_modulus", "*_u_fourier_param_phase", "*_displace_fourier_id", "*_occ_fourier_id", "*_u_fourier_id", "*_displace_fourier_param_id", "*_occ_fourier_param_id", "*_u_fourier_param_id", "*_occ_fourier_absolute_site_label", "*_occ_fourier_absolute", "*_moment_fourier_atom_site_label", "*_moment_fourier_axis", "*_moment_fourier_wave_vector_seq_id", "*_moment_fourier_param_cos", "*_moment_fourier_param_sin", "*_moment_fourier_param_modulus", "*_moment_fourier_param_phase", "*_moment_special_func_atom_site_label", "*_moment_special_func_sawtooth_ax", "*_moment_special_func_sawtooth_ay", "*_moment_special_func_sawtooth_az", "*_moment_special_func_sawtooth_c", "*_moment_special_func_sawtooth_w", "*_displace_legendre_atom_site_label", "*_displace_legendre_axis", "*_displace_legendre_param_order", "*_displace_legendre_param_coeff", "*_u_legendre_atom_site_label", "*_u_legendre_tens_elem", "*_u_legendre_param_order", "*_u_legendre_param_coeff", "*_occ_legendre_atom_site_label", "*_occ_legendre_param_order", "*_occ_legendre_param_coeff", "*_displace_fourier_cos", "*_displace_fourier_sin", "*_occ_fourier_cos", "*_occ_fourier_sin", "*_u_fourier_cos", "*_u_fourier_sin"]),
-"NONE", -1);
+"NONE", -1,
+"SEP", "_");
 });

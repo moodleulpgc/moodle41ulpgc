@@ -131,9 +131,6 @@ $string['tags'] = 'Tags: ';
 $string['clear_confirm'] = 'You have asked to CLEAR questions list<br />
 
 Do you want to continue? ';
-$string['copyold_confirm'] = 'You have asked to COPY questions from other course<br />
-
-Do you want to continue? ';
 $string['submit_confirm'] = 'You have asked to SEND attempt {$a->num}, {$a->name} <br />
 corresponding to Exam {$a->exam} <br />
 
@@ -159,6 +156,7 @@ $string['taginvalidationmsg'] = 'This question contains official Review Board Ta
 If you edit or change anything the Review Board tags will be removed.';
 $string['importoldquestions'] = 'Import old questions';
 $string['clearattempts'] = 'Reset quiz';
+$string['delexistingattempts'] = 'There are quiz attempts remaining. Questions cannot be removed.';
 $string['continueattempt'] = 'Continue previous version';
 $string['validquestions'] = 'Un-supervised Question types';
 $string['configvalidquestions'] = 'These questions types will not raise a warning when used in an exam.
@@ -177,15 +175,6 @@ $string['setcapabilities_help'] = 'The selected extra capabilities will be set a
 $string['assigncapabilities'] = 'Action on permissions';
 $string['assigncapabilities_help'] = 'Choose if the extra capabilities is going to be either removed or added for the relevant roles.';
 $string['permissionsset'] = 'Set {$a->caps} permissions on {$a->roles} roles in {$a->count} courses';
-
-$string['copyold'] = 'Copy old questions';
-$string['copyoldquestions'] = 'Copy questions from old tables';
-$string['copysource'] = 'Source course shortname';
-$string['copysource_help'] = 'The shortname of the course the questions were associated to in the old tables.
-
-If left blank (any) then questions form ALL courses will be copied, ecah into its coreresponding course.';
-$string['copystatus'] = 'Questionid field status';
-$string['copystatus_help'] = 'If set to  " = 0 " then duplicated copies are avoided.';
 $string['unsend'] = 'Reset status to Unsent';
 $string['unsend_confirm'] = 'You have asked to RESET status to UNSENT in attempt {$a->num}, {$a->name} <br />
 corresponding to Exam {$a->exam} <br />

@@ -87,7 +87,7 @@ With this setting, you can override Moodle's course content width without manual
 
 With this setting, you can override Moodle's default medium width without manual SCSS modifications.
 
-#### Tab "Branding"
+#### Tab "Site Branding"
 
 In this tab there are the following settings:
 
@@ -107,9 +107,9 @@ Here, you can upload a compact version of the same logo as above, such as an emb
 
 Here, you can upload a custom image that the browser will show as the favicon of your Moodle website. If no custom favicon is uploaded, a standard Moodle favicon will be used.
 
-##### Background images
+##### General background images
 
-###### General background image
+###### Background image
 
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
 Please note: This will not interfere with the setting "theme_boost_union | loginbackgroundimage" which means that the pictures uploaded here will be shown on all pages except the login page.
@@ -124,9 +124,27 @@ This setting is already available in the Moodle core theme Boost. For more infor
 
 With these settings, you can overwrite the Bootstrap colors which are used within the Moodle GUI.
 
+##### Navbar
+
+With this setting, you can change the navbar color from the default light navbar to a dark one or a colored one.
+
+#### Tab "Activity Branding"
+
+In this tab there are the following settings:
+
 ##### Activity icon colors
 
 With these settings, you can overwrite the activity icon colors which are used within courses.
+
+##### Activity icon purposes
+
+With these settings, you can override the activity icon background color which is defined by the activity's purpose (and which is a hardcoded plugin feature in each activity).
+
+##### Activity icons
+
+###### Custom icons for activities and resources
+
+With this setting, you can modify the icons for activities and resources which are used by Moodle on the course pages and in the activity chooser. You can upload custom icons for all or only some activity modules installed in this Moodle instance.
 
 #### Tab "Login page"
 
@@ -149,6 +167,8 @@ As text color, you can use the values "dark" or "light".
 
 You can declare texts for an arbitrary amount of your uploaded login background images. The texts will be added only to those images that match their filename with the identifier declared in this setting.
 
+#### Login form
+
 ##### Login form position
 
 With this setting, you can optimize the login form to fit to a greater variety of background images. By default, the login form is displayed centered on the login page. Alternatively, you can move it to the left or to the right of the login page to let other parts of the background image shine through. Of course, you can also change this setting if no background images are uploaded at all.
@@ -169,13 +189,13 @@ When enabled, the course image (which can be uploaded in a course's course setti
 
 If you upload an image in this setting, it is used as fallback image and is displayed in the course header if no course image is uploaded in a particular course's course settings. If you do not upload an image here, a course header image is only shown in a particular course if a course image is uploaded in this particular course's course settings.
 
-###### Course header image height
-
-With this setting, you control the height of the presented course header image.
-
 ###### Course header image layout
 
 With this setting, you control the layout of the course header image and the course title.
+
+###### Course header image height
+
+With this setting, you control the height of the presented course header image.
 
 ###### Course header image position
 
@@ -235,17 +255,23 @@ In this tab there are the following settings:
 
 With this setting, you can hide one or multiple nodes from the primary navigation.
 
+##### Breadcrumbs
+
+###### Display the category breadcrumbs in the course header
+
+By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.
+
 ##### Navigation
 
 ###### Back to top button
 
 With this setting a back to top button will appear in the bottom right corner of the page as soon as the user scrolls down the page. A button like this existed already on Boost in Moodle Core until Moodle 3.11, but was removed in 4.0. With Boost Union, you can bring it back.
 
-###### Scrollspy
+###### Scroll-spy
 
 With this setting, upon toggling edit mode on and off, the scroll position at where the user was when performing the toggle is preserved.
 
-###### Activity navigation
+###### Activity navigation elements
 
 With this setting the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource become displayed. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0. With Boost Union, you can bring them back.
 
@@ -295,9 +321,14 @@ With this setting, you can set the width of the 'Outside (top)' block region whi
 
 With this setting, you can set the width of the 'Outside (bottom)' block region which is shown below the main content.
 
+###### Block region width for 'Footer' region
+
+With this setting, you can set the width of the 'Footer' block region.
+
 ###### Outside regions horizontal placement
 
 With this setting, you can control if, on larger screens, the 'Outside (left)' and 'Outside (right)' block regions should be placed near the main content area or rather near the window edges.
+
 ##### Site home right-hand block drawer
 
 ###### Show right-hand block drawer of site home on visit
@@ -311,6 +342,16 @@ With this setting, the right-hand block drawer of site home will be displayed in
 ###### Show right-hand block drawer of site home on guest login
 
 With this setting, the right-hand block drawer of site home will be displayed in its expanded state by default. This only applies to users who log in as a guest.
+
+#### Tab "Links"
+
+In this tab there are the following settings:
+
+##### Special links markup
+
+###### Mark external links
+
+Adds an "external link" icon after external links (which lead the user to a target outside Moodle).
 
 #### Tab "Miscellaneous"
 
@@ -520,17 +561,23 @@ This theme is a collaboration result of multiple organisations.
 
 Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
 
+* Baden-Württemberg Cooperative State University (DHBW), Katja Neubehler: Code
 * bdecent GmbH, Stefan Scholz: Code, Ideating, Funding
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
+* Carinthia University of Applied Sciences, Mario Wehr: Code
 * FernUniversität in Hagen, Daniel Poggenpohl: Code, Ideating
 * Hochschule Hannover - University of Applied Sciences and Arts: Funding, Ideating
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
 * lern.link GmbH, Beata Waloszczyk: Code
+* Moodle.NRW / Ruhr University Bochum, Tim Trappen: Code, Ideating
+* Moodle.NRW / Ruhr University Bochum, Matthias Buttgereit: Code, Ideating
 * moodleSCHULE e.V., Ralf Krause: German translation and curation, Ideating
 * Ruhr University Bochum, Melanie Treitinger: Code, Ideating
 * RWTH Aachen, Amrita Deb Dutta: Code
 * RWTH Aachen, Josha Bartsch: Code
+* Solent University, Mark Sharp: Code
+* Technische Universität Berlin, Lars Bonczek: Code
 * University of Graz, André Menrath: Code
 * University of Lübeck, Christian Wolters: Peer Review, Ideating
 * Zurich University of Applied Sciences (ZHAW): Funding, Ideating

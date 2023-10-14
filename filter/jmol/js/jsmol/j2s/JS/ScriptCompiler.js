@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JS");
-Clazz.load (["JS.ScriptTokenParser", "JU.Lst"], "JS.ScriptCompiler", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "JU.AU", "$.BS", "$.M34", "$.M4", "$.PT", "$.SB", "J.api.Interface", "J.i18n.GT", "JM.BondSet", "$.Group", "JS.ContextToken", "$.SV", "$.ScriptContext", "$.ScriptError", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptManager", "$.ScriptParam", "$.T", "JU.Escape", "$.Logger", "JV.FileManager", "$.Viewer"], function () {
+Clazz.load (["JS.ScriptTokenParser", "JU.Lst"], "JS.ScriptCompiler", ["java.lang.Boolean", "$.Float", "java.util.Hashtable", "JU.AU", "$.BS", "$.M34", "$.M4", "$.PT", "$.SB", "J.api.Interface", "J.i18n.GT", "JM.BondSet", "$.Group", "JS.ContextToken", "$.SV", "$.ScriptContext", "$.ScriptError", "$.ScriptFlowContext", "$.ScriptFunction", "$.ScriptManager", "$.T", "JU.Edge", "$.Escape", "$.Logger", "JV.FileManager", "$.Viewer"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.filename = null;
 this.isSilent = false;
@@ -12,6 +12,8 @@ this.preDefining = false;
 this.isShowScriptOutput = false;
 this.isCheckOnly = false;
 this.haveComments = false;
+this.isPrivateFunc = false;
+this.isPrivateScript = false;
 this.scriptExtensions = null;
 this.thisFunction = null;
 this.flowContext = null;
@@ -51,6 +53,7 @@ this.identLC = null;
 this.vPush = null;
 this.pushCount = 0;
 this.forceFlowContext = null;
+this.isWhere = false;
 this.haveENDIF = false;
 this.chFirst = '\0';
 this.afterMath = 0;
@@ -61,6 +64,7 @@ this.vPush =  new JU.Lst ();
 });
 Clazz.makeConstructor (c$, 
 function (vwr) {
+Clazz.superConstructor (this, JS.ScriptCompiler, []);
 this.vwr = vwr;
 }, "JV.Viewer");
 Clazz.defineMethod (c$, "compile", 
@@ -69,6 +73,7 @@ this.isCheckOnly = isCheckOnly;
 this.filename = filename;
 this.isSilent = isSilent;
 this.script = script;
+this.isWhere = script.startsWith ("w_h_e_r_e = ");
 this.logMessages = (!isSilent && !isPredefining && debugScript);
 this.preDefining = (filename === "#predefine");
 var doFull = true;
@@ -80,6 +85,7 @@ isOK = (this.iBrace == 0 && this.parenCount == 0 && this.braceCount == 0 && this
 sc.isComplete = isOK;
 sc.script = script;
 sc.scriptExtensions = this.scriptExtensions;
+sc.isEditor = (this.scriptExtensions != null && this.scriptExtensions.indexOf ("\u0001## ISEDITOR") >= 0);
 sc.errorType = this.errorType;
 if (this.errorType != null) {
 sc.iCommandError = this.iCommand;
@@ -124,11 +130,11 @@ if (script.indexOf ('\u00A0') >= 0) script = script.$replace ('\u00A0', ' ');
 if (script.indexOf ('\u201C') >= 0) script = script.$replace ('\u201C', '"');
 if (script.indexOf ('\u201D') >= 0) script = script.$replace ('\u201D', '"');
 if (script.indexOf ('\uFEFF') >= 0) script = script.$replace ('\uFEFF', ' ');
-var pt = (script.indexOf ("\1##"));
+var pt = (script.indexOf ("\u0001##"));
 if (pt >= 0) {
-this.scriptExtensions = script.substring (pt + 1);
+this.allowMissingEnd = (script.indexOf ("\u0001##NOENDCHECK", pt) >= 0);
+this.scriptExtensions = script.substring (pt);
 script = script.substring (0, pt);
-this.allowMissingEnd = (this.scriptExtensions.indexOf ("##noendcheck") >= 0);
 }this.haveComments = (script.indexOf ("#") >= 0);
 return JV.FileManager.getEmbeddedScript (script);
 }, "~S");
@@ -143,7 +149,7 @@ Clazz.defineMethod (c$, "compile0",
 this.haveENDIF = false;
 this.script = this.cleanScriptComments (this.script);
 this.ichToken = this.script.indexOf ("# Jmol state version ");
-this.isStateScript = (this.ichToken >= 0);
+this.isStateScript = (this.ichToken >= 0 && this.ichToken < 10);
 if (this.isStateScript) {
 this.ptSemi = this.script.indexOf (";", this.ichToken);
 if (this.ptSemi >= this.ichToken) JS.ScriptManager.setStateScriptVersion (this.vwr, this.script.substring (this.ichToken + "# Jmol state version ".length, this.ptSemi).trim ());
@@ -161,6 +167,8 @@ this.errorType = null;
 this.errorMessage = null;
 this.errorMessageUntranslated = null;
 this.errorLine = null;
+this.isPrivateScript = false;
+this.isPrivateFunc = false;
 this.nSemiSkip = 0;
 this.ichToken = 0;
 this.ichCurrentCommand = 0;
@@ -424,7 +432,9 @@ this.cchToken = 4;
 return 2;
 }if (ichT == this.ichToken) return 0;
 this.cchToken = ichT - this.ichToken;
-return (this.nTokens == 0 ? 1 : 2);
+if (!isSharp && this.cchToken == 10 && this.script.substring (this.ichToken, ichT).equals ("//@private")) {
+this.isPrivateScript = true;
+}return (this.nTokens == 0 ? 1 : 2);
 });
 Clazz.defineMethod (c$, "charAt", 
  function (i) {
@@ -645,12 +655,16 @@ this.ltoken.add (0, this.setCommand (token));
 Clazz.defineMethod (c$, "getPrefixToken", 
  function () {
 this.ident = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
-this.identLC = this.ident.toLowerCase ();
+if (this.ident.equals ("NaN")) {
+this.addTokenToPrefix (JS.SV.vNaN);
+return 3;
+}this.identLC = this.ident.toLowerCase ();
 var isUserVar = this.lastToken.tok != 1073742336 && !this.isDotDot && this.isContextVariable (this.identLC);
 var myName = this.ident;
 var preserveCase = null;
-if (this.nTokens == 0) this.isUserToken = isUserVar;
-if (this.nTokens == 1 && (this.tokCommand == 134320141 || this.tokCommand == 102436 || this.tokCommand == 36868) || this.nTokens != 0 && isUserVar || !this.isDotDot && this.isUserFunction (this.identLC) && ((preserveCase = this.ident) != null) && (this.thisFunction == null || !this.thisFunction.name.equals (this.identLC))) {
+if (this.nTokens == 0) {
+this.isUserToken = isUserVar;
+}if (this.nTokens == 1 && (this.tokCommand == 134320141 || this.tokCommand == 102436 || this.tokCommand == 36868) || this.nTokens != 0 && isUserVar || !this.isDotDot && this.isUserFunction (this.identLC) && ((preserveCase = this.ident) != null) && (this.thisFunction == null || !this.thisFunction.name.equals (this.identLC))) {
 this.ident = (preserveCase == null ? this.identLC : preserveCase);
 this.theToken = null;
 } else if (this.ident.length == 1 || this.lastToken.tok == 268435490) {
@@ -660,6 +674,8 @@ this.theToken = JS.T.getTokenFromName (this.identLC);
 if (isUserVar && this.theToken != null && !this.theToken.value.toString ().equalsIgnoreCase (this.identLC)) {
 this.theToken = null;
 }if (this.theToken != null) switch (this.lastToken.tok) {
+default:
+if (!this.isWhere) break;
 case 1073742336:
 case 268435520:
 case 268435504:
@@ -673,9 +689,9 @@ Clazz.defineMethod (c$, "checkSpecialParameterSyntax",
  function () {
 if (this.lookingAtString (!this.implicitString)) {
 if (this.cchToken < 0) return this.ERROR (4);
-var str = this.getUnescapedStringLiteral (this.lastToken != null && !this.iHaveQuotedString && this.lastToken.tok != 1073741984 && (this.tokCommand == 36867 && this.nTokens == 2 && this.lastToken.tok == 545259546 || this.tokCommand == 134222849 || this.tokCommand == 1610616835 || this.tokCommand == 134222850 || this.tokCommand == 4124));
+var str = this.getUnescapedStringLiteral (this.lastToken != null && !this.iHaveQuotedString && this.lastToken.tok != 1073741984 && (this.tokCommand == 36867 && this.nTokens == 2 && this.lastToken.tok == 545259546 || this.tokCommand == 134223363 || this.tokCommand == 1610616835 || this.tokCommand == 134222850 || this.tokCommand == 4124));
 this.iHaveQuotedString = true;
-if ((this.tokCommand == 134222849 || this.tokCommand == 135174) && this.lastToken.tok == 134221834 || this.tokCommand == 134221834 && str.indexOf ("@") < 0) {
+if ((this.tokCommand == 134223363 || this.tokCommand == 135174) && this.lastToken.tok == 134221834 || this.tokCommand == 134221834 && str.indexOf ("@") < 0) {
 if (!this.getData (str)) {
 return this.ERROR (11, "data");
 }} else {
@@ -730,7 +746,7 @@ return 2;
 case 134222350:
 switch (this.lastToken.tok) {
 case 4120:
-case 1296041986:
+case 1296041985:
 case 1715472409:
 case 1073877010:
 if (this.nTokens == 2) this.iHaveQuotedString = true;
@@ -742,7 +758,7 @@ default:
 if (!this.iHaveQuotedString && this.nTokens != 2) return 0;
 break;
 }
-case 134222849:
+case 134223363:
 case 134222850:
 case 4124:
 case 1275072526:
@@ -753,8 +769,10 @@ return 0;
 case 4124:
 this.haveMacro = true;
 break out;
-case 134222849:
-if (this.nTokens == 1 || this.nTokens == 2 && (this.tokAt (1) == 1073741839)) {
+case 134223363:
+var isAppend = (this.tokAt (1) == 1073741839);
+if (this.nTokens == 1 || isAppend && (this.nTokens == 2 || this.nTokens == 3 && this.tokAt (2) == 2)) {
+if (isAppend && this.nTokens == 2 && JU.PT.isDigit (this.charAt (this.ichToken))) break out;
 var isDataBase = JV.Viewer.isDatabaseCode (this.charAt (this.ichToken));
 if (this.lookingAtLoadFormat (isDataBase)) {
 var strFormat = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
@@ -770,6 +788,7 @@ case 1073877011:
 if (this.nTokens != 1) return 4;
 case 134221834:
 case 1228935687:
+case 134217764:
 case 1073741984:
 case 1094717454:
 case 134218757:
@@ -792,7 +811,7 @@ if ((bs = this.lookingAtBitset ()) != null) {
 this.addTokenToPrefix (JS.T.o (10, bs));
 return 2;
 }}
-if (!this.iHaveQuotedString && this.lookingAtImpliedString (this.tokCommand == 134222350, this.tokCommand == 134222849, this.nTokens > 1 || this.tokCommand != 134222850 && this.tokCommand != 4124)) {
+if (!this.iHaveQuotedString && this.lookingAtImpliedString (this.tokCommand == 134222350, this.tokCommand == 134223363, this.nTokens > 1 || this.tokCommand != 134222850 && this.tokCommand != 4124)) {
 var str = this.script.substring (this.ichToken, this.ichToken + this.cchToken);
 if (this.tokCommand == 134222850) {
 if (str.startsWith ("javascript:")) {
@@ -840,14 +859,14 @@ return 2;
 this.addTokenToPrefix (JS.T.getTokenFromName ("$"));
 this.addTokenToPrefix (JS.T.o (1073741824, this.script.substring (this.ichToken, this.ichToken + this.cchToken)));
 return 2;
-}var value;
-if (!Float.isNaN (value = this.lookingAtExponential ())) {
-this.addNumber (3, 2147483647, Float.$valueOf (value));
+}var value = this.lookingAtExponential ();
+if (value != null) {
+this.addNumber (3, 2147483647, value);
 return 2;
 }if (this.lookingAtDecimal ()) {
-value = JU.PT.fVal (this.script.substring (this.ichToken, this.ichToken + this.cchToken));
-var intValue = (JS.ScriptParam.getFloatEncodedInt (this.script.substring (this.ichToken, this.ichToken + this.cchToken)));
-this.addNumber (3, intValue, Float.$valueOf (value));
+value = Float.$valueOf (this.script.substring (this.ichToken, this.ichToken + this.cchToken));
+var intValue = (JU.Edge.getFloatEncodedInt (this.script.substring (this.ichToken, this.ichToken + this.cchToken)));
+this.addNumber (3, intValue, value);
 return 2;
 }if (this.lookingAtSeqcode ()) {
 ch = this.script.charAt (this.ichToken);
@@ -906,6 +925,7 @@ return m;
 Clazz.defineMethod (c$, "parseKnownToken", 
  function () {
 var tok = this.getPrefixToken ();
+if (tok == 3) return 2;
 var token;
 if (this.isDotDot) {
 if (tok == 268435520) {
@@ -995,7 +1015,7 @@ this.forceFlowContext = f;
 break;
 case 268435472:
 this.parenCount++;
-if (this.nTokens > 1 && (this.lastToken.tok == 1275082245 || this.lastToken.tok == 134320648 || this.lastToken.tok == 134320649)) this.nSemiSkip += 2;
+if (this.nTokens > 1 && (this.lastToken.tok == 1275082241 || this.lastToken.tok == 134320648 || this.lastToken.tok == 134320649)) this.nSemiSkip += 2;
 break;
 case 1073742338:
 if (this.iBrace > 0 && this.parenCount == 0 && this.braceCount == 0) {
@@ -1038,6 +1058,9 @@ case 268435520:
 return 0;
 }
 switch (tok) {
+case 4134:
+this.isPrivateFunc = true;
+return 2;
 case 102409:
 if (this.tokCommand == 135174 || this.tokCommand == 4103 && this.nTokens == 1) return 0;
 if (!this.haveENDIF) return 5;
@@ -1106,6 +1129,7 @@ if (ret == 4) return 4;
  else if (ret == 2) {
 this.isEndOfCommand = true;
 this.cchToken = 0;
+if (this.theTok == 268435472) this.parenCount--;
 return 2;
 }switch (this.theTok) {
 case 1073742332:
@@ -1227,6 +1251,8 @@ return 2;
 if (this.thisFunction != null) this.vFunctionStack.add (0, this.thisFunction);
 this.thisFunction = (this.tokCommand == 102436 ? J.api.Interface.getInterface ("JS.ScriptParallelProcessor", null, null) :  new JS.ScriptFunction (this.ident, this.tokCommand));
 this.thisFunction.set (this.ident, this.tokCommand);
+this.thisFunction.isPrivate = this.isStateScript || this.isPrivateScript || this.isPrivateFunc;
+this.isPrivateFunc = false;
 this.htUserFunctions.put (this.ident, Boolean.TRUE);
 this.flowContext.setFunction (this.thisFunction);
 break;
@@ -1327,7 +1353,7 @@ this.replaceCommand (JS.T.tokenSet);
 this.addTokenToPrefix (this.lastToken);
 break;
 }}break;
-case 134222849:
+case 134223363:
 if (this.theTok == 12290 && (this.nTokens == 1 || this.lastToken.tok == 1073741940 || this.lastToken.tok == 134217764)) {
 this.addTokenToPrefix (JS.T.tokenDefineString);
 return 2;
@@ -1825,7 +1851,7 @@ return false;
 }, "~B,~B,~B");
 Clazz.defineMethod (c$, "lookingAtExponential", 
  function () {
-if (this.ichToken == this.cchScript) return NaN;
+if (this.ichToken == this.cchScript) return null;
 var ichT = this.ichToken;
 var pt0 = ichT;
 if (this.script.charAt (ichT) == '-') ++ichT;
@@ -1840,18 +1866,18 @@ while (JU.PT.isDigit (ch = this.charAt (ichT))) {
 ++ichT;
 isOK = true;
 }
-if (ichT == this.cchScript || !isOK) return NaN;
+if (ichT == this.cchScript || !isOK) return null;
 isOK = (ch != 'E' && ch != 'e');
-if (isOK || ++ichT == this.cchScript) return NaN;
+if (isOK || ++ichT == this.cchScript) return null;
 ch = this.script.charAt (ichT);
 if (ch == '-' || ch == '+') ichT++;
 while (JU.PT.isDigit (this.charAt (ichT))) {
 ichT++;
 isOK = true;
 }
-if (!isOK) return NaN;
+if (!isOK) return null;
 this.cchToken = ichT - this.ichToken;
-return JU.PT.dVal (this.script.substring (pt0, ichT));
+return Float.$valueOf (JU.PT.dVal (this.script.substring (pt0, ichT)));
 });
 Clazz.defineMethod (c$, "lookingAtDecimal", 
  function () {
@@ -2047,7 +2073,10 @@ return 4;
 Clazz.defineMethod (c$, "handleError", 
  function () {
 this.errorType = this.errorMessage;
-this.errorLine = this.script.substring (this.ichCurrentCommand, this.ichEnd <= this.ichCurrentCommand ? this.ichToken + this.cchToken : this.ichEnd);
+var s = this.script;
+var igui = s.indexOf ("; ## GUI ##");
+if (igui < 0) igui = this.ichEnd;
+this.errorLine = s.substring (this.ichCurrentCommand, Math.min (igui, this.ichEnd <= this.ichCurrentCommand ? this.ichToken + this.cchToken : this.ichEnd));
 var lineInfo = (this.ichToken < this.ichEnd ? this.errorLine.substring (0, this.ichToken - this.ichCurrentCommand) + " >>>> " + this.errorLine.substring (this.ichToken - this.ichCurrentCommand) : this.errorLine) + " <<<<";
 this.errorMessage = J.i18n.GT.$ ("script compiler ERROR: ") + this.errorMessage + JS.ScriptError.getErrorLineMessage (null, this.filename, this.lineCurrent, this.iCommand, lineInfo);
 if (!this.isSilent) {

@@ -66,11 +66,8 @@ class teamschannelsync extends \core\task\scheduled_task {
             return false;
         }
 
-        $courseteamsync = new teamschannels($graphclient, true);
-        
-        $courseteamsync->sync_courses();
-        $courseteamsync->update_teams_cache();
-        
-        $courseteamsync->sync_channels();
+        $teamsync = new teamschannels($graphclient, true);
+
+        $teamsync->sync_channels();
     }
 }

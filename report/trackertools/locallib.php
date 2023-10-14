@@ -603,8 +603,7 @@ function report_trackertools_export_issues($course, $tracker, $fromform) {
     $rs_issues = $DB->get_recordset_sql($sql, $params); 
     if($rs_issues->valid() && $columns) {
         if (!headers_sent() && error_get_last()==NULL ) {
-            download_as_dataformat($filename, $fromform->dataformat, $columns, $rs_issues, 'report_trackertools_exportissue_row');
-
+            \core\dataformat::download_data($filename, $fromform->dataformat, $columns, $rs_issues, 'report_trackertools_exportissue_row');
         } else {
             $message = get_string('errorheaderssent', 'report_trackertools');
         }

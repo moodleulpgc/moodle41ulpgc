@@ -52,9 +52,18 @@ class utils extends \local_o365\feature\coursesync\utils {
         $createusergroups = get_config('local_o365teams', 'createusergroups');
         $teamsprivatechannels = get_config('local_o365teams', 'teamsprivatechannels');
         
-        return [(bool)$createteams, (bool)$createusergroups, (bool)$teamsprivatechannels];
+        return [(bool)$createteams, (bool)$teamsprivatechannels, (bool)$createusergroups];
     }    
-    
+
+    /**
+     * Check if the Moodle site is connected to Microsoft 365 services using the integration.
+     *
+     * @return bool
+     */
+    public static function is_connected() {
+        return \local_o365\utils::is_connected();
+    }
+
     /**
      * Create connection to graph.
      * @return false|object Graph api.
@@ -371,7 +380,7 @@ class utils extends \local_o365\feature\coursesync\utils {
                 }
                 $coursepart = $course->shortname.'-'.$sitelabel;
                 $coursepart .= $course->fullname;
-                $sitelabel = '';            
+                $sitelabel = '';
 /*            
                 if (empty($group) ) {   
                     //this is a name for a course
@@ -485,7 +494,7 @@ class utils extends \local_o365\feature\coursesync\utils {
     public static function get_teams_object(int $courseid, string $type = '') {
         global $DB;
         
-        $subtypes = ['courseteam', 'teamforgroup'];
+        $subtypes = ['courseteam', 'teamfromgroup'];
         if($type) {
             $subtypes = [$type];
         }
@@ -494,7 +503,7 @@ class utils extends \local_o365\feature\coursesync\utils {
         $params[] = 'group';
         $params[] = $courseid;
 
-        $object = $DB->get_record_select('local_o365_objects', $select, $params, IGNORE_MULTIPLE);
+        $object = $DB->get_record_select('local_o365_objects', $select, $params, '*', IGNORE_MULTIPLE);
         if (empty($object)) {
             return false;
         }

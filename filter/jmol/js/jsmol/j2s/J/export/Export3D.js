@@ -362,7 +362,7 @@ function (TF) {
 }, "~B");
 Clazz.overrideMethod (c$, "addRenderer", 
 function (tok) {
-if (tok == 553648145) this.hermite3d =  new J.g3d.HermiteRenderer ().set (this, this.gdata);
+if (tok == 553648143) this.hermite3d =  new J.g3d.HermiteRenderer ().set (this, this.gdata);
 }, "~N");
 Clazz.overrideMethod (c$, "plotImagePixel", 
 function (argb, x, y, z, shade, bgargb, width, height, pbuf, p, transpLog) {
@@ -390,4 +390,8 @@ if (this.webGL) {
 return;
 }this.gdata.renderAllStrings (this);
 }, "~O");
+Clazz.overrideMethod (c$, "drawLinePixels", 
+function (sA, sB, z, zslab) {
+return;
+}, "JU.P3i,JU.P3i,~N,~N");
 });

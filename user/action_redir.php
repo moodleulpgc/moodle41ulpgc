@@ -143,7 +143,7 @@ if ($formaction == 'bulkchange.php') {
                     }
 
                     // ecastro ULPGC email
-                    $sql = "SELECT u.firstname, u.lastname, u.email, {$userfields->selects}
+                    $sql = "SELECT u.firstname, u.lastname, u.email {$userfields->selects}
                               FROM {user} u
                                    {$userfields->joins}
                               JOIN ({$enrolledsql}) je ON je.id = u.id

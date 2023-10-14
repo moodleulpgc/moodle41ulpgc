@@ -167,7 +167,7 @@ function activequiz_grade_item_update($activequiz, $grades = null) {
         require_once($CFG->libdir . '/gradelib.php');
     }
 
-    if (array_key_exists('cmidnumber', $activequiz)) { // May not be always present.
+    if (property_exists($activequiz, 'cmidnumber')) { // May not be always present. // ecastro ULPGC
         $params = array('itemname' => $activequiz->name, 'idnumber' => $activequiz->cmidnumber);
     } else {
         $params = array('itemname' => $activequiz->name);

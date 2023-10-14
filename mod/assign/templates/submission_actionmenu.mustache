@@ -37,8 +37,10 @@
         <div class="navitem">
             <a class="btn btn-secondary mr-1" href="{{submissionlink}}">{{#str}}viewgrading, mod_assign{{/str}}</a>
         </div>
+        {{#showgradingpanel}}
         <div class="navitem">
-            <a class="btn btn-primary" href="{{gradelink}}">{{#str}}gradeverb, core{{/str}}</a>
+            <a class="btn btn-primary" href="{{gradelink}}">{{showgradingpanel}}</a>
         </div>
+        {{/showgradingpanel}}
     </div>
 </div>

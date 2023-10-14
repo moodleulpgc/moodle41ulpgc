@@ -1,5 +1,5 @@
 Clazz.declarePackage ("JS");
-Clazz.load (["J.api.SmilesMatcherInterface"], "JS.SmilesMatcher", ["JU.AU", "$.BS", "$.Lst", "$.PT", "JS.InvalidSmilesException", "$.SmilesAtom", "$.SmilesBond", "$.SmilesGenerator", "$.SmilesParser", "$.SmilesSearch", "JU.BSUtil", "$.Elements", "$.Logger", "$.Node", "$.Point3fi"], function () {
+Clazz.load (["J.api.SmilesMatcherInterface"], "JS.SmilesMatcher", ["java.lang.Boolean", "JU.AU", "$.BS", "$.PT", "JS.InvalidSmilesException", "$.SmilesAtom", "$.SmilesBond", "$.SmilesGenerator", "$.SmilesParser", "$.SmilesSearch", "JU.BSUtil", "$.Elements", "$.Logger", "$.Node", "$.Point3fi"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.okMF = true;
 Clazz.instantialize (this, arguments);
@@ -9,16 +9,15 @@ function () {
 return (this.okMF == true ? JS.InvalidSmilesException.getLastError () : "MF_FAILED");
 });
 Clazz.overrideMethod (c$, "getMolecularFormula", 
-function (pattern, isSmarts) {
+function (pattern, isSmarts, isEmpirical) {
 this.clearExceptions ();
 var search = JS.SmilesParser.newSearch ("/nostereo/" + pattern, isSmarts, true);
 search.createTopoMap (null);
-search.nodes = search.targetAtoms;
-return search.getMolecularFormula (!isSmarts, null, false);
-}, "~S,~B");
+search.nodes = search.target.nodes;
+return search.getMolecularFormula (!isSmarts, null, isEmpirical);
+}, "~S,~B,~B");
 Clazz.defineMethod (c$, "clearExceptions", 
  function () {
-this.okMF = true;
 JS.InvalidSmilesException.clear ();
 });
 Clazz.overrideMethod (c$, "getSmiles", 
@@ -37,6 +36,7 @@ return (result == null ? -1 : result.length);
 }, "~S,~S");
 Clazz.defineMethod (c$, "areEqualTest", 
 function (smiles, search) {
+search.set ();
 var ret = this.matchPriv (smiles, null, 0, null, null, false, 9, 2, search);
 return (ret != null && ret.length == 1);
 }, "~S,JS.SmilesSearch");
@@ -49,24 +49,60 @@ var search = JS.SmilesParser.newSearch (target, false, true);
 var array = this.matchPriv (pattern, null, 0, null, null, false, flags, 3, search);
 for (var i = array.length; --i >= 0; ) {
 var a = array[i];
-for (var j = a.length; --j >= 0; ) a[j] = (search.targetAtoms[a[j]]).mapIndex;
+for (var j = a.length; --j >= 0; ) a[j] = (search.target.nodes[a[j]]).mapIndex;
 
 }
 return array;
 }, "~S,~S,~N");
+Clazz.overrideMethod (c$, "hasStructure", 
+function (pattern, smilesSet, flags) {
+var ret =  Clazz.newIntArray (smilesSet.length, 0);
+if ((flags & 1) != 1) {
+flags = flags | 2;
+}this.clearExceptions ();
+pattern = JS.SmilesParser.cleanPattern (pattern);
+try {
+var search = JS.SmilesParser.newSearch (pattern, true, false);
+for (var i = 0; i < smilesSet.length; i++) {
+var smiles = JS.SmilesParser.cleanPattern (smilesSet[i]);
+var searchTarget = JS.SmilesParser.newSearch (smiles, false, true);
+searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern));
+try {
+this.clearExceptions ();
+ret[i] = (this.matchPattern (search, null, 0, null, null, false, flags | 8, 5, searchTarget) === Boolean.TRUE ? 1 : 0);
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+ret[i] = -1;
+e.printStackTrace ();
+} else {
+throw e;
+}
+}
+}
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+if (JU.Logger.debugging) e.printStackTrace ();
+if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
+throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
+} else {
+throw e;
+}
+}
+return ret;
+}, "~S,~A,~N");
 Clazz.overrideMethod (c$, "getAtoms", 
 function (target) {
 this.clearExceptions ();
 target = JS.SmilesParser.cleanPattern (target);
 var search = JS.SmilesParser.newSearch (target, false, true);
 search.createTopoMap ( new JU.BS ());
-return search.targetAtoms;
+return search.target.nodes;
 }, "~S");
 Clazz.overrideMethod (c$, "getRelationship", 
 function (smiles1, smiles2) {
 if (smiles1 == null || smiles2 == null || smiles1.length == 0 || smiles2.length == 0) return "";
-var mf1 = this.getMolecularFormula (smiles1, false);
-var mf2 = this.getMolecularFormula (smiles2, false);
+var mf1 = this.getMolecularFormula (smiles1, false, false);
+var mf2 = this.getMolecularFormula (smiles2, false, false);
 if (!mf1.equals (mf2)) return "none";
 var check;
 var n1 = JU.PT.countChar (JU.PT.rep (smiles1, "@@", "@"), '@');
@@ -91,9 +127,10 @@ smiles = JU.PT.rep (smiles, "!@@", "@");
 return smiles;
 }, "~S");
 Clazz.overrideMethod (c$, "getSubstructureSet", 
-function (pattern, atoms, ac, bsSelected, flags) {
-return this.matchPriv (pattern, atoms, ac, bsSelected, null, true, flags | JS.SmilesParser.getFlags (pattern), 1, null);
-}, "~S,~A,~N,JU.BS,~N");
+function (pattern, target, ac, bsSelected, flags) {
+var atoms = (Clazz.instanceOf (target, JS.SmilesSearch) ? null : target);
+return this.matchPriv (pattern, atoms, ac, bsSelected, null, true, flags | JS.SmilesParser.getFlags (pattern.toString ()), 1, (atoms == null ? target : null));
+}, "~O,~O,~N,JU.BS,~N");
 Clazz.overrideMethod (c$, "getMMFF94AtomTypes", 
 function (smarts, atoms, ac, bsSelected, ret, vRings) {
 this.clearExceptions ();
@@ -102,9 +139,7 @@ var search = null;
 var flags = (770);
 search = sp.parse ("");
 search.exitFirstMatch = false;
-search.targetAtoms = atoms;
-search.targetAtomCount = Math.abs (ac);
-search.setSelected (bsSelected);
+search.target.setAtoms (atoms, Math.abs (ac), bsSelected);
 search.flags = flags;
 search.getRingData (vRings, true, true);
 search.asVector = false;
@@ -144,6 +179,7 @@ atoms[i].atomNumber = (pt).getAtomNumber ();
 atoms[i].setT (pt);
 } else {
 atoms[i].elementNumber = (Clazz.instanceOf (pt, JU.Point3fi) ? (pt).sD : -2);
+if (pt != null) atoms[i].setT (pt);
 }atoms[i].index = i;
 }
 var nBonds = 0;
@@ -180,41 +216,70 @@ Clazz.defineMethod (c$, "matchPriv",
  function (pattern, atoms, ac, bsSelected, bsAromatic, doTestAromatic, flags, mode, searchTarget) {
 this.clearExceptions ();
 try {
+var isCompiled = (Clazz.instanceOf (pattern, JS.SmilesSearch));
+if (isCompiled) flags |= 2;
 var isSmarts = ((flags & 2) == 2);
-var search = JS.SmilesParser.newSearch (pattern, isSmarts, false);
+var search = (isCompiled ? pattern : JS.SmilesParser.newSearch (pattern == null ? null : pattern.toString (), isSmarts, false));
+if (searchTarget != null) searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern.toString ()));
+return this.matchPattern (search, atoms, ac, bsSelected, bsAromatic, doTestAromatic, flags, mode, searchTarget);
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+if (JU.Logger.debugging) e.printStackTrace ();
+if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
+throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
+} else {
+throw e;
+}
+}
+}, "~O,~A,~N,JU.BS,JU.BS,~B,~N,~N,JS.SmilesSearch");
+Clazz.defineMethod (c$, "matchPattern", 
+ function (search, atoms, ac, bsSelected, bsAromatic, doTestAromatic, flags, mode, searchTarget) {
+var isSmarts = ((flags & 2) == 2);
+this.okMF = true;
 if (searchTarget != null) {
-search.haveTopo = true;
+if (searchTarget.targetSet) {
+search.setTarget (searchTarget);
+} else {
+search.haveSmilesTarget = true;
 bsAromatic =  new JU.BS ();
-searchTarget.setFlags (searchTarget.flags | JS.SmilesParser.getFlags (pattern));
 searchTarget.createTopoMap (bsAromatic);
-atoms = searchTarget.targetAtoms;
-ac = searchTarget.targetAtoms.length;
-var mfTarget = searchTarget.getMolecularFormulaImpl (true, null, false, false);
-var mf = search.getMolecularFormulaImpl (true, null, false, false);
+atoms = searchTarget.target.nodes;
+ac = searchTarget.target.nodes.length;
 if (isSmarts) {
 var a1 = searchTarget.elementCounts;
 var a2 = search.elementCounts;
-for (var i = Math.max (searchTarget.elementNumberMax, search.elementNumberMax); i > 0; i--) {
+var n = searchTarget.elementNumberMax;
+if (n == search.elementNumberMax) {
+for (var i = 1; i <= n; i++) {
 if (a1[i] < a2[i]) {
 this.okMF = false;
 break;
 }}
 } else {
-this.okMF = mf.equals (mfTarget);
-}searchTarget.mf = search.mf = null;
-}if (this.okMF) {
+this.okMF = false;
+}} else {
+var mf = search.getMFArray (true, null, false);
+var mft = searchTarget.getMFArray (true, null, false);
+var n = searchTarget.elementNumberMax;
+if (n == search.elementNumberMax) {
+for (var i = 2; i <= n; i++) {
+if (mf[i] != mft[i]) {
+this.okMF = false;
+break;
+}}
+} else {
+this.okMF = false;
+}}}}if (this.okMF) {
 if (!isSmarts && !search.patternAromatic) {
 if (bsAromatic == null) bsAromatic =  new JU.BS ();
-JS.SmilesSearch.normalizeAromaticity (search.patternAtoms, bsAromatic, search.flags);
+search.normalizeAromaticity (bsAromatic);
 search.isNormalized = true;
-}search.targetAtoms = atoms;
-search.targetAtomCount = ac;
-if (ac != 0 && (bsSelected == null || !bsSelected.isEmpty ())) {
-var is3D = !(Clazz.instanceOf (atoms[0], JS.SmilesAtom));
-search.setSelected (bsSelected);
+}if (!search.targetSet) search.target.setAtoms (atoms, ac, bsSelected);
+if (search.targetSet || ac != 0 && (bsSelected == null || !bsSelected.isEmpty ())) {
+var is3D = search.targetSet || !(Clazz.instanceOf (atoms[0], JS.SmilesAtom));
 search.getSelections ();
-if (!doTestAromatic) search.bsAromatic = bsAromatic;
-search.setRingData (null, null, is3D || doTestAromatic);
+if (!doTestAromatic) search.target.bsAromatic = bsAromatic;
+if (!search.target.hasRingData (flags)) search.setRingData (null, null, is3D || doTestAromatic || search.patternAromatic);
 search.exitFirstMatch = ((flags & 8) == 8);
 search.mapUnique = ((flags & 128) == 128);
 }}switch (mode) {
@@ -222,7 +287,7 @@ case 1:
 search.asVector = false;
 return (this.okMF ? search.search () :  new JU.BS ());
 case 2:
-if (!this.okMF) return  new JU.Lst ();
+if (!this.okMF) return  new Array (0);
 search.asVector = true;
 var vb = search.search ();
 return vb.toArray ( new Array (vb.size ()));
@@ -238,24 +303,38 @@ search.getMaps = true;
 search.setFlags (flags | search.flags);
 var vl = search.search ();
 return vl.toArray (JU.AU.newInt2 (vl.size ()));
-}
-} catch (e) {
-if (Clazz.exceptionOf (e, Exception)) {
-if (JU.Logger.debugging) e.printStackTrace ();
-if (JS.InvalidSmilesException.getLastError () == null) this.clearExceptions ();
-throw  new JS.InvalidSmilesException (JS.InvalidSmilesException.getLastError ());
-} else {
-throw e;
-}
+case 5:
+if (!this.okMF) return Boolean.FALSE;
+search.retBoolean = true;
+search.setFlags (flags | search.flags);
+return search.search ();
 }
 return null;
-}, "~S,~A,~N,JU.BS,JU.BS,~B,~N,~N,JS.SmilesSearch");
+}, "JS.SmilesSearch,~A,~N,JU.BS,JU.BS,~B,~N,~N,JS.SmilesSearch");
 Clazz.overrideMethod (c$, "cleanSmiles", 
 function (smiles) {
 return JS.SmilesParser.cleanPattern (smiles);
 }, "~S");
 Clazz.overrideMethod (c$, "getMapForJME", 
 function (jme, at, bsAtoms) {
+try {
+var molecule = JS.SmilesMatcher.jmeToMolecule (jme);
+var bs = JU.BSUtil.newBitSet2 (0, molecule.ac);
+var s = this.getSmiles (molecule.patternAtoms, molecule.ac, bs, null, 34);
+var map = this.getCorrelationMaps (s, molecule.patternAtoms, molecule.ac, bs, 42);
+var map2 = this.getCorrelationMaps (s, at, bsAtoms.cardinality (), bsAtoms, 42);
+return  Clazz.newArray (-1, [map[0], map2[0]]);
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+e.printStackTrace ();
+} else {
+throw e;
+}
+}
+return null;
+}, "~S,~A,JU.BS");
+c$.jmeToMolecule = Clazz.defineMethod (c$, "jmeToMolecule", 
+function (jme) {
 var molecule =  new JS.SmilesSearch ();
 var tokens = JU.PT.getTokens (jme);
 var nAtoms = JU.PT.parseInt (tokens[0]);
@@ -293,27 +372,40 @@ break;
 }
  new JS.SmilesBond (a1, a2, order, false).index = i;
 }
-var s = "";
-try {
 molecule.isSmarts = true;
 molecule.set ();
-var bs = JU.BSUtil.newBitSet2 (0, nAtoms);
-s = this.getSmiles (molecule.patternAtoms, molecule.ac, bs, null, 34);
-var map = this.getCorrelationMaps (s, molecule.patternAtoms, nAtoms, bs, 42);
-var map2 = this.getCorrelationMaps (s, at, bsAtoms.cardinality (), bsAtoms, 42);
-return  Clazz.newArray (-1, [map[0], map2[0]]);
+return molecule;
+}, "~S");
+Clazz.overrideMethod (c$, "getSmilesFromJME", 
+function (jme) {
+try {
+var molecule = JS.SmilesMatcher.jmeToMolecule (jme);
+var bs = JU.BSUtil.newBitSet2 (0, molecule.ac);
+return this.getSmiles (molecule.patternAtoms, molecule.ac, bs, null, 1);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
-e.printStackTrace ();
+return null;
 } else {
 throw e;
 }
 }
-return null;
-}, "~S,~A,JU.BS");
+}, "~S");
+Clazz.overrideMethod (c$, "compileSmartsPattern", 
+function (pattern) {
+pattern = JS.SmilesParser.cleanPattern (pattern);
+return JS.SmilesParser.newSearch (pattern, true, false);
+}, "~S");
+Clazz.overrideMethod (c$, "compileSearchTarget", 
+function (atoms, atomCount, bsSelected) {
+var ss =  new JS.SmilesSearch ();
+ss.target.setAtoms (atoms, atomCount, bsSelected);
+ss.targetSet = true;
+return ss;
+}, "~A,~N,JU.BS");
 Clazz.defineStatics (c$,
 "MODE_BITSET", 0x01,
 "MODE_ARRAY", 0x02,
 "MODE_MAP", 0x03,
-"MODE_ATROP", 0x04);
+"MODE_ATROP", 0x04,
+"MODE_BOOLEAN", 0x05);
 });

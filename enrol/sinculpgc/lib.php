@@ -288,7 +288,7 @@ class enrol_sinculpgc_plugin extends enrol_plugin
                         $this->update_user_enrol($enrol_instance, $user->id, 0, null, 0); 
                     } else {
                         // Enrol the user with this plugin instance
-                        $this->enrol_user($enrol_instance, $user->id, $roleid, 0, 0, null, false);
+                        $this->enrol_user($enrol_instance, $user->id, $roleid); // ecastro ULPGC use default params 
                     }
 
                     // Si tiene enrol manual, se elimina, prevalece sinculpgc

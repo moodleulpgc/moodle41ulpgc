@@ -55,6 +55,7 @@ $string['synchrolecaps_desc'] = 'Id enables then a periodic task will reset manu
 for restricted roles to the format-especified values for each course. ';
 $string['restrictsection'] = 'Restrict section to grouping';
 $string['editrestrictsection'] = 'Edit section grouping restriction';
+$string['changerestrictsection'] = 'Change section grouping restriction (currently {$a})';
 $string['unrestrictsection'] = 'Unlock section from grouping';
 $string['restrictedsectionlbl'] = 'Accesible only to {$a} ';
 $string['manageactivities'] = 'Restrict manage activities capability';

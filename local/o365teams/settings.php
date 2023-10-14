@@ -44,7 +44,7 @@ if ($hassiteconfig) {
                                 
         $label = new lang_string('settings_usersmatching', 'local_o365teams');
         $desc = new lang_string('settings_usersmatching_details', 'local_o365teams');
-        $settings->add(new admin_setting_configselect('local_o365teams/usersmatching', $label, $desc, 'auto', $menu));          
+        $settings->add(new admin_setting_configselect('local_o365teams/usersmatching', $label, $desc, 'auto', $menu));
         
         $label = new lang_string('settings_usersmaildomains', 'local_o365teams');
         $desc = new lang_string('settings_usersmaildomains_details', 'local_o365teams');
@@ -104,6 +104,14 @@ if ($hassiteconfig) {
         $label = new lang_string('settings_sitelabel', 'local_o365teams');
         $desc = new lang_string('settings_sitelabel_details', 'local_o365teams');
         $settings->add(new \admin_setting_configtext('local_o365teams/sitelabel', $label, $desc, '', PARAM_TEXT, 8));
+
+
+        $menu = ['' => get_string('any'),
+                 'site' => get_string('namesupdate_site', 'local_o365teams'),
+                 'not' => get_string('namesupdate_not', 'local_o365teams'), ];
+        $label = new lang_string('settings_namesupdate', 'local_o365teams');
+        $desc = new lang_string('settings_namesupdate_desc', 'local_o365teams');
+        $settings->add(new admin_setting_configselect('local_o365teams/namesupdate', $label, $desc, 'auto', $menu));
 
         // Sample Team / group name.testdata
         $testdata = \local_o365teams\coursegroups\utils::get_team_group_name_sample_course();

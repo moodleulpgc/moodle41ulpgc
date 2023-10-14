@@ -176,11 +176,11 @@
     {{/showmovehere}}
     <div style="clear: both;">
         {{#tabs}}
-        {{> format_multitopic/courseformat/tabtree}}
+        {{> format_multitopic/courseformat/contenttabs/tabtree}}
         {{/tabs}}
     </div>
     {{{completionhelp}}}
-    <ul class="sections" data-for="course_sectionlist">
+    <ul class="sections topics" data-for="course_sectionlist">
         {{#initialsection}}
             {{$ core_courseformat/local/content/section }}
                 {{> format_multitopic/courseformat/content/section }}
@@ -197,6 +197,11 @@
             {{> format_multitopic/courseformat/content/addsection}}
         {{/ core_courseformat/local/content/addsection}}
     {{/numsections}}
+    {{#bulkedittools}}
+        {{$ core_courseformat/local/content/bulkedittools}}
+            {{> core_courseformat/local/content/bulkedittools}}
+        {{/ core_courseformat/local/content/bulkedittools}}
+    {{/bulkedittools}}
 </div>
 {{#js}}
 require(['format_multitopic/courseformat/content'], function(component) {

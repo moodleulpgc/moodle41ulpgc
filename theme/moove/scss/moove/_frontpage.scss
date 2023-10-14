@@ -104,12 +104,20 @@
         }
 
         .carousel-caption {
-            background-color: rgba(0, 0, 0, .6);
+            //background-color: rgba(0, 0, 0, .6); /* ecastro ULPGC */
             margin: 0;
-            bottom: 35px;
-            padding: 15px;
+            // ecastro ULPGC
+            right: 83%;
+            left: 3%;
+            padding-bottom: 0;
+            //bottom: 35px; /* ecastro ULPGC */
+            //padding: 15px; /* ecastro ULPGC */
             border-top-left-radius: .5rem;
             border-top-right-radius: .5rem;
+
+            h4 {
+                font-size: 1.5rem;
+            }
         }
 
         .carousel-fade .carousel-item {
@@ -164,7 +172,8 @@
     }
 
     #numbers {
-        padding: 5.625rem 0;
+        // padding: 5.625rem 0;   */
+        padding: 1.5rem 0; /* ecastro ULPGC */
 
         .sectionheading p {
             line-height: 1;
@@ -186,21 +195,22 @@
 
                 h3 {
                     color: #fff;
-                    font-size: 60px;
+                    /*font-size: 60px; */
+                    font-size: 32px; /* ecastro ULPGC */
                     font-weight: 600;
                     font-style: normal;
                     letter-spacing: -1px;
-                    line-height: 66px;
-                    margin-bottom: 30px;
+                    line-height: 36px; /* ecastro ULPGC */
+                    /* margin-bottom: 30px; */
                 }
 
                 p {
                     color: #fff;
-                    font-size: 17px;
+                    font-size: 18px;/* ecastro ULPGC */
                     font-weight: 400;
                     font-style: normal;
                     letter-spacing: normal;
-                    line-height: 30px;
+                    line-height: 24px; /* ecastro ULPGC */
                     margin-bottom: 0;
                 }
             }

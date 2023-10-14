@@ -154,6 +154,37 @@ switch (strtolower($action)) {
         }
         // We should never reach this point.
         break;
+
+    // ecastro ULPGC, to inplement action: download mp4 file
+    case 'download':
+        $recording = recording::get_record(['id' => $rid]);
+        if ($href = $recording->get_remote_download_url()) {
+            //logger::log_recording_played_event($instance, $rid);
+
+            $filename = $recording->get('name') . "_bbb-{$cm->id}-$rid";;
+            $filename .= '_'.strftime('%Y-%m-%d_%H-%M', $recording->get('starttime')/1000).'.mp4';
+            $recordingid = $recording->get('recordingid');
+            $tempfile = tempnam($CFG->tempdir . '/', "bigbluebutton_$recordingid.mp4");
+            $c = new \curl();
+            $file = fopen($tempfile, 'w');
+            $result = $c->download_one($href, null,
+            array('file' => $file, 'timeout' => 5, 'followlocation' => true, 'maxredirs' => 3));
+            fclose($file);
+            $download_info = $c->get_info();
+            if ($result === true) {
+                // file downloaded successfully
+                send_temp_file($tempfile, ($filename));
+            } else {
+                $error_text = $result;
+                $error_code = $c->get_errno();
+            }
+            redirect(urldecode($href));
+        } else {
+            notification::add(get_string('recordingurlnotfound', 'mod_bigbluebuttonbn'), notification::ERROR);
+            redirect($instance->get_view_url());
+        }
+        // We should never reach this point.
+        break;
 }
 // When we reach this point, we can close the tab or window where BBB was opened.
 echo $OUTPUT->header();

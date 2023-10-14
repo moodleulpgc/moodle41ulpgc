@@ -116,7 +116,21 @@ $canmanage = $caneditelements || $canmanageperiods || $canmanageexams || $canman
 
 ////////////////////////////////////////////////////////////////////////////////
 
-add_to_log($course->id, 'examregistrar', 'manage quality control', "manage.php?id={$cm->id}&edit=qualitycontrol", $examregistrar->name, $cm->id);
+//add_to_log($course->id, 'examregistrar', 'manage quality control', "manage.php?id={$cm->id}&edit=qualitycontrol", $examregistrar->name, $cm->id);
+
+        $eventdata = array();
+        $eventdata['context'] = $context;
+        $eventdata['other'] = array();
+        $eventdata['other']['examregid'] = $examregistrar->id;
+        $eventdata['other']['tab'] = $tab;
+        $eventdata['other']['session'] = $session;
+        if($bookedsite) {
+            $eventdata['other']['bookedsite'] = $bookedsite;
+        }
+        $eventdata['other']['action'] = 'Reviewd quality control';
+        $eventdata['other']['extra'] = '';
+        $event = \mod_examregistrar\event\manage_action::create($eventdata);
+        $event->trigger();
 
 /// Print the page header, Output starts here
 echo $OUTPUT->header();

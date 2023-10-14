@@ -5,9 +5,10 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-# @vpl_script_description Run a GUI "hello world" program of all programming languages available
+# @vpl_script_description Run a GUI "hello world" program for each programming language available
 
-cp common_script.sh common_script.sav
+COMMON_SCRIPT_SAVED=.common_script.sav
+cp common_script.sh $COMMON_SCRIPT_SAVED
 cat common_script.sh > all_execute
 . common_script.sh
 
@@ -41,11 +42,12 @@ do
 		echo " No hello program"
 		continue
 	fi
-	cp common_script.sav common_script.sh
+	cp $COMMON_SCRIPT_SAVED common_script.sh
 	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
 	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
 	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
+	rm vpl_wexecution vpl_execution vpl_webexecution 2> /dev/null
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_wexecution ] ; then
 		let "NG=NG+1"
@@ -57,6 +59,11 @@ do
 	elif [ -f vpl_execution ] ; then
 		echo -n " Compiled for run with TUI => removed"
 		rm vpl_execution
+		let "NNG=NNG+1"
+		LANGNGEN="$LANGNGEN $LANGUAGE"
+	elif [ -f vpl_webexecution ] ; then
+		echo -n " Compiled for run Web App => removed"
+		rm vpl_webexecution
 		let "NNG=NNG+1"
 		LANGNGEN="$LANGNGEN $LANGUAGE"
 	else

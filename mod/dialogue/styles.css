@@ -649,26 +649,6 @@ body.path-mod-dialogue #region-main .btn-group {
     vertical-align: middle;
 }
 
-/* ecastro ULPGC */
-/*
-.path-mod-dialogue #region-main .btn {
-    color: white;
-}
-
-.path-mod-dialogue #region-main .btn:hover {
-    color: #333;
-}
-
-/*
-body.path-mod-dialogue #region-main .js-control.btn-group .dropdown-toggle {
-    color: #fff;
-}
-
-body.path-mod-dialogue #region-main .js-control.btn-group .dropdown-toggle:hover{
-    color: #333;
-}
-/* ecastro ULPGC */
-
 body.path-mod-dialogue #region-main .btn-group + .btn-group {
     margin-left: 5px;
 }
@@ -1656,7 +1636,7 @@ body.path-mod-dialogue #region-main span.participant {
 
 body.path-mod-dialogue #region-main .btn-create {
     display: inline-block;
-    padding: 8px 12px; /* 4px 12px ecastro  ULPGC */
+    padding: 4px 12px;
     margin-bottom: 0;
     font-size: 14px;
     line-height: 20px;
@@ -1665,7 +1645,7 @@ body.path-mod-dialogue #region-main .btn-create {
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
     vertical-align: middle;
     cursor: pointer;
-    background-color: #f69f18;  /* #006dcc; ecastro  ULPGC */
+    background-color: #006dcc;
     background-repeat: repeat-x;
     border-color: #e6e6e6 #e6e6e6 #bfbfbf;
     border-bottom-color: #b3b3b3;
@@ -1683,13 +1663,13 @@ body.path-mod-dialogue #region-main .btn-create:active,
 body.path-mod-dialogue #region-main .btn-create.active,
 body.path-mod-dialogue #region-main .btn-create.disabled,
 body.path-mod-dialogue #region-main .btn-create[disabled] {
-    /*color: #333; removed ecastro ULPGC */
-    /* background-color: #e6e6e6; */
+    color: #333;
+    background-color: #e6e6e6;
 }
 
 body.path-mod-dialogue #region-main .btn-create:hover,
 body.path-mod-dialogue #region-main .btn-create:focus {
-    /*color: #333; removed ecastro ULPGC */
+    color: #333;
     text-decoration: none;
     background-position: 0 -15px;
     -webkit-transition: background-position 0.1s linear;
@@ -1718,21 +1698,6 @@ body.path-mod-dialogue #region-main .btn-create[disabled] {
 body.path-mod-dialogue #region-main .btn-create .badge {
     position: relative;
     top: -1px;
-}
-
-body.path-mod-dialogue #region-main .btn-create:hover,
-body.path-mod-dialogue #region-main .btn-create:focus,
-body.path-mod-dialogue #region-main .btn-create:active,
-body.path-mod-dialogue #region-main .btn-create.active,
-body.path-mod-dialogue #region-main .btn-create.disabled,
-body.path-mod-dialogue #region-main .btn-create[disabled] {
-    color: #333 !important; /* ecastro ULPGC */
-    /* background-color: #04c;*/
-}
-
-body.path-mod-dialogue #region-main .btn-create:active,
-body.path-mod-dialogue #region-main .btn-create.active {
-    background-color: #039;
 }
 
 body.path-mod-dialogue #region-main .btn-create .caret {

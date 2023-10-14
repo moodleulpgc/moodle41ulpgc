@@ -74,7 +74,6 @@ class mod_offlinequiz_mod_form extends moodleform_mod {
         $this->standard_intro_elements();
 
         $mform->addElement('date_time_selector', 'time', get_string("quizdate", "offlinequiz"), array('optional' => true));
-
         if (!$offlinequiz || !$offlinequiz->docscreated) {
             for ($i = 1; $i <= 6; $i++) {
                 $groupmenu[$i] = "$i";
@@ -99,18 +98,16 @@ class mod_offlinequiz_mod_form extends moodleform_mod {
         $mform->addHelpButton('shuffleanswers', 'shufflewithin', 'offlinequiz');
         $mform->setDefault('shuffleanswers', $offlinequizconfig->shuffleanswers);
 
+        $mform->addElement('selectyesno', 'participantsusage', get_string('participantsusage', 'offlinequiz'));
+        $mform->addHelpButton('participantsusage', 'participantsusage', 'offlinequiz');
+        $mform->setDefault('participantsusage', $offlinequizconfig->defaultparticipantsusage);
+
         // Option for show tutorial.
         $mform->addElement('selectyesno', 'showtutorial', get_string("showtutorial", "offlinequiz"));
         $mform->addHelpButton('showtutorial', "showtutorial", "offlinequiz");
-        //ecastro ULPGC 
-        $params = array();
-        if(!empty($this->_cm)) {
-            $params = array('id' => $this->_cm->id);
-        }
-        $url = new moodle_url('/mod/offlinequiz/tutorial/index.php', $params);
         $mform->addElement('static', 'showtutorialdescription', '', get_string("showtutorialdescription", "offlinequiz") .
-                '<br/>'.\html_writer::link($url, $url->out()));
-        //ecastro ULPGC 
+                '<br/><a href="'.$CFG->wwwroot.'/mod/offlinequiz/tutorial/index.php">' . $CFG->wwwroot .
+                '/mod/offlinequiz/tutorial/index.php</a>');
 
         unset($options);
         $options = array();

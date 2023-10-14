@@ -25,8 +25,8 @@
   }
 }}
 
-{{! Did the current user upvoted this post? }}
-<div class="vote icon fa fa-chevron-up moodleoverflow-icon-1_5x m-0" {{#canchange}}data-moodleoverflow-action="upvote"{{/canchange}} data-moodleoverflow-state="{{#userupvoted}}clicked{{/userupvoted}}{{!
+{{! Did the current user upvoted this post? }}  {{! ecastro ULPGC xmoodleoverflow-icon-1_5x to disable}}
+<div class="vote icon fa fa-chevron-up xmoodleoverflow-icon-1_5x m-0" {{#canchange}}data-moodleoverflow-action="upvote"{{/canchange}} data-moodleoverflow-state="{{#userupvoted}}clicked{{/userupvoted}}{{!
 }}{{^userupvoted}}{{#canchange}}notclicked{{/canchange}}{{^canchange}}disabled{{/canchange}}{{/userupvoted}}"
     title="{{#canchange}}{{!
     }}{{#userupvoted}}{{#str}}action_remove_upvote, moodleoverflow{{/str}}{{/userupvoted}}{{!
@@ -36,7 +36,7 @@
 {{! Display the amount of votes. }}
 <p class="votecount line-height-3" data-moodleoverflow-postreputation="{{postid}}">{{ votes }}</p>
 
-<div class="vote icon fa fa-chevron-down moodleoverflow-icon-1_5x m-0" {{#canchange}}data-moodleoverflow-action="downvote"{{/canchange}} data-moodleoverflow-state="{{#userdownvoted}}clicked{{/userdownvoted}}{{!
+<div class="vote icon fa fa-chevron-down xmoodleoverflow-icon-1_5x m-0" {{#canchange}}data-moodleoverflow-action="downvote"{{/canchange}} data-moodleoverflow-state="{{#userdownvoted}}clicked{{/userdownvoted}}{{!
     }}{{^userdownvoted}}{{#canchange}}notclicked{{/canchange}}{{^canchange}}disabled{{/canchange}}{{/userdownvoted}}"
      title="{{#canchange}}{{!
     }}{{#userdownvoted}}{{#str}}action_remove_downvote, moodleoverflow{{/str}}{{/userdownvoted}}{{!

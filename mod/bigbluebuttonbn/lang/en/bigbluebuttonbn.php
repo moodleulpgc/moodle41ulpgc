@@ -43,6 +43,7 @@ $string['bigbluebuttonbn:protectrecordings'] = 'Protect recordings';
 $string['bigbluebuttonbn:unprotectrecordings'] = 'Unprotect recordings';
 $string['bigbluebuttonbn:deleterecordings'] = 'Delete recordings';
 $string['bigbluebuttonbn:importrecordings'] = 'Import recordings';
+$string['bigbluebuttonbn:downloadrecordings'] = 'Download recordings';
 $string['bigbluebuttonbn'] = 'BigBlueButton';
 $string['bigbluebuttondisablednotification_subject'] = 'BigBlueButton activity module disabled.';
 $string['bigbluebuttondisablednotification'] = 'The BigBlueButton activity module has been disabled and any existing BigBlueButton course activities are currently not accessible. Prior to re-enabling this plugin, please ensure that you have read and accepted the <a href="{$a}" target="_blank">data processing agreement</a> with Blindside Networks Inc.';
@@ -649,3 +650,7 @@ $string['userlimitreached'] = 'The number of users allowed in a session has been
 $string['waitformoderator'] = 'Waiting for a moderator to join.';
 
 $string['recordingurlnotfound'] = 'The recording URL is invalid.';
+
+// ecastro ULPGC
+$string['view_recording_list_actionbar_download'] = 'Download';
+$string['view_recording_actionbar_mp4'] = 'mp4';

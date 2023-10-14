@@ -191,7 +191,7 @@
     width: 4px;
 }
 
-.moodleoverflowpost.statusteacher.statusstarter:before {
+.moodleoverflowpost.markedsolution.markedhelpful:before {
     background: linear-gradient(80deg, rgba(234, 133, 22, 1) 50%, rgba(112, 160, 52, 1) 50%);
     bottom: -1px;
     content: "";
@@ -202,7 +202,7 @@
     width: 4px;
 }
 
-.moodleoverflowpost.statusteacher:before {
+.moodleoverflowpost.markedsolution:before {
     background: rgba(112, 160, 52, 1);
     bottom: -1px;
     content: "";
@@ -213,9 +213,8 @@
     width: 4px;
 }
 
-.moodleoverflowpost.statusstarter:before {
-    /* background: rgba(234, 133, 22, 1); */  /* ecastro ULPGC to improve unread */ 
-    background: rgba(128, 0, 128, 1);
+.moodleoverflowpost.markedhelpful:before {
+    background: rgba(234, 133, 22, 1);
     bottom: -1px;
     content: "";
     display: block;
@@ -230,11 +229,11 @@
     display: none;
 }
 
-.moodleoverflowpost.statusstarter .onlyifhelpful {
+.moodleoverflowpost.markedhelpful .onlyifhelpful {
     display: initial;
 }
 
-.moodleoverflowpost.statusteacher .onlyifsolved {
+.moodleoverflowpost.markedsolution .onlyifsolved {
     display: initial;
 }
 
@@ -283,31 +282,6 @@
 
 .moodleoverflowpost.unread .row.header {
     border-bottom: 1px solid #ddd;
-}
-
-.moodleoverflowpost.border.unread {
-    border: 2px solid #ff9a00 !important; 
-    
-}
-
-.moodleoverflowpost.unread:before {
-    background: #ff9a00;
-    bottom: -1px;
-    content: "";
-    display: block;
-    left: -6px;
-    position: absolute;
-    top: -1px;
-    width: 6px;
-}
-
-.moodleoverflowpost .row {
-    margin-left: 0;
-}
-
-.moodleoverflowpost .row:before,
-.moodleoverflowpost .row:after {
-    content: none;
 }
 
 .moodleoverflowpost .topic .author {
@@ -463,11 +437,6 @@
     width: calc(100% - 40px);
 }
 
-
-.moodleoverflowpost td.answercell table.post-info td.leftbox .user-info .user-details .-flair {
-    display: block;
-}
-
 .moodleoverflowpost .commentcell {
     display: flex;
     flex-direction: column;
@@ -557,6 +526,12 @@
 
 .mod_moodleoverflow-label-review {
     background-color: #ffd3d3;
+}
+
+
+.moodleoverflow-statistics-table .header .helpactivityclass {
+    padding: 0;
+    margin-left: 8px;
 }
 
 .moodleoverflow-gap-small {

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['commonoptionsheader'] = 'Opciones comunes';
 $string['donotupdate'] = 'No actualizar';
-$string['navandheader'] = 'Actualizar';
+$string['navandheader'] = 'Actualización masiva';
 $string['pluginname'] = 'Actualización masiva de preguntas';
 $string['privacy:metadata'] = 'Este plugin no almacena datos personales';
 $string['selectcategoryheader'] = 'Seleccionar categoría para actualizar preguntas';

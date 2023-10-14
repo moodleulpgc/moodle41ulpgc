@@ -1,7 +1,8 @@
 Clazz.declarePackage ("JS");
-Clazz.load (null, "JS.ScriptTokenParser", ["java.lang.Boolean", "$.Float", "JU.Lst", "$.P3", "$.PT", "J.i18n.GT", "JS.ScriptParam", "$.T", "JU.Logger", "$.SimpleUnitCell"], function () {
+Clazz.load (null, "JS.ScriptTokenParser", ["java.lang.Boolean", "$.Float", "JU.Lst", "$.P3", "$.PT", "J.i18n.GT", "JS.T", "JU.Edge", "$.Logger", "$.SimpleUnitCell"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.vwr = null;
+this.htUserFunctions = null;
 this.script = null;
 this.isStateScript = false;
 this.lineCurrent = 0;
@@ -31,7 +32,6 @@ this.ltokenPostfix = null;
 this.isEmbeddedExpression = false;
 this.isCommaAsOrAllowed = false;
 this.theValue = null;
-this.htUserFunctions = null;
 this.haveString = false;
 this.residueSpecCodeGenerated = false;
 this.errorMessage = null;
@@ -89,10 +89,11 @@ firstToken = 0;
 case 12295:
 if (tok == 1677721602) firstToken = 2;
 break;
-case 1275082245:
+case 1275082241:
 switch (tok) {
 case 1073742335:
 case 1073742334:
+case 268435504:
 tok = this.tokAt (++firstToken);
 break;
 }
@@ -111,7 +112,7 @@ for (var i = 0; i < firstToken && this.addNextToken (); i++) {
 while (this.moreTokens ()) {
 if (this.isEmbeddedExpression) {
 while (!this.isExpressionNext ()) {
-if (this.tokPeekIs (1073741824) && !(this.tokCommand == 134222849 && this.itokenInfix == 1)) {
+if (this.tokPeekIs (1073741824) && !(this.tokCommand == 134223363 && this.itokenInfix == 1)) {
 var name = this.atokenInfix[this.itokenInfix].value;
 var t = JS.T.getTokenFromName (name);
 if (t != null) if (!this.isMathExpressionCommand && this.lastToken.tok != 12290 || (this.lastToken.tok == 1073742336 || this.tokAt (this.itokenInfix + 1) == 268435472) && !this.isUserFunction (name)) {
@@ -127,8 +128,8 @@ if (!this.clauseOr (this.isCommaAsOrAllowed || !this.isMathExpressionCommand && 
 if (!this.isMathExpressionCommand && !(this.isEmbeddedExpression && this.lastToken === JS.T.tokenCoordinateEnd)) {
 this.addTokenToPostfixToken (JS.T.tokenExpressionEnd);
 }if (this.moreTokens ()) {
-if (this.tokCommand != 1275082245 && this.tokCommand != 12291 && !this.isEmbeddedExpression) return this.error (5);
-if (this.tokCommand == 1275082245) {
+if (this.tokCommand != 1275082241 && this.tokCommand != 12291 && !this.isEmbeddedExpression) return this.error (5);
+if (this.tokCommand == 1275082241) {
 tokenBegin.intValue = 0;
 this.tokCommand = 0;
 this.isEmbeddedExpression = true;
@@ -476,6 +477,12 @@ break;
 if (isWithin && distance == 3.4028235E38) switch (tok0) {
 case 12290:
 break;
+case 1094713350:
+case 1094713349:
+this.addTokenToPostfix (4, this.theValue);
+this.clauseCell (8);
+key = "";
+break;
 case 1111490587:
 case 1073742128:
 case 134218756:
@@ -517,7 +524,7 @@ case 136314895:
 case 1094717454:
 case 1094713360:
 case 134217750:
-case 134219265:
+case 134219777:
 case 1094713362:
 case 1086324744:
 case 2097184:
@@ -551,7 +558,7 @@ tok = this.tokPeek ();
 }
 if (key == null) {
 switch (tok) {
-case 134219265:
+case 134219777:
 case 1073742329:
 case 134217750:
 isCoordOrPlane = true;
@@ -622,7 +629,7 @@ if (this.addNextTokenIf (3)) if (!this.addNextTokenIf (268435504)) break;
 if (this.addNextTokenIf (3)) if (!this.addNextTokenIf (268435504)) break;
 var o = this.getToken ().value;
 var strOrder = (Clazz.instanceOf (o, String) ? o : " ");
-var intType = JS.ScriptParam.getBondOrderFromString (strOrder);
+var intType = JU.Edge.getBondOrderFromString (strOrder);
 if (intType == 131071) {
 this.returnToken ();
 } else {
@@ -714,12 +721,13 @@ Clazz.defineMethod (c$, "clauseCell",
  function (tok) {
 var cell =  new JU.P3 ();
 this.tokenNext ();
+if (tok != 8) {
 if (!this.tokenNextTok (268435860)) return this.errorStr (15, "=");
-if (this.getToken () == null) return this.error (3);
+}if (this.getToken () == null) return this.error (3);
 if (this.theToken.tok == 2) {
 JU.SimpleUnitCell.ijkToPoint3f (this.theToken.intValue, cell, 1, 0);
-return this.addTokenToPostfix (tok, cell);
-}if (this.theToken.tok != 1073742332 || !this.getNumericalToken ()) return this.error (3);
+} else {
+if (this.theToken.tok != 1073742332 || !this.getNumericalToken ()) return this.error (3);
 cell.x = this.floatValue ();
 if (this.tokPeekIs (268435504)) this.tokenNext ();
 if (!this.getNumericalToken ()) return this.error (3);
@@ -727,7 +735,7 @@ cell.y = this.floatValue ();
 if (this.tokPeekIs (268435504)) this.tokenNext ();
 if (!this.getNumericalToken () || !this.tokenNextTok (1073742338)) return this.error (3);
 cell.z = this.floatValue ();
-return this.addTokenToPostfix (tok, cell);
+}return this.addTokenToPostfix (tok, cell);
 }, "~N");
 Clazz.defineMethod (c$, "clauseDefine", 
  function (haveToken, forceString) {

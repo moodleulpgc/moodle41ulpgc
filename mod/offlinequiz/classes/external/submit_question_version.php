@@ -22,9 +22,6 @@ require_once($CFG->libdir . '/externallib.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/engine/datalib.php');
 require_once($CFG->libdir . '/questionlib.php');
-require_once($CFG->dirroot . '/mod/offlinequiz/locallib.php');
-require_once($CFG->dirroot . '/mod/offlinequiz/offlinequiz.class.php');
-require_once($CFG->dirroot . '/mod/offlinequiz/report/statistics/lib.php');
 
 use external_api;
 use external_description;
@@ -53,6 +50,7 @@ class submit_question_version extends external_api {
             [
                 'slotid' => new external_value(PARAM_INT, ''),
                 'newversion' => new external_value(PARAM_INT, ''),
+                'canbeedited' => new external_value(PARAM_BOOL, '')
             ]
         );
     }
@@ -62,17 +60,21 @@ class submit_question_version extends external_api {
      *
      * @param int $slotid Slot id to display.
      * @param int $newversion the version to set. 0 means 'always latest'.
+     * @param bool $canbeedited Wheter the forms were already created
      * @return array
      */
-    public static function execute(int $slotid, int $newversion): array {
+    public static function execute(int $slotid, int $newversion, bool $canbeedited): array {
         global $DB;
         $params = [
             'slotid' => $slotid,
-            'newversion' => $newversion
+            'newversion' => $newversion,
+            'canbeedited' => $canbeedited
         ];
         $params = self::validate_parameters(self::execute_parameters(), $params);
         $response = ['result' => false];
-
+        // Get the required data.
+        $referencedata = $DB->get_record('question_references',
+            ['itemid' => $params['slotid'], 'component' => 'mod_offlinequiz', 'questionarea' => 'slot']);
         $slotdata = $DB->get_record('offlinequiz_group_questions', ['id' => $slotid]);
         $questionbankentryid = $DB->get_field('question_versions',
                                                 'questionbankentryid',
@@ -106,33 +108,24 @@ class submit_question_version extends external_api {
             $response['answersdiffer'] = true;
         }
 
-        // Get the course object and related bits.
-        $offlinequizrow = $DB->get_record('offlinequiz', ['id' => $slotdata->offlinequizid]);
-        $offlinequizobj = new \offlinequiz($offlinequizrow, $cm, $course);
-        $structure = $offlinequizobj->get_structure();
-        $canbeedited = $structure->can_be_edited();
-        if ($canbeedited) {
-            $response['canbeedited'] = true;
-        } else {
-            $response['canbeedited'] = false;
-        }
-
-        if ($newquestionid == $oldquestionid) {
-            $response['samequestion'] = true;
-            return $response;
-        } else {
-            $response['samequestion'] = false;
-        }
-
         // The forms are either still not created or the number of answers matches, so a question can be updated ex-post.
         if ($canbeedited || $oldquestioncountanswers == $newquestioncountanswers) {
-            $offlinequiz = $DB->get_record('offlinequiz', ['id' => $slotdata->offlinequizid]);
-            offlinequiz_update_question_instance($offlinequiz, $oldquestionid, $slotdata->maxmark, $newquestionid);
-            offlinequiz_update_all_attempt_sumgrades($offlinequiz);
-            offlinequiz_update_grades($offlinequiz);
-            offlinequiz_delete_statistics_caches($offlinequiz->id);
 
-            $response['result'] = true;
+            $newdata = new stdClass();
+            $newdata->id = $slotdata->id;
+            $newdata->questionid = $newquestionid;
+            $response['result'] = $DB->update_record('offlinequiz_group_questions', $newdata);
+
+            $reference = new stdClass();
+            $reference->id = $referencedata->id;
+            if ($params['newversion'] === 0) {
+                $reference->version = null;
+            } else {
+                $reference->version = $params['newversion'];
+            }
+            if ($response['result']) {
+                $response['result'] = $DB->update_record('question_references', $reference);
+            }
         }
 
         return $response;
@@ -147,9 +140,7 @@ class submit_question_version extends external_api {
         return new external_single_structure(
             [
                 'result' => new external_value(PARAM_BOOL, ''),
-                'answersdiffer' => new external_value(PARAM_BOOL),
-                'canbeedited' => new external_value(PARAM_BOOL),
-                'samequestion'  => new external_value(PARAM_BOOL)
+                'answersdiffer' => new external_value(PARAM_BOOL)
             ]
         );
     }

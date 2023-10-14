@@ -27,8 +27,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Exam delivery  Offlinequiz';
-$string['examdelivery_offlinequiz:manage'] = 'Manage Offlinequiz delivery method';
-$string['examdelivery_offlinequiz:view'] = 'View and use Offlinequiz delivery method';
+$string['offlinequiz:manage'] = 'Manage Offlinequiz delivery method';
+$string['offlinequiz:view'] = 'View and use Offlinequiz delivery method';
 $string['enabled'] = 'Enabled';
 $string['enabled_help'] = 'If active, this exam delivery method using Offlinequiz instances will be available 
 for examns in the Exam Registrar.. ';

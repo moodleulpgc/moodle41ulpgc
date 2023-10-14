@@ -8,26 +8,27 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * qtype_mtf editing form.
+ * qtype_mtf lib.
  *
- * @package qtype_mtf
- * @author Amr Hourani (amr.hourani@id.ethz.ch)
- * @author Martin Hanusch (martin.hanusch@let.ethz.ch)
- * @copyright 2016 ETHZ {@link http://ethz.ch/}
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     qtype_mtf
+ * @author      Amr Hourani (amr.hourani@id.ethz.ch)
+ * @author      Martin Hanusch (martin.hanusch@let.ethz.ch)
+ * @copyright   2016 ETHZ {@link http://ethz.ch/}
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-require_once ($CFG->dirroot . '/question/type/edit_question_form.php');
-require_once ($CFG->dirroot . '/question/type/mtf/lib.php');
-require_once ($CFG->dirroot . '/question/engine/bank.php');
+require_once($CFG->dirroot . '/question/type/edit_question_form.php');
+require_once($CFG->dirroot . '/question/type/mtf/lib.php');
+require_once($CFG->dirroot . '/question/engine/bank.php');
 
 /**
  * qtype_mtf editing form definition.
@@ -111,7 +112,8 @@ class qtype_mtf_edit_form extends question_edit_form {
             }
         }
 
-        if (class_exists('qbank_editquestion\\editquestion_helper') && !empty($this->question->id) && !$this->question->beingcopied) {
+        if (class_exists('qbank_editquestion\\editquestion_helper') && !empty($this->question->id) &&
+            !$this->question->beingcopied) {
             // Add extra information from plugins when editing a question (e.g.: Authors, version control and usage).
             $functionname = 'edit_form_display';
             $questiondata = [];
@@ -191,7 +193,8 @@ class qtype_mtf_edit_form extends question_edit_form {
                     $buttonarray[] = $mform->createElement('static', 'previewlink', '', $previewlink);
                 }
             } else {
-                $previewlink = $PAGE->get_renderer('core_question')->question_preview_link($this->question->id, $this->context, true);
+                $previewlink = $PAGE->get_renderer('core_question')->question_preview_link($this->question->id,
+                    $this->context, true);
                 $buttonarray[] = $mform->createElement('static', 'previewlink', '', $previewlink);
             }
         }
@@ -201,7 +204,8 @@ class qtype_mtf_edit_form extends question_edit_form {
 
         $this->add_action_buttons(true, get_string('savechanges'));
 
-        if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit || $this->question->formoptions->cansaveasnew))) {
+        if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||
+            $this->question->formoptions->cansaveasnew))) {
             $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
         }
     }
@@ -245,8 +249,8 @@ class qtype_mtf_edit_form extends question_edit_form {
         $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '', get_string('scoringsubpoints', 'qtype_mtf'),
                                                 'subpoints', $attributes);
         if (get_config('qtype_mtf')->allowdeduction) {
-            $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '', get_string('scoringsubpointdeduction', 'qtype_mtf'),
-                'subpointdeduction', $attributes);
+            $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '',
+            get_string('scoringsubpointdeduction', 'qtype_mtf'), 'subpointdeduction', $attributes);
         }
         $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '', get_string('scoringmtfonezero', 'qtype_mtf'),
                                                 'mtfonezero', $attributes);
@@ -344,7 +348,8 @@ class qtype_mtf_edit_form extends question_edit_form {
      * @param int $addoptions
      *        the number of answer blanks to add. Default QUESTION_NUMANS_ADD.
      */
-    protected function add_per_answer_fields(&$mform, $label, $gradeoptions, $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
+    protected function add_per_answer_fields(&$mform, $label, $gradeoptions, $minoptions = QUESTION_NUMANS_START,
+        $addoptions = QUESTION_NUMANS_ADD) {
         $answersoption = '';
         $repeatedoptions = array();
         $repeated = $this->get_per_answer_fields($mform, $label, $gradeoptions, $repeatedoptions, $answersoption);
@@ -588,7 +593,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             }
         }
 
-        // If deduction is set, it must be >= 0 and <= 1
+        // If deduction is set, it must be >= 0 and <= 1.
         if (isset($data['deduction'])) {
             $deduction = $data['deduction'];
             if ($deduction < 0 || $deduction > 1) {
@@ -596,7 +601,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             }
         }
 
-        // If admin has disallowed deductions, scoring method cannot be subpoints with deductions
+        // If admin has disallowed deductions, scoring method cannot be subpoints with deductions.
         if (get_config('qtype_mtf', 'allowdeduction') === '0') {
             if (!isset($data['scoringmethod'])) {
                 $errors['radiogroupscoring'] = get_string('cannotusedeductions', 'qtype_mtf');
@@ -613,7 +618,6 @@ class qtype_mtf_edit_form extends question_edit_form {
                 $errors["responsetext_" . $j] = get_string('mustsupplyvalue', 'qtype_mtf');
             }
         }
-
         return $errors;
     }
 }

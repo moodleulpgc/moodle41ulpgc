@@ -1,15 +1,12 @@
 //Import additional ULPGC scss moove files. //ecastro ULPGC
 @import "ulpgc/modchooser";
 
-.badge .badge-pill .badge-warning {
-	background-color: #000066;
+.path-user .main-inner,
+.path-mod .main-inner {
+  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: 450;
+  }
 }
-
-/*
-.badge-warning {
-	background-color: #000066;
-}
-*/
 
 .logo_ulpgc {
 	background-image: $logo_ulpgc;
@@ -22,7 +19,7 @@
       width: 236px;
       height: 40px;
       margin: 0;
-      display: block;
+      display: inline;
       /* @media (max-device-width: 1366px) and (orientation : "landscape"){
           @content;
       }*/ }
@@ -50,7 +47,7 @@
 }
 
 .ulpgcds-btn--primary {
-  background: #0066a1;
+  background: $color-blue;
   color: #fff;
 }
 .ulpgcds-btn--small {
@@ -64,15 +61,40 @@
   display: inline-block;
 }
 .ulpgcds-icon-user::before, .icon-user::before {
-  font-family: "FontAwesome" !important;
+  font-family: "Fontawesome" !important;
   font-weight: 400;
   content: "\f007";
+}
+
+
+.icon.fa, 
+.dropdown-toggle::after,
+.dropdown-toggle::before {
+  /* font-family: 'Fontawesome'; */
+  font-family: 'Font Awesome 6 Free';
+}
+
+.dropdown-item span.currentcourse::before {
+  font-family: 'fontawesome';
+  content: "\f115";  
+margin-left: -1.2rem;
+padding-right: 0.2rem;
+}
+
+.primary-navigation  .dropdown-item[aria-current="true"] {
+  background-color: $color-orange-50;
 }
 
 
 /*---------------------------------------
  * rules: navbar navigation
  --------------------------------------*/
+
+.atto-fullscreen .d-print-none {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   margin-top: 86px;
 }
@@ -90,10 +112,27 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     height: 6px;
 }
 
-
+.secondary-navigation .moremenu.navigation {
+  float: left;
+}
 
 .secondary-navigation > .moove-container-fluid,  .secondary-navigation .moremenu,  .moremenu .nav-link{
      height: 36px;
+}
+
+.secondary-navigation .moremenu-toggles{
+    height: 36px;
+    margin-left: auto;
+    float: right;     
+}
+
+body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
+  display: none;  
+}
+
+.secondary-navigation .moremenu-toggles .menupanel {
+  float: right;
+  padding: 0.5rem 0.2rem;
 }
 
 .navigation.inactivitysettings,
@@ -116,23 +155,47 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 }
 
 
-
+.dropdown-toggle::after {
+    @extend .fa-solid;
+    font-family: 'Fontawesome';
+    content: fa-content($fa-var-chevron-down);
+    margin-right: 0;
+    margin-left: 2px;
+    font-size: 12px;
+    width: 9px;
+    border: 0; 
+}
 
 /* Change the block column width on the Dashboard if setting 'blockcolumnwidthdashboard' is different from setting 'blockcolumnwidth'. */
 @if variable-exists(blockwidthdashboard) {
     @if $blocks-width-dashboard {
-  .path-my #lateral-side-blocks {
-    max-width: $blocks-width-dashboard;
-    float: left;
-  }
+    .path-my #lateral-side-blocks {
+      max-width: $blocks-width-dashboard;
+      float: left;
+    }
 
-  .path-my #region-main .main-content {
-    //float: right;
-    //max-width: calc(100% - 4px - #{$blocks-width-dashboard});
+    .path-my #region-main .main-content {
+      float: right;
+      max-width: calc(100% - 4px - #{$blocks-width-dashboard});
+      width: 100%;
+    }
+
+    .path-my #bottom-blocks {
+      display: inline-block;
+    }
   }
 }
-}
 
+
+@media (max-width: 768px) {
+      .path-my #region-main .main-content {
+        float: none;
+        max-width: 100%;
+      }
+    .path-my #lateral-side-blocks {
+      float: none;
+    }
+}
 
 /*---------------------------------------
  * rules: footer copiadas de ULPGC
@@ -140,37 +203,37 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 #page-footer {
   //margin: 0 -15px;
-  background-color: #eee;
+  background-color: $color-gray-5;
   color: inherit;
 }
 
-#page-footer .moodle-footer a:not(.btn) {
-  color: red;
+#page-footer  a:not(.btn) {
+     color: $primary;
 }
 
 .moodle-footer {
-  background-color: #f2f3f7 !important;
-  border-top: 4px solid #0067a2 ;
-  //color: red;
+  background-color: $color-gray-5 !important;
+  border-top: 4px solid $primary ;
   padding-bottom: 1.0rem;
+  padding-top: 0.5rem;
 }
 
 
 .site-footer {
   clear: both;
-  *zoom: 1;
+  /*zoom: 1; */
   width: 100%;
   display: block;
   position: relative;
-  background: #eeeeee;
-  border-top: 4px solid #ffa100;
+  background: $color-gray-10;
+  border-top: 4px solid $color-orange;
   //padding-top: 48px;
   //margin-top: 40px;
 }
 
 #pie_final {
   clear: both;
-  background: #565a5c;
+  background: $color-gray;
   color: #fff;
   height: auto;
   text-align: center;
@@ -209,14 +272,22 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 #pie_info .columna_pie {
     float: left;
-    padding-left: 2.5%;
-    padding-right: 2.5%;
+    padding-left: 2.0%;
+    padding-right: 2.0%;
+    
+    p {
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
 }
 
 #pie_info .columna_pie.primera {
     border-left: 1px solid;
 }
 
+#page-footer .supportemail, #page-footer .logininfo, #page-footer .tool_dataprivacy {
+    margin: 0 0.1rem;
+}
 
 #page-footer {
     .btn-footer-popover {
@@ -228,9 +299,90 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
     }   
 }
 
+
+/*---------------------------------------
+ * rules: Dashboard page.
+ --------------------------------------*/
+.dashboard-card-deck .dashboard-card .dashboard-card-img {
+  height: unset;
+}
+
+.dashboard-card .dashboard-card-img {
+  padding: 0.1rem;
+  height: unset !important;
+}
+
+.dashboard-card .dashboard-card-img .course-category {
+  padding: 1px 8px;
+  margin-bottom: 0.15rem;
+  font-size: 75%;
+}
+
+.pagelayout-frontpage .dashboard-card .card-body, .pagelayout-coursecategory .dashboard-card .card-body {
+  padding: 0.25rem 0.8rem;
+}
+
+
+.dashboard-card .course-contacts .info {
+  display: flex;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .info {
+  line-height: 1.0;
+}
+
+.pagelayout-standard .dashboard-card .course-contacts .contact p {
+  margin-left: 0.4rem;
+  margin-bottom: 0;
+}
+
+.pagelayout-standard .dashboard-card .course-contacts .contact p.role {
+  color: $color-gray-dark;
+  font-size: 80%;
+  margin-top: 0.15rem;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .contact img, 
+.pagelayout-standard .dashboard-card .course-contacts .contact img {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dee2e6;
+}
+
+.pagelayout-frontpage .dashboard-card .course-contacts .contact, 
+.pagelayout-standard .dashboard-card .course-contacts .contact {
+  display: flex;
+  align-items: center;
+}
+
+
+@media (min-width: 768px) {
+  body.has-secondarynavigation .drawer-left, body.has-secondarynavigation .drawer-right {
+    top: calc(80px + 1px);
+  }
+}
+
+.drawer.drawer-left .drawertoggle,
+.drawer.drawer-right .drawertoggle {
+  padding: 0.15rem 0.75rem;
+}
+
 /*---------------------------------------
  * rules: Course page.
  --------------------------------------*/
+
+#page-header {
+  margin: 0.75rem auto;
+}
+
+#page.drawers .main-inner {
+  padding-top: 0.2rem;
+}
+
+.course-content .single-section.general-section {
+  margin-top: 0;
+}
+
 .activity-instance.d-flex {
   min-width: 25%;
 }
@@ -262,10 +414,57 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 
 .section_availability .availabilityinfo.isrestricted.isfullinfo,
 .activity-restrictions .availabilityinfo.isrestricted.isfullinfo {
+  min-width: 200px;
+  max-width: 50%;
+  top: -10px;
+  left: 50%;
+  transform: translate(-30%,-100%);
+  padding:10px 20px;
+  background-color: #ffd;
+  border-radius: 8px;
+  position: absolute;
+  z-index: 99999999;
+  box-sizing: border-box;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.5);
   display: none;
   text-align: left;
 }
 
+.topicgroup .hasinfo .activity-basis:hover .activity-restrictions .availabilityinfo.isrestricted.isfullinfo,
+.hasconditions .activity-basis:hover .activity-restrictions .availabilityinfo.isrestricted.isfullinfo {
+  display: block;
+  opacity: 1;
+}
+
+.course-section:hover .section_availability .availabilityinfo.isrestricted.isfullinfo {
+  display: block;
+  top: unset;
+  z-index: 0;
+  opacity: 1;
+}
+
+.topicgroup .hasinfo .activity-restrictions .availabilityinfo.isrestricted.isfullinfo::after,
+.hasconditions .activity-restrictions .availabilityinfo.isrestricted.isfullinfo::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -15px;
+  border-width: 15px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.section_availability.withrestrictions  .availabilityinfo.isrestricted.isfullinfo .description-inner {
+  text-align: left;
+}
+.activity-basis .course-description-item .isrestricted.isfullinfo .description-inner {
+    background-color: transparent;
+}
+
+.course-content  #section-0 {
+  padding-top: 0.2rem;
+}
 
 .activity-item .moove .activity-info {
   align-self: center;
@@ -278,11 +477,19 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
   text-align: right;
 }
 
+.activity-item.hiddenactivity {
+  background-color: $color-gray-10; //#f8f9fa;
+}
+
 .activity-basis .course-description-item .description-inner {
   font-size: 80%;
-  background-color: #f8f9fa;
+  background-color: $color-gray-5; //#f8f9fa;
   padding: 0 1.0rem;
   border-radius: 0.5rem;
+}
+
+.description .course-description-item {
+  background-color: $color-gray-5; //#f8f9fa;
 }
 
 .description .course-description-item:last-child {
@@ -310,20 +517,20 @@ span.unread {
 }
 
 .breadcrumb .breadcrumb-item a.type20 {
-  color: #f0ad4e; //to change afterwards XXX
+  color: $color-orange; //to change afterwards XXX #f49a0e #f08d2e
   font-weight: bolder;
-  font-size: larger;
+  font-size: medium;
 }
 
 
 .course-content .current::before {
-  border-left: #f0ad4e 8px solid;
+  border-left: $color-orange-80 8px solid;
   left: -12px;
 }
 
 .course-section.current .badge-primary {
   color: #1d2125;
-  background-color: #f0ad4e;
+  background-color: $color-orange-80;
 }
 
 .section .activity {
@@ -339,7 +546,7 @@ span.unread {
 }
 
 .activityiconcontainer {
-  height: 42px;
+  height: 36px;
 }
 
 .activity-item .bulkselect {
@@ -358,9 +565,58 @@ span.unread {
 }
 
 
+/*@media (min-width: 768px) */
+.path-admin #page-navbar.d-md-block {
+  max-width: 12.0rem;
+}
+
+.forumpost.unread .row.header {
+  background-color: $unread;
+  padding: 0.2rem 0.2rem;
+  border-radius: 0.25rem;
+}
+
+.path-course-view .unread,
+span.unread,
+.badge-secondary,
+.moodleoverflowpost.unread .row.header,
+.mod_moodleoverflow-label-unread {
+  background-color: $unread;
+  font-size: 80%;
+  font-weight: normal;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.badge .badge-pill .badge-warning {
+	background-color: #000066;
+}
+
+.badge-light {
+  color: $color-gray-dark; //#212529;
+  background-color: $color-red-10;    /* #e0eddc; #d9eee1  #e0eddc;  */
+}
+
+.path-mod .automatic-completion-conditions .badge {
+  mix-blend-mode: normal;
+}
+
+.path-mod .automatic-completion-conditions .badge.badge-light {
+  background-color: $color-red-10 !important;
+}
+
+.card-profile .btn-primary:visited {
+  border-color: initial;
+  background: initial;
+}
+
 /*---------------------------------------
  * rules: Course formats related.
  --------------------------------------*/
+
+.format-onetopic .header-actions-container .bulkEnable {
+  //display: none;
+}
 
 .format-onetopic .hastopictabs .nav-tabs .nav-link.active {
     background-color: #edf9ed;
@@ -420,9 +676,26 @@ span.unread {
 /*---------------------------------------
  * Gradebook
  --------------------------------------*/
+
+.tertiary-navigation .tertiary-navigation-selector .dropdown-toggle {
+  font-size: 1.2rem;
+    padding: 0 1.0rem;
+    background-color: $color-gray-5;
+    border-bottom: solid $color-blue 2px;
+}
+
+.path-grade-report-grader .gradeparent .highlightable.cell {
+  min-width: 120px;
+}
+
 .path-grade-report-grader .gradeparent .cell {
   padding: 0.20rem 0.25rem;
   vertical-align: middle;
+}
+
+.path-grade-report-grader .grade_icons, .path-grade-report-grader .category_grade_icons {
+  margin-top: 0;
+  float: left;
 }
 
 
@@ -439,7 +712,7 @@ span.unread {
           font-size: 1.2rem;
           padding-right: 6px;
           margin-left: -6px;
-          color: #ff9a00; /* ecastro ULPGC*/
+          color: $color-orange; /* ecastro ULPGC*/
       }
       /* Provide different, suitable Font Awesome icons for different Moodle blocks. */
       .block_recent_activity .card-title::before {
@@ -503,6 +776,208 @@ span.unread {
     }
 }
 
+.block.list_block .card-text.content  div.icon {
+  float: left;
+}
+
+.block.card .my-course-name .fa {
+  color: $color-orange;
+  font-size: x-small;
+  vertical-align: super;
+}
+
+.path-backup .mform .normal_setting {
+  padding: 0 !important;
+}
+
+.block_calendar_month .maincalendar .header {
+  font-size: 80%;
+}
+
+@media (min-width: 768px) {
+  section:not(#region-main) .block.block_calendar_month .maincalendar .calendarwrapper .current {
+    font-size: 90%;
+    font-stretch: condensed;
+    font-weight: 500;
+    font-variant: all-small-caps;
+  }
+}
+
+.calendar_filters ul li {
+  display: inline-block;
+}
+
+.calendar_filters ul li .eventname {
+  font-size: 80%;
+}
+.show > .btn-outline-secondary.dropdown-toggle {
+  color: #212529;
+}
+
+/*---------------------------------------
+ * Activity modules: Attendance.
+ --------------------------------------*/
+
+#page-mod-attendance-report .attendancereporttable {
+  margin-left: 0;
+}
+
+
+/*---------------------------------------
+ * Activity modules: Bigbluebuttonbn.
+ --------------------------------------*/
+
+#bigbluebuttonbn-room-view.d-flex {
+  display: block !important;
+}
+
+.path-mod-bigbluebuttonbn.yui3-skin-sam {
+  .yui3-datatable-data .btn-default {
+      @extend .btn-primary;
+  }
+
+  /*
+  YUI 3.17.2 (build 9c3c78e)
+  Copyright 2014 Yahoo! Inc. All rights reserved.
+  Licensed under the BSD License.
+  http://yuilibrary.com/license/
+  */
+
+  /* basic skin styles */
+
+  .yui3-datatable-paginator {
+    /*
+      background: white url(../../../../assets/skins/sam/sprite.png) repeat-x 0 0;
+      background-image: -webkit-linear-gradient(transparent 40%, hsla(0, 0%, 0%, 0.21));
+      background-image: -moz-linear-gradient(top, transparent 40%, hsla(0, 0%, 0%, 0.21));
+      background-image: -ms-linear-gradient(transparent 40%, hsla(0, 0%, 0%, 0.21));
+      background-image: -o-linear-gradient(transparent 40%, hsla(0, 0%, 0%, 0.21));
+      background-image: linear-gradient(transparent 40%, hsla(0, 0%, 0%, 0.21));
+      */
+      background: transparent;
+      background-color: rgba(0,0,0,.02);
+      border-color: #cbcbcb;
+  }
+
+
+  .yui3-datatable-table {
+      margin: 0;
+      padding: 0;
+      font-family: arial, sans-serif;
+      border-collapse: separate;
+      border-spacing: 0;
+      /* IE7- don't support border-spacing, but separate is needed for more
+      * reliable dimension calculation for scrollable's header width sync,
+      * and it doesn't hurt to have the declaration here.
+      */
+      /**border-collapse: collapse;*/
+      border: 1px solid #cbcbcb;
+  }
+
+  .yui3-datatable-caption {
+      color: #000;
+      font: italic 85%/1 arial, sans-serif;
+      padding: 1em 0;
+      text-align: center;
+  }
+
+  .yui3-datatable-cell,
+  .yui3-datatable-header {
+      border-left: 1px solid #cbcbcb;/*  inner column border */
+      border-width: 0 0 0 1px;
+      font-size: inherit;
+      margin: 0;
+      overflow: visible; /*to make ths where the title is really long work*/
+      padding: 4px 10px 4px 10px; /* cell padding */
+  }
+  .yui3-datatable-cell:first-child,
+  .yui3-datatable-first-header {
+      border-left-width: 0px;
+  }
+
+  .yui3-datatable-header {
+      /* header gradient */
+      /*
+      background: #fff url(../../../../assets/skins/sam/sprite.png) repeat-x 0 0;
+
+      background-image:-webkit-linear-gradient(transparent 40%, rgba(0,0,0,0.21));
+      background-image:-moz-linear-gradient(top,transparent 40%,rgba(0,0,0,0.21));
+      background-image:    -ms-linear-gradient(transparent 40%, rgba(0,0,0,0.21));
+      background-image:     -o-linear-gradient(transparent 40%, rgba(0,0,0,0.21));
+      background-image:        linear-gradient(transparent 40%, rgba(0,0,0,0.21));
+      */
+      /* Not using an IE gradient because it doesn't support color stops */
+
+      border-bottom: 3px solid #cbcbcb;
+      background: none;
+      background-color: rgba(0,0,0,.02);
+      color: #000;
+      font-weight: bold;
+      text-align: left;
+      text-shadow: none;
+      vertical-align: bottom;
+      white-space: nowrap;
+  }
+
+  /* bigbluebuttonbn resources */
+  .recording-thumbnail {
+      width: 72px;
+      height: 41px;
+  }
+
+  .recording-thumbnail:hover {
+      transform: scale(8.0); /* (200% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+      -moz-transform: scale(8.0); /* Firefox */
+      -webkit-transform: scale(8.0); /* Safari and Chrome */
+      -o-transform: scale(8.0); /* Opera */
+  }
+
+}
+
+/*---------------------------------------
+ * Activity modules: Dialogue.
+ --------------------------------------*/
+
+body.path-mod-dialogue ul.nav-tabs .btn-create {
+  font-size: large !important;
+  padding: 8px 12px !important;
+  border-color: $color-blue;
+}
+
+body.path-mod-dialogue #region-main .btn-create:hover,
+body.path-mod-dialogue #region-main .btn-create:focus,
+body.path-mod-dialogue #region-main .btn-create:active,
+body.path-mod-dialogue #region-main .btn-create.active {
+  background-color: $color-orange;
+  border-color: $color-orange;
+}
+
+body.path-mod-dialogue #region-main .btn-create.disabled,
+body.path-mod-dialogue #region-main .btn-create[disabled] {
+  @include opacity(0.5);
+  cursor:auto;
+}
+
+.path-mod-dialogue #region-main .btn-group  {
+  background-color: $gray-200;
+  border-radius: 4px;
+  margin-left: 0.25rem;
+}
+
+body.path-mod-dialogue #region-main .btn.btn-small.disabled {
+  background-color: #5cb85c;
+  color: #000;
+  font-weight: bold;
+  font-size: initial;
+}
+
+body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-main .badge-info {
+  background-color: #ffdb99; /* #3a87ad */
+  color: $color-gray-dark;
+  padding: 4px 9px;
+  font-weight: normal;
+}
+
 /*---------------------------------------
  * Activity modules: Forum.
  --------------------------------------*/
@@ -514,4 +989,266 @@ span.unread {
 
 #page-mod-forum-view .discussion-list .text-truncate {
   white-space: pre-wrap;
+}
+
+.path-mod-forum .forumpost .header.row {
+  border-bottom: 1px solid $gray-200;
+}
+
+.forum-post-container .forumpost .header.row .mb-3 {
+  margin-bottom: 0.25rem !important;
+}
+
+.path-mod-forum .forumpost .post-actions .btn {
+  padding: .25rem .75rem;
+  line-height: 1;
+  border: 1px solid #dee2e6;
+  border-radius: 1.5rem;
+  background-color: #f2f2f2;
+  margin-left: 0.25rem;
+}
+
+.badge-primary {
+  color: #000;
+  background-color: $unread;  /* #ffdb99 ; */
+}
+
+/*---------------------------------------
+ * Activity modules: Moodleoverflow.
+ --------------------------------------*/
+
+.path-mod-moodleoverflow .singleuserstats {
+  float: right;
+  //text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  background-color: transparent;
+  border: 1px solid #ced4da;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+}
+
+.moodleoverflowpost .attachments {
+  text-align: right;
+}
+
+.moodleoverflowpost .attachments img {
+  float: left;
+}
+
+.moodleoverflowpost .attachments a>img {
+  float: none;
+}
+
+.moodleoverflowdiscussion .moodleoverflow-gap-small,
+.moodleoverflowpost .answercell .post-info,
+.moodleoverflowpost .commentcell .post-info {
+  border-top: 1px solid $gray-200;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.moodleoverflowdiscussion .actions {
+    float: right;
+    margin-left: auto;
+}
+
+.moodleoverflowdiscussion .discussionmove .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.moodleoverflowheaderlist .discussion .icon {
+    width: 24px;
+}
+
+.moodleoverflowdiscussion .upper {
+    justify-content: center;
+}
+
+.moodleoverflowdiscussion .status {
+    flex-direction: column;
+    margin-left: 12px;
+    align-content: flex-start;
+}
+
+.moodleoverflowpost.unread .answercell .post-info,
+.moodleoverflowpost.unread .commentcell .post-info {
+  background-color: $unread;
+}
+
+.moodleoverflowpost .answercell .leftbox, .moodleoverflowpost .commentcell .leftbox {
+  margin-top: 0.25rem;
+}
+
+.moodleoverflowdiscussion {
+    line-height: 1.0;
+}
+
+.moodleoverflowpost.firstpost.starter,
+.moodleoverflowdiscussion:hover,
+.moodleoverflowpost.border:hover {
+    background-color: #fff8f3 !important;
+}
+
+.moodleoverflowaddnew {
+  margin-bottom: 0;
+}
+
+.moodleoverflowdiscussion .votes .votecount {
+  line-height: 0.75 !important;
+  font-size: unset;
+  margin: 0;
+}
+
+.moodleoverflowdiscussion .user-info {
+  font-size: smaller;
+}
+
+.moodleoverflowdiscussion .subject.mb-3 {
+  margin-bottom: 0.1rem !important;
+}
+
+
+.moodleoverflowdiscussion span.statuspromt {
+    color: #000;
+    font-size: 75%;
+    font-weight: normal;
+    margin: auto 1.0rem;
+    padding: 0.2rem 1.0rem;
+}
+
+
+.moodleoverflow-statistics-table .badge-warning {
+  color: inherit;
+  background-color: inherit;
+  font-weight: normal;
+}
+
+.moodleoverflowdiscussion .unread-bubble {
+  background: $unread;
+  font-size: smaller;
+  font-weight: normal;
+  color: #000;
+}
+
+.moodleoverflowdiscussion .questioner {
+  background-color: unset;
+}
+
+.moodleoverflowpost .questioner {
+  background-color: $unread;
+}
+
+.moodleoverflowdiscussion .questioner .user-details {
+  /*background-color: rgba(80, 168, 255, .1); */
+  padding: 0.3rem;
+  border-radius: 0.3rem;
+}
+
+.moodleoverflowdiscussion .status {
+  align-content: flex-start;
+  justify-content: center;
+}
+
+.moodleoverflowdiscussion .status .icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  margin-top: 6px;
+}
+
+.moodleoverflowpost .status .icon{
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.moodleoverflowpost.markedhelpful::before {
+  background: rgba(128,0,128,1);
+  width: 6px;
+}
+
+.moodleoverflowpost.markedsolution::before {
+  width: 6px;
+}
+
+.moodleoverflowpost.unread.markedsolution::before {
+  background: rgba(112, 160, 52, 1);
+}
+
+.icon.moodleoverflow-text-helpful {
+    color: rgba(128,0,128,1);
+}
+
+/*---------------------------------------
+ * Activity modules: Offlinequiz.
+ --------------------------------------*/
+
+.offlinequiz-view .fa-li {
+  line-height: 1;
+}
+
+/*---------------------------------------
+ * Activity modules: Quiz.
+ --------------------------------------*/
+
+.mod_quiz-edit-top-controls .timeselect {
+  margin-left: 0.5rem;
+}
+
+.mod_quiz-edit-top-controls .selectmultiplecommand.actions {
+  float: left;
+}
+
+.mod_quiz-edit-top-controls .btn-toolbar .selectmultiplecommandbuttons {
+  margin-top: 0.25rem;
+}
+
+#page-mod-quiz-edit .section .activity .actions .version-selection {
+  padding: 0 4px;
+  font-size: 80%;
+}
+
+
+/*---------------------------------------
+ * Activity modules: Tracker.
+ --------------------------------------*/
+
+
+/*---------------------------------------
+ * Activity modules: Unilabel.
+ --------------------------------------*/
+
+.unilabeltype-collapsed .unilabel-title  {
+  font-size: $h3-font-size;
+  font-weight: 500;
+}
+
+.unilabeltype-collapsed-dialog-button a {
+  display: inline-block;
+  font-family: $btn-font-family;
+  font-weight: $btn-font-weight;
+  color: #fff;
+  text-align: center;
+  text-decoration: if($link-decoration == none, null, none);
+  white-space: $btn-white-space;
+  vertical-align: middle;
+  user-select: none;
+  background-color: #0f47ad;
+  border: 1px solid transparent;
+  border-color: #0f47ad;
+  padding: 0.5rem 1rem;
+  font-size: $btn-font-size-lg;
+  line-height: $btn-line-height-lg;
+  border-radius: 0.3rem;
+  transition: $btn-transition;
+}
+
+.unilabel-content .accordion .card-header {
+  padding: 0.15rem 1.25rem;
+}
+.unilabel-content .accordion .card-header  button.btn-link.btn-block p {
+ margin-bottom: 0;
 }

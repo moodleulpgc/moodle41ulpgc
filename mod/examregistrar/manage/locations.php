@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
 require_capability('mod/examregistrar:managelocations',$context);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id'=>$cm->id,'edit'=>$edit));
-
 /// filter form parameters
 
 $sel_locationtype  = optional_param('slocationtype', '', PARAM_ALPHANUMEXT);
@@ -41,7 +39,7 @@ $params = array('id'=>$cm->id, 'edit' => $edit,
                       'sparent' => $sel_parent,
                       );
 
-$manageurl = new moodle_url($baseurl, $params);
+$manageurl = new moodle_url($baseurl, array_filter($params));
 
 /// Print heading & filter
 if (!$table->is_downloading()) {

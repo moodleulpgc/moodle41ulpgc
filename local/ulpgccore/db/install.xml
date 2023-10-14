@@ -12,6 +12,7 @@
         <FIELD NAME="credits" TYPE="number" LENGTH="5" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="2"/>
         <FIELD NAME="department" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="ctype" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="cstatus" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

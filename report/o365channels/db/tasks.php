@@ -23,15 +23,15 @@
 
 $tasks = [
 
-//     [
-//         'classname' => 'report_o365channels\task\teamschannelsynch',
-//         'blocking' => 0,
-//         'minute' => 0,
-//         'hour' => '*/2',
-//         'day' => '*',
-//         'dayofweek' => '*',
-//         'month' => '*'
-//     ],
+    [
+        'classname' => 'report_o365channels\task\teamschannelsynch',
+        'blocking' => 0,
+        'minute' => 0,
+        'hour' => '*/2',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
 
-    
+
 ];

@@ -91,9 +91,30 @@ return (format.indexOf ("%FILE") >= 0 ? JU.PT.rep (format, "%FILE", id) : format
 }, "~S,~S,~S");
 c$.fixProtocol = Clazz.defineMethod (c$, "fixProtocol", 
 function (name) {
-var newname = (name == null ? null : name.indexOf ("http://www.rcsb.org/pdb/files/") == 0 ? JV.JC.resolveDataBase (name.indexOf ("/ligand/") >= 0 ? "ligand" : "pdb", name.substring (name.lastIndexOf ("/") + 1), null) : name.indexOf ("http://www.ebi") == 0 || name.indexOf ("http://pubchem") == 0 || name.indexOf ("http://cactus") == 0 || name.indexOf ("http://www.materialsproject") == 0 ? "https://" + name.substring (7) : name);
+var isHttp = (name != null && name.indexOf ("http") >= 0);
+var newname = (name == null || !isHttp ? name : name.indexOf ("http://www.rcsb.org/pdb/files/") == 0 ? JV.JC.resolveDataBase (name.indexOf ("/ligand/") >= 0 ? "ligand" : "pdb", name.substring (name.lastIndexOf ("/") + 1), null) : name.indexOf ("http://www.ebi") == 0 || name.indexOf ("http://pubchem") == 0 || name.indexOf ("http://cactus") == 0 || name.indexOf ("http://www.materialsproject") == 0 ? "https://" + name.substring (7) : name.indexOf ("optimade") > 0 ? JV.JC.fixOptimadeCall (name) : name);
 if (newname !== name) JU.Logger.info ("JC.fixProtocol " + name + " --> " + newname);
 return newname;
+}, "~S");
+c$.fixOptimadeCall = Clazz.defineMethod (c$, "fixOptimadeCall", 
+function (url) {
+var pt = url.indexOf ("response_fields=") + 16;
+var a = ",chemical_formula_descriptive,dimension_types,lattice_vectors,cartesian_site_positions,species_at_sites,species,";
+if (pt < 16) {
+var ptQ = url.indexOf ("?");
+url += (ptQ < 0 ? "?" : "&") + "response_fields=" + a.substring (1, a.length - 1);
+} else {
+var fields = "," + url.substring (pt, (url + "&").indexOf ('&', pt)) + ",";
+var flen = fields.length;
+for (var i = 0, b = 0; i >= 0; i = b) {
+b = a.indexOf (',', i + 1);
+if (b < 0) break;
+var k = a.substring (i, b + 1);
+if (fields.indexOf (k) < 0) {
+fields += k.substring (1);
+}}
+url = url.substring (0, pt) + fields.substring (1, fields.length - 1) + url.substring (pt + flen - 2);
+}return url;
 }, "~S");
 c$.embedScript = Clazz.defineMethod (c$, "embedScript", 
 function (s) {
@@ -266,6 +287,10 @@ if (type.indexOf ("a") < 0) i ^= 4;
 if (type.indexOf ("t") > 0) i |= 16;
 }return i;
 }, "~S");
+c$.getBoolName = Clazz.defineMethod (c$, "getBoolName", 
+function (g) {
+return JV.JC.globalBooleans[g];
+}, "~N");
 Clazz.defineStatics (c$,
 "NBO_TYPES", ";AO;;;;PNAO;;NAO;;;PNHO;;NHO;;;PNBO;;NBO;;;PNLMO;NLMO;;MO;;;;NO;;;;;;;;;;PRNBO;RNBO;;;;;;;;",
 "CIP_CHIRALITY_UNKNOWN", 0,
@@ -292,13 +317,14 @@ Clazz.defineStatics (c$,
 "PDB_ANNOTATIONS", ";dssr;rna3d;dom;val;",
 "CACTUS_FILE_TYPES", ";alc;cdxml;cerius;charmm;cif;cml;ctx;gjf;gromacs;hyperchem;jme;maestro;mol;mol2;sybyl2;mrv;pdb;sdf;sdf3000;sln;smiles;xyz",
 "defaultMacroDirectory", "https://chemapps.stolaf.edu/jmol/macros",
-"databaseArray",  Clazz.newArray (-1, ["aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary", "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary", "ams", "'http://rruff.geo.arizona.edu/AMS/viewJmol.php?'+(0+'%file'==0? 'mineral':('%file'.length==7? 'amcsd':'id'))+'=%file&action=showcif#_DOCACHE_'", "dssr", "http://dssr-jmol.x3dna.org/report.php?id=%FILE&opts=--json=ebi", "dssrModel", "http://dssr-jmol.x3dna.org/report.php?POST?opts=--json=ebi&model=", "iucr", "http://scripts.iucr.org/cgi-bin/sendcif_yard?%FILE", "cod", "http://www.crystallography.net/cod/cif/%c1/%c2%c3/%c4%c5/%FILE.cif", "nmr", "https://www.nmrdb.org/new_predictor?POST?molfile=", "nmrdb", "https://www.nmrdb.org/service/predictor?POST?molfile=", "nmrdb13", "https://www.nmrdb.org/service/jsmol13c?POST?molfile=", "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif", "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE", "mmtf", "https://mmtf.rcsb.org/v1.0/full/%FILE", "chebi", "https://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%", "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif", "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", "nci", "https://cactus.nci.nih.gov/chemical/structure", "pdb", "https://files.rcsb.org/download/%FILE.pdb", "pdb0", "https://files.rcsb.org/download/%FILE.pdb", "pdbe", "https://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif", "pdbe2", "https://www.ebi.ac.uk/pdbe/static/entry/%FILE_updated.cif", "pubchem", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d", "map", "https://www.ebi.ac.uk/pdbe/api/%TYPE/%FILE?pretty=false&metadata=true", "pdbemap", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4", "pdbemapdiff", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4", "pdbemapserver", "https://www.ebi.ac.uk/pdbe/densities/x-ray/%file/box/0,0,0/0,0,0?space=cartesian&encoding=bcif", "pdbemapdiffserver", "https://www.ebi.ac.uk/pdbe/densities/x-ray/%file/box/0,0,0/0,0,0?space=cartesian&encoding=bcif&diff=1", "emdbmap", "http://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-%file/map/emd_%file.map.gz", "emdbquery", "https://www.ebi.ac.uk/emdb/api/search/fitted_pdbs:%file?fl=emdb_id,map_contour_level_value&wt=csv", "resolverResolver", "https://chemapps.stolaf.edu/resolver"]),
+"databaseArray",  Clazz.newArray (-1, ["aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary", "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary", "ams", "'http://rruff.geo.arizona.edu/AMS/viewJmol.php?'+(0+'%file'==0? 'mineral':('%file'.length==7? 'amcsd':'id'))+'=%file&action=showcif#_DOCACHE_'", "dssr", "http://dssr-jmol.x3dna.org/report.php?id=%FILE&opts=--json=ebi", "dssrModel", "http://dssr-jmol.x3dna.org/report.php?POST?opts=--json=ebi&model=", "iucr", "http://scripts.iucr.org/cgi-bin/sendcif_yard?%FILE", "cod", "http://www.crystallography.net/cod/cif/%c1/%c2%c3/%c4%c5/%FILE.cif", "nmr", "https://www.nmrdb.org/new_predictor?POST?molfile=", "nmrdb", "https://www.nmrdb.org/service/predictor?POST?molfile=", "nmrdb13", "https://www.nmrdb.org/service/jsmol13c?POST?molfile=", "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif", "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE", "mmtf", "https://mmtf.rcsb.org/v1.0/full/%FILE", "chebi", "https://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%", "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif", "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", "nci", "https://cactus.nci.nih.gov/chemical/structure/", "pdb", "https://files.rcsb.org/download/%FILE.pdb", "pdb0", "https://files.rcsb.org/download/%FILE.pdb", "pdbe", "https://www.ebi.ac.uk/pdbe/entry-files/download/%FILE.cif", "pdbe2", "https://www.ebi.ac.uk/pdbe/static/entry/%FILE_updated.cif", "pubchem", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d", "map", "https://www.ebi.ac.uk/pdbe/api/%TYPE/%FILE?pretty=false&metadata=true", "pdbemap", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4", "pdbemapdiff", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4", "pdbemapserver", "https://www.ebi.ac.uk/pdbe/densities/x-ray/%file/box/0,0,0/0,0,0?detail=6&space=cartesian&encoding=bcif", "pdbemapdiffserver", "https://www.ebi.ac.uk/pdbe/densities/x-ray/%file/box/0,0,0/0,0,0?detail=6&space=cartesian&encoding=bcif&diff=1", "emdbmap", "https://www.ebi.ac.uk/pdbe/densities/emd/emd-%file/cell?detail=6&space=cartesian&encoding=bcif", "emdbquery", "https://www.ebi.ac.uk/emdb/api/search/fitted_pdbs:%file?fl=emdb_id,map_contour_level_value&wt=csv", "emdbmapserver", "https://www.ebi.ac.uk/pdbe/densities/emd/emd-%file/box/0,0,0/0,0,0?detail=6&space=cartesian&encoding=bcif", "xxxresolverResolver", "https://chemapps.stolaf.edu/resolver", "smiles2d", "https://cirx.chemicalcreatures.com/chemical/structure/%FILE/file?format=sdf&get3d=false", "smiles3d", "https://cirx.chemicalcreatures.com/chemical/structure/%FILE/file?format=sdf&get3d=true"]),
 "legacyResolver", "cactus.nci.nih.gov/chemical/structure");
 c$.databases = c$.prototype.databases =  new java.util.Hashtable ();
 {
 for (var i = 0; i < JV.JC.databaseArray.length; i += 2) JV.JC.databases.put (JV.JC.databaseArray[i].toLowerCase (), JV.JC.databaseArray[i + 1]);
 
 }Clazz.defineStatics (c$,
+"defaultOptimadeFieldsStr", ",chemical_formula_descriptive,dimension_types,lattice_vectors,cartesian_site_positions,species_at_sites,species,",
 "macros",  Clazz.newArray (-1, ["aflow", "https://chemapps.stolaf.edu/jmol/macros/AFLOW.spt", "AFLOW macros", "bz", "https://chemapps.stolaf.edu/jmol/macros/bz.spt", "Brillouin Zone/Wigner-Seitz macros", "topology", "https://chemapps.stolaf.edu/jmol/macros/topology.spt", "Topology CIF macros", "topond", "https://chemapps.stolaf.edu/jmol/macros/topond.spt", "CRYSTAL/TOPOND macros", "crystal", "https://chemapps.stolaf.edu/jmol/macros/crystal.spt", "CRYSTAL macros"]),
 "copyright", "(C) 2015 Jmol Development",
 "version", null,
@@ -354,8 +380,15 @@ JV.JC.versionInt = v;
 "STATE_VERSION_STAMP", "# Jmol state version ",
 "EMBEDDED_SCRIPT_TAG", "**** Jmol Embedded Script ****",
 "NOTE_SCRIPT_FILE", "NOTE: file recognized as a script file: ",
-"SCRIPT_EDITOR_IGNORE", "\1## EDITOR_IGNORE ##",
-"REPAINT_IGNORE", "\1## REPAINT_IGNORE ##",
+"SCRIPT_EXT", "\1##");
+c$.SCRIPT_STEP = c$.prototype.SCRIPT_STEP = "\u0001##SCRIPT_STEP";
+c$.SCRIPT_START = c$.prototype.SCRIPT_START = "\u0001##SCRIPT_START";
+c$.SCRIPT_NOENDCHECK = c$.prototype.SCRIPT_NOENDCHECK = "\u0001##NOENDCHECK";
+c$.SCRIPT_ISEDITOR = c$.prototype.SCRIPT_ISEDITOR = "\u0001## ISEDITOR";
+c$.SCRIPT_EDITOR_IGNORE = c$.prototype.SCRIPT_EDITOR_IGNORE = "\u0001## EDITOR_IGNORE ##";
+c$.REPAINT_IGNORE = c$.prototype.REPAINT_IGNORE = "\u0001## REPAINT_IGNORE ##";
+Clazz.defineStatics (c$,
+"SCRIPT_GUI", "; ## GUI ##",
 "LOAD_ATOM_DATA_TYPES", ";xyz;vxyz;vibration;temperature;occupancy;partialcharge;",
 "radiansPerDegree", (0.017453292519943295),
 "allowedQuaternionFrames", "RC;RP;a;b;c;n;p;q;x;",
@@ -472,7 +505,7 @@ Clazz.defineStatics (c$,
 "GROUPID_ION_MIN", 46,
 "GROUPID_ION_MAX", 48,
 "predefinedVariable",  Clazz.newArray (-1, ["@_1H _H & !(_2H,_3H)", "@_12C _C & !(_13C,_14C)", "@_14N _N & !(_15N)", "@solvent water, (_g>=45 & _g<48)", "@ligand _g=0|!(_g<46,protein,nucleic,water)", "@turn structure=1", "@sheet structure=2", "@helix structure=3", "@helix310 substructure=7", "@helixalpha substructure=8", "@helixpi substructure=9", "@bulges within(dssr,'bulges')", "@coaxStacks within(dssr,'coaxStacks')", "@hairpins within(dssr,'hairpins')", "@hbonds within(dssr,'hbonds')", "@helices within(dssr,'helices')", "@iloops within(dssr,'iloops')", "@isoCanonPairs within(dssr,'isoCanonPairs')", "@junctions within(dssr,'junctions')", "@kissingLoops within(dssr,'kissingLoops')", "@multiplets within(dssr,'multiplets')", "@nonStack within(dssr,'nonStack')", "@nts within(dssr,'nts')", "@pairs within(dssr,'pairs')", "@ssSegments within(dssr,'ssSegments')", "@stacks within(dssr,'stacks')", "@stems within(dssr,'stems')"]),
-"predefinedStatic",  Clazz.newArray (-1, ["@amino _g>0 & _g<=23", "@acidic asp,glu", "@basic arg,his,lys", "@charged acidic,basic", "@negative acidic", "@positive basic", "@neutral amino&!(acidic,basic)", "@polar amino&!hydrophobic", "@peptide protein&within(chain,monomer>1)&!within(chain,monomer>12)", "@cyclic his,phe,pro,trp,tyr", "@acyclic amino&!cyclic", "@aliphatic ala,gly,ile,leu,val", "@aromatic his,phe,trp,tyr", "@cystine within(group,(cys,cyx)&atomname=sg&connected((cys,cyx)&atomname=sg))", "@buried ala,cys,ile,leu,met,phe,trp,val", "@surface amino&!buried", "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val", "@mainchain backbone", "@small ala,gly,ser", "@medium asn,asp,cys,pro,thr,val", "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr", "@c nucleic & ([C] or [DC] or within(group,_a=42))", "@g nucleic & ([G] or [DG] or within(group,_a=43))", "@cg c,g", "@a nucleic & ([A] or [DA] or within(group,_a=44))", "@t nucleic & ([T] or [DT] or within(group,_a=45 | _a=49))", "@at a,t", "@i nucleic & ([I] or [DI] or within(group,_a=46) & !g)", "@u nucleic & ([U] or [DU] or within(group,_a=47) & !t)", "@tu nucleic & within(group,_a=48)", "@ions _g>=46&_g<48", "@alpha _a=2", "@_bb protein&(_a>=1&_a<6|_a=64) | nucleic&(_a>=6&_a<14|_a>=73&&_a<=79||_a==99||_a=100)", "@backbone _bb | _H && connected(single, _bb)", "@spine protein&_a>=1&_a<4|nucleic&(_a>=6&_a<11|_a=13)", "@sidechain (protein,nucleic) & !backbone", "@base nucleic & !backbone", "@dynamic_flatring search('[a]')", "@nonmetal _H,_He,_B,_C,_N,_O,_F,_Ne,_Si,_P,_S,_Cl,_Ar,_As,_Se,_Br,_Kr,_Te,_I,_Xe,_At,_Rn", "@metal !nonmetal", "@alkaliMetal _Li,_Na,_K,_Rb,_Cs,_Fr", "@alkalineEarth _Be,_Mg,_Ca,_Sr,_Ba,_Ra", "@nobleGas _He,_Ne,_Ar,_Kr,_Xe,_Rn", "@metalloid _B,_Si,_Ge,_As,_Sb,_Te", "@transitionMetal elemno>=21&elemno<=30|elemno=57|elemno=89|elemno>=39&elemno<=48|elemno>=72&elemno<=80|elemno>=104&elemno<=112", "@lanthanide elemno>57&elemno<=71", "@actinide elemno>89&elemno<=103"]),
+"predefinedStatic",  Clazz.newArray (-1, ["@amino _g>0 & _g<=23", "@acidic asp,glu", "@basic arg,his,lys", "@charged acidic,basic", "@negative acidic", "@positive basic", "@neutral amino&!(acidic,basic)", "@polar amino&!hydrophobic", "@peptide protein&within(chain,monomer>1)&!within(chain,monomer>12)", "@cyclic his,phe,pro,trp,tyr", "@acyclic amino&!cyclic", "@aliphatic ala,gly,ile,leu,val", "@aromatic his,phe,trp,tyr", "@cystine within(group,(cys,cyx)&atomname=sg&connected((cys,cyx)&atomname=sg))", "@buried ala,cys,ile,leu,met,phe,trp,val", "@surface amino&!buried", "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val", "@mainchain backbone", "@small ala,gly,ser", "@medium asn,asp,cys,pro,thr,val", "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr", "@c nucleic & ([C] or [DC] or within(group,_a=42))", "@g nucleic & ([G] or [DG] or within(group,_a=43))", "@cg c,g", "@a nucleic & ([A] or [DA] or within(group,_a=44))", "@t nucleic & ([T] or [DT] or within(group,_a=45 | _a=49))", "@at a,t", "@i nucleic & ([I] or [DI] or within(group,_a=46) & !g)", "@u nucleic & ([U] or [DU] or within(group,_a=47) & !t)", "@tu nucleic & within(group,_a=48)", "@ions _g>=46&_g<48", "@alpha _a=2", "@_bb protein&(_a>=1&_a<6|_a=64) | nucleic&(_a>=6&_a<14|_a>=73&&_a<=79||_a==99||_a=100)", "@backbone _bb | _H && connected(single, _bb)", "@spine protein&_a>=1&_a<4|nucleic&(_a>=6&_a<11|_a=13)", "@sidechain (protein,nucleic) & !backbone", "@base nucleic & !backbone", "@dynamic_flatring search('[a]')", "@nonmetal _H,_He,_B,_C,_N,_O,_F,_Ne,_Si,_P,_S,_Cl,_Ar,_As,_Se,_Br,_Kr,_Te,_I,_Xe,_At,_Rn", "@metal !nonmetal && !_Xx", "@alkaliMetal _Li,_Na,_K,_Rb,_Cs,_Fr", "@alkalineEarth _Be,_Mg,_Ca,_Sr,_Ba,_Ra", "@nobleGas _He,_Ne,_Ar,_Kr,_Xe,_Rn", "@metalloid _B,_Si,_Ge,_As,_Sb,_Te", "@transitionMetal elemno>=21&elemno<=30|elemno=57|elemno=89|elemno>=39&elemno<=48|elemno>=72&elemno<=80|elemno>=104&elemno<=112", "@lanthanide elemno>57&elemno<=71", "@actinide elemno>89&elemno<=103"]),
 "MODELKIT_ZAP_STRING", "5\n\nC 0 0 0\nH .63 .63 .63\nH -.63 -.63 .63\nH -.63 .63 -.63\nH .63 -.63 -.63",
 "MODELKIT_ZAP_TITLE", "Jmol Model Kit",
 "ZAP_TITLE", "zapped",
@@ -481,6 +514,7 @@ Clazz.defineStatics (c$,
 "DEFAULT_FONTSTYLE", "Plain",
 "MEASURE_DEFAULT_FONTSIZE", 18,
 "AXES_DEFAULT_FONTSIZE", 16,
+"DRAW_DEFAULT_FONTSIZE", 16,
 "SHAPE_BALLS", 0,
 "SHAPE_STICKS", 1,
 "SHAPE_HSTICKS", 2,
@@ -599,6 +633,7 @@ c$.IMAGE_OR_SCENE = c$.prototype.IMAGE_OR_SCENE = ";jpg;jpeg;jpg64;jpeg64;gif;gi
 "SMILES_GEN_TOPOLOGY", 0x00004000,
 "SMILES_GEN_POLYHEDRAL", 0x00010000,
 "SMILES_GEN_ATOM_COMMENT", 0x00020000,
+"SMILES_GEN_NO_BRANCHES", 0x00040000,
 "SMILES_GEN_BIO", 0x00100000,
 "SMILES_GEN_BIO_ALLOW_UNMATCHED_RINGS", 0x00300000,
 "SMILES_GEN_BIO_COV_CROSSLINK", 0x00500000,
@@ -626,5 +661,17 @@ c$.IMAGE_OR_SCENE = c$.prototype.IMAGE_OR_SCENE = ";jpg;jpeg;jpg64;jpeg64;gif;gi
 "UNITID_ATOM", 4,
 "UNITID_INSCODE", 8,
 "UNITID_TRIM", 16,
-"DEFAULT_DRAG_DROP_SCRIPT", "zap; load SYNC \"%FILE\";if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible && cartoons > 0}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}");
+"DEFAULT_DRAG_DROP_SCRIPT", "zap; load SYNC \"%FILE\";if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible && cartoons > 0}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}",
+"UC_TOLERANCE2", 1.96E-6,
+"globalBooleans",  Clazz.newArray (-1, ["someModelsHaveFractionalCoordinates", "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB", "someModelsHaveDomains", "someModelsHaveValidations", "isSupercell", "someModelsHaveAromaticBonds", "someModelsAreModulated"]),
+"GLOBAL_FRACTCOORD", 0,
+"GLOBAL_SYMMETRY", 1,
+"GLOBAL_UNITCELLS", 2,
+"GLOBAL_CONECT", 3,
+"GLOBAL_ISPDB", 4,
+"GLOBAL_DOMAINS", 5,
+"GLOBAL_VALIDATIONS", 6,
+"GLOBAL_SUPERCELL", 7,
+"GLOBAL_AROMATICBONDS", 8,
+"GLOBAL_MODULATED", 9);
 });

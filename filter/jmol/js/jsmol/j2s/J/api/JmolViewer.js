@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.api");
-Clazz.load (null, "J.api.JmolViewer", ["java.lang.Boolean", "java.util.Hashtable"], function () {
+Clazz.load (null, "J.api.JmolViewer", ["java.lang.Boolean", "java.util.Hashtable", "JV.JC"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.menuStructure = null;
 this.apiPlatform = null;
@@ -34,6 +34,10 @@ this.getProperty ("DATA_API", "getAppConsole", console);
 c$.getJmolVersion = Clazz.defineMethod (c$, "getJmolVersion", 
 function () {
 return JV.Viewer.getJmolVersion ();
+});
+c$.getJmolVersionNoDate = Clazz.defineMethod (c$, "getJmolVersionNoDate", 
+function () {
+return JV.JC.version;
 });
 Clazz.defineMethod (c$, "openReader", 
 function (fullPathName, reader) {

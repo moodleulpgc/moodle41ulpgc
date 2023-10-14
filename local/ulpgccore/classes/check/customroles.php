@@ -86,7 +86,7 @@ class customroles extends check {
         
         $missing = [];
         foreach($expectedroles as $role) {
-            if(!in_array($role, $$roles)) {
+            if(!in_array($role, $roles)) {
                 $status  = result::ERROR;
                 $summary = get_string('check_customroles_missing', 'local_ulpgccore');
                 $missing[] = $role;

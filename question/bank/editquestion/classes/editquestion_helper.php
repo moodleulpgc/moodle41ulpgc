@@ -109,7 +109,7 @@ class editquestion_helper {
         $statuslist = [];
         $statuslist[question_version_status::QUESTION_STATUS_READY] = get_string('questionstatusready', 'qbank_editquestion');
         $statuslist[question_version_status::QUESTION_STATUS_DRAFT] = get_string('questionstatusdraft', 'qbank_editquestion');
-        //$statuslist[question_version_status::QUESTION_STATUS_HIDDEN] = get_string('questionstatushidden', 'qbank_editquestion'); //ecastro ULPGC
+        $statuslist[question_version_status::QUESTION_STATUS_HIDDEN] = get_string('questionstatushidden', 'qbank_editquestion'); //ecastro ULPGC to restore use of hidden questions (TF)
         return $statuslist;
     }
 

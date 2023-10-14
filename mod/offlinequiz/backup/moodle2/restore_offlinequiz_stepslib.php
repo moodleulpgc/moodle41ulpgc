@@ -74,8 +74,6 @@ class restore_offlinequiz_activity_structure_step extends restore_questions_acti
         $groupquestion = new restore_path_element('offlinequiz_groupquestion',
              '/activity/offlinequiz/groups/group/groupquestions/groupquestion');
         $paths[] = $groupquestion;
-
-        assert($this->task instanceof restore_offlinequiz_activity_task);
         if ($this->task->get_old_moduleversion() >= 2022071500) {
             $this->add_question_references($groupquestion, $paths);
         }
@@ -107,12 +105,8 @@ class restore_offlinequiz_activity_structure_step extends restore_questions_acti
         global $DB;
         $groupvariable = $data["group_response"]["group_variable"];
         $this->restore_question_attempt_step_worker($data, 'group_');
-        $oldquestionid = $DB->get_field('question_attempts',
-                                        'questionid',
-                                        array('id' => $this->elementsoldid["group_question_attempt"]));
-        $newquestionid = $DB->get_field('question_attempts',
-                                        'questionid',
-                                        array('id' => $this->elementsnewid["group_question_attempt"]));
+        $oldquestionid = $DB->get_field('question_attempts', 'questionid', array('id' => $this->elementsoldid["group_question_attempt"]));
+        $newquestionid = $DB->get_field('question_attempts', 'questionid', array('id' => $this->elementsnewid["group_question_attempt"]));
         if ($oldquestionid == $newquestionid) { // Duplicate.
             $stepid = $DB->get_field('question_attempt_steps',
                                 'id',
@@ -196,6 +190,7 @@ class restore_offlinequiz_activity_structure_step extends restore_questions_acti
         global $DB;
 
         $data = (object) $data;
+        $oldid = $data->id;
 
         // Backward compatibility for old field names prior to Moodle 2.8.5.
         if (isset($data->usageslot) && !isset($data->slot)) {
@@ -210,26 +205,18 @@ class restore_offlinequiz_activity_structure_step extends restore_questions_acti
         if ($newid = $this->get_mappingid('question', $data->questionid)) {
             $data->questionid = $newid;
         }
-
         $newitemid = $DB->insert_record('offlinequiz_group_questions', $data);
 
-        if ($newitemid && !$DB->get_record('question_references',
-                                        ['component' => 'mod_offlinequiz', 'questionarea' => 'slot', 'itemid' => $newitemid]
-                                )) {
-
-            assert($this->task instanceof restore_offlinequiz_activity_task);
+        if ($this->task->get_old_moduleversion() < 2022071500 || $newid == false) {
+            $data = (object) $data;
             $data->usingcontextid = $this->task->get_contextid();
             $data->itemid = $newitemid;
             $this->get_new_parentid('offlinequiz_group_question');
             $data->component = 'mod_offlinequiz';
             $data->questionarea = 'slot';
             // Fill in the selected version form question_version.
-            if ($entry = $DB->get_record('question_versions',
-                                        array('questionid' => $data->questionid),
-                                        'questionbankentryid,version'
-                                        )) {
-                $data->questionbankentryid = $entry->questionbankentryid;
-                $data->version = $entry->version;
+            if ($entry = $DB->get_field('question_versions', 'questionbankentryid', array('questionid' => $data->questionid))) {
+                $data->questionbankentryid = $entry;
             }
             $DB->insert_record('question_references', $data);
         }

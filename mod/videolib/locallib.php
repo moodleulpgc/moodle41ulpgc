@@ -170,7 +170,7 @@ function videolib_get_variable_values($videolib, $cm, $course, $config) {
         $values['userlastname']    = $USER->lastname;
         $values['userfullname']    = fullname($USER);
         $values['useremail']       = $USER->email;
-        $values['usericq']         = $USER->icq;
+        //$values['usericq']         = $USER->icq;
         $values['userphone1']      = $USER->phone1;
         $values['userphone2']      = $USER->phone2;
         $values['userinstitution'] = $USER->institution;
@@ -179,7 +179,7 @@ function videolib_get_variable_values($videolib, $cm, $course, $config) {
         $values['usercity']        = $USER->city;
         $now = new DateTime('now', core_date::get_user_timezone_object());
         $values['usertimezone']    = $now->getOffset() / 3600.0; // Value in hours for BC.
-        $values['userurl']         = $USER->url;
+        //$values['userurl']         = $USER->url;
     }
 
     // weak imitation of Single-Sign-On, for backwards compatibility only
@@ -241,19 +241,6 @@ function videolib_get_encrypted_parameter($videolib, $config) {
         }
     }
     return md5(getremoteaddr().$config->secretphrase);
-}
-
-/**
- * 
- * @param object $videolib
- * @return plugin videolibsource class subtype
- */
-function videolib_get_source_plugin($videolib, $parameters = null) {
-    global $CFG;
-    include_once($CFG->dirroot.'/mod/videolib/source/'.$videolib->source.'/source.php');
-    $classname = 'videolibsource_'.$videolib->source;
-    
-    return new $classname($videolib, $parameters);
 }
 
 

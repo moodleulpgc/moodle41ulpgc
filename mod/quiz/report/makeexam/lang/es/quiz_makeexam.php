@@ -129,9 +129,6 @@ $string['tags'] = 'Etiquetas: ';
 $string['clear_confirm'] = 'Ha solicitado VACIAR las lista de preguntas de este cuestionario<br />
 
 ¿Quiere continuar?  ';
-$string['copyold_confirm'] = 'Ha solicitado COPIAR las preguntas de otra asignatura<br />
-
-¿Quiere continuar?  ';
 $string['submit_confirm'] = 'Ha solicitado Enviar al Registro la versión {$a->num}, {$a->name} <br />
 correspondiente al Examen {$a->exam} <br />
 
@@ -156,6 +153,7 @@ $string['tagremove'] = 'Eliminar cualquier validación por "Tags"';
 $string['taginvalidationmsg'] = 'Esta pregunta contiene etiquetas oficiales de revisión por la Junta de Evaluación. <br />
 Si edita o cambia algún elemento o usa el botón de "Guardar cambios" al final de la página, dichas etiquetas serán eliminadas.';
 $string['clearattempts'] = 'Reiniciar cuestionario';
+$string['delexistingattempts'] = 'Existen intentos del cuestionario por usuarios. Las preguntas no pueden ser eliminadas.';
 $string['continueattempt'] = 'Continuar versión previa';
 $string['validquestions'] = 'Tipos de preguntas no supervisados';
 $string['configvalidquestions'] = 'Estos tipos de preguntas no generan un aviso cuando se usan en un Examen.
@@ -174,14 +172,6 @@ $string['setcapabilities_help'] = 'Los permisos adicionales, extra, que serán m
 $string['assigncapabilities'] = 'Acción sobre permisos';
 $string['assigncapabilities_help'] = 'Indicar si los permisos adicionales van a ser otorgados o retirados para los roles relevantes.';
 $string['permissionsset'] = 'Modificados {$a->caps} permisos en {$a->roles} roles de {$a->count} asignaturas.';
-$string['copyold'] = 'Copiar preguntas antiguas';
-$string['copyoldquestions'] = 'Copiar preguntas de aplicación antigua';
-$string['copysource'] = 'Código de asignatura de origen';
-$string['copysource_help'] = 'El código de la asignatura origen a la que estaban asociadas las preguntas.
-
-Si se deja en cualquiera se copiarán TODAS las preguntas de todas las asignaturas.';
-$string['copystatus'] = 'Estado del campo questionid';
-$string['copystatus_help'] = 'Si se ajusta en " = 0 " se evitan duplicados de todas las preguntas ';
 $string['unsend'] = 'Revertir a estado de No Enviado';
 $string['unsend_confirm'] = 'Ha solicitado Revertir a NO Enviado la versión {$a->num}, {$a->name} <br />
 correspondiente al Examen {$a->exam} <br />

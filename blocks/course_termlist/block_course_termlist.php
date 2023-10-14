@@ -486,7 +486,7 @@ class block_course_termlist extends block_base {
             $ishidden = ($course->hidecourse == false) ? '' : ' ctl-hidden '; 
             $output .= '<div class="hidecoursediv ctl-hidecourse-'.$course->id.$ishidden.'">';
         }
-        
+
         // Start filter by term div - later we use this div to filter the course.
         if ($this->config->termcoursefilter == true && $this->param_manage == 0) {
             // Show course if it is visible according to the term course filter.
@@ -508,24 +508,23 @@ class block_course_termlist extends block_base {
             $ishidden = ($course->toplevelcategorycoursefiltered == false) ? '' : ' ctl-hidden ';   
             $output .= '<div class="toplevelcategorydiv ctl-toplevelcategory-'.$course->toplevelcategoryid.$ishidden.'">';
         }
-        
+
         // Start standard course overview coursebox.
         $output .= $OUTPUT->container_start('coursebox');
-        
+
         $output .= $this->print_showhide_icons($course->id);
 
-      
         // Get course attributes for use with course link.
         $attributes = array('title' => format_string($course->fullname), 'class' => 'my-course-name'  );
         if (empty($course->visible)) {
             $attributes['class'] .= ' dimmed ';
         }
-                
+
         $coursename = $this->config->showshortname ? $course->shortname.' - '.$course->fullname : $course->fullname;
         if($course->recentactivity) {
             $coursename .= ' '.html_writer::tag('i', '', array('class'=>'fa fa-dot-circle-o'));
         }
-        
+
         $output .= $OUTPUT->heading(html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), $coursename, $attributes), 3);
         
         if($this->config->showteachername) {

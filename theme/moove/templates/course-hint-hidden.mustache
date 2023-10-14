@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template theme_boost_union/course-hint-hidden
+    @template theme_moove/course-hint-hidden
 
     Boost Union template for outputting the hidden course hint.
 
@@ -33,9 +33,9 @@
     <div class="media">
         <div class="mr-3 icon-size-5"><i class="fa fa-exclamation-circle fa-3x"></i></div>
         <div class="media-body align-self-center">
-            {{#str}} showhintcoursehiddengeneral, theme_boost_union {{/str}}
+            {{#str}} showhintcoursehiddengeneral, theme_moove {{/str}}
             {{#showcoursesettingslink}}
-                <br />{{#str}} showhintcoursehiddensettingslink, theme_boost_union, { "url": "{{config.wwwroot}}/course/edit.php?id={{courseid}}" } {{/str}}
+                <br />{{#str}} showhintcoursehiddensettingslink, theme_moove, { "url": "{{config.wwwroot}}/course/edit.php?id={{courseid}}" } {{/str}}
             {{/showcoursesettingslink}}
         </div>
     </div>

@@ -13,7 +13,7 @@ return data.toString ();
 var isHeaderOnly = ("HEADERONLY".equals (msg));
 if (includeHeader) {
 JU.XmlUtil.openDocument (data);
-JU.XmlUtil.openTagAttr (data, "jvxl",  Clazz.newArray (-1, ["version", "2.3", "jmolVersion", jvxlData.version, "xmlns", "http://jmol.org/jvxl_schema", "xmlns:cml", "http://www.xml-cml.org/schema"]));
+JU.XmlUtil.openTagAttr (data, "jvxl",  Clazz.newArray (-1, ["version", "2.4", "jmolVersion", jvxlData.version, "xmlns", "http://jmol.org/jvxl_schema", "xmlns:cml", "http://www.xml-cml.org/schema"]));
 JU.XmlUtil.appendCdata (data, "jvxlFileTitle", null, jvxlData.jvxlFileTitle == null ? "\n" : "\n" + jvxlData.jvxlFileTitle);
 if (jvxlData.moleculeXml != null) data.append (jvxlData.moleculeXml);
 var volumeDataXml = (vertexDataOnly ? null : jvxlData.jvxlVolumeDataXml);
@@ -122,7 +122,7 @@ var bytesUncompressedEdgeData = (vertexDataOnly ? 0 : jvxlData.jvxlEdgeData.leng
 var nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length - 1));
 J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  isModelConnected", "" + jvxlData.isModelConnected);
 if (!vertexDataOnly) {
-J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  cutoff", "" + jvxlData.cutoff);
+J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  cutoff", (jvxlData.cutoffRange == null ? "" + jvxlData.cutoff : jvxlData.cutoffRange[0] + " " + jvxlData.cutoffRange[1]));
 J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  isCutoffAbsolute", "" + jvxlData.isCutoffAbsolute);
 J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  pointsPerAngstrom", "" + jvxlData.pointsPerAngstrom);
 var n = jvxlData.jvxlSurfaceData.length + bytesUncompressedEdgeData + nColorData + 1;
@@ -299,20 +299,25 @@ var valueBlue = jvxlData.valueMappedToBlue;
 var valueRed = jvxlData.valueMappedToRed;
 var vertexCount = (jvxlData.saveVertexCount > 0 ? jvxlData.saveVertexCount : jvxlData.vertexCount);
 if (vertexCount > vertexValues.length) System.out.println ("JVXLCODER ERROR");
-var min = jvxlData.mappedDataMin;
-var max = jvxlData.mappedDataMax;
+var isPrecisionColor = jvxlData.isJvxlPrecisionColor;
+var min = (isPrecisionColor ? jvxlData.mappedDataMin : jvxlData.valueMappedToRed);
+var max = (isPrecisionColor ? jvxlData.mappedDataMax : jvxlData.valueMappedToBlue);
+if (vertexValues.length < vertexCount) System.out.println ("JVXLCOLOR OHOHO");
+jvxlData.jvxlColorData = J.jvxl.data.JvxlCoder.jvxlEncodeColorData (vertexValues, min, max, colorFractionBase, colorFractionRange, jvxlData.isTruncated, isPrecisionColor);
+}, "J.jvxl.data.JvxlData,~A");
+c$.jvxlEncodeColorData = Clazz.defineMethod (c$, "jvxlEncodeColorData", 
+function (vertexValues, min, max, colorFractionBase, colorFractionRange, doTruncate, isPrecisionColor) {
 var list1 =  new JU.SB ();
 var list2 =  new JU.SB ();
-if (vertexValues.length < vertexCount) System.out.println ("JVXLCOLOR OHOHO");
-for (var i = 0; i < vertexCount; i++) {
+for (var i = 0, n = vertexValues.length; i < n; i++) {
 var value = vertexValues[i];
 if (Float.isNaN (value)) value = min;
 if (doTruncate) value = (value > 0 ? 0.999 : -0.999);
-if (writePrecisionColor) J.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (value, min, max, colorFractionBase, colorFractionRange, list1, list2);
- else list1.appendC (J.jvxl.data.JvxlCoder.jvxlValueAsCharacter (value, valueRed, valueBlue, colorFractionBase, colorFractionRange));
+if (isPrecisionColor) J.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (value, min, max, colorFractionBase, colorFractionRange, list1, list2);
+ else list1.appendC (J.jvxl.data.JvxlCoder.jvxlValueAsCharacter (value, min, max, colorFractionBase, colorFractionRange));
 }
-jvxlData.jvxlColorData = list1.appendSB (list2).appendC ('\n').toString ();
-}, "J.jvxl.data.JvxlData,~A");
+return list1.appendSB (list2).appendC ('\n').toString ();
+}, "~A,~N,~N,~N,~N,~B,~B");
 c$.appendXmlVertexOnlyData = Clazz.defineMethod (c$, "appendXmlVertexOnlyData", 
  function (sb, jvxlData, meshData, escapeXml) {
 var vertexIdNew =  Clazz.newIntArray (meshData.vc, 0);
@@ -690,7 +695,7 @@ if (sb.length () == 0) sb.append ("Line 1\nLine 2\n");
 }, "J.jvxl.data.VolumeData,JU.SB");
 Clazz.defineStatics (c$,
 "JVXL_VERSION1", "2.0",
-"JVXL_VERSION_XML", "2.3",
+"JVXL_VERSION_XML", "2.4",
 "haveXMLUtil", false,
 "CONTOUR_NPOLYGONS", 0,
 "CONTOUR_BITSET", 1,

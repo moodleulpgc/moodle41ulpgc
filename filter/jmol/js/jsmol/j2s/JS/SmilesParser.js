@@ -33,6 +33,7 @@ Clazz.defineMethod (c$, "parse",
 function (pattern) {
 if (pattern == null) throw  new JS.InvalidSmilesException ("expression must not be null");
 var search =  new JS.SmilesSearch ();
+if (this.isSmarts && !this.isTarget) search.pattern0 = pattern;
 if (pattern.indexOf ("$(select") >= 0) pattern = this.parseNested (search, pattern, "select");
 var ret =  Clazz.newIntArray (1, 0);
 pattern = JS.SmilesParser.extractFlags (pattern, ret);
@@ -150,6 +151,7 @@ var search =  new JS.SmilesSearch ();
 search.setTop (parent);
 search.isSmarts = this.isSmarts;
 search.pattern = pattern;
+search.pattern0 = parent.pattern0;
 search.setFlags (flags);
 if (pattern.indexOf ("$(") >= 0) pattern = this.parseNested (search, pattern, "");
 this.parseSmiles (search, pattern, null, false);
@@ -275,7 +277,7 @@ if (bond.order == 0) return;
 var isConnect = (JU.PT.isDigit (ch) || ch == '%');
 var isAtom = (!isConnect && (ch == '_' || ch == '[' || ch == '*' || JU.PT.isLetter (ch)));
 if (isConnect) {
-if (wasMeasure || wasBranch) throw  new JS.InvalidSmilesException ("connection number must immediately follow its connecting atom");
+if (wasMeasure) throw  new JS.InvalidSmilesException ("connection number must immediately follow its connecting atom");
 index = JS.SmilesParser.getRingNumber (pattern, index, ch, ret);
 var ringNumber = ret[0];
 this.parseConnection (search, ringNumber, currentAtom, bond);
@@ -296,7 +298,7 @@ break;
 default:
 var ch2 = (!this.isBioSequence && JU.PT.isUpperCase (ch) ? JS.SmilesParser.getChar (pattern, index + 1) : '\0');
 if (ch != 'X' || ch2 != 'x') if (!JU.PT.isLowerCase (ch2) || JU.Elements.elementNumberFromSymbol (pattern.substring (index, index + 2), true) == 0) ch2 = '\0';
-if (ch2 != '\0' && "NA CA BA PA SC AC".indexOf (pattern.substring (index, index + 2)) >= 0) {
+if (ch2 != '\0' && "NA CA BA PA SC AC Na Ca Ba Pa Sc Ac".indexOf (pattern.substring (index, index + 2)) >= 0) {
 ch2 = '\0';
 }var size = (JU.PT.isUpperCase (ch) && JU.PT.isLowerCase (ch2) ? 2 : 1);
 currentAtom = this.parseAtom (search, null, pattern.substring (index, index + size), currentAtom, bond, false, false, isBranchAtom);
@@ -317,7 +319,7 @@ var r = Integer.$valueOf (ringNum);
 var bond0 = this.connections.get (r);
 if (bond0 == null) {
 this.connections.put (r, bond);
-search.top.ringCount++;
+search.target.ringCount++;
 return;
 }this.connections.remove (r);
 switch (bond.order) {
@@ -679,7 +681,7 @@ newAtom.notBondedIndex = atom.index;
 }if (atom != null && bond.order != 0) {
 if (bond.order == -1) bond.order = (this.isBioSequence && isBranchAtom ? 112 : this.isSmarts || atom.isAromatic && newAtom.isAromatic ? 81 : 1);
 if (!isBracketed) this.setBondAtom (bond, null, newAtom, search);
-if (this.branchLevel == 0 && (bond.order == 17 || bond.order == 112)) this.branchLevel++;
+if (this.branchLevel == 0 && (bond.getBondType () == 17 || bond.order == 112)) this.branchLevel++;
 }if (this.branchLevel == 0) search.lastChainAtom = newAtom;
 return newAtom;
 }, "JS.SmilesSearch,JS.SmilesAtom,~S,JS.SmilesAtom,JS.SmilesBond,~B,~B,~B");

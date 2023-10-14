@@ -24,7 +24,10 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_mtf;
+
 defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/mtf/questiontype.php');
@@ -38,19 +41,24 @@ require_once($CFG->dirroot . '/question/type/mtf/edit_mtf_form.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group       qtype_mtf
  */
-class qtype_mtf_test extends advanced_testcase {
+class questiontype_test extends \advanced_testcase {
 
     /** @var object qtype */
     protected $qtype;
 
     protected function setUp(): void {
-        $this->qtype = new qtype_mtf();
+        $this->qtype = new \qtype_mtf();
     }
 
     protected function tearDown(): void {
         $this->qtype = null;
     }
 
+    /**
+     * Test getting the question name.
+     *
+     * @covers ::name
+     */
     public function test_name() {
         $this->assertEquals($this->qtype->name(), 'mtf');
     }
@@ -58,10 +66,10 @@ class qtype_mtf_test extends advanced_testcase {
     /**
      * Get some test question data.
      * @return object the data to construct a question like
-     * {@see test_question_maker::make_question($questiondata)}.
+     * {@see \test_question_maker::make_question($questiondata)}.
      */
     protected function get_test_question_data() {
-        $qdata = new stdClass();
+        $qdata = new \stdClass();
         $qdata->qtype = 'mtf';
         $qdata->name = 'MTF001';
         $qdata->id = 5;
@@ -84,7 +92,7 @@ class qtype_mtf_test extends advanced_testcase {
         $qdata->questiontextformat = FORMAT_HTML;
         $qdata->generalfeedback = "This feedback is general";
         $qdata->generalfeedbackformat = FORMAT_HTML;
-        $qdata->options = new stdClass();
+        $qdata->options = new \stdClass();
         $qdata->options->scoringmethod = "subpoints";
         $qdata->options->answernumbering = 123;
         $qdata->options->deduction = 0.0;
@@ -189,6 +197,8 @@ class qtype_mtf_test extends advanced_testcase {
 
     /**
      * Test can_analyse_responses
+     *
+     * @covers ::can_analyse_responses
      */
     public function test_can_analyse_responses() {
         $this->assertTrue($this->qtype->can_analyse_responses());
@@ -196,6 +206,8 @@ class qtype_mtf_test extends advanced_testcase {
 
     /**
      * Test get_random_guess_score_mtf
+     *
+     * @covers ::get_random_guess_score
      */
     public function test_get_random_guess_score_mtf() {
         $question = $this->get_test_question_data();
@@ -205,6 +217,8 @@ class qtype_mtf_test extends advanced_testcase {
 
     /**
      * Test get_random_guess_score_subpoints
+     *
+     * @covers ::get_random_guess_score
      */
     public function test_get_random_guess_score_subpoints() {
         $question = $this->get_test_question_data();
@@ -213,20 +227,22 @@ class qtype_mtf_test extends advanced_testcase {
 
     /**
      * Test get_possible_responses_subpoints
+     *
+     * @covers ::get_possible_responses
      */
     public function test_get_possible_responses_subpoints() {
         $question = $this->get_test_question_data();
         $responses = $this->qtype->get_possible_responses($question);
         $this->assertEquals(array(
             5 => array(
-                3 => new question_possible_response('option text 1: True (Correct Response)', 0.5),
-                4 => new question_possible_response('option text 1: False', 0.0),
-                null => question_possible_response::no_response()
+                3 => new \question_possible_response('option text 1: True (Correct Response)', 0.5),
+                4 => new \question_possible_response('option text 1: False', 0.0),
+                null => \question_possible_response::no_response()
             ),
             6 => array (
-                3 => new question_possible_response('option text 2: True', 0.0),
-                4 => new question_possible_response('option text 2: False (Correct Response)', 0.5),
-                null => question_possible_response::no_response()
+                3 => new \question_possible_response('option text 2: True', 0.0),
+                4 => new \question_possible_response('option text 2: False (Correct Response)', 0.5),
+                null => \question_possible_response::no_response()
             )
         ), $this->qtype->get_possible_responses($question));
     }
@@ -241,19 +257,21 @@ class qtype_mtf_test extends advanced_testcase {
 
     /**
      * Test question saving
+     *
+     * @covers ::save_question
      * @dataProvider get_question_saving_which
      * @param string $which
      */
     public function test_question_saving_question_one($which) {
         $this->resetAfterTest(true);
         $this->setAdminUser();
-        $questiondata = test_question_maker::get_question_data('mtf', $which);
-        $formdata = test_question_maker::get_question_form_data('mtf', $which);
+        $questiondata = \test_question_maker::get_question_data('mtf', $which);
+        $formdata = \test_question_maker::get_question_form_data('mtf', $which);
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category(array());
         $formdata->category = "{$cat->id},{$cat->contextid}";
-        qtype_mtf_edit_form::mock_submit((array)$formdata);
-        $form = qtype_mtf_test_helper::get_question_editing_form($cat, $questiondata);
+        \qtype_mtf_edit_form::mock_submit((array)$formdata);
+        $form = \qtype_mtf_test_helper::get_question_editing_form($cat, $questiondata);
         $this->assertTrue($form->is_validated());
         $fromform = $form->get_data();
         $returnedfromsave = $this->qtype->save_question($questiondata, $fromform);
@@ -261,7 +279,8 @@ class qtype_mtf_test extends advanced_testcase {
         $actualquestiondata = end($actualquestionsdata);
 
         foreach ($questiondata as $property => $value) {
-            if (!in_array($property, array('id', 'version', 'timemodified', 'timecreated', 'options', 'hints', 'stamp', 'idnumber', 'hidden'))) {
+            if (!in_array($property, array('id', 'version', 'timemodified', 'timecreated', 'options', 'hints', 'stamp', 'idnumber',
+                'hidden'))) {
                 $this->assertEquals($value, $actualquestiondata->$property);
             }
         }
@@ -308,18 +327,20 @@ class qtype_mtf_test extends advanced_testcase {
 
     /**
      * Test get_question_options.
+     *
+     * @covers ::get_question_options
      */
     public function test_get_question_options() {
         global $DB;
         $this->resetAfterTest(true);
         $this->setAdminUser();
-        $questiondata = test_question_maker::get_question_data('mtf', 'question_one');
-        $formdata = test_question_maker::get_question_form_data('mtf', 'question_two');
+        $questiondata = \test_question_maker::get_question_data('mtf', 'question_one');
+        $formdata = \test_question_maker::get_question_form_data('mtf', 'question_two');
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category(array());
         $formdata->category = "{$cat->id},{$cat->contextid}";
-        qtype_mtf_edit_form::mock_submit((array)$formdata);
-        $form = qtype_mtf_test_helper::get_question_editing_form($cat, $questiondata);
+        \qtype_mtf_edit_form::mock_submit((array)$formdata);
+        $form = \qtype_mtf_test_helper::get_question_editing_form($cat, $questiondata);
         $this->assertTrue($form->is_validated());
         $fromform = $form->get_data();
         $returnedfromsave = $this->qtype->save_question($questiondata, $fromform);

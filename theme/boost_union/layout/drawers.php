@@ -20,7 +20,6 @@
  * This layoutfile is based on theme/boost/layout/drawers.php
  *
  * Modifications compared to this layout file:
- * * Render theme_boost_union/drawers instead of theme_boost/drawers template
  * * Include activity navigation
  * * Include course related hints
  * * Include back to top button
@@ -31,6 +30,7 @@
  * * Include advertisement tiles
  * * Include info banners
  * * Include additional block regions
+ * * Handle admin setting for right-hand block drawer of site home
  *
  * @package   theme_boost_union
  * @copyright 2022 Luca Bösch, BFH Bern University of Applied Sciences luca.boesch@bfh.ch
@@ -188,5 +188,5 @@ if ($PAGE->pagelayout == 'frontpage') {
     require_once(__DIR__ . '/includes/advertisementtiles.php');
 }
 
-// Render drawers.mustache from boost_union.
-echo $OUTPUT->render_from_template('theme_boost_union/drawers', $templatecontext);
+// Render drawers.mustache from theme_boost (which is overridden in theme_boost_union).
+echo $OUTPUT->render_from_template('theme_boost/drawers', $templatecontext);

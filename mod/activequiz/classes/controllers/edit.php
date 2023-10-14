@@ -252,7 +252,16 @@ class edit {
         ob_start(); // capture question bank display in buffer to have the renderer render output.
 
         $questionbank = new \mod_activequiz\activequiz_question_bank_view($this->contexts, $this->pageurl, $this->activequiz->getCourse(), $this->activequiz->getCM());
-        $questionbank->display('editq', $qpage, $qperpage, $this->pagevars['cat'], true, true, true);
+        //$questionbank->display('editq', $qpage, $qperpage, $this->pagevars['cat'], true, true, true);
+        // ecastro ULPGC adapt to 4.1 new questionbankview display
+        $pagevars = [];
+        $pagevars['qpage'] = $qpage;
+        $pagevars['qperpage'] = $qperpage;
+        $pagevars['cat'] = $this->pagevars['cat'];
+        $pagevars['recurse'] = true;
+        $pagevars['showhidden'] = true;
+        $pagevars['qbshowtext'] = true;
+        $questionbank->display($pagevars, 'editq');
 
         return ob_get_clean();
     }

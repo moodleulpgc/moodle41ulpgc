@@ -23,7 +23,7 @@
  * @copyright (C) 2022 Enrique Castro
  */
 
-namespace local_o365\task;
+namespace local_o365teams\task;
 
 use local_o365teams\coursegroups\teamschannels;
 use local_o365teams\coursegroups\utils;
@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Create any needed groups in Microsoft 365.
  */
-class teamschannelsync extends \core\task\scheduled_task {
+class teamnamesync extends \core\task\scheduled_task {
     /**
      * Get a descriptive name for this task (shown to admins).
      *

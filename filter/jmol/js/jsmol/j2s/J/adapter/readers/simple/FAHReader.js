@@ -115,10 +115,8 @@ return false;
 });
 Clazz.defineMethod (c$, "getTopData", 
  function () {
-var fileName = this.htParams.get ("fullPathName");
-var pt = fileName.indexOf ("::");
-if (pt > 0) fileName = fileName.substring (pt + 2);
-pt = fileName.lastIndexOf (".");
+var fileName = this.filePath;
+var pt = fileName.lastIndexOf (".");
 if (pt < 0) pt = fileName.length;
 var ptv = fileName.lastIndexOf ("Frame", pt);
 fileName = fileName.substring (0, ptv) + "Top" + fileName.substring (pt);

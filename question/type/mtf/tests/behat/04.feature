@@ -55,7 +55,7 @@ Feature: Step 4
 
   # No option selected
     When I click on "quiznavbutton2" "link"
-    Then "#quiznavbutton1[title='Not yet answered']" "css_element" should exist
+    Then "#quiznavbutton1[title*='Not yet answered']" "css_element" should exist
 
   # Some options selected
     When I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
@@ -63,7 +63,7 @@ Feature: Step 4
     And I click on ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element"
     And I click on "quiznavbutton3" "link"
-    Then "#quiznavbutton2[title='Incomplete answer']" "css_element" should exist
+    Then "#quiznavbutton2[title*='Incomplete answer']" "css_element" should exist
 
   #All options selected
     When I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
@@ -75,7 +75,7 @@ Feature: Step 4
     And I click on ".qtype_mtf_row:contains('option text 7') input[value=2]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 8') input[value=2]" "css_element"
     And I click on "quiznavbutton1" "link"
-    Then "#quiznavbutton3[title='Answer saved']" "css_element" should exist
+    Then "#quiznavbutton3[title*='Answer saved']" "css_element" should exist
 
   #Check if the completion state of each question is displayed on the summary page
     When I click on "Finish attempt ..." "link" in the "Quiz navigation" "block"

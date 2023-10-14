@@ -132,10 +132,17 @@ class batchmanage_managejob_courseconfig extends batchmanage_managejob_plugin {
                 // now update course format, if needed
                 $oldcourse = 0;
                 $format = isset($data->format) ? $data->format : $course->format;
-                if(in_array($format, array('weeks', 'topics', 'topicgroup', 'topcoll'))) {
-                    foreach(array('numsections', 'hiddensections', 'coursedisplay') as $field) {
+                if(in_array($format, array('weeks', 'topics', 'topicgroup', 'topcoll', 'onetopic'))) {
+                    foreach(array('numsections', 'hiddensections', 'coursedisplay', 'activityindentation') as $field) {
                         if(isset($data->{$field})) {
-                            $DB->set_field('course_format_options', 'numsections', $data->{$field}, array('courseid'=>$course->id, 'format'=>$format, 'name'=>$field));
+                            $params = ['courseid'=>$course->id, 'format'=>$format, 'sectionid' => 0, 'name'=>$field];
+                            if($option = $DB->get_record('course_format_options', $params)) {
+                                $option->value = $data->{$field};
+                                $DB->update_record('course_format_options', $option);
+
+                            } else {
+                                $DB->insert_record('course_format_options', $params + ['value' => $data->{$field}]);
+                            }
                         }
                     }
                 }

@@ -37,6 +37,7 @@ $string['confirmunlinkgroup'] = 'Ha solicitado borrar el Grupo asociado a este g
 $string['error_delnonexisting'] = 'NO existe un objeto o365 asociado que borrar.';
 $string['error_noaddexisting'] = 'Ya existe un ítem o365 asociado al grupo {$a}.';
 $string['error_noitem'] = 'No se ha especificado un grupo.';
+$string['error_o365'] = 'No se ha creado canal por o365. Motivo: {$a}';
 $string['eventchannelcreated'] = 'Añadido Canal Teams en curso.';
 $string['eventchanneldeleted'] = 'Borrado un Canal Teams en curso.';
 $string['eventchannelsynced'] = 'Actualizados miembros del canal';

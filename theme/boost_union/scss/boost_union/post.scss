@@ -1,5 +1,5 @@
 /*=======================================
- * Settings: Look -> Branding
+ * Settings: Look -> Site branding
  ======================================*/
 
 /*---------------------------------------
@@ -112,6 +112,20 @@
     .login a:hover {
         color: $white;
     }
+
+    /* Change the color of the notification action buttons to dark grey.
+       This has to use !important as Moodle core already uses !important for the icon colors. */
+    .popover-region-container a .icon {
+        color: #343a40 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    /* Change the color of the language selector link in the navbar to a light grey and to white when hovered. */
+    .langmenu .dropdown .dropdown-toggle {
+        color: #c8c8c8;
+        &:hover {
+            color: $white;
+        }
+    }
 }
 
 /* Tweak the dark navbar with light font color a little bit more. */
@@ -132,6 +146,17 @@
     /* Change the background color of the search panel in the navbar. */
     #searchform-navbar {
         background-color: #343a40;
+    }
+
+    /* Change the color of the language selector drop down items when hovered, focused and active to dark grey
+       as this would be presented in the primary color otherwise. */
+    .langmenu {
+        .dropdown-item:active,
+        .dropdown-item:hover,
+        .dropdown-item:focus,
+        .dropdown-item:focus-within {
+            background-color: $dark;
+        }
     }
 }
 
@@ -154,14 +179,26 @@
     #searchform-navbar {
         background-color: $primary;
     }
+
+    /* Change the color of the active nav items's bottom border to white as this would be presented in the
+   primary color otherwise. */
+    .nav-link.active {
+        border-bottom-color: $white;
+    }
+
+    /* Change the color of the language selector icon to a light grey as well.
+        This has to use !important as Moodle core already uses !important for the icon colors. */
+    .langmenu .icon {
+        color: #c8c8c8 !important; /* stylelint-disable-line declaration-no-important */
+    }
 }
 
 /* Tweak the primary color navbar with dark font color. */
 .navbar.navbar-light.bg-primary {
-    /* Change the color of the active nav items's bottom border to white as this would be presented in the
+    /* Change the color of the active nav items's bottom border to dark grey as this would be presented in the
        primary color as well otherwise. */
     .nav-link.active {
-        border-bottom-color: $white;
+        border-bottom-color: rgba($black, .6);
     }
 
     /* Change the background color and colors of open custom menu parent navigation items in the navbar
@@ -193,6 +230,21 @@
     /* Change the background color of the search panel in the navbar. */
     #searchform-navbar {
         background-color: $primary;
+    }
+
+    /* Change the color of the login link in the navbar to dark grey and to darker grey when hovered. */
+    .login,
+    .login a {
+        color: rgba($black, .6);
+        &:hover {
+            color: rgba($black, .9);
+        }
+    }
+
+    /* Change the color of the divider to dark grey.
+       This has to use !important as Moodle core already uses !important for the border-left color.*/
+    .divider {
+        border-left: 1px solid rgba($black, .6) !important; /* stylelint-disable-line declaration-no-important */
     }
 }
 
@@ -310,6 +362,17 @@ body.hasstickyfooter #back-to-top {
 /*=======================================
  * Settings: Feel -> Blocks.
  ======================================*/
+
+/*---------------------------------------
+ * Settings: Additional block regions - General.
+ --------------------------------------*/
+
+/* To support additional block regions around the main content area, Boost Union introduced
+   the main-inner-wrapper HTML element. Unfortunately, this breaks the Flexbox flow of Moodle core.
+   To make it work again, we have to set the Flexbox flex attribute in the main-inner-wrapper element as well. */
+.main-inner-wrapper {
+    flex: 1 0 auto;
+}
 
 /*---------------------------------------
  * Settings: Additional block regions - The offcanvas region.
@@ -516,16 +579,20 @@ body.hasstickyfooter #back-to-top {
 
 /* Block regions: Outside top and outside bottom. */
 #theme-block-region-outside-top,
-#theme-block-region-outside-bottom {
+#theme-block-region-outside-bottom,
+#theme-block-region-footer {
     /* On larger screens. */
     @include media-breakpoint-up(md) {
         /* Position and size. */
         &.theme-block-region-outside-fullwidth,
-        &.theme-block-region-outside-coursecontentwidth {
+        &.theme-block-region-outside-coursecontentwidth,
+        &.theme-block-region-footer-fullwidth,
+        &.theme-block-region-footer-coursecontentwidth {
             margin: 1rem auto;
             width: 100%;
         }
-        &.theme-block-region-outside-herowidth {
+        &.theme-block-region-outside-herowidth,
+        &.theme-block-region-footer-herowidth {
             margin: 0 -3rem 0 -3rem;
             /* We do not set any width at all.
                100% would be too small, 100vw would add horizontal scrollbars (for whatever reason). */
@@ -535,13 +602,16 @@ body.hasstickyfooter #back-to-top {
     /* And on smaller screens. */
     @include media-breakpoint-down(sm) {
         &.theme-block-region-outside-fullwidth,
-        &.theme-block-region-outside-coursecontentwidth {
+        &.theme-block-region-outside-coursecontentwidth,
+        &.theme-block-region-footer-fullwidth,
+        &.theme-block-region-footer-coursecontentwidth {
             /* Just show the block full width with some horizontal space. */
             padding-left: 15px;
             padding-right: 15px;
             width: 100%;
         }
-        &.theme-block-region-outside-herowidth {
+        &.theme-block-region-outside-herowidth,
+        &.theme-block-region-footer-herowidth {
             /* Remove the margin. */
             margin: 0;
         }
@@ -549,12 +619,14 @@ body.hasstickyfooter #back-to-top {
 }
 
 /* Additional styling for content width regions to limit the block region size on Moodle pages with limited width. */
-body.limitedwidth .theme-block-region-outside-coursecontentwidth {
+body.limitedwidth .theme-block-region-outside-coursecontentwidth,
+body.limitedwidth .theme-block-region-footer-coursecontentwidth {
     max-width: $course-content-maxwidth;
 }
 
 /* Additional styling for hero-width regions to remove some styling which is counterproductive. */
-.theme-block-region-outside-herowidth {
+.theme-block-region-outside-herowidth,
+.theme-block-region-footer-herowidth {
     .block {
         border-width: 0;
         border-radius: 0;
@@ -838,4 +910,83 @@ body.pagelayout-login:not(.loginbackgroundimage) #footnote {
 .course-hint-switchedrole {
     margin-left: 15px;
     margin-right: 15px;
+}
+
+
+/*=======================================
+ * Supporting third-party plugins
+ ======================================*/
+
+/*---------------------------------------
+ * Dash Pro
+ --------------------------------------*/
+
+/* Style Dash Pro dashboards. */
+.path-local-dash-dashboard #page.drawers {
+    /* Use flex if one of the block regions next to the main content is used. */
+    .main-inner-outside-nextmaincontent {
+        display: flex;
+    }
+
+    /* Remove the margin of a Dash block when used in the outside top region in hero width mode. */
+    #theme-block-region-outside-top.theme-block-region-outside-herowidth .block_dash,
+    #theme-block-region-outside-bottom.theme-block-region-outside-herowidth .block_dash,
+    #theme-block-region-footer.theme-block-region-footer-herowidth .block_dash {
+        margin: 0;
+    }
+
+    /* The page header makes alignment nearly impossible,
+       so let's hide it when block regions next to main content are used. */
+    .main-inner-outside-nextmaincontent #page-header {
+        display: none;
+    }
+
+    /* Remove the spacing which was there for the header which we have hidden in the previous rule. */
+    .main-inner-outside-nextmaincontent .main-inner {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 25-50-25 layout. */
+    .main-inner-outside-left-right > .main-inner {
+        width: 50%;
+        max-width: 50%;
+    }
+    .main-inner-outside-left-right > section {
+        width: 25%;
+        max-width: 25%;
+        margin-top: calc(0.5rem + 1px);
+    }
+
+    /* 33-67 or 67-33 layout. */
+    .main-inner-outside-right > .main-inner,
+    .main-inner-outside-left > .main-inner {
+        width: 67%;
+        max-width: 67%;
+    }
+    .main-inner-outside-left > section,
+    .main-inner-outside-right > section {
+        width: 33%;
+        max-width: 33%;
+        margin-top: calc(0.5rem + 1px);
+    }
+
+    /* On not-so-large screens. */
+    @include media-breakpoint-down(lg) { /* This means less than 300px per outside block region. */
+        /* Stack content vertically. */
+        .main-inner-outside-nextmaincontent {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main content first, outside block regions later. */
+        .main-inner-outside-nextmaincontent > .main-inner {
+            order: -2;
+        }
+        .main-inner-outside-nextmaincontent > section,
+        .main-inner-outside-nextmaincontent > .main-inner {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
 }

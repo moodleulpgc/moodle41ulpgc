@@ -69,7 +69,7 @@ $canmanage = has_all_capabilities(['report/o365channels:manage', 'local/o365:tea
 
 $coursegroupobj = utils::get_o365_object($courseid);
 $courseteamsobj = utils::get_teams_object($courseid);
-                        
+
 // check o365 API & configuration
 $apiconfigured = (\local_o365\utils::is_configured() === true);
 [$teamsenabled, $channelsenabled, $usergroupsenabled] = utils::enabled_mode(true); 
@@ -77,6 +77,7 @@ $apiconfigured = (\local_o365\utils::is_configured() === true);
 $teamschannels = null;
 if($graphclient = utils::get_graphclient() AND $apiconfigured) {
     $teamschannels = new \local_o365teams\coursegroups\teamschannels($graphclient, (bool)$CFG->debugdisplay);
+    $courseteams = new \local_o365\feature\coursesync\main($graphclient, (bool)$CFG->debugdisplay);
 }
 
 // Sanitation, team
@@ -105,15 +106,16 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
         if($item) {
             if(empty($itemobj)) {
                 // Add ONLY if not existing yet
+                $done = false;
                 if($stype == 0) { // means channels
                     if($channelobj = $teamschannels->add_channel_for_group($item)) {
                         \core\notification::add(get_string('channeladded', 'report_o365channels'), 
                                         \core\output\notification::NOTIFY_SUCCESS);    
                         // Trigger an channel created event.
                         report_o365channels_get_updated_and_event($channelobj, 'channel_created');
-                        
+                        $success = true;
                         $retrycounter = 0;
-                        while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+                        while ($retrycounter <= 5) { // API_CALL_RETRY_LIMIT
                             if ($retrycounter) {
                                 sleep(10);
                             }
@@ -121,13 +123,17 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                                 $done = $teamschannels->resync_channel_membership($courseid, $item, $courseteamsobj->objectid, $channelobj->objectid);
                                 if(!empty($done)) {
                                     $updated[] = $done;
+                                    $message = '?';
                                     report_o365channels_get_updated_and_event($channelobj, 'channel_synced');
                                 }
                                 break;
                             } catch (\Exception $e) {
                                 $retrycounter++;
+                                $message = $e->getMessage();
                             }
                         }                        
+                    } else {
+
                     }
                 } elseif($stype > 1) { // means usergroup
                     if($groupobj = $teamschannels->create_usergroup($item)) {
@@ -135,21 +141,27 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                         \core\notification::add(get_string('usergroupadded', 'report_o365channels'), 
                                         \core\output\notification::NOTIFY_SUCCESS);    
                         $retrycounter = 0;
-                        while ($retrycounter <= API_CALL_RETRY_LIMIT) {
+                        while ($retrycounter <= 5) { // API_CALL_RETRY_LIMIT
                             if ($retrycounter) {
                                 sleep(10);
                             }
                             try {
-                                [$toadd, $toremove] = $teamschannels->resync_group_owners_and_members($course->id, $groupobj->objectid);
+                                //local_o365\feature\coursesync\main
+                                [$toadd, $toremove] = $courseteams->resync_group_owners_and_members($course->id, $groupobj->objectid);
                                 if($done = report_o365channels_get_updated_and_event($groupobj, 'channel_synced', $toadd, $toremove)) {
                                     $updated[] = $done;
+                                    $message = '?';
                                 }
                                 break;
                             } catch (\Exception $e) {
                                 $retrycounter++;
+                                $message = $e->getMessage();
                             }
                         }                        
                     }                
+                }
+                if(empty($done)) {
+                    $message = get_string('error_o365', 'report_o365channels', $message);
                 }
             } else {
                 $message = get_string('error_noaddexisting', 'report_o365channels', $itemobj->o365name);
@@ -183,7 +195,8 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
         }
         
     } elseif($action == 'addteam') {
-        if($teamschannels->create_group_for_course($course)) {
+        //local_o365\feature\coursesync\main
+        if($courseteams->create_group_for_course($course)) {
             $coursegroupobj = utils::get_o365_object($courseid);
             $courseteamsobj = utils::get_teams_object($courseid);
             if(!empty($courseteamsobj) && $courseteamsobj) {
@@ -194,7 +207,13 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
             $message = get_string('error_noteam', 'report_o365channels');
         }
     } elseif($action == 'syncteam') {
-        [$toadd, $toremov] = $teamschannels->resync_group_owners_and_members($courseid, $coursegroupobj->objectid);
+        //local_o365\feature\coursesync\main
+        if(!empty($teamschannels)) {
+            if($teamo365obj->displayName != $courseteamsobj->o365name) {
+                $success = $teamschannels->update_course_team_name_extended($course, $courseteamsobj->objectid, $courseteamsobj->o365name);
+            }
+        }
+        [$toadd, $toremov] = $courseteams->resync_group_owners_and_members($courseid, $coursegroupobj->objectid);
         if($done = report_o365channels_get_updated_and_event($coursegroupobj, 'team_synced', $toadd, $toremove)) {
             $updated[] = $done;
         }
@@ -224,7 +243,8 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
         $params['subtype'] = 'usergroup';
         $groups = $DB->get_records_sql($sql, $params); 
         foreach($groups as $group) {
-            [$toadd, $toremove] = $teamschannels->resync_group_owners_and_members($courseid, $groupobj->objectid);
+            //local_o365\feature\coursesync\main
+            [$toadd, $toremove] = $courseteams->resync_group_owners_and_members($courseid, $groupobj->objectid);
             if($done = report_o365channels_get_updated_and_event($groupobj, 'channel_synced', $toadd, $toremove)) {
                 $updated[] = $done;
             }
@@ -248,7 +268,7 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
     }
 }
 
-if($apiconfigured && ($teamsenabled || $usergroupsenable)) {
+if($apiconfigured && ($teamsenabled || $usergroupsenabled)) {
     // obtain course groups
     $params = ['courseid' => $courseid];
     $groupingwhere = '';
@@ -322,7 +342,7 @@ $strgrouping         = get_string('grouping', 'group');
 $strnotingrouping    = get_string('notingrouping', 'group');
 $strnogrouping       = get_string('nogrouping', 'group');
 
-if(!$apiconfigured || !($teamsenabled || $usergroupsenable)) {
+if(!$apiconfigured || !($teamsenabled || $usergroupsenabled)) {
     echo $output->notification(get_string('notavailable', 'report_o365channels'), 'notifyproblem');
 } else {
     // Get all groupings and present selection menu.
@@ -378,7 +398,7 @@ function report_o365channels_get_updated_and_event(stdclass $o365obj, string $ev
     if($o365obj->subtype == 'usergroup') {
         $other['subtype'] = 'usergroup';
     }
-    $eventmethod = "\\report_o365channels\event\{$eventname}::create";
+    $eventmethod = "\\report_o365channels\\event\\$eventname::create";
     $event = $eventmethod(['context' => $context,
                             'objectid' => $o365obj->id,
                             'other' => $other,

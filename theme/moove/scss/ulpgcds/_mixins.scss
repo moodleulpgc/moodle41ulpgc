@@ -1,0 +1,35 @@
+/* ------------------------------- ateigh.com ------------------------------- 
+ *
+ * Mixins
+ *
+ * ------------------------------- ateigh.com -------------------------------
+ */
+@mixin input-placeholder {
+    &.placeholder { @content; }
+    &:-moz-placeholder { @content; }
+    &::-moz-placeholder { @content; }
+    &:-ms-input-placeholder { @content; }
+    &::-webkit-input-placeholder { @content; }
+}
+
+@mixin visually-hidden{
+    position: absolute;
+    overflow: hidden;
+    clip: rect(1px,1px,1px,1px);
+    width: 1px;
+    height: 1px;
+    word-wrap: normal;
+}
+
+@mixin opacity($opacity) {
+    opacity: $opacity;
+    $opacity-ie: $opacity * 100;
+    filter: alpha(opacity=$opacity-ie); //IE8
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+       -moz-transition: $args;
+        -ms-transition: $args;
+            transition: $args;
+}

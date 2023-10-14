@@ -119,45 +119,23 @@
                         {{#pix}}i/duration, moodle, {{#str}}pending_review, mod_moodleoverflow{{/str}}{{/pix}}
                     {{/ questionunderreview }}
                     {{^ questionunderreview }}
-                        {{#statusboth}}
-                            <a href="{{starterlink}}">
-                                {{# pix}} status/c_circle, moodleoverflow, {{#str}}teacherrating, moodleoverflow{{/str}}{{/ pix}}
-                                {{# pix}} status/b_box, moodleoverflow, {{#str}}starterrating, moodleoverflow{{/str}}{{/ pix}}
+                        {{#markedsolution}}
+                            <a href="{{teacherlink}}">
+                                {{# pix}} status/c_outline, moodleoverflow, {{#str}}teacherrating, moodleoverflow{{/str}} {{/ pix}}
                             </a>
-                        {{/statusboth}}
-                        {{^statusboth}}
-                            {{^statusstarter}}
-                                {{^statusteacher}}
-                                    {{# pix}} status/c_blank, moodleoverflow, {{#str}}marknotsolved, moodleoverflow{{/str}}{{/ pix}}
-                                {{/statusteacher}}
-                                {{#statusteacher}}
-                                    <a href="{{teacherlink}}">
-                                        {{# pix}} status/c_outline, moodleoverflow, {{#str}}teacherrating, moodleoverflow{{/str}} {{/ pix}}
-                                    </a>
-                                {{/statusteacher}}
-                                {{# pix}} status/b_blank, moodleoverflow, {{#str}}marknothelpful, moodleoverflow{{/str}} {{/ pix}}
-                            {{/statusstarter}}
-                            {{#statusstarter}}
-                                {{^statusteacher}}
-                                    {{# pix}} status/c_blank, moodleoverflow, {{#str}}marknotsolved, moodleoverflow{{/str}} {{/ pix}}
-                                    <a href="{{starterlink}}">
-                                        {{# pix}} status/b_outline, moodleoverflow, {{#str}}starterrating, moodleoverflow{{/str}} {{/ pix}}
-                                    </a>
-                                {{/statusteacher}}
-                                {{#statusteacher}}
-                                    <a href="{{teacherlink}}">
-                                        {{# pix}} status/c_outline, moodleoverflow, {{#str}}teacherrating, moodleoverflow{{/str}}{{/ pix}}
-                                    </a>
-                                    <a href="{{starterlink}}">
-                                        {{# pix}} status/b_outline, moodleoverflow, {{#str}}starterrating, moodleoverflow{{/str}} {{/ pix}}
-                                    </a>
-                                {{/statusteacher}}
-                            {{/statusstarter}}
-                        {{/statusboth}}
-                        {{! Locked by // ecastro ULPGC }}
-                        {{#locked}}
-                            {{# pix}} t/locked, core,  {{#str}}discussionlocked, moodleoverflow{{/str}} {{/ pix}}
-                        {{/locked}}
+                        {{/markedsolution}}
+                        {{^markedsolution}}
+                            {{# pix}} status/c_blank, moodleoverflow, {{#str}}marknotsolved, moodleoverflow{{/str}}{{/ pix}}
+                        {{/markedsolution}}
+
+                        {{#markedhelpful}}
+                            <a href="{{starterlink}}">
+                                {{# pix}} status/b_outline, moodleoverflow, {{#str}}starterrating, moodleoverflow{{/str}} {{/ pix}}
+                            </a>
+                        {{/markedhelpful}}
+                        {{^markedhelpful}}
+                            {{# pix}} status/b_blank, moodleoverflow, {{#str}}marknothelpful, moodleoverflow{{/str}} {{/ pix}}
+                        {{/markedhelpful}}
                     {{/ questionunderreview }}
                 </td>
 

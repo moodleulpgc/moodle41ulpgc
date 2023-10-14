@@ -94,6 +94,7 @@ this.isXLowToHigh = false;
 this.insideOut = false;
 this.dataXYReversed = false;
 this.cutoff = 3.4028235E38;
+this.cutoffRange = null;
 this.sigma = 3.4028235E38;
 this.cutoffAutomatic = true;
 this.isCutoffAbsolute = false;

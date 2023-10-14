@@ -27,6 +27,7 @@
 namespace format_multitopic\output\courseformat;
 
 use core_courseformat\output\local\content as content_base;
+use \renderer_base;
 
 /**
  * Base class to render a course format.
@@ -39,14 +40,21 @@ use core_courseformat\output\local\content as content_base;
  */
 class content extends content_base {
 
+    /** @var \section_info[] course sections */
+    protected $fmtsections;
+
     /**
      * Export this data so it can be used as the context for a mustache template (core/inplace_editable).
      *
      * @param renderer_base $output typically, the renderer that's calling this function
-     * @return stdClass data context for a mustache template
+     * @return \stdClass data context for a mustache template
      */
     public function export_for_template(\renderer_base $output) {
+        global $CFG;
+        global $PAGE;
         global $USER;                               // INCLUDED from course/format/classes/output/local/content/section/cmlist.php .
+
+        $PAGE->requires->js_call_amd('format_multitopic/courseformat/courseeditor/mutations', 'init');
 
         $format = $this->format;
 
@@ -225,6 +233,20 @@ class content extends content_base {
         $tabseft = (new \tabtree($tabs,
             "tab_id_{$displaysection->id}_l{$displaysection->pagedepthdirect}",
             $inactivetabs))->export_for_template($output);
+        foreach ($tabseft->tabs as $tabeft) {
+            if (preg_match('/^tab_id_(\d+)_l(\d+)$/', $tabeft->id, $matches)) {
+                $tabeft->sectionid = $matches[1];
+                $tabeft->level = $matches[2];
+            }
+        }
+        if ($tabseft->secondrow) {
+            foreach ($tabseft->secondrow->tabs as $tabeft) {
+                if (preg_match('/^tab_id_(\d+)_l(\d+)$/', $tabeft->id, $matches)) {
+                    $tabeft->sectionid = $matches[1];
+                    $tabeft->level = $matches[2];
+                }
+            }
+        }
 
         // END INCLUDED.
 
@@ -261,6 +283,12 @@ class content extends content_base {
         // Allow next and back navigation between pages.
         $sectionnav = new \format_multitopic\output\courseformat\content\sectionnavigation($format, $displaysection);
         $data->sectionnavigation = $sectionnav->export_for_template($output);
+
+        if ($CFG->version >= 2023021000 && $format->show_editor()) {
+            $data->hasbulkedittools = true;
+            $bulkedittools = new $this->bulkedittoolsclass($format);
+            $data->bulkedittools = $bulkedittools->export_for_template($output);
+        }
 
         return $data;
     }
@@ -323,8 +351,8 @@ class content extends content_base {
      * This method is used to differentiate between display a specific section
      * or a list of them.
      *
-     * @param course_modinfo $modinfo the current course modinfo object
-     * @return section_info[] an array of section_info to display
+     * @param \course_modinfo $modinfo the current course modinfo object
+     * @return \section_info[] an array of section_info to display
      */
     private function get_sections_to_display(\course_modinfo $modinfo): array {
         return $this->fmtsections;

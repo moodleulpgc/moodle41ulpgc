@@ -204,7 +204,7 @@ this.desiredModelNumber = pymolState;
 }var n = names.size ();
 for (var j = 0; j < this.stateCount; j++) {
 if (!this.doGetModel (++this.nModels, null)) continue;
-this.model (this.nModels);
+this.model (this.nModels, null);
 this.pymolScene.currentAtomSetIndex = this.asc.iSet;
 if (this.isTrajectory) {
 this.trajectoryStep =  new Array (this.totalAtomCount);
@@ -400,7 +400,7 @@ this.allStates = true;
 this.pymolScene.setFrameObject (4115, Integer.$valueOf (-1));
 }}var objectHeader = J.adapter.readers.pymol.PyMOLReader.listAt (pymolObject, 0);
 var parentGroupName = (execObject.size () < 8 ? null : J.adapter.readers.pymol.PyMOLReader.stringAt (execObject, 6));
-if ("".equals (parentGroupName.trim ())) parentGroupName = null;
+if (parentGroupName != null && "".equals (parentGroupName.trim ())) parentGroupName = null;
 this.pymolScene.setReaderObjectInfo (this.objectName, type, parentGroupName, this.isHidden, J.adapter.readers.pymol.PyMOLReader.listAt (objectHeader, 8), stateSettings, (moleculeOnly ? "_" + (iState + 1) : ""));
 var bsAtoms = null;
 var doExclude = (this.bsBytesExcluded != null);

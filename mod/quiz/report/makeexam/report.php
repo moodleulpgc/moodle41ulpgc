@@ -22,11 +22,16 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_question\local\bank\question_version_status;
+use qbank_editquestion\external\update_question_version_status;
+use mod_quiz\question\bank\qbank_helper;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/quiz/report/makeexam/makeexam_form.php');
 require_once($CFG->dirroot . '/mod/quiz/report/makeexam/makeexam_table.php');
-require_once($CFG->dirroot . '/mod/examregistrar/locallib.php');
+require_once($CFG->dirroot . '/mod/quiz/report/makeexam/lib.php');
+require_once($CFG->dirroot . '/mod/examregistrar/lib.php');
 
 /**
  * The quiz makeexam report provides summary information about each question in
@@ -96,6 +101,110 @@ class quiz_makeexam_report extends quiz_default_report {
         return new moodle_url('/mod/quiz/report.php',
                 array('id' => $this->context->instanceid, 'mode' => $this->mode));
     }
+
+
+    /**
+     * Initialise some parts of $PAGE and start output.
+     *
+     * @param object $cm the course_module information.
+     * @param object $coures the course settings.
+     * @param object $quiz the quiz settings.
+     * @param string $reportmode the report name.
+     */
+    public function print_header_and_tabs($cm, $course, $quiz, $reportmode = 'makeexam') {
+        global $PAGE, $OUTPUT;
+
+        // Print the page header.
+        $PAGE->set_title($quiz->name);
+        $PAGE->set_heading($course->fullname);
+        echo $OUTPUT->header();
+        $context = context_module::instance($cm->id);
+        //echo $OUTPUT->heading(format_string($quiz->name, true, array('context' => $context)));
+        echo $OUTPUT->heading(get_string('createexams', 'quiz_makeexam'));
+    }
+
+    /**
+     * Display the report.
+     */
+    public function display($quiz, $cm, $course) {
+        global $CFG, $DB, $OUTPUT, $PAGE, $USER;
+
+        $this->init('makeexam', $quiz, $cm, $course);
+
+        $reporturl = $this->get_base_url();
+
+        // Find out current groups mode.
+        $currentgroup = $this->get_current_group($cm, $course, $this->context);
+
+        // load data
+        $this->load_exams($cm, $course);
+
+        //$quizobj = quiz::create($quiz->id, $USER->id);
+        //$hasquestions = $quizobj->has_questions();
+        unset($quizobj);
+        $hasquestions = quiz_has_questions($quiz->id);
+
+        $mform = new quiz_makeexam_settings_form($reporturl, array('exams'=>$this->exams,
+                                                                   'quiz'=>$quiz,
+                                                                   'questions'=>$hasquestions,
+                                                                   'current'=>$this->get_current_attempt($quiz->id)));
+
+        $this->install_official_tags(); // just in case not installed yet
+
+        // Process any submitted actions in the report.
+        //Any optional params & action goes inside
+        $this->process_actions($quiz, $cm, $course, $currentgroup, $mform);
+
+        $output = $PAGE->get_renderer('quiz_makeexam');
+
+        $PAGE->set_pagelayout('incourse');
+
+        // Now starts output
+        $this->print_header_and_tabs($cm, $course, $quiz, 'makeexam');
+
+        if(!$this->exams) {
+            echo $output->heading(get_string('nothingtodisplay'));
+            return true;
+        }
+
+        if (groups_get_activity_groupmode($cm)) {
+            groups_print_activity_menu($cm, $reporturl->out());
+        }
+
+        // On-screen display of report.
+        $mform->display();
+
+        // new quiz reset button
+        if(has_capability('quiz/makeexam:submit', $this->context)) {
+            $disabled = (!$hasquestions && !$this->get_current_attempt($quiz->id)) ? true : false;
+            echo $output->print_clearquiz_button($disabled);
+        }
+
+        echo $output->container('', 'clearfix');
+
+        /// TODO here can be placed options
+        /// TODO options = period select form
+
+        $examregistrar = $this->get_examregistrar_instance($cm, $this->course);
+        foreach($this->exams as $exam) {
+            echo $output->container_start(' examcoursereview'  );
+                echo $output->print_exam_header($exam);
+
+                //load check_attempt_questions data into exam for displaying
+                foreach($exam->attempts as $key => $attempt) {
+                     $attempt->check_questions_results = $this->check_attempt_questions($quiz, $attempt);
+                     $exam->attempts[$key] = $attempt;
+                }
+
+                echo $output->print_exam_attempts($quiz, $exam, $examregistrar);
+
+            echo $output->container_end();
+        }
+
+        return true;
+    }
+
+//// LOAD PART /////////////////////////////////////////////////////////////
 
 
     /**
@@ -212,6 +321,24 @@ class quiz_makeexam_report extends quiz_default_report {
     }
 
 
+
+//// LOAD PART END /////////////////////////////////////////////////////////////
+
+    protected function install_official_tags() {
+        global $CFG;
+
+        // install official tags
+        require_once($CFG->dirroot . '/tag/lib.php');
+        $tags[] = get_string('tagvalidated', 'quiz_makeexam');
+        $tags[] = get_string('tagrejected', 'quiz_makeexam');
+        $tags[] = get_string('tagunvalidated', 'quiz_makeexam');
+
+        $tags = core_tag_tag::create_if_missing(1, $tags, true);
+    }
+
+//// ACTIONS PART  /////////////////////////////////////////////////////////////
+
+
     protected function data_submitted() {
 
         $data = false;
@@ -237,15 +364,15 @@ class quiz_makeexam_report extends quiz_default_report {
         return false;
     }
 
-
     /**
-     * Process any submitted actions.
+     * Pretty prints a message informing of an error and button to continue.
+     *
      * @param string $pagename the quiz name, usually.
      * @param string $coursename 
      * @param moodle_url $reporturl url to go to after this page.
      * @param string $error a notification to show to user
      * @param string $message a confirmation message to show to user      
-     * @param array $params for confirmation action, if any
+     * @param array $confirmparams for confirmation action, if any
      * @return void;
      */
     protected function print_error_continue($pagename, $coursename, $reporturl, $error, 
@@ -258,7 +385,7 @@ class quiz_makeexam_report extends quiz_default_report {
         $output = $PAGE->get_renderer('mod_quiz');
         echo $output->header();
         
-        if($confirmparams) {
+        if(!empty($confirmparams)) {
             $confirmurl = new moodle_url($reporturl, $confirmparams + array('confirm' => 1));
             echo $output->confirm($message, $confirmurl, $reporturl);
         } else {
@@ -272,27 +399,7 @@ class quiz_makeexam_report extends quiz_default_report {
         echo $output->footer();
         die;
     }
-    
-    
-    
-    /**
-     * Process any submitted actions.
-     * @param object $quiz the quiz settings.
-     * @param int $attempid the exam version attempt to show.
-     * @param object $mform the settings form
-     * @return void;
-     */
-    protected function exam_version_preview($quiz, $attempid) {
-        require_capability('mod/quiz:preview', $this->context);
-        // start a new quiz attempt from stored one
-        $quizattemptid = $this->restore_saved_attempt($quiz, $attempid);
-        // Redirect to the attempt page.
-        $url = new moodle_url('/mod/quiz/review.php', array('id'=>$this->context->instanceid, 'mode'=>$this->mode,
-                                                            'attempt' => $quizattemptid, 'review'=>$attempid, 'showall'=>1));
-        redirect($url);
-    }    
-    
-    
+
     /**
      * Process any submitted actions.
      * @param object $quiz the quiz settings.
@@ -311,8 +418,11 @@ class quiz_makeexam_report extends quiz_default_report {
             if (optional_param('delete', 0, PARAM_BOOL) && confirm_sesskey()) {
                 if ($attemptids = optional_param_array('attemptid', array(), PARAM_INT)) {
                     require_capability('mod/quiz:deleteattempts', $this->context);
+
+                    print_object("aqui");
+                    die;
                     $this->delete_selected_attempts($quiz, $cm, $attemptids, $allowed);
-                    redirect($redirecturl);
+                    redirect($reporturl);
                 }
             }
         }
@@ -329,9 +439,8 @@ class quiz_makeexam_report extends quiz_default_report {
             }
             $warnings = 0;
             if(!has_capability('quiz/makeexam:anyquestions', $this->context)) {
-                $quiz->questions = $this->get_quiz_questions_ids($quiz->id);
-                $questions = $DB->get_records_list('question', 'id', $quiz->questions);
-                $warnings = $this->check_attempt_valid_questions($questions);
+                $slots = qbank_helper::get_question_structure($quiz->id, $this->context);
+                $warnings = $this->check_attempt_valid_questions($slots);
             }
             if($warnings) {
                 $editurl = new moodle_url('/mod/quiz/edit.php', array('cmid'=>$cm->id));
@@ -340,7 +449,7 @@ class quiz_makeexam_report extends quiz_default_report {
                                             get_string('errorinvalidquestions', 'quiz_makeexam', $warnings));
             
             } else {
-                $newattemptid = $this->start_new_attempt($quiz);
+                $newattemptid = $this->start_new_preview_attempt($quiz);
                 $url = new moodle_url($reviewurl,  array('action'=>'newattempt', 'examid'=>$fromform->examid,
                                                             'name'=>$fromform->name, 'attempt'=>$newattemptid));
                 if($fromform->currentattempt) {
@@ -416,26 +525,7 @@ class quiz_makeexam_report extends quiz_default_report {
             } elseif(!isset($fromform->confirm) || !$fromform->confirm) {
                 $this->print_error_continue($quiz->name, $course->fullname, $reporturl, 
                                             $error, $message, get_object_vars($fromform));
-            /*
-            
-                $PAGE->set_title($quiz->name);
-                $PAGE->set_heading($course->fullname);
-                $PAGE->navbar->add(get_string('makeexam', 'quiz_makeexam'));
 
-                $output = $PAGE->get_renderer('mod_quiz');
-                $params = get_object_vars($fromform);
-                $confirmurl = new moodle_url($reporturl, $params + array('confirm' => 1));
-                echo $output->header();
-                if($error) {
-                    echo $output->notification($message, 'notifysuccess');
-                    echo $output->notification($error);
-                    echo $output->continue_button($reporturl);
-                } else {
-                    echo $output->confirm($message, $confirmurl, $reporturl);
-                }
-                echo $output->footer();
-                die;
-                */
             } elseif(confirm_sesskey()){
                 // confirmed, perform real actions
 
@@ -443,14 +533,15 @@ class quiz_makeexam_report extends quiz_default_report {
                 // delete
                 if(isset($fromform->delete) &&  $fromform->delete) {
                     $this->delete_attempt($quiz, $fromform->delete);
+                    redirect($reporturl);
                 }
-
+/*
                 // review
                 if(isset($fromform->review) &&  $fromform->review) {
                     // review, start a new quiz attempt from stored one
                     $this->exam_version_preview($quiz, $fromform->review);
                 }
-
+*/
                 // prepare eventdata
                 $eventdata = array();
                 $eventdata['context'] = $this->context;
@@ -463,31 +554,43 @@ class quiz_makeexam_report extends quiz_default_report {
                     //  restore quiz questions from stored ones
                     $examattempt = $DB->get_record('quiz_makeexam_attempts', array('id'=>$fromform->setquestions), '*', MUST_EXIST);
 
-                    // change quiz state, questions, from stored makeexam
-                    $this->restore_quiz_from_attempt($quiz, $examattempt, true);
-                    //$quizattemptid = $this->restore_saved_attempt($quiz, $fromform->setquestions);
+                    // change quiz state, questions, from stored makeexam; this clears previous questions, if existing
+                    $this->restore_saved_attempt($quiz, $examattempt->id);
+                    $this->set_current_attempt($quiz->id, $examattempt->id);
                     $eventdata['objectid'] = $examattempt->id;
                     $eventdata['other']['examid'] = $examattempt->examid;
                     $event = \quiz_makeexam\event\exam_recalled::create($eventdata);
                     $event->trigger();
                     // Redirect to the edit page.
-                    $url = new moodle_url('/mod/quiz/edit.php', array('cmid'=>$this->context->instanceid, 'mode'=>$this->mode,
+                    $url = new moodle_url('/mod/quiz/edit.php', array('cmid'=>$cm->id, 'mode'=>$this->mode,
                                                                         'qbanktool' => 1));
                     redirect($url);
                 }
 
                 // pdfpreview
                 if(isset($fromform->pdf) &&  $fromform->pdf) {
-                    // start a new quiz attempt from stored one
-                    $quizattemptid = $this->restore_saved_attempt($quiz, $fromform->pdf);
+                    // Generate PDF and present in browser / download
+                    //First load questions into quiz from pdf attempt
+                    $this->restore_saved_attempt($quiz, (int)$fromform->pdf);
+
+                    // now we have questions, we can create a quiz attempt
+                    $quizattemptid = $this->start_new_preview_attempt($quiz);
+
+                    // and generate PDF
                     $message = $this->generate_pdf($quiz, $quizattemptid,  $fromform->examid, $fromform->pdf, 'exam', false);
                 }
 
                 // submit
                 if(isset($fromform->submit) &&  $fromform->submit) {
-                    // start a new quiz attempt from stored one
+                    // Submits exam verson to examregistrar
                     require_capability('quiz/makeexam:submit', context_module::instance($cm->id));
-                    $quizattemptid = $this->restore_saved_attempt($quiz, $fromform->submit);
+
+                    //First load questions into quiz from pdf attempt
+                    $this->restore_saved_attempt($quiz, (int)$fromform->submit);
+
+                    // now we have questions, we can create a quiz attempt
+                    $quizattemptid = $this->start_new_preview_attempt($quiz);
+
                     $message = $this->submit_attempt($cm, $quiz, $course, $quizattemptid, $fromform->examid, $fromform->submit);
 
                     $eventdata['objectid'] = $fromform->submit;
@@ -509,60 +612,29 @@ class quiz_makeexam_report extends quiz_default_report {
                     if(!isset($fromform->currentattempt)) {
                         $fromform->currentattempt = 0;
                     }
-                    $nodelete = $fromform->action == 'continueattempt' ? true : false;
-                    $attemptid = $this->make_new_attempt($quiz, $fromform->examid, $fromform->name, $fromform->newattempt, $fromform->currentattempt, $nodelete);
+                    $continueattempt = ($fromform->action == 'continueattempt') ? true : false;
+                    $attemptid = $this->make_new_attempt($quiz, $fromform->examid, $fromform->name, $fromform->newattempt, $fromform->currentattempt, $continueattempt);
 
                     $eventdata['objectid'] = $attemptid;
                     $eventdata['other']['examid'] = $fromform->examid;
-                    $eventdata['other']['continue'] = $nodelete;
+                    $eventdata['other']['continue'] = $continueattempt;
                     $event = \quiz_makeexam\event\exam_created::create($eventdata);
                     $event->trigger();
                 }
 
                 if(isset($fromform->clearquiz) && $fromform->clearquiz == 1 ) {
-                    $this->clear_quiz($quiz);
-                    $eventdata['objectid'] = $quiz->id;
-                    $event = \quiz_makeexam\event\exam_cleared::create($eventdata);
-                    $event->trigger();
-                    $editurl = new moodle_url('/mod/quiz/edit.php', array('cmid'=>$cm->id));
-                    redirect($editurl, get_string('cleared', 'quiz_makeexam'), 5);
-                }
-
-                if(isset($fromform->copyold) && $fromform->copyold && !optional_param('cancel', '', PARAM_ALPHA)) {
-                    require_once($CFG->dirroot . '/mod/quiz/report/makeexam/copyold_form.php');
-                    $mform = new quiz_makeexam_copyold_form(null, array('cmid'=>$cm->id, 'quiz'=>$quiz));
-                    $strnav = get_string('copyold', 'quiz_makeexam');
-                    $PAGE->set_title($quiz->name);
-                    $PAGE->set_heading($course->fullname);
-                    $PAGE->navbar->add($strnav);
-                    $output = $PAGE->get_renderer('mod_quiz');
-                    echo $output->header();
-
-                    if(($formdata = $mform->get_data()) && confirm_sesskey()) {
-                        $this->import_old_questions($formdata->copysource, $formdata->copystatus);
-                        echo $output->continue_button($reporturl);
+                    if($this->clear_quiz($quiz)) {
+                        $eventdata['objectid'] = $quiz->id;
+                        $event = \quiz_makeexam\event\exam_cleared::create($eventdata);
+                        $event->trigger();
+                        $editurl = new moodle_url('/mod/quiz/edit.php', array('cmid'=>$cm->id));
+                        redirect($editurl, get_string('cleared', 'quiz_makeexam'), 5);
                     } else {
-                        $mform->display();
+                        \core\notification::add(get_string('delexistingattempts', 'quiz_makeexam'),
+                                                    \core\output\notification::NOTIFY_ERROR);
                     }
-                    echo $output->footer();
-                    die;
                 }
 
-                $viewurl = new moodle_url('/mod/quiz/view.php',  array('id' => $cm->id));
-                $examregistrar = $this->get_examregistrar_instance($cm, $course);
-                $options = array('courseid' => $course->id, 'quizid' => $quiz->id);
-                
-                if(isset($fromform->updatedates) && $fromform->updatedates) {
-                    examregistrar_update_exam_quizzes($examregistrar, $options); 
-                    redirect($viewurl);
-                }
-                
-                if(isset($fromform->addqzcm) && $fromform->addqzcm) {
-                    examregistrar_add_quizzes_makexamlock($examregistrar, $options); 
-                    examregistrar_synch_exam_quizzes($examregistrar, $options); 
-                    redirect($viewurl);
-                }
-                
                 // other actions
                 if($message) {
                     redirect($reporturl, $message, 5);
@@ -572,479 +644,49 @@ class quiz_makeexam_report extends quiz_default_report {
         }
     }
 
+//// ACTIONS PART END /////////////////////////////////////////////////////////////
 
-    protected function delete_attempt($quiz, $attemptid, $updateattempt = null) {
-        global $DB, $USER;
-
-        if(is_object($updateattempt)) {
-            $examattempt = clone $updateattempt;
-        } else {
-            $examattempt = $DB->get_record('quiz_makeexam_attempts', array('id'=>$attemptid), '*', MUST_EXIST);
-        }
-
-        $quizobj = quiz::create($quiz->id, $examattempt->userid);
-        $this->delete_existing_previews($quizobj, $examattempt->userid);
-
-        if($quizattempt = $DB->get_record('quiz_attempts', array('id'=>$examattempt->attemptid))) {
-            $quizattempt->quiz = $quiz->id;
-            $quizattempt->uniqueid = -($quizattempt->uniqueid);
-            $DB->update_record('quiz_attempts', $quizattempt);
-            quiz_delete_attempt($quizattempt, $quiz, true); // true means unconditional delete, no check for negative
-        }
-
-        //delete  makeexam qinstances
-        $questions = $DB->get_records_menu('quiz_makeexam_slots', array('mkattempt'=>$attemptid), '', 'id,questionid');
-        $DB->delete_records('quiz_makeexam_slots', array('mkattempt'=>$attemptid));
-        $DB->delete_records('quiz_makeexam_sections', array('mkattempt'=>$attemptid));
-
-        // unhide used questions. Check first if used in other attempts
-        $unhide = array();
-        foreach($questions as $qid) {
-            if(!$DB->record_exists('quiz_makeexam_slots', array('questionid'=>$qid, 'inuse'=>1))) {
-                $unhide[] = $qid;
-            }
-        }
-        if($unhide) {
-            list($insql, $params) = $DB->get_in_or_equal($unhide);
-            $DB->set_field_select('question', 'hidden', 0, " id $insql ", $params);
-        }
-
-        $success = true;
-        if(!is_object($updateattempt)) {
-            if($success = $DB->delete_records('quiz_makeexam_attempts', array('id'=>$attemptid))) {
-                $eventdata = array();
-                $eventdata['objectid'] = $attemptid;
-                $eventdata['context'] = $this->context;
-                $eventdata['other'] = array();
-                $eventdata['other']['quizid'] = $quiz->id;
-                $eventdata['other']['examid'] = $examattempt->id;
-                $event = \quiz_makeexam\event\exam_recalled::create($eventdata);
-                $event->trigger();
-            }
-        }
-
-
-        return $success;
-
-    }
+//// Makeexam proper report PART //////////////////////////////////////////////////
 
     /**
-     * Delete the quiz attempts
-     * @param object $quiz the quiz settings. Attempts that don't belong to
-     * this quiz are not deleted.
-     * @param object $cm the course_module object.
-     * @param array $attemptids the list of attempt ids to delete.
-     * @param array $allowed This list of userids that are visible in the report.
-     *      Users can only delete attempts that they are allowed to see in the report.
-     *      Empty means all users.
+     * Sets the makeexam_attemp that is currently in use, and return it
+     *
+     * @param int $quizid the ID for a quiz instance
+     * @param int $attemptid the ID for a makeexam_attempt
+     * @return int currentattempt
      */
-    protected function delete_selected_attempts($quiz, $cm, $attemptids, $allowed) {
+    protected function set_current_attempt(int $quizid, int $attemptid): int {
         global $DB;
 
-        foreach ($attemptids as $attemptid) {
-            $attempt = $DB->get_record('quiz_attempts', array('id' => $attemptid));
-            if (!$attempt || $attempt->quiz != $quiz->id || $attempt->preview != 0) {
-                // Ensure the attempt exists, and belongs to this quiz. If not skip.
-                continue;
-            }
-            if ($allowed && !in_array($attempt->userid, $allowed)) {
-                // Ensure the attempt belongs to a student included in the report. If not skip.
-                continue;
-            }
+        // ensure there is only one record with currentattempt set
+        $DB->set_field('quiz_makeexam_attempts', 'currentattempt', 0, ['quizid'=>$quizid]);
+        // if $attemptid = 0 or not in table, not set field = no current attempt
+        $DB->set_field('quiz_makeexam_attempts', 'currentattempt', 1, ['quizid'=>$quizid, 'id'=>$attemptid]);
 
-            $this->delete_attempt($quiz, $attemptid);
-        }
+        return $this->get_current_attempt($quizid);
     }
 
-
     /**
-     * Initialise some parts of $PAGE and start output.
+     * Returns the makeexam_attemp that is currently in use
      *
-     * @param object $cm the course_module information.
-     * @param object $coures the course settings.
-     * @param object $quiz the quiz settings.
-     * @param string $reportmode the report name.
+     * @param int $quizid the ID for a quiz instance
+     * @return int currentattempt
      */
-    public function print_header_and_tabs($cm, $course, $quiz, $reportmode = 'makeexam') {
-        global $PAGE, $OUTPUT;
+    protected function get_current_attempt(int $quizid): int {
+        global $DB;
 
-        // Print the page header.
-        $PAGE->set_title($quiz->name);
-        $PAGE->set_heading($course->fullname);
-        echo $OUTPUT->header();
-        $context = context_module::instance($cm->id);
-        //echo $OUTPUT->heading(format_string($quiz->name, true, array('context' => $context)));
-        echo $OUTPUT->heading(get_string('createexams', 'quiz_makeexam'));
+        $id = $DB->get_field('quiz_makeexam_attempts', 'id', ['quizid'=>$quizid, 'currentattempt'=> 1]);
+        $this->currentattempt = (int)$id;
+        return $this->currentattempt;
     }
 
     /**
-     * Display the report.
-     */
-    public function display($quiz, $cm, $course) {
-        global $CFG, $DB, $OUTPUT, $PAGE;
-        
-        $this->init('makeexam', $quiz, $cm, $course);
-
-        $reporturl = $this->get_base_url();
-
-        // Find out current groups mode.
-        $currentgroup = $this->get_current_group($cm, $course, $this->context);
-
-        // load data
-        $this->load_exams($cm, $course);
-        $questions = $this->get_quiz_questions_ids($quiz->id);
-        unset($quizobj);
-
-        $mform = new quiz_makeexam_settings_form($reporturl, array('exams'=>$this->exams,
-                                                                   'quiz'=>$quiz,
-                                                                   'questions'=>$questions,
-                                                                   'current'=>$this->get_current_attempt($quiz)));
-
-        $this->install_official_tags(); // just in case not installed yet
-
-        // Process any submitted actions in the report.
-        //Any optional params & action goes inside
-        $this->process_actions($quiz, $cm, $course, $currentgroup, $mform);
-
-        $output = $PAGE->get_renderer('mod_quiz');
-        $PAGE->set_pagelayout('incourse');
-
-        // Now starts output
-        $this->print_header_and_tabs($cm, $course, $quiz, 'makeexam');
-
-        if(!$this->exams) {
-            echo $output->heading(get_string('nothingtodisplay'));
-            return true;
-        }
-
-        if (groups_get_activity_groupmode($cm)) {
-            groups_print_activity_menu($cm, $reporturl->out());
-        }
-
-
-        // On-screen display of report.
-        $mform->display();
-
-        // new quiz reset button
-        echo $this->print_clearquiz_button($quiz, $cm, $course);
-
-        // new copy questions button
-        //echo $this->print_old_questions_form($cm);
-
-        echo $output->container('', 'clearfix');
-
-        /// TODO here can be placed options
-        /// TODO options = period select form
-
-        foreach($this->exams as $exam) {
-            echo $output->container_start(' examcoursereview'  );
-                echo $this->print_exam_header($exam);
-                echo $this->print_exam_attempts($cm, $quiz, $exam);
-            echo $output->container_end();
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Prints header with exam identification data: Period, scope, call, session,
+     * Checks if questions belong to configured valid types
      *
-     * @param object $exam the exam (single period, scope, call) being printed
-     * @param object $course the course settings object.
+     * @param array $questions array of slot => question data. Required type is question.qtype
+     * @return int number of invalid questions (not in valid types)
      */
-    protected function print_exam_header($exam) {
-        global $PAGE;
-
-        $output = $PAGE->get_renderer('mod_quiz');
-
-        $items = array();
-/*
-        list($name, $idnumber) = examregistrar_get_namecodefromid($exam->annuality);
-        $items[] = get_string('annualityitem', 'examregistrar').': '.$name.' ('.$idnumber.')';
-
-        $items[] = get_string('programme', 'examregistrar').': '.$exam->programme;
-*/
-        list($name, $idnumber) = examregistrar_get_namecodefromid($exam->period, 'periods');
-        $items[] = get_string('perioditem', 'examregistrar').': '.$name.' ('.$idnumber.')';
-
-        list($name, $idnumber) = examregistrar_get_namecodefromid($exam->examscope);
-        $items[] = get_string('scopeitem', 'examregistrar').': '.$name.' ('.$idnumber.')';
-
-        $items[] = get_string('callnum', 'examregistrar').': '.$exam->callnum;
-
-        list($name, $idnumber) = examregistrar_get_namecodefromid($exam->examsession, 'examsessions');
-        $items[] = get_string('examsessionitem', 'examregistrar').': '.$name.' ('.$idnumber.')';
-
-        echo $output->heading(implode('; ', $items), 3, ' makeexam_examheader'  );
-    }
-
-    /**
-     * Prints the table of exam attempts existing for this exam
-     *
-     * @param object $cm the course module object of this quiz
-     * @param object $quiz the quiz instance this Make Exam is called from
-     * @param object $exam the exam (single period, scope, call) being printed
-     */
-    protected function print_exam_attempts($cm, $quiz, $exam) {
-        global $CFG, $DB, $PAGE;
-
-        $output = $PAGE->get_renderer('mod_quiz');
-        $reporturl = $this->get_base_url();
-
-        if($exam->attempts) {
-            $table = new html_table();
-            $table->attributes = array('class'=>'flexible makeexamreviewtable' );
-            $tableheaders = array(get_string('attempt', 'quiz_makeexam'),
-                                  get_string('generatinguser', 'quiz_makeexam'),
-                                  get_string('questions', 'quiz'),
-                                    get_string('status', 'quiz_makeexam'),
-                                    get_string('attempts', 'examregistrar'),
-                                    get_string('statereview', 'examregistrar'),
-                                    get_string('action'),
-
-                                    );
-            $table->head = $tableheaders;
-            $table->colclasses = array('colattempt', 'colgeneratinguser', 'colquestions', 'colstatus', 'colattempts', 'colstatereview', 'colqaction');
-
-            $strdelete  = get_string('delete');
-            $strsent    = get_string('sent', 'quiz_makeexam');
-            $strunsent  = get_string('unsent', 'quiz_makeexam');
-            $strunsend  = get_string('unsend', 'quiz_makeexam');
-            $strsubmit  = get_string('submit', 'quiz_makeexam');
-            $strnew     = get_string('newattempt', 'quiz_makeexam');
-            $strpdf     = get_string('pdfpreview', 'quiz_makeexam');
-            $strgoexreg = get_string('gotoexamreg', 'quiz_makeexam');
-            $strgoattempt = get_string('setquestions', 'quiz_makeexam');
-            $strgoreport = get_string('gotootherquiz', 'quiz_makeexam');
-
-            $strapproved = get_string('approved', 'examregistrar');
-            $strrejected = get_string('rejected', 'examregistrar');
-            $strexamfile = get_string('examfile', 'examregistrar');
-
-            $cansubmit = has_capability('quiz/makeexam:submit', context_module::instance($cm->id));
-            $candelete = has_capability('quiz/makeexam:delete', context_module::instance($cm->id));
-            $nochecklimit = has_capability('quiz/makeexam:nochecklimit', context_module::instance($cm->id));
-            $canuseany = has_capability('quiz/makeexam:anyquestions', context_module::instance($cm->id));
-            $canmanage = has_capability('mod/examregistrar:manageexams', context_course::instance($this->course->id));
-
-            foreach($exam->attempts as $attempt) {
-                $celln = $attempt->attempt;
-                $user = $DB->get_record('user', array('id'=>$attempt->userid),
-                                                        implode(',', \core_user\fields::get_name_fields()));
-                $url = new moodle_url('/user/view.php', array('id'=>$attempt->userid, 'course'=>$this->course->id));
-                $cellgeneratedby = html_writer::link($url, fullname($user));
-                $cellgeneratedby .= '<br />'. userdate($attempt->timemodified, get_string('strftimerecent'));
-
-                list($numquestions, $invalid, $errors) = $this->check_attempt_questions($quiz, $attempt);
-                $cellquestions = $numquestions;
-                if($invalid OR $errors) {
-                    $content = '';
-                    if($invalid) {
-                        $content .= $invalid;
-                    }
-                    if($errors) {
-                        if($content) {
-                            $content .= '<br />';
-                        }
-                        $content .= $errors;
-                    }
-                    $cellquestions .= '<br />'.print_collapsible_region($content, ' error ', 'showhideerror_'.$attempt->id,
-                                                                        get_string('generate_errors','quiz_makeexam'), 'examattempterror_'.$attempt->id, true, true);
-                }
-
-                if($attempt->status) {
-                    $icon = $output->pix_icon('i/completion-manual-enabled', $strsent, 'moodle', array('class'=>'icon', 'title'=>$strsent));
-                } else {
-                    $icon = $output->pix_icon('i/completion-manual-n', $strunsent, 'moodle', array('class'=>'icon', 'title'=>$strunsent));
-                }
-                $cellstatus = $icon;
-
-                $name = $attempt->name.' ('.userdate($attempt->timecreated, get_string('strftimerecent')).') ';
-                if($quiz->id == $attempt->quizid) {
-                    //$url = new moodle_url($reporturl,  array('review'=>$attempt->id, 'confirm'=>1, 'sesskey'=>sesskey()));
-                    $url = new moodle_url($reporturl,  array('review'=>$attempt->id, 'confirm'=>1));
-                    $name = html_writer::link($url, $name);
-                    $url = new moodle_url($reporturl,  array('examid'=>$attempt->examid, 'pdf'=>$attempt->id, 'confirm'=>1, 'sesskey'=>sesskey()));
-                    $icon = new pix_icon('f/pdf-32', $strpdf, 'moodle', array('class'=>'iconlarge', 'title'=>$strpdf));
-                    $cellattempt = $name.'&nbsp;   &nbsp;'.$output->action_icon($url, $icon);
-                } else {
-                    $cellattempt = $name;
-                }
-                if($attempt->timesubmitted) {
-                    $cellattempt .= '<br />'.get_string('sent', 'examregistrar').': '.userdate($attempt->timesubmitted, get_string('strftimedaydatetime'));
-                }
-
-                // if ANY examfile for this exmid is approved, or sent without resolution then no more exam submitting allowed
-                foreach($exam->examfiles as $item) {
-                    if(($item->status != EXAM_STATUS_CREATED) && ($item->status != EXAM_STATUS_REJECTED) ) {
-                        $cansubmit = false;
-                    }
-                }
-
-                $attempt->reviewstatus = $attempt->examfileid ? $exam->examfiles[$attempt->examfileid]->status : 0;
-
-                $icon = '';
-                switch($attempt->reviewstatus) {
-                    case EXAM_STATUS_SENT       : $icon = $output->pix_icon('sent', $strsent, 'mod_examregistrar', array('class'=>'iconlarge', 'title'=>$strsent));
-                                                    break;
-                    case EXAM_STATUS_WAITING    : $icon = $output->pix_icon('waiting', $strsent, 'mod_examregistrar', array('class'=>'iconlarge', 'title'=>$strsent));
-                                                    break;
-                    case EXAM_STATUS_REJECTED   : $icon = $output->pix_icon('rejected', $strrejected, 'mod_examregistrar', array('class'=>'icon', 'title'=>$strrejected));
-                                                  $time = $exam->examfiles[$attempt->examfileid]->timerejected;
-                                                  $cellattempt .= '<br />'.get_string('rejected', 'examregistrar').': '.userdate($time, get_string('strftimedaydatetime'));
-                                                    break;
-                    case EXAM_STATUS_APPROVED   :
-                    case EXAM_STATUS_VALIDATED  : $icon = $output->pix_icon('approved', $strapproved, 'mod_examregistrar', array('class'=>'iconlarge', 'title'=>$strapproved));
-                                                  $time = $exam->examfiles[$attempt->examfileid]->timeapproved;
-                                                  $cellattempt .= '<br />'.get_string('approved', 'examregistrar').': '.userdate($time, get_string('strftimedaydatetime'));
-                                                    break;
-                }
-                $cellstatereview = $icon;
-
-                $actions = array();
-                
-                if($quiz->id == $attempt->quizid) {
-                    if($candelete && !$attempt->reviewstatus >= EXAM_STATUS_APPROVED) {
-                        $icon = new pix_icon('t/delete', $strdelete, 'moodle', array('class'=>'iconsmall', 'title'=>$strdelete));
-                        $url = new moodle_url($reporturl, array('delete'=>$attempt->id, 'examid'=>$attempt->examid, 'sesskey'=>sesskey()));
-                        $actions[] = $output->action_icon($url, $icon);
-                    }
-                    
-                    if($cansubmit && $attempt->status == 0 && (!$invalid || $canuseany) && (!$errors || $nochecklimit) ) {
-                        $icon = new pix_icon('i/completion-auto-pass', $strsubmit, 'moodle', array('class'=>'iconlarge', 'title'=>$strsubmit));
-                        $url = new moodle_url($reporturl, array('submit'=>$attempt->id, 'examid'=>$attempt->examid, 'sesskey'=>sesskey()));
-                        $actions[] = $output->action_icon($url, $icon);
-                    }
-
-                    $examregistrar = $this->get_examregistrar_instance($cm, $this->course);
-                    if($attempt->examfileid && isset($examregistrar->cmid)) {
-                        $icon = new pix_icon('t/contextmenu', $strgoexreg, 'moodle', array('class'=>'icon', 'title'=>$strgoexreg));
-                        $url = new moodle_url('/mod/examregistrar/view.php', array('id'=>$examregistrar->cmid, 'tab'=>'review', 'period'=>$exam->period, 'sesskey'=>sesskey()));
-                        $actions[] = $output->action_icon($url, $icon);
-                    }
-
-                    if($canmanage && $attempt->status) {
-                        $icon = new pix_icon('i/completion-manual-n', $strunsend, 'moodle', array('class'=>'iconsmall', 'title'=>$strunsend));
-                        $url = new moodle_url($reporturl, array('unsend'=>$attempt->id, 'examid'=>$attempt->examid, 'sesskey'=>sesskey()));
-                        $actions[] = $output->action_icon($url, $icon);
-                    }
-                } else {
-                    $icon = new pix_icon('i/customfield', $strgoreport, 'moodle', array('class'=>'icon', 'title'=>$strgoreport));
-                    $url = new moodle_url('/mod/quiz/report.php', array('q' => $attempt->quizid, 'mode' => 'makeexam'));
-                    $actions[] = $output->action_icon($url, $icon);
-                }
-                if(($quiz->id == $attempt->quizid) || $canmanage) {
-                    $icon = new pix_icon('i/reload', $strgoattempt, 'moodle', array('class'=>'icon', 'title'=>$strgoattempt));
-                    $url = new moodle_url($reporturl, array('setquestions'=>$attempt->id, 'confirm'=>1, 'sesskey'=>sesskey()));
-                    $actions[] = $output->action_icon($url, $icon);
-                }
-                
-                
-
-                $cellaction = implode('&nbsp;  ', $actions);
-
-                $row = new html_table_row(array($celln, $cellgeneratedby, $cellquestions, $cellstatus, $cellattempt, $cellstatereview, $cellaction));
-                $table->data[] = $row;
-            }
-            echo html_writer::table($table);
-        }
-    }
-
-
-
-    /**
-     * Creates a new attempt object to use as Exam preview
-     *
-     * @param object $quizobj quiz Class object
-     * @param int $userid the ID of the user the attempts belong to
-     */
-    protected function delete_existing_previews(quiz $quizobj, $userid = 0) {
-        global $DB, $USER;
-
-        if(!$userid) {
-            $userid = $USER->id;
-        }
-
-        // To force the creation of a new preview, we mark the current attempt (if any)
-        // as finished. It will then automatically be deleted below.
-        $DB->set_field('quiz_attempts', 'state', quiz_attempt::FINISHED,
-                array('quiz' => $quizobj->get_quizid(), 'userid' => $userid));
-
-        // Look for an existing attempt.
-        $attempts = quiz_get_user_attempts($quizobj->get_quizid(), $userid, 'all', true);
-        $lastattempt = end($attempts);
-        while ($lastattempt && $lastattempt->preview) {
-            // check if existing preview is a normal one or a makeexam preview
-            if($DB->record_exists('quiz_attempts', array('uniqueid'=>-$lastattempt->uniqueid))) {
-                //this is a makeexam preview, just delete it
-                $DB->delete_records('quiz_attempts', array('uniqueid'=>$lastattempt->uniqueid));
-            }
-            $lastattempt = array_pop($attempts);
-        }
-
-        // Delete any previous preview attempts belonging to this user.
-        // This deletes question_usages
-        quiz_delete_previews($quizobj->get_quiz(), $userid);
-
-        return $lastattempt;
-    }
-
-
-    /**
-     * Creates a new attempt objecto to use as Exam preview
-     *
-     * @param object $cm the course module object of this quiz
-     */
-    protected function start_new_attempt($quiz, $userid = 0) {
-        global $CFG, $DB, $PAGE, $USER;
-
-        if(!$userid) {
-            $userid = $USER->id;
-        }
-        $quizobj = quiz::create($quiz->id, $userid);
-        // This script should only ever be posted to, so set page URL to the view page.
-        $PAGE->set_url($quizobj->view_url());
-
-        // Check login and sesskey.
-        require_login($this->course, false, $quizobj->get_cm());
-        $PAGE->set_heading($this->course->fullname);
-
-        // If no questions have been set up yet redirect to edit.php or display an error.
-        if (!$quizobj->has_questions()) {
-            if ($quizobj->has_capability('mod/quiz:manage')) {
-                redirect($quizobj->edit_url());
-            } else {
-                print_error('cannotstartnoquestions', 'quiz', $quizobj->view_url());
-            }
-        }
-
-        // Check capabilities.
-        if (!$quizobj->is_preview_user()) {
-            $quizobj->require_capability('mod/quiz:manage');
-        } else {
-            $quizobj->require_capability('quiz/makeexam:submit');
-        }
-
-        $lastattempt = $this->delete_existing_previews($quizobj);
-        $attemptnumber = 1;
-        if($lastattempt) {
-            $attemptnumber = $lastattempt->attempt + 1;
-        }
-        $quba = question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
-        $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
-        $timenow = time(); // Update time now, in case the server is running really slowly.
-        $attempt = quiz_create_attempt($quizobj, $attemptnumber, $lastattempt, $timenow, $quizobj->is_preview_user());
-        $attempt = quiz_start_new_attempt($quizobj, $quba, $attempt, $attemptnumber, $timenow);
-        $attempt->preview = 1;
-        $attempt = quiz_attempt_save_started($quizobj, $quba, $attempt);
-        $attemptobj = quiz_attempt::create($attempt->id);
-        $attemptobj->process_finish($timenow+1, true);
-        return $attempt->id;
-    }
-
-
-    protected function check_attempt_valid_questions($questions) {
+    protected function check_attempt_valid_questions(array $questions): int {
         $config = get_config('quiz_makeexam');
 
         $validquestions = $config->validquestions;
@@ -1055,7 +697,7 @@ class quiz_makeexam_report extends quiz_default_report {
         }
 
         $warnings = 0;
-        foreach($questions as $qid => $question) {
+        foreach($questions as $slot => $question) {
             if(!in_array($question->qtype, $validquestions)) {
                 $warnings +=1;
             }
@@ -1064,20 +706,27 @@ class quiz_makeexam_report extends quiz_default_report {
         return $warnings;
     }
 
-    protected function check_attempt_questions($quiz, $attempt) {
+    /**
+     * Checks if current questions ar compliant with configured requirements
+     *
+     * @param object $quiz a record from quiz table
+     * @param object $mkattempt the makeexam_attempt with ID for a makeexam_slots attempt
+     * @return array array($numquestions, $invalid, $success)
+     */
+    protected function check_attempt_questions($quiz, $mkattempt): array {
         global $DB, $USER;
 
         $config = get_config('quiz_makeexam');
 
         $success = false;
         $info = new stdClass;
-
         $errors = array();
         $invalid = false;
 
-        $questions = $DB->get_records_list('question', 'id', explode(',', $attempt->questions));
-
-        $quizobj = quiz::create($quiz->id, $USER->id);
+        $fields = 'qms.slot, qv.questionid, q.qtype, q.defaultmark, qms.questionbankentryid, qbe.questioncategoryid AS category';
+        $extrajoins = "JOIN {question} q ON q.id = qv.questionid
+                       JOIN {question_bank_entries} qbe ON qbe.id = qms.questionbankentryid";
+        $questions = $this->attempt_real_questions($quiz->id, $mkattempt->id, $fields, $extrajoins);
 
         $warning = $this->check_attempt_valid_questions($questions);
 
@@ -1103,11 +752,11 @@ class quiz_makeexam_report extends quiz_default_report {
             switch($config->contextlevel) {
                 case CONTEXT_SYSTEM     : $context = context_system::instance();
                                             break;
-                case CONTEXT_COURSECAT  : $context = context_coursecat::instance($quizobj->get_course()->category);
+                case CONTEXT_COURSECAT  : $context = context_coursecat::instance($this->course->category);
                                             break;
                 case CONTEXT_COURSE     : $context = context_course::instance($quiz->course);
                                             break;
-                case CONTEXT_MODULE     : $context = $quizobj->get_context();
+                case CONTEXT_MODULE     : $context = $this->context;
             }
             $select = ' contextid = :contextid AND '.$DB->sql_like('name', ':pattern');
             if($config->excludesubcats) {
@@ -1148,11 +797,292 @@ class quiz_makeexam_report extends quiz_default_report {
         if($errors) {
             $success = get_string('generate_errors','quiz_makeexam').'<br />'.implode('<br />', $errors);
         }
+
         return array($numquestions, $invalid, $success);
     }
 
+    /**
+     * Gets the module instance empty and ready for new uses
+     * Removes all attempts, questions and sections from a quiz instance
+     *
+     * @param object $quiz a record from quiz table
+     * @return void
+     */
+    public function clear_quiz($quiz, bool $allusers = false): bool {
+        global $DB, $USER;
 
-    protected function make_new_attempt($quiz, $examid, $name, $newattemptid, $currentattempt = 0, $nodelete = false) {
+        $user = $USER;
+        if($allusers == true) {
+            $user = null;
+        }
+
+        // delete all previous attempts & previews
+        if(!$this->deleted_existing_attempts($quiz, $user)) {
+            // if keeping attempts, cannot delete questions & usages
+            return false;
+        }
+
+        $this->set_current_attempt($quiz->id, 0);
+        // now we can proceed with questions & slots removal
+        $this->delete_quiz_slots_sections($quiz->id);
+        $this->add_first_section($quiz->id);
+        quiz_update_sumgrades($quiz);
+        return true;
+    }
+
+    /**
+     * Deletes any previous quiz_attempts
+     *
+     * @param object $quiz a quiz instance
+     * @param objet $user the  user the attempts belong to, or any
+     * @return bool if completely deleted (true) or has any remaining attempts (false)
+     */
+    protected function deleted_existing_attempts($quiz, $user = null): bool {
+        global $DB;
+
+        // To force the creation of a new preview, we mark the current attempt (if any)
+        // as finished. It will then automatically be deleted below.
+        $params = ['quiz' => $quiz->id];
+        if(isset($user)) {
+            $params['userid'] = $user->id;
+
+        }
+        $DB->set_field('quiz_attempts', 'state', quiz_attempt::FINISHED, $params);
+
+        if(isset($user)) {
+            // Delete any previous preview attempts belonging to this user.
+            // This deletes question_usages for user
+            $quizobj = quiz::create($quiz->id);
+            quiz_delete_user_attempts($quizobj, $user);
+        } else {
+            // This deletes any question_usages for all users
+            quiz_delete_all_attempts($quiz);
+        }
+
+        // This deletes question_usages for any preview user, all users
+        quiz_delete_previews($quiz);
+
+        return !quiz_has_attempts($quiz->id);
+    }
+
+    /**
+     * Removes all question slots & secctions from current quiz
+     *
+     * @param int $quizid the ID for a quiz instance
+     * @return void
+     */
+    public function delete_quiz_slots_sections(int $quizid) {
+        global $DB;
+
+        $trans = $DB->start_delegated_transaction();
+        $deletesql = "SELECT qr.id AS qrid
+                        FROM {question_references} qr
+                        JOIN {quiz_slots} qs ON qs.id = qr.itemid AND qr.component = 'mod_quiz' AND qr.questionarea = 'slot'
+                    WHERE qr.usingcontextid = :quizcontextid AND qs.quizid = :quizid";
+        $DB->delete_records_subquery('question_references', 'id', 'qrid', $deletesql,
+                                        ['quizcontextid' => $this->context->id, 'quizid' => $quizid]);
+
+        $deletesql = str_replace('question_references', 'question_set_references', $deletesql);
+        $DB->delete_records_subquery('question_set_references', 'id', 'qrid', $deletesql,
+                                        ['quizcontextid' => $this->context->id, 'quizid' => $quizid]);
+
+        $DB->delete_records('quiz_slots', array('quizid'=>$quizid));
+        $DB->delete_records('quiz_sections', array('quizid'=>$quizid));
+        $this->add_first_section($quizid);
+
+        $trans->allow_commit();
+    }
+
+    /**
+     * Makes sure there is a section 1 in the quiz
+     *
+     * @param int $quizid the ID for a quiz instance
+     * @return void
+     */
+    public function add_first_section(int $quizid) {
+        global $DB;
+        if(!$DB->record_exists('quiz_sections', ['quizid' => $quizid, 'firstslot' => 1])) {
+            $firstsection = new stdClass();
+            $firstsection->quizid = $quizid;
+            $firstsection->firstslot = 1;
+            $firstsection->shufflequestions = 0;
+            $DB->insert_record('quiz_sections', $firstsection);
+        }
+    }
+
+    /**
+     * Construct array or slot questions from makeexam_slots questionbankentryids
+     *
+     * @param int $quizid ID of a record from quiz table
+     * @param int $attemptid the ID of a makeexam_attempt entry
+     * @param strig $fields a list of qualified field names to use in a SQL SELECT
+     * @param strig $extrajoins an SQL join for another tabl eto get data from
+     * @return array with question objects,
+     */
+    protected function attempt_real_questions($quizid, int $attemptid,
+                                              $fields = '',
+                                              $extrajoins = ''): array {
+        global $DB;
+
+        if(empty(trim($fields))) {
+            $fields = 'qms.id, qv.questionid, qms.slot, qms.page, qms.maxmark, qms.questionbankentryid';
+        }
+
+        $versionjoin = quiz_makeexam_question_version_sqljoin('quiz_makeexam_slots', 'qms.questionbankentryid');
+        $sql = "SELECT $fields
+                FROM {quiz_makeexam_slots} qms
+                    $versionjoin
+                    $extrajoins
+                WHERE qms.quizid = :quizid1 AND qms.mkattempt = :attempt
+                ORDER BY qms.slot ";
+        $params = ['draft' => question_version_status::QUESTION_STATUS_DRAFT,
+                    'quizid1' => $quizid,
+                    'quizid2' => $quizid,
+                    'attempt' => $attemptid,
+                    ];
+        return $DB->get_records_sql($sql, $params);
+    }
+
+
+    /**
+     * Checks if current questions ar compliant with configured requirements
+     *
+     * @param object $quiz a record from quiz table
+     * @param int $attemptid the ID of a makeexam_attempt entry
+     * @return bool
+     */
+    protected function delete_attempt($quiz, int $attemptid): bool {
+        global $DB, $USER;
+
+        $examattempt = $DB->get_record('quiz_makeexam_attempts', array('id'=>$attemptid), '*', MUST_EXIST);
+
+        if($quizattempt = $DB->get_record('quiz_attempts', array('id'=>$examattempt->attemptid))) {
+            quiz_delete_attempt($quizattempt, $quiz);
+        }
+
+        // slos data must be recovered before deletion
+        $fields = 'qms.id, qv.questionid, qms.slot, qms.questionbankentryid';
+        $slots = $this->attempt_real_questions($quiz->id, $attemptid, $fields);
+
+        $DB->delete_records('quiz_makeexam_slots', array('mkattempt'=>$attemptid));
+        $DB->delete_records('quiz_makeexam_sections', array('mkattempt'=>$attemptid));
+
+        // unhide used questions. Check first if used in other attempts
+        foreach($slots as $slot) {
+            if(!$DB->record_exists('quiz_makeexam_slots',
+                                    ['questionbankentryid'=>$slot->questionbankentryid, 'inuse'=>1])) {
+                update_question_version_status::execute($slot->questionid,
+                                                        question_version_status::QUESTION_STATUS_READY);
+            }
+        }
+
+        $success = true;
+        if($success = $DB->delete_records('quiz_makeexam_attempts', array('id'=>$attemptid))) {
+            // if this is current attempt, unset as current and clear quiz
+            if($attemptid == $this->get_current_attempt($quiz->id)) {
+                $this->clear_quiz($quiz);
+                $this->set_current_attempt($quiz->id, 0);
+            }
+
+            $eventdata = array();
+            $eventdata['objectid'] = $attemptid;
+            $eventdata['context'] = $this->context;
+            $eventdata['other'] = array();
+            $eventdata['other']['quizid'] = $quiz->id;
+            $eventdata['other']['examid'] = $examattempt->examid;
+            $event = \quiz_makeexam\event\exam_deleted::create($eventdata);
+            $event->trigger();
+        }
+
+        return $success;
+    }
+
+    /**
+     * Delete the quiz attempts
+     * @param object $quiz the quiz settings. Attempts that don't belong to
+     * this quiz are not deleted.
+     * @param object $cm the course_module object.
+     * @param array $attemptids the list of attempt ids to delete.
+     * @param array $allowed This list of userids that are visible in the report.
+     *      Users can only delete attempts that they are allowed to see in the report.
+     *      Empty means all users.
+     */
+    protected function delete_selected_attempts($quiz, $cm, $attemptids, $allowed) {
+        global $DB;
+
+        foreach ($attemptids as $attemptid) {
+            $attempt = $DB->get_record('quiz_attempts', array('id' => $attemptid));
+            if (!$attempt || $attempt->quiz != $quiz->id || $attempt->preview != 0) {
+                // Ensure the attempt exists, and belongs to this quiz. If not skip.
+                continue;
+            }
+            if ($allowed && !in_array($attempt->userid, $allowed)) {
+                // Ensure the attempt belongs to a student included in the report. If not skip.
+                continue;
+            }
+
+            $this->delete_attempt($quiz, $attemptid);
+        }
+    }
+
+    /**
+     * Checks if current questions ar compliant with configured requirements
+     *
+     * @param object $quiz a record from quiz table
+     * @param int $userid the ID of a user, 0 defaults to current user
+     * @return int quiz attempt id
+     */
+    protected function start_new_preview_attempt($quiz, $userid = 0): int {
+        global $CFG, $DB, $PAGE, $USER;
+
+        if(!$userid) {
+            $userid = $USER->id;
+        }
+        $quizobj = quiz::create($quiz->id, $userid);
+        // This script should only ever be posted to, so set page URL to the view page.
+        $PAGE->set_url($quizobj->view_url());
+
+        // Check login and sesskey.
+        require_login($this->course, false, $quizobj->get_cm());
+        $PAGE->set_heading($this->course->fullname);
+
+        // If no questions have been set up yet redirect to edit.php or display an error.
+        if (!$quizobj->has_questions()) {
+            if ($quizobj->has_capability('mod/quiz:manage')) {
+                redirect($quizobj->edit_url());
+            } else {
+                print_error('cannotstartnoquestions', 'quiz', $quizobj->view_url());
+            }
+        }
+
+        // Check capabilities.
+        if (!$quizobj->is_preview_user()) {
+            $quizobj->require_capability('mod/quiz:manage');
+        } else {
+            $quizobj->require_capability('quiz/makeexam:submit');
+        }
+
+        quiz_delete_previews($quiz, $userid);
+
+        $attemptnumber = 1;
+        $attempts = quiz_get_user_attempts($quiz->id, $userid, 'all', false);
+        $lastattempt = end($attempts);
+        if($lastattempt) {
+            $attemptnumber = $lastattempt->attempt + 1;
+        }
+        $quba = question_engine::make_questions_usage_by_activity('mod_quiz', $quizobj->get_context());
+        $quba->set_preferred_behaviour($quizobj->get_quiz()->preferredbehaviour);
+        $timenow = time(); // Update time now, in case the server is running really slowly.
+        $attempt = quiz_create_attempt($quizobj, $attemptnumber, $lastattempt, $timenow, $quizobj->is_preview_user());
+        $attempt = quiz_start_new_attempt($quizobj, $quba, $attempt, $attemptnumber, $timenow);
+        $attempt->preview = 1;
+        $attempt = quiz_attempt_save_started($quizobj, $quba, $attempt);
+        $attemptobj = quiz_attempt::create($attempt->id);
+        $attemptobj->process_finish($timenow+1, true);
+        return $attempt->id;
+    }
+
+    protected function make_new_attempt($quiz, $examid, $name, $newattemptid, $currentattempt = 0, $continueattempt = false) {
         global $DB, $USER;
 
         $now = time();
@@ -1165,29 +1095,28 @@ class quiz_makeexam_report extends quiz_default_report {
         $quizattempt = $DB->get_record('quiz_attempts', array('id'=>$newattemptid), '*', MUST_EXIST);
 
         // prevents bug by having no questions in quiz_attempt
-        if(!$questions = $this->attempt_real_questions($quiz, $quizattempt)) {
+        if(!$qbankentries = $this->get_quiz_questions_and_entries($quiz, $quizattempt)) {
             print_error('noquestionsinquiz', 'quiz', $this->get_base_url());
             return false;
         }
-        if($currentattempt) {
+
+        if($currentattempt && $continueattempt) {
             $examattempt = $DB->get_record('quiz_makeexam_attempts', array('quizid'=>$quiz->id, 'id'=>$currentattempt), '*', MUST_EXIST);
             $oldattempt = clone $examattempt;
             $examattempt->attemptid = $quizattempt->id;
-            $examattempt->questions = $questions; //$this->attempt_real_questions($quiz, $quizattempt); // $quiz->questions;
+            $examattempt->qbankentries  = implode(',', $qbankentries);
             $examattempt->timemodified = $now;
             $examattempt->userid = $USER->id;
             if($DB->update_record('quiz_makeexam_attempts', $examattempt)) {
                 $newid = $examattempt->id;
-                if(!$nodelete) {
-                    $this->delete_attempt($quiz, $currentattempt, $oldattempt);
-                }
+
             }
         } else {
             $examattempt = new stdClass;
             $examattempt->course = $quiz->course;
             $examattempt->quizid = $quiz->id;
             $examattempt->attemptid = $quizattempt->id;
-            $examattempt->questions = $questions; //$this->attempt_real_questions($quiz, $quizattempt); // $quiz->questions;
+            $examattempt->qbankentries  = implode(',', $qbankentries);
             $examattempt->attempt = $maxattempt + 1;
             if(!$name) {
                 $name = get_string('attemptn', 'quiz_makeexam', $examattempt->attempt);
@@ -1203,200 +1132,192 @@ class quiz_makeexam_report extends quiz_default_report {
             $newid = $DB->insert_record('quiz_makeexam_attempts', $examattempt);
         }
 
+        // newid is a quiz_makeexam_attempts ID
         if($newid) {
             // save quiz question instances
-            $this->save_quiz_sections_slots($quiz, $quizattempt, $newid);
-            // now update quiz_attempts
-            $quizattempt->quiz = -abs($quiz->id);
-            $quizattempt->uniqueid = -abs($quizattempt->uniqueid);
-            $quizattempt->attempt = $newid;
-            // check if previous versions and delete
-            $select = " id <> :id AND quiz = :quiz AND userid = :user AND attempt = :attempt  ";
-            if($quizattempts = $DB->get_records_select('quiz_attempts', $select, array('id'=>$quizattempt->id, 'quiz'=>$quizattempt->quiz,
-                                                                                       'user'=>$quizattempt->userid, 'attempt'=>$quizattempt->attempt))) {
-                foreach($quizattempts as $qattempt) {
-                    $qattempt->quiz = abs($qattempt->quiz);
-                    $qattempt->uniqueid = abs($qattempt->uniqueid);
-                    $DB->update_record('quiz_attempts', $qattempt);
-                    quiz_delete_attempt($qattempt, $quiz, true); // true means unconditional delete, no check for negative
-                }
+            $this->save_quiz_sections_slots($quiz, $newid);
 
+            // Now proceed to HIDE the used questions, cannot be reused
+            $fields = 'qms.slot, qv.questionid, qms.questionbankentryid';
+            $slots = $this->attempt_real_questions($quiz->id, $newid, $fields);
+            foreach($slots as $slot) {
+                print_object("Hiding question with qid: {$slot->questionid}  qbeid: {$slot->questionbankentryid}");
+                update_question_version_status::execute($slot->questionid,
+                                                        question_version_status::QUESTION_STATUS_HIDDEN);
             }
-            $success = $DB->update_record('quiz_attempts', $quizattempt);
 
-            // now we can set questions as used, HIDDEN
-            list($insql, $params) = $DB->get_in_or_equal(explode(',',$examattempt->questions));
-            $DB->set_field_select('question', 'hidden', 1, " id $insql ", $params);
-
-            // now we delete quiz questions to prevent teachers to repeat the exam inadvertently
-            $trans = $DB->start_delegated_transaction();
-            $DB->delete_records('quiz_slots', array('quizid'=>$quiz->id));
-            $DB->delete_records('quiz_sections', array('quizid'=>$quiz->id));
-            $firstsection = new stdClass();
-            $firstsection->quizid = $quiz->id;
-            $firstsection->firstslot = 1;
-            $firstsection->shufflequestions = 0;
-            $DB->insert_record('quiz_sections', $firstsection);
-            $trans->allow_commit();
-            quiz_update_sumgrades($quiz);
+            // now empty quiz questions to avoid reuse of questions
+            $this->clear_quiz($quiz);
         }
+
         return $newid;
     }
 
-
-    public function get_quiz_questions_ids($quizid) {
+    /**
+     * Collects slots from current quiz questions and makes a map questionid - questionbankentryid.
+     *
+     * @param object $quiz the quiz intance record.
+     * @param object $quizattempt a quiz_attempt, for question usage
+     * @return array a map questionid - questionbankentryid
+     */
+    protected function get_quiz_questions_and_entries($quiz, $quizattempt): array {
         global $DB;
 
-        return $DB->get_records_menu('quiz_slots', array('quizid' => $quizid), 'slot ASC', 'slot, questionid');
-
-    }
-
-
-    protected function attempt_real_questions($quiz, $quizattempt) {
-        global $DB;
-
-        $quizquestions = $this->get_quiz_questions_ids($quiz->id);  //explode(',',$quiz->questions);
-
+        $slots = qbank_helper::get_question_structure($quiz->id, $this->context);
         $questions = $DB->get_records_menu('question_attempts', array('questionusageid'=>abs($quizattempt->uniqueid)), 'slot ASC ', 'slot,questionid');
 
-        $newquestions = array();
-        $slot = 0;
-        foreach($quizquestions as $qid) {
-            if(!$qid) {
-                $newquestions[] = $qid;
+        $newquestions = [];
+        $notfound = [];
+        $slotnum = 0;
+        foreach($slots as $question) {
+            $slot = array_search($question->questionid, $questions);
+            if($slot == $question->slot) {
+                $newquestions[$question->questionid] = $question->questionbankentryid;
             } else {
-                $slot += 1;
-                $newquestions[] = $questions[$slot];
+                $notfound[] = $question->name;
             }
         }
 
-        return implode(',', $newquestions);
+        if(!empty($notfound)) {
+            \core\notification::add(get_string('slotsnotusage', 'quiz_makeexam', implode(',<br />', $notfound)),
+                                        \core\output\notification::NOTIFY_ERROR);
+        }
+
+        return $newquestions;
     }
 
-
-    protected function save_quiz_sections_slots($quiz, $quizattempt, $examattemptid) {
+    /**
+     * Gets slots from current quiz questions and store into makeexam_slots & sections
+     *
+     * @param object $quiz the quiz intance record.
+     * @param int $examattemptid ID of a quiz_makeexam_attempt, slots stored with mkattempt = $examattemptid.
+     * @return void;
+     */
+    protected function save_quiz_sections_slots($quiz, int $examattemptid) {
         global $DB;
 
-        $quizquestions = $this->get_quiz_questions_ids($quiz->id); //$quizquestions = explode(',',$quiz->questions);
-
-        $questions = $DB->get_records_menu('question_attempts', array('questionusageid'=>$quizattempt->uniqueid), 'slot ASC ', 'slot,questionid');
-
-        $newquestions = array();
-        $slot = 0;
-        foreach($quizquestions as $qid) {
-            if($qid) {
-                $slot += 1;
-                $newquestions[$qid] = $questions[$slot];
-            }
-        }
-        if($slots = $DB->get_records('quiz_slots', array('quizid'=>$quiz->id))) {
+        if($slots = qbank_helper::get_question_structure($quiz->id, $this->context)) {
             $mkslots = $DB->get_records_menu('quiz_makeexam_slots', array('quizid'=>$quiz->id, 'mkattempt'=>$examattemptid), 'slot', 'id,slot');
+            $slotfields = ['inuse', 'slot', 'page', 'requireprevious', 'maxmark', 'questionbankentryid', 'version'];
             foreach($slots as $slot) {
-                if(isset($newquestions[$slot->questionid])) {
-                    $slot->questionid = $newquestions[$slot->questionid];
-                    $slot->mkattempt = $examattemptid;
-                    if(!$mkslot = $DB->get_record('quiz_makeexam_slots', array('quizid'=>$quiz->id, 'mkattempt'=>$examattemptid, 'questionid'=>$slot->questionid))) {
-                        unset($slot->id);
-                        $newid = $DB->insert_record('quiz_makeexam_slots', $slot);
-                    } else {
-                        $mkslot->inuse = 1;
-                        $mkslot->slot = $slot->slot;
-                        $DB->update_record('quiz_makeexam_slots', $mkslot);
-                        unset($mkslots[$mkslot->id]);
-                    }
+                $slot->inuse = 1;
+                $slot->version = null;
+                $sv = $DB->get_field('question_references', 'version', ['component' => 'mod_quiz',
+                                                                        'questionarea' => 'slot',
+                                                                        'itemid' => $slot->slotid,
+                                                                        'questionbankentryid' => $slot->questionbankentryid]);
+                if(!empty($sv)) {
+                    $slot->version = $sv;
                 }
+                $slot->mkattempt = $examattemptid;
+                $slot->quizid = $quiz->id;
+                if(!$mkslot = $DB->get_record('quiz_makeexam_slots', array('quizid'=>$quiz->id, 'mkattempt'=>$examattemptid, 'slot'=>$slot->slot))) {
+                    unset($slot->id);
+                    $newid = $DB->insert_record('quiz_makeexam_slots', $slot);
+                } else {
+                    $update = false;
+                    foreach($slotfields as $field) {
+                        if($mkslot->{$field} != $slot->{$field}) {
+                            $update = true;
+                        }
+                        $mkslot->{$field} = $slot->{$field};
+                    }
+                    if($update) {
+                        $DB->update_record('quiz_makeexam_slots', $mkslot);
+                    }
+                    unset($mkslots[$mkslot->id]);
+                }
+
             }
+            // delete remaining, not used slots (provide support for updating);
             if($mkslots) {
                 $DB->delete_records_list('quiz_makeexam_slots', 'id', array_keys($mkslots));
             }
         }
         if($sections = $DB->get_records('quiz_sections', array('quizid'=>$quiz->id))) {
             $mksections = $DB->get_records_menu('quiz_makeexam_sections', array('quizid'=>$quiz->id, 'mkattempt'=>$examattemptid), 'firstslot', 'id,firstslot');
+            $mkfields = ['inuse', 'firstslot', 'heading', 'shufflequestions'];
             foreach($sections as $section) {
                 $section->mkattempt = $examattemptid;
+                $section->inuse = 1;
                 if(!$mksection = $DB->get_record('quiz_makeexam_sections', array('quizid'=>$quiz->id, 'mkattempt'=>$examattemptid, 'firstslot'=>$section->firstslot))) {
                     unset($section->id);
                     $newid = $DB->insert_record('quiz_makeexam_sections', $section);
                 } else {
-                    $mksection->inuse = 1;
-                    $mksection->firstslot = $section->firstslot;
-                    $mksection->heading = $section->heading;
-                    $mksection->shufflequestions = $section->shufflequestions;
-                    $DB->update_record('quiz_makeexam_sections', $mksection);
+                    $update = false;
+                    foreach($mkfields as $field) {
+                        if($mksection->{$field} != $section->{$field}) {
+                            $update = true;
+                        }
+                        $mksection->{$field} = $section->{$field};
+                    }
+                    if($update) {
+                        $DB->update_record('quiz_makeexam_sections', $mksection);
+                    }
                     unset($mksections[$mksection->id]);
                 }
             }
             if($mksections) {
-                $DB->delete_records_list('quiz_makeexam_ssections', 'id', array_keys($mksections));
+                $DB->delete_records_list('quiz_makeexam_sections', 'id', array_keys($mksections));
             }
         }
     }
 
-    protected function install_official_tags() {
-        global $CFG;
+    /**
+     * Restore questions in stored mkattemp and launches a quiz review attemp.
+     *
+     * @param object $quiz the quiz settings.
+     * @param int $attemptid the makeexam  attempt to show.
+     * @return void;
+     */
+    protected function exam_version_preview($quiz, int $attemptid) {
+        require_capability('mod/quiz:preview', $this->context);
+        // start a new quiz attempt from stored one
 
-        // install official tags
-        require_once($CFG->dirroot . '/tag/lib.php');
-        $tags[] = get_string('tagvalidated', 'quiz_makeexam');
-        $tags[] = get_string('tagrejected', 'quiz_makeexam');
-        $tags[] = get_string('tagunvalidated', 'quiz_makeexam');
-        
-        $tags = core_tag_tag::create_if_missing(1, $tags, true);
+        //First load questions into quiz from
+        $this->restore_saved_attempt($quiz, $attemptid);
+
+        $this->set_current_attempt($quiz->id, $attemptid);
+
+        // now we have questions, we can create a quiz attempt
+        $quizattemptid = $this->start_new_preview_attempt($quiz);
+
+        $url = new moodle_url('/mod/quiz/review.php', array('id'=>$this->context->instanceid, 'mode'=>$this->mode,
+                                                            'attempt' => $quizattemptid, 'review'=>$attemptid, 'showall'=>1));
+        redirect($url);
     }
 
-    public function clear_quiz($quiz) {
+    /**
+     * Restore questions in stored mkattemp and .
+     *
+     * @param object $quiz the quiz settings.
+     * @param int $examattemptid the makeexam  attempt to restore slots from.
+     * @return void;
+     */
+    protected function restore_saved_attempt($quiz, int $examattemptid) {
         global $DB;
 
-        if($attempts = $DB->get_records('quiz_makeexam_attempts', array('quizid'=>$quiz->id,'currentattempt'=>1))) {
-            foreach($attempts as $attempt) {
-                $quizobj = quiz::create($quiz->id, $attempt->userid);
-                $this->delete_existing_previews($quizobj, $attempt->userid);
-            }
-            $DB->set_field('quiz_makeexam_attempts', 'currentattempt', 0, array('quizid'=>$quiz->id));
-            $this->currentattempt = 0;
-        }
-        // now we delete quiz questions to prevent teachers to repeat the exam inadvertently
-        $trans = $DB->start_delegated_transaction();
-        $DB->delete_records('quiz_slots', array('quizid'=>$quiz->id));
-        $DB->delete_records('quiz_sections', array('quizid'=>$quiz->id));
-        $firstsection = new stdClass();
-        $firstsection->quizid = $quiz->id;
-        $firstsection->firstslot = 1;
-        $firstsection->shufflequestions = 0;
-        $DB->insert_record('quiz_sections', $firstsection);
-        $trans->allow_commit();
-        quiz_update_sumgrades($quiz);
+        $examattempt = $DB->get_record('quiz_makeexam_attempts', array('id'=>$examattemptid), '*', MUST_EXIST);
+
+        // we always restore into an empty quiz
+        $this->clear_quiz($quiz);
+
+        $this->load_slots_sections_from_attempt($quiz, $examattempt);
     }
 
-    protected function set_current_attempt($quiz, $attemptid) {
-        global $DB;
-
-        $id = 0;
-        $DB->set_field('quiz_makeexam_attempts', 'currentattempt', 0, array('quizid'=>$quiz->id));
-        $DB->set_field('quiz_makeexam_attempts', 'currentattempt', 1, array('quizid'=>$quiz->id, 'id'=>$attemptid));
-        if($current = $DB->get_record('quiz_makeexam_attempts', array('quizid'=>$quiz->id, 'currentattempt'=> 1))) {
-            if(!is_array($current)) {
-                $id = $current->id;
-            } else {
-                $DB->set_field('quiz_makeexam_attempts', 'currentattempt', 0, array('quizid'=>$quiz->id));
-            }
-        }
-        $this->currentattempt = $id;
-        return $this->currentattempt;
-    }
-
-    protected function get_current_attempt($quiz) {
-        global $DB;
-
-        $id = 0;
-        if($current = $DB->get_record('quiz_makeexam_attempts', array('quizid'=>$quiz->id, 'currentattempt'=> 1))) {
-            $id = $current->id;
-        }
-        $this->currentattempt = $id;
-        return $this->currentattempt;
-    }
-
-    protected function restore_quiz_from_attempt($quiz, $examattempt, $move = false, $shuffle = false, $insertcontrol = false ) {
+    /**
+     * Load stored questions in makeexam_slots into a quiz module instance .
+     * OLD restore_quiz_from_attempt
+     *
+     * @param object $quiz the quiz settings.
+     * @param int/object $examattempt the makeexam  attempt to restore slots from, either ID or full record.
+     * @param bool $move to indicate if questions restored form a mkattempt from other quiz
+     *              (used to copy questions to exam delivery intances).
+     * @param bool $shuffle if sections suffled. Used for actual  exam delivery intances.
+     * @param bool  $insertcontrol wheter insert the control question, proctoring
+     * @return void;
+     */
+    protected function load_slots_sections_from_attempt($quiz, $examattempt, $move = false, $shuffle = false, $insertcontrol = false ) {
         global $DB;
 
         if(!is_object($examattempt)) {
@@ -1404,83 +1325,22 @@ class quiz_makeexam_report extends quiz_default_report {
         }
 
         if(($quiz->id != $examattempt->quizid) && !$move) {
-            \core\notification::add(get_string('differentsourcetarget', 'quiz_makeexam'), 
+            \core\notification::add(get_string('differentsourcetarget', 'quiz_makeexam'),
                                         \core\output\notification::NOTIFY_SUCCESS);
             return false;
         }
         $sourcequizid = $examattempt->quizid;
-        
-        
-        // eliminate existing previews in current quiz state
-        $quizobj = quiz::create($quiz->id, $examattempt->userid);
-        $this->delete_existing_previews($quizobj, $examattempt->userid);
 
-        // change quiz state, questions, from stored makeexam
-        $questions = explode(',', $examattempt->questions);
-        
-        $trans = $DB->start_delegated_transaction();
-        $slotnum = 1;
-        $slots = $DB->get_records('quiz_makeexam_slots', array('quizid'=>$sourcequizid, 'mkattempt'=>$examattempt->id), 'slot ASC');
-        $slotobj = new stdClass();
-        $slotobj->quizid = $sourcequizid;
-        $slotobj->mkattempt = $examattempt->id;
-        $slotobj->inuse = 1;
-        $slotobj->page = 1;
-        $slotobj->requireprevious = 0;
-        $slotobj->maxmark = 1.00000;
-        $page = 1;
+        // ensure current quiz is empty, no questions or sections (only first)
+        $this->delete_quiz_slots_sections($quiz->id);
 
-        foreach($questions as $qid) {
-            if($slot = $DB->get_record('quiz_makeexam_slots', array('quizid'=>$sourcequizid, 'mkattempt'=>$examattempt->id, 'questionid'=>$qid))) {
-                $slot->slot = $slotnum;
-                $DB->update_record('quiz_makeexam_slots', $slot);
-                unset($slots[$slot->id]);
-                $page = $slot->page;
-            } else {
-                $slotobj->slot = $slotnum;
-                $slotobj->page = $page;
-                $slotobj->questionid = $qid;
-                $slotid = $DB->insert_record('quiz_makeexam_slots', $slotobj);
-            }
-            $slotnum += 1;
-        }
-        if($slots) {
-            $DB->delete_records_list('quiz_makeexam_slots', 'id', array_keys($slots));
-        }
-        $trans->allow_commit();
+        $fields = 'qms.id, qv.questionid, qms.slot, qms.page, qms.maxmark, qms.questionbankentryid ';
+        $slots = $this->attempt_real_questions($sourcequizid, $examattempt->id, $fields, '');
 
-        $deletes = array();
-        $trans = $DB->start_delegated_transaction();
-        $DB->delete_records('quiz_slots', array('quizid'=>$quiz->id));
-        if($slots = $DB->get_records('quiz_makeexam_slots', array('quizid'=>$sourcequizid, 'mkattempt'=>$examattempt->id), 'slot ASC')) {
-            if($insertcontrol) {
-                $slot = clone(end($slots));
-                $slot->id = null;
-                $slot->inuse = 1;
-                $slot->requireprevious = 0;
-                $slot->maxmark = 0;
-                $slot->slot = $slot->slot + 1;  
-                $slot->questionid = $insertcontrol;
-                $slots[$slot->slot] = $slot;
-                $questions[] = $slot->questionid;
-            }
-            reset($slots);
-            foreach($slots as $slot) {
-                $slot->quizid = $quiz->id;
-                if(in_array($slot->questionid, $questions)) {
-                    unset($slot->id);
-                    if(!$DB->record_exists('quiz_slots', array('slot' => $slot->slot, 'quizid' => $slot->quizid))) {
-                        $newid = $DB->insert_record('quiz_slots', $slot);
-                    } else {
-                        print_object(" NO INSERTADO POR INDEX DUPLICADO ");
-                    }
-                } else {
-                    $deletes[$slot->id] = $slot->id;
-                }
-            }
-        }
-        if($deletes) {
-            $DB->delete_records_list('quiz_makeexam_slots', 'id', $deletes);
+        // actually adding questions to quiz
+        foreach($slots as $slot) {
+            $mark = empty($slot->maxmark) ? null : $slot->maxmark;
+            quiz_add_quiz_question((int)$slot->questionid, $quiz, (int)$slot->page, $mark);
         }
 
         $DB->delete_records('quiz_sections', array('quizid'=>$quiz->id));
@@ -1494,59 +1354,9 @@ class quiz_makeexam_report extends quiz_default_report {
                 $newid = $DB->insert_record('quiz_sections', $section);
             }
         }
-        $trans->allow_commit();
 
         quiz_update_sumgrades($quiz);
-        if($sourcequizid == $quiz) {
-            // only set current if within the same Quiz instance
-            $this->set_current_attempt($quiz, $examattempt->id);
-        }
     }
-
-    public function load_exam_questions($quiz, $examattempt, $shuffle = false, $insertcontrol = false) {    
-        global $USER;
-        // change quiz state, questions, from stored makeexam
-        $this->restore_quiz_from_attempt($quiz, $examattempt, true, $shuffle, $insertcontrol); 
-
-        // once loaded housekeeping
-        quiz_repaginate_questions($quiz->id, $quiz->questionsperpage);
-        quiz_delete_previews($quiz);
-        
-        $eventdata = array();
-        $eventdata['objectid'] = $examattempt->id;
-        $eventdata['context'] = $this->context;
-        $eventdata['userid'] = $USER->id;
-        $eventdata['other'] = array();
-        $eventdata['other']['quizid'] = $quiz->id;
-        $eventdata['other']['examid'] = $examattempt->examid;
-        $event = \quiz_makeexam\event\exam_recalled::create($eventdata);
-        $event->trigger();
-    }
-    
-    protected function restore_saved_attempt($quiz, $examattemptid) {
-        global $DB;
-
-        $examattempt = $DB->get_record('quiz_makeexam_attempts', array('id'=>$examattemptid), '*', MUST_EXIST);
-        $attempt = $DB->get_record('quiz_attempts', array('id'=>$examattempt->attemptid));
-        if(!$attempt) {
-            $newattemptid = $this->start_new_attempt($quiz);
-            $this->make_new_attempt($quiz, $examattempt->examid, $examattempt->name, $newattemptid, $examattempt->id, true);
-            $attempt = $DB->get_record('quiz_attempts', array('id'=>$newattemptid));
-        }
-
-        // change quiz state, questions, from stored makeexam
-        $this->restore_quiz_from_attempt($quiz, $examattempt);
-       
-        // We prepare a preview from stored attempt and restore quiz questions
-        $attempt->quiz = $examattempt->quizid;
-        $attempt->uniqueid = -($attempt->uniqueid);
-        $oldattemptid = $attempt->id;
-        $attempt->id = null;
-        $attemptid = $DB->insert_record('quiz_attempts', $attempt);
-
-        return $attemptid;
-    }
-
 
     /**
      * Generate a PDF file from current attempt. Sends/store as indicated
@@ -1563,9 +1373,6 @@ class quiz_makeexam_report extends quiz_default_report {
         require_once($CFG->dirroot.'/tag/lib.php');
         require_once($CFG->dirroot.'/local/ulpgccore/lib.php');
         require_once('pdf.class.php');
-
-        //$examattempt = $DB->get_record('quiz_makeexam_attempts', array('id'=>$examattemptid), '*', MUST_EXIST);
-        //$exam = $DB->get_record('examregistrar_exams', array('id'=>$examattempt->examid), '*', MUST_EXIST);
 
         $exam = $this->exams[$examid];
         $examattempt = $this->exams[$examid]->attempts[$examattemptid];
@@ -1595,7 +1402,6 @@ class quiz_makeexam_report extends quiz_default_report {
         }
 
         // get exam data
-        //$examcourse = $DB->get_record('course', array('id'=>$exam->courseid), 'id, shortname, fullname, idnumber');
         $examcourses = local_ulpgccore_load_courses_details(array($exam->courseid), 'c.id, c.fullname, c.idnumber, c.shortname, uc.department, uc.credits, uc.term');
         $examcourse = reset($examcourses);
         unset($examcourses);
@@ -1615,94 +1421,15 @@ class quiz_makeexam_report extends quiz_default_report {
         $annuality = $name;
         $examname = $period.', '.$scope.' ('.$annuality.')';
 
-        $headstyle = ' style="text-align:right; font-weight: bold;"';
-        $headalign = ' style="vertical-align:middle;  line-height: 8.0em; border: 1px solid black;" ';
-        $header = '<table cellspacing="0" cellpadding="4" border="1"  width:100%;  style="  border: 1px solid black; border-collapse: collapse; table-layout:fixed; ">';
-        $header .= "<tr $headalign ><td $headstyle  width=\"15%\" >".get_string('programme', 'examregistrar').'</td><td colspan="5">'.$programme.'</td></tr>';
-        $header .= "<tr $headalign ><td $headstyle  >".get_string('course', 'examregistrar').'</td><td colspan="5">'.$coursename.'</td></tr>';
-        $headalign = ' style="vertical-align:middle;  line-height: 10.0em;" ';
-        $header .= "<tr $headalign ><td $headstyle  >".get_string('perioditem', 'examregistrar').'</td><td width="29%" colspan="1">'.$period.'</td>'.
-                   "<td $headstyle colspan=\"1\"> ".get_string('scopeitem', 'examregistrar').' </td><td width="17%" colspan="1">'.$scope.'</td>';
-
-        $headstyle = ' style="text-align:right; font-weight: bold;" width="12%"';
-        $header .= "<td $headstyle colspan=\"1\"> ".get_string('annualityitem', 'examregistrar').' </td><td  width="8.7%" >'.$annuality.'</td></tr>';
-
-        //$headstyle = ' style="text-align:right; font-weight: bold;" width="15%"';
-        //$header .= "<td $headstyle colspan=\"1\"> ".get_string('annualityitem', 'examregistrar').' </td><td width="13.3%" >'.$annuality.'</td></tr>';
-
-
-        $headstyle = ' style="text-align:right; font-weight: bold;" ';
-        $headalign = ' style="vertical-align:middle;  line-height: 18.0em:  border: 1px solid black;" ';
-        $header .= "<tr $headalign ><td $headstyle >".get_string('lastname').'</td><td colspan="5"></td></tr>';
-        $header .= "<tr $headalign ><td $headstyle ".'   >'.get_string('firstname').'</td><td colspan="2"></td>'.
-                   "<td $headstyle >".get_string('idnumber').'</td><td colspan="2"></td></tr>';
-        $header .= '</table>';
-
-
-        //echo $header;
-
-        //$header = ' cabecero ';
-
         // PDF title section
         $pdf = new makeexam_pdf();
-
-        // set document information
-        $pdf->SetCreator('Moodle mod_quiz');
-        $pdf->SetAuthor(fullname($USER));
-        $pdf->SetTitle($examname);
-        $pdf->SetSubject($coursename);
-        $pdf->SetKeywords('moodle, quiz');
-
-        $pdf->setPrintHeader(true);
-        $pdf->setPrintFooter(true);
-
-        // set default header data
-        //$pdf->SetHeaderData('', 25, $coursename, '');
-        $pdf->SetHeaderData('', 0, $coursename, '');
-
-        // set header and footer fonts
-        $pdf->setHeaderFont(array('helvetica', '', 8));
-        $pdf->setFooterFont(array('helvetica', '', 8));
-
-        // set margins
-        $topmargin = 10;
-        $leftmargin = 15;
-        $rightmargin = 15;
-        $pdf->SetMargins($leftmargin, $topmargin, $rightmargin);
-        $pdf->SetHeaderMargin(5);
-        $pdf->SetFooterMargin(10);
-
-        // set auto page breaks
-        $pdf->SetAutoPageBreak(TRUE, 25);
-
-        // set image scale factor
-        $pdf->setImageScale(1.25);
-
-        // ---------------------------------------------------------
-
-        // set font
-        $pdf->SetFont('helvetica', '', 10);
-
-        // add titlepage
-        $pdf->AddPage('', '', true);
-        $pdf->Ln(1);
-        $pdf->writeHTML($header, false, false, true, false, '');
-        $pdf->Ln(12);
-
-//         $text = " &#8594;  &rarr;  &#9829; &hearts;  x&nbsp;x    &#8694;  &#8649;  &#9745; &#9872; &#9873; &#169;";
-//         $pdf->writeHTML($text, false, false, true, false, '');
-//         $pdf->Ln(12);
+        $pdf->print_exam_header($programme, $coursename, $annuality, $period, $examname, $scope);
 
         // set font
         $pdf->SetFont('helvetica', '', 9);
-
         if($type == 'key') {
             $pdf->SetFont('helvetica', '', 10);
-
         }
-
-
-
 
         // PDF questions
         $lastpage = 0;
@@ -1712,11 +1439,9 @@ class quiz_makeexam_report extends quiz_default_report {
         foreach ($slots as $slot) {
             $qa = $attemptobj->get_question_attempt($slot);
             $question = $qa->get_question();
-            //print_object($question);
             if($type == 'key') {
 
             } else {
-
                 $page = $attemptobj->get_question_page($slot);
                 if($page != $lastpage) {
                     $pdf->AddPage('', '', true);
@@ -1729,9 +1454,8 @@ class quiz_makeexam_report extends quiz_default_report {
                     //$html .= '</p> TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX TeX </p>';
                                    //print_object($html);
                 }
-//              format_text($text, $format = FORMAT_MOODLE, $options = null, $courseiddonotuse = null)
-                //$html = format_text($html, FORMAT_HTML, array('nocache'=>true, 'noclean'=>true, 'trusted'=>true));
-                if($html{0} === '<') {
+
+                if($html[0] === '<') {
                     $p = strpos($html, '>');
                     $html = substr_replace($html, '>'.$number.'. ', $p,1);
                 } else {
@@ -1746,7 +1470,7 @@ class quiz_makeexam_report extends quiz_default_report {
                     }
                     //$tags = tag_get_tags_csv('question', $question->id, TAG_RETURN_HTML, 'official');
                     $tags = core_tag_tag::get_item_tags_array('', 'question', $question->id, core_tag_tag::STANDARD_ONLY);
-                    
+
                     $category = format_string($DB->get_field('question_categories', 'name', array('id'=>$question->category)));
                     $info = get_string('feedback', 'quiz_makeexam').strip_tags($feedback, '<a><sup><sub><strong><b><i><em><small>').' / '.
                                 get_string('category', 'quiz_makeexam').$category.' / '.
@@ -1755,10 +1479,7 @@ class quiz_makeexam_report extends quiz_default_report {
                     $pdf->writeHTML($html, false, false, true, false, 'J');
                 }
             }
-            //$export[] = $html;
-            //print_object($html);
-            //echo $html;
-//            $pdf->writeHTML($html, false, false, true, false, 'J');
+
             $pdf->Ln(8);
             $number++;
         }
@@ -1766,7 +1487,7 @@ class quiz_makeexam_report extends quiz_default_report {
         $pdf->Ln(10);
 
         $filename = clean_filename($filename).'.pdf';
-        //die;
+
         if(!$store) {
             $pdf->Output($filename, 'I');
             die;
@@ -1774,7 +1495,6 @@ class quiz_makeexam_report extends quiz_default_report {
             return $pdf->Output($filename, 'S');
         }
     }
-
 
     /**
      * Generate a PDF file from current attempt. Sends/store as indicated
@@ -1877,8 +1597,6 @@ class quiz_makeexam_report extends quiz_default_report {
             $event = \quiz_makeexam\event\exam_submitted::create($eventdata);
             $event->trigger();
 
-            
-            
             // now create tracker issue for examfile
             $examregistrar = $this->get_examregistrar_instance($cm, $course);
             $issueid = examregistrar_review_addissue($examregistrar, $course, $examfile);
@@ -1896,308 +1614,5 @@ class quiz_makeexam_report extends quiz_default_report {
         }
         return $message;
     }
-
-
-    protected function import_old_questions($oldcode = '', $status = '') {
-        global $CFG, $DB, $USER;
-        require_once($CFG->dirroot.'/question/engine/bank.php');
-        require_once($CFG->dirroot . '/tag/lib.php');
-
-        @set_time_limit(3600); // 1 hour should be enough
-        raise_memory_limit(MEMORY_HUGE);
-        $now = time();
-
-        $params = array();
-        $sourcecode = '';
-        if($oldcode != '') {
-            $sourcecode = " AND codigo = ? ";
-            $params[] = $oldcode;
-        }
-        $sourcestatus = '';
-        if($status != '') {
-            $sourcestatus = " AND questionid $status ";
-        }
-
-        $oldquestions = $DB->get_recordset_sql("SELECT * FROM preguntas_prof WHERE 1 $sourcecode $sourcestatus ", $params);
-
-        $this->install_official_tags(); // just in case not installed yet
-        $tag = get_string('tagvalidated', 'quiz_makeexam');
-
-        foreach($oldquestions as $oldq) {
-            if(!$oldq->codigo || !$oldq->pregunta) {
-                continue;
-            }
-
-            if($oldcode) {
-                $courses = array($this->course);
-            } else {
-                $select = $DB->sql_like('shortname', ':pattern');
-                $courses = $DB->get_records_select('course', $select, array('pattern'=>$oldq->codigo.'%'), '', 'id, shortname, idnumber');
-            }
-            if($courses) {
-                foreach($courses as $course) {
-                    $context = context_course::instance($course->id);
-                    $question = $this->defaultquestion();
-                    $question->qtype = 'multichoice';
-                    $question->name = false;
-                    $question->questiontext = $oldq->pregunta;
-                    // Set question name if not already set.
-                    if ($question->name === false) {
-                        $question->name = $this->create_default_question_name($question->questiontext, get_string('questionname', 'question'));
-                    }
-                    $question->single = 1;
-                    $question = $this->add_blank_combined_feedback($question);
-
-                    $question->answer = array();
-                    $question->fraction = array();
-                    $question->feedback = array();
-                    $answers = array('A'=> $oldq->respa, 'B'=> $oldq->respb, 'C'=> $oldq->respc, 'D'=> $oldq->respd);
-                    foreach($answers as $key => $answer) {
-                        $answerweight = ($key == $oldq->solucion) ? 1 : 0;
-                        list($question->answer[$key], $question->feedback[$key]) =
-                                $this->commentparser($answer, $question->questiontextformat);
-                        $question->fraction[$key] = $answerweight;
-                    }
-                    $question->generalfeedback = 'pg. '.$oldq->paglibro;
-
-                    if($oldq->revision && $tag) {
-                        $question->tags = array($tag);
-                    }
-
-                    $question->context = $context;
-
-                    $categoryname = 'Unidad '.$oldq->modulo;
-                    if(!$categoryid = $DB->get_field('question_categories', 'id', array('contextid'=>$context->id, 'parent'=>0, 'name'=>$categoryname))) {
-/*
-                        $categories = $DB->get_fieldset_select('question_categories', 'id', ' contextid = :contextid AND parent = :parent ', array('contextid'=>$context->id, 'parent'=>0));
-                        $categoryid = reset($categories);
-                        if(!$categoryid) {
-                            continue;
-                        }
-*/
-                        $cat = new stdClass();
-                        $cat->parent = 0;
-                        $cat->contextid = $context->id;
-                        $cat->name = $categoryname;
-                        $cat->info = '';;
-                        $cat->infoformat = 1;
-                        $cat->sortorder = 999;
-                        $cat->stamp = make_unique_id_code();
-                        if(!$categoryid = $DB->insert_record("question_categories", $cat)) {
-                            $categories = $DB->get_fieldset_select('question_categories', 'id', ' contextid = :contextid AND parent = :parent ', array('contextid'=>$context->id, 'parent'=>0));
-                            $categoryid = reset($categories);
-                            if(!$categoryid) {
-                                continue;
-                            }
-                        }
-                    }
-                    $question->category = $categoryid;
-                    $question->stamp = make_unique_id_code();  // Set the unique code (not to be changed)
-                    if(!$userid = $DB->get_field('user', 'id', array('idnumber'=>$oldq->dni))) {
-                        $userid = $USER->id;
-                    }
-                    $question->createdby = $userid;
-                    $question->timecreated = $now;
-                    $question->modifiedby = $userid;
-                    $question->timemodified = $now;
-
-                    mtrace(" {$course->shortname} |  {$question->name} <br />\n");
-
-                    if($question->id = $DB->insert_record('question', $question)) {
-                        $result = question_bank::get_qtype($question->qtype)->save_question_options($question);
-
-                        if (!empty($CFG->usetags) && isset($question->tags)) {
-                            core_tag_tag::set_item_tags('core_question', 'question', $question->id, $context, $question->tags);
-                        }
-                        // Give the question a unique version stamp determined by question_hash()
-                        $DB->set_field('question', 'version', question_hash($question),
-                                array('id' => $question->id));
-
-                        if(!$oldcode) {
-                            $sql = "UPDATE preguntas_prof
-                                    SET questionid = {$question->id}, timecopied = $now
-                                    WHERE id = {$oldq->id}";
-                            $DB->execute($sql);
-                        }
-                    }
-
-                }
-            }
-        }
-        $oldquestions->close();
-        //die;
-    }
-
-    protected function defaultquestion() {
-        $question = new stdClass();
-        $question->shuffleanswers = 0;
-        $question->defaultmark = 1;
-        $question->image = "";
-        $question->usecase = 0;
-        $question->parent = 0;
-        $question->multiplier = array();
-        $question->questiontextformat = FORMAT_HTML;
-        $question->generalfeedback = '';
-        $question->generalfeedbackformat = FORMAT_HTML;
-        $question->correctfeedback = '';
-        $question->partiallycorrectfeedback = '';
-        $question->incorrectfeedback = '';
-        $question->answernumbering = 'ABCD';
-        $question->penalty = 0.3333333;
-        $question->length = 1;
-
-        // this option in case the questiontypes class wants
-        // to know where the data came from
-        $question->export_process = true;
-        $question->import_process = true;
-
-        return $question;
-    }
-
-    public function create_default_question_name($questiontext, $default) {
-        $name = $this->clean_question_name(shorten_text($questiontext, 80));
-        if ($name) {
-            return $name;
-        } else {
-            return $default;
-        }
-    }
-
-    public function clean_question_name($name) {
-        $name = clean_param($name, PARAM_TEXT); // Matches what the question editing form does.
-        $name = trim($name);
-        $trimlength = 251;
-        while (core_text::strlen($name) > 255 && $trimlength > 0) {
-            $name = shorten_text($name, $trimlength);
-            $trimlength -= 10;
-        }
-        return $name;
-    }
-
-    protected function add_blank_combined_feedback($question) {
-        $question->correctfeedback['text'] = '';
-        $question->correctfeedback['format'] = $question->questiontextformat;
-        $question->correctfeedback['files'] = array();
-        $question->partiallycorrectfeedback['text'] = '';
-        $question->partiallycorrectfeedback['format'] = $question->questiontextformat;
-        $question->partiallycorrectfeedback['files'] = array();
-        $question->incorrectfeedback['text'] = '';
-        $question->incorrectfeedback['format'] = $question->questiontextformat;
-        $question->incorrectfeedback['files'] = array();
-        return $question;
-    }
-
-
-    protected function parse_text_with_format($text, $defaultformat = FORMAT_MOODLE) {
-        $result = array(
-            'text' => $text,
-            'format' => $defaultformat,
-            'files' => array(),
-        );
-        if (strpos($text, '[') === 0) {
-            $formatend = strpos($text, ']');
-            $result['format'] = $this->format_name_to_const(substr($text, 1, $formatend - 1));
-            if ($result['format'] == -1) {
-                $result['format'] = $defaultformat;
-            } else {
-                $result['text'] = substr($text, $formatend + 1);
-            }
-        }
-        $result['text'] = trim($this->escapedchar_post($result['text']));
-        return $result;
-    }
-
-    protected function commentparser($answer, $defaultformat) {
-        $bits = explode('#', $answer, 2);
-        $ans = $this->parse_text_with_format(trim($bits[0]), $defaultformat);
-        if (count($bits) > 1) {
-            $feedback = $this->parse_text_with_format(trim($bits[1]), $defaultformat);
-        } else {
-            $feedback = array('text' => '', 'format' => $defaultformat, 'files' => array());
-        }
-        return array($ans, $feedback);
-    }
-
-    protected function format_name_to_const($format) {
-        if ($format == 'moodle') {
-            return FORMAT_MOODLE;
-        } else if ($format == 'html') {
-            return FORMAT_HTML;
-        } else if ($format == 'plain') {
-            return FORMAT_PLAIN;
-        } else if ($format == 'markdown') {
-            return FORMAT_MARKDOWN;
-        } else {
-            return -1;
-        }
-    }
-
-    protected function escapedchar_post($string) {
-        // Replaces placeholders with corresponding character AFTER processing is done.
-        $placeholders = array("&&058;", "&&035;", "&&061;", "&&123;", "&&125;", "&&126;", "&&010");
-        $characters   = array(":",     "#",      "=",      "{",      "}",      "~",      "\n"  );
-        $string = str_replace($placeholders, $characters, $string);
-        return $string;
-    }
-
-
-    /**
-     * Prints the table of exam attempts existing for this exam
-     *
-     * @param object $cm the course module object of this quiz
-     * @param object $quiz the quiz instance this Make Exam is called from
-     * @param object $exam the exam (single period, scope, call) being printed
-     */
-    protected function print_old_questions_form($cm) {
-        global $PAGE;
-
-        $output = $PAGE->get_renderer('mod_quiz');
-
-        if(!has_capability('moodle/site:config',  context_system::instance())) {
-            return;
-        }
-
-        $reporturl = $this->get_base_url();
-
-        $url = new moodle_url($reporturl, array('confirm'=>1, 'sessley'=>sesskey(), 'copyold'=>1));
-        $button = new single_button($url, get_string('copyold', 'quiz_makeexam'));
-        $button->class = 'makeexambutton';
-        $button->add_confirm_action(get_string('copyold_confirm', 'quiz_makeexam'));
-        echo $output->container($output->render($button), ' makeexambuttonform clearfix ');
-
-        echo $output->container('', 'clearfix');
-    }
-
-    /**
-     * Clears the quiz removing listed questions
-     *
-     * @param object $quiz the quiz instance this Make Exam is called from
-     * @param object $cm the course module object of this quiz
-     * @param object $coures the course settings.
-     */
-    protected function print_clearquiz_button($quiz, $cm, $course) {
-        global $PAGE;
-
-        if(!has_capability('quiz/makeexam:submit', context_module::instance($cm->id))) {
-            return;
-        }
-
-        $output = $PAGE->get_renderer('mod_quiz');
-
-        $reporturl = $this->get_base_url();
-
-        $url = new moodle_url($reporturl, array('confirm'=>1, 'sessley'=>sesskey(), 'clearquiz'=>1));
-        $button = new single_button($url, get_string('clearattempts', 'quiz_makeexam'));
-        $button->class = 'makeexambutton';
-
-        $questions = $this->get_quiz_questions_ids($quiz->id);
-        if(!$questions && !$this->currentattempt) {
-            $button->disabled = 'disabled';
-        }
-        $button->add_confirm_action(get_string('clear_confirm', 'quiz_makeexam'));
-        echo $output->container($output->render($button), ' makeexambuttonform clearfix ');
-        echo $output->container('', 'clearfix');
-    }
-
 
 }

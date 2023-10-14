@@ -26,17 +26,19 @@ define(
         'jquery',
         'jqueryui',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
         'mod_vpl/vplidecodefile',
         'mod_vpl/vplideblocklyfile',
         'mod_vpl/vplidebinaryfile',
     ],
-    function($, jqui, VPLUtil, codeExtension, blocklyExtension, binaryExtension) {
+    function($, jqui, VPLUtil, VPLUI, codeExtension, blocklyExtension, binaryExtension) {
         return function(id, name, value, fileManager, vplIdeInstance) {
             var tid = "#vpl_file" + id;
             var tabnameid = "#vpl_tab_name" + id;
             var fileName = name;
             var modified = true;
             var opened = false;
+            var langType = 'text';
             var self = this;
             this.getContent = function() {
                 return value;
@@ -76,6 +78,12 @@ define(
             this.getTabPos = function() {
                 return fileManager.getTabPos(this);
             };
+            this.setLang = function(lang) {
+                langType = lang;
+            };
+            this.getLang = function() {
+                return langType;
+            };
             this.isOpen = function() {
                 return opened;
             };
@@ -101,6 +109,7 @@ define(
                     fileName = name;
                     self.change();
                 }
+                this.setReadOnly(fileManager.isReadOnly(name));
                 if (!this.isOpen()) {
                     return true;
                 }
@@ -114,12 +123,13 @@ define(
                 if (fn.length > 20) {
                     fn = fn.substring(0, 16) + '...';
                 }
-                var html = (modified ? VPLUtil.iconModified() : '') + fn;
-                if (this.getTabPos() < fileManager.minNumberOfFiles) {
-                    html = html + VPLUtil.iconRequired();
-                } else {
-                    html = html + VPLUtil.iconClose();
+                var html = (modified ? VPLUI.iconModified() : '') + fn;
+                if (this.isReadOnly()) {
+                    html = html + VPLUI.iconReadOnly();
+                } else if (this.getId() < fileManager.minNumberOfFiles) {
+                    html = html + VPLUI.iconRequired();
                 }
+                html = html + VPLUI.iconClose();
                 $(tabnameid + ' a').html(html);
                 if (fn != name) {
                     $(tabnameid + ' a').attr('title', name);
@@ -158,9 +168,11 @@ define(
                 }
                 return false;
             };
+            this.updateStatus = VPLUI.hideIDEStatus;
             this.gotoLine = VPLUtil.doNothing;
             this.setReadOnly = VPLUtil.doNothing;
-            this.focus = VPLUtil.doNothing;
+            this.isReadOnly = VPLUtil.returnFalse;
+            this.focus = VPLUI.hideIDEStatus;
             this.blur = VPLUtil.doNothing;
             this.undo = VPLUtil.doNothing;
             this.redo = VPLUtil.doNothing;

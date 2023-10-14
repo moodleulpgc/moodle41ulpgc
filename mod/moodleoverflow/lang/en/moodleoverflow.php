@@ -60,9 +60,11 @@ $string['moodleoverflow:movetopic'] = 'Move Topic to another Moddleoverflow Foru
 
 // Strings for the view.php.
 $string['noviewdiscussionspermission'] = 'You do not have the permission to view discussions in this forum';
+$string['lastpost'] = 'Last post';
 
 // Strings for the locallib.php.
 $string['addanewdiscussion'] = 'Add a new discussion topic';
+$string['seeuserstats'] = 'View user statistics';
 $string['nodiscussions'] = 'There are no discussion topics yet in this forum.';
 $string['headerdiscussion'] = 'Discussion';
 $string['headerstartedby'] = 'Started by';
@@ -195,8 +197,10 @@ $string['addanewreply'] = 'Add a new answer';
 $string['ratingfailed'] = 'Rating failed. Try again.';
 $string['rateownpost'] = 'You cannot rate your own post.';
 $string['marksolved'] = 'Mark as solution';
+$string['alsomarksolved'] = "Also mark as solution";
 $string['marknotsolved'] = 'Remove solution mark';
-$string['markhelpful'] = 'Mark as Helpful';
+$string['markhelpful'] = 'Mark as helpful';
+$string['alsomarkhelpful'] = "Also mark as helpful";
 $string['marknothelpful'] = 'Not Helpful';
 $string['answer'] = '{$a} Answer';
 $string['answers'] = '{$a} Answers';
@@ -206,6 +210,17 @@ $string['markreadfailed'] = 'A post of the discussion could not be marked as rea
 $string['markdiscussionreadsuccessful'] = 'The discussion has been marked as read.';
 $string['markmoodleoverflowreadsuccessful'] = 'All posts have been marked as read.';
 $string['noguesttracking'] = 'Sorry, guests are not allowed to set tracking options.';
+
+// Strings for the userstats feature.
+$string['userstatsupvotes'] = 'Received upvotes';
+$string['userstatsdownvotes'] = 'Received downvotes';
+$string['userstatsforumactivity'] = 'Activity (this forum)';
+$string['userstatsforumreputation'] = 'Reputation (this forum)';
+$string['userstatscourseactivity'] = 'Activity (coursewide)';
+$string['userstatscoursereputation'] = 'Reputation (coursewide)';
+$string['helpamountofactivity'] = 'Each activity like writing a post, starting a discussion or giving a rating gives 1 point';
+$string['showuserstats'] = 'Show cumulative user statistics';
+$string['configshowuserstats'] = 'Allow teachers in courses to see statistics summarizing the activity of users in Moodleoverflows.';
 
 // OTHER.
 $string['messageprovider:posts'] = 'Notification of new posts';
@@ -334,6 +349,8 @@ $string['clicktosubscribe'] = 'You are not subscribed to this discussion. Click 
 $string['attachment'] = 'Attachment';
 $string['attachments'] = 'Attachments';
 $string['attachment_help'] = 'You can optionally attach one or more files to a forum post. If you attach an image, it will be displayed after the message.';
+$string['allowmultiplemarks'] = 'Multiple marks?';
+$string['allowmultiplemarks_help'] = 'A post can be marked as helpful or solved. Within a discussion, only one post can be marked as helpful/solved. Click the checkbox to mark multiple posts as helpful/solved.';
 
 // Templates.
 $string['helpfulanswer'] = 'The question owner accepted this as the best answer.';
@@ -352,6 +369,7 @@ $string['nodownvote'] = 'No downvote';
 $string['downvote'] = 'Downvote';
 $string['movetopicicon'] = 'The icon to move a topic';
 $string['movetopictoforum'] = 'The icon to move a selected topic to another forum';
+$string['movetopictowhere'] = 'Where do you want to move the topic "{$a}"?';
 
 // Privacy.
 $string['privacy:metadata:core_files'] = 'Moodleoverflow stores files which have been uploaded by the user to form part of a forum post.';
@@ -478,6 +496,9 @@ $string['original_post'] = 'Original post';
 $string['digestunreadpost'] = 'Course: {$a->linktocourse} -> {$a->linktoforum}, Topic: {$a->linktodiscussion} has {$a->unreadposts} unread posts.';
 
 /* ecastro ULPGC */
+$string['singleuserstats'] = 'Answers: {$a->answers}, Posts: {$a->posts}, Votes: {$a->votes} | Reputation index: {$a->totalrating}.';
+$string['statuslocked'] = 'Discussion solved! Please try another discussion.';
+$string['statusneedsanswer'] = 'Needs your answer!';
 $string['repcountvotes'] = 'Count received student votes.';
 $string['repcountvotes_help'] = 'If marked, then the votes received by an student form other students 
 will be included in grades calculated form reputation for that student.';
@@ -493,6 +514,10 @@ $string['configvotescalepost']         = 'The amount of reputation a post gives.
 $string['votescalecomment']               = 'Reputation: Comment.';
 $string['configvotescalecomment']         = 'The amount of reputation a commentpost gives.';
 // Completion 
+$string['completiondetail:discussions'] = 'Start discussions: {$a}';
+$string['completiondetail:answers'] = 'Post answers: {$a}';
+$string['completiondetail:comments'] = 'Make comments: {$a}';
+$string['completiondetail:success'] = 'Get posts Solved/Helpful: {$a}';
 $string['completiondiscussions'] = 'Student must create discussions:';
 $string['completiondiscussionsdesc'] = 'Student must create at least {$a} discussion(s)';
 $string['completiondiscussionsgroup'] = 'Require discussions';
@@ -505,12 +530,10 @@ $string['completionanswers'] = 'Student must post answers:';
 $string['completionanswersdesc'] = 'Student must post at least {$a} answers';
 $string['completionanswersgroup'] = 'Require answers';
 $string['completionanswershelp'] = 'requiring answers to complete';
-$string['completiosuccess'] = 'Student must get right answers:';
-$string['completiosuccessdesc'] = 'Student must post at least {$a} answers labeled as right or useful';
-$string['completiosuccessgroup'] = 'Require right answers';
-$string['completiosuccesshelp'] = 'requiring right answers to complete';
-
-
+$string['completionsuccess'] = 'Student must get right answers:';
+$string['completionsuccessdesc'] = 'Student must post at least {$a} answers labeled as right or useful';
+$string['completionsuccessgroup'] = 'Require right answers';
+$string['completionsuccesshelp'] = 'requiring right answers to complete';
 $string['lockingheading'] = 'Locking options';
 $string['lockdiscussions'] = 'Lock answered discussions';
 $string['lockdiscussions_help'] = 'When a discussion is answered, 

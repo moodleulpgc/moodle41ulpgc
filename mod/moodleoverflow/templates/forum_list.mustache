@@ -29,8 +29,8 @@
         <thead>
             <th class ="header topic" scope="col">
                 {{#currentdiscussion}}
-                    Where do you want to move the topic "{{currentdiscussion}}" ?
-                {{/currentdiscussion}}          
+                    {{#str}}movetopictowhere, moodleoverflow, {{currentdiscussion}} {{/str}} {{! ecastro ULPGC}}
+                {{/currentdiscussion}}
             </th>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@
                 <tr class="discussion">
                     <td class="topic starter">
                         {{name}} 
-                        <a href='{{ movetoforum }}'>{{#pix}} i/arrow-right, core, {{#str}}movetopictoforum, moodleoverflow{{/str}} {{/pix}}</a>
+                        <a href='{{ movetoforum }}'>{{#pix}} t/removeright, core, {{#str}}movetopictoforum, moodleoverflow{{/str}} {{/pix}}</a> {{! ecastro ULPGC}}
                     </td>
                 </tr>
             {{/forums}}

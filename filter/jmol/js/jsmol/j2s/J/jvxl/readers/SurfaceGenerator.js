@@ -120,21 +120,31 @@ if (JU.Logger.debugging) for (var i = 0; i < this.params.title.length; i++) if (
 }return true;
 }if ("sigma" === propertyName) {
 this.params.cutoff = this.params.sigma = (value).floatValue ();
+this.params.cutoffRange = null;
 this.params.cutoffAutomatic = false;
 return true;
 }if ("cutoff" === propertyName) {
 this.params.cutoff = (value).floatValue ();
+this.params.cutoffRange = null;
+this.params.isPositiveOnly = false;
+this.params.cutoffAutomatic = false;
+return true;
+}if ("cutoffPositive" === propertyName) {
+this.params.cutoff = (value).floatValue ();
+this.params.cutoffRange = null;
+this.params.isPositiveOnly = true;
+this.params.isCutoffAbsolute = false;
+this.params.cutoffAutomatic = false;
+return true;
+}if ("cutoffRange" === propertyName) {
+this.params.cutoffRange = value;
+this.params.cutoff = this.params.cutoffRange[0];
 this.params.isPositiveOnly = false;
 this.params.cutoffAutomatic = false;
 return true;
 }if ("parameters" === propertyName) {
 this.params.parameters = JU.AU.ensureLengthA (value, 2);
 if (this.params.parameters.length > 0 && this.params.parameters[0] != 0) this.params.cutoff = this.params.parameters[0];
-return true;
-}if ("cutoffPositive" === propertyName) {
-this.params.cutoff = (value).floatValue ();
-this.params.isPositiveOnly = true;
-this.params.isCutoffAbsolute = false;
 return true;
 }if ("cap" === propertyName || "slab" === propertyName) {
 if (value != null) this.params.addSlabInfo (value);
@@ -589,6 +599,7 @@ return;
 }if (!this.surfaceReader.createIsosurface (false)) {
 JU.Logger.error ("Could not create isosurface");
 this.params.cutoff = NaN;
+this.params.cutoffRange = null;
 this.surfaceReader.closeReader ();
 return;
 }if (this.params.probes != null) {
@@ -632,6 +643,7 @@ if (this.params.thePlane != null) {
 var isSquared = this.params.isSquared;
 this.params.isSquared = false;
 this.params.cutoff = 0;
+this.params.cutoffRange = null;
 this.surfaceReader.volumeData.setMappingPlane (this.params.thePlane);
 this.surfaceReader.createIsosurface (!this.params.isPeriodic);
 this.surfaceReader.volumeData.setMappingPlane (null);
@@ -685,8 +697,10 @@ value = JU.Rdr.getBR (value);
 }if (Clazz.instanceOf (value, Array)) {
 var a = (value)[0];
 var b =  new Array (a.length);
-for (var i = 0; i < a.length; i++) b[i] = this.setFileData (vwr, a[i]);
-
+for (var i = 0; i < a.length; i++) {
+this.fileType = fileType;
+b[i] = this.setFileData (vwr, a[i]);
+}
 (value)[0] = b;
 this.readerData = value;
 return this.newReader ("IsoIntersectGridReader");

@@ -31,7 +31,18 @@ use core\plugininfo\format;
 
 defined ( 'MOODLE_INTERNAL' ) || die ();
 
-require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
+global $CFG;
+
+// Check moodle version and make it compatible with 4.1 and prior.
+// TODO: deprecate this patch and refactor class names.
+if ($CFG->version < 2023042400) {
+    // Moodle 4.1 and previous.
+    require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
+} else {
+    //  Use aliases at class_loader level to maintain compatibility.
+    \class_alias(mod_quiz\local\access_rule_base::class, quiz_access_rule_base::class);
+    \class_alias(mod_quiz\quiz_settings::class, quiz::class);
+}
 
 /**
  * A rule implementing auto-appearance of “Attempt quiz now” button at quiz open timing
@@ -71,7 +82,7 @@ class quizaccess_delayed extends quiz_access_rule_base {
         $result = "";
         if ($enabled && $this->is_pending()) {
             $this->configure_timerscript('.quizattempt');
-            $result .= "<noscript>" . get_string('noscriptwarning', 'quizaccess_delayed') . "</noscript>";
+            $result .= get_string('quizaccess_delayed_teachernotice', 'quizaccess_delayed', ceil($this->calculate_max_delay() / 60));
         }
         return ''; //$result; // Used as a prevent message. // ecastro ULPGC
     }

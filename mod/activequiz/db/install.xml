@@ -16,7 +16,7 @@
         <FIELD NAME="grademethod" TYPE="int" LENGTH="2" NOTNULL="true" SEQUENCE="false" COMMENT="The grading method for grading.  This only applies to grading with multiple sessions, not multiple attempts"/>
         <FIELD NAME="workedingroups" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Bit to specify if the activity is set up to work in groups"/>
         <FIELD NAME="groupattendance" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="whether or not we want to have the user specify the group members present for the quiz"/>
-        <FIELD NAME="grouping" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The grouping id that this activity is set up to use for groups"/>
+        <FIELD NAME="teamsgrouping" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The grouping id that this activity is set up to use for groups ecastro ULPGC"/>
         <FIELD NAME="reviewoptions" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON encoded string of the review options from the mod form"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

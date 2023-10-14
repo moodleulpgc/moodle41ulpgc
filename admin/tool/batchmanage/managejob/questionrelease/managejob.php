@@ -24,8 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//include_once($CFG->dirroot.'/tool/batchmanage/managejob_forms.php');
-
+use core_question\local\bank\question_version_status;
 
 /**
  * Abstract class for feedback_plugin inherited from assign_plugin abstract class.
@@ -145,13 +144,13 @@ class batchmanage_managejob_questionrelease extends batchmanage_managejob_plugin
         $params['name'] =  $data->qtncategoryname;
 
         if(isset($data->qtncategoryparent) && $data->qtncategoryparent > -1) {
-            $wherequestions .= " AND q.parent = :parent ";
+            $wherequestions .= " AND qc.parent = :parent ";
             $params['parent'] =  $data->qtncategoryparent;
         }
 
-        if(isset($data->qtnvisibility) && $data->qtnvisibility > -1) {
-            $wherequestions .= " AND q.hidden = :hidden ";
-            $params['hidden'] =  $data->qtnvisibility;
+        if(isset($data->qtnstatus) && $data->qtnstatus != '') {
+            $wherequestions .= " AND qv.status = :status ";
+            $params['status'] =  $data->qtnstatus;
         }
 
         if(isset($data->qtnquestionid) &&  $data->qtnquestionid ) {
@@ -178,9 +177,11 @@ class batchmanage_managejob_questionrelease extends batchmanage_managejob_plugin
             $params = array_merge($params, $inparams);
         }
         
-        $sql = "SELECT q.*, qc.contextid,  uq.id AS uqid, uq.questionid, uq.qsource, uq.sourceqid, uq.creatoridnumber, uq.modifieridnumber
+        $sql = "SELECT q.*, qc.id AS category, qc.contextid,  uq.id AS uqid, uq.questionid, uq.qsource, uq.sourceqid, uq.creatoridnumber, uq.modifieridnumber
                     FROM {question} q
-                    JOIN {question_categories} qc ON q.category = qc.id 
+                    JOIN {question_versions} qv ON qv.questionid = q.id
+                    JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+                    JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
                     LEFT JOIN {local_ulpgccore_questions} uq ON q.id = uq.questionid";
         $where = " WHERE ( qc.contextid $wherecontext ) AND ( $wherequestions ) ";
    
@@ -196,7 +197,6 @@ class batchmanage_managejob_questionrelease extends batchmanage_managejob_plugin
         
         list($sql, $where, $params) = $this->question_selector_sql($course, json_decode($this->formsdata['question_selector']));
         
-        
         if(isset($data->userdata)) {
             $extramsg[] = $this->apply_userdata($sql.$where, $params, $data->userdata);
             $success = true;
@@ -207,8 +207,8 @@ class batchmanage_managejob_questionrelease extends batchmanage_managejob_plugin
             $success = true;
         }
 
-        if(isset($data->hidden)) {
-            $extramsg[] = $this->apply_visibility($where, $params, $data->hidden);
+        if(isset($data->status)) {
+            $extramsg[] = $this->apply_status($where, $params, $data->status);
             $success = true;
         }
 
@@ -355,17 +355,19 @@ class batchmanage_managejob_questionrelease extends batchmanage_managejob_plugin
     }
 
    
-    public function apply_visibility($where, $params, $hidden) {
+    public function apply_status($where, $params, $status) {
         global $DB;
 
         $result = array(true=>'-OK', false=>'-Fail');
 
-        $sql = "UPDATE {question} q
-                JOIN {question_categories} qc ON q.category = qc.id
-                SET q.hidden = :hide ";
-        $params['hide'] = $hidden;
+        $sql = "UPDATE {question_versions} qv
+                    JOIN {question} q ON qv.questionid = q.id
+                    JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+                    JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
+                SET qv.status = :newstatus ";
+        $params['newstatus'] = $status;
         $success = $DB->execute($sql.$where, $params);
-        return " questions hidden {$hidden} ".$result[$success];
+        return " questions status {$status} ".$result[$success];
     }
     
     

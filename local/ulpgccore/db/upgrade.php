@@ -486,5 +486,37 @@ function xmldb_local_ulpgccore_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023032501, 'local', 'ulpgccore');
     }
 
+    if ($oldversion < 2023051201) {
+        // Field cstatus in ulpgccore_course to store cstatus from Oracle
+        /*
+        001        Activo (se imparte)
+        00B        Baja (ya no se imparte)
+        00C        Cerrado (se impartirá en el futuro)
+        00D       En extinción (pueden matricularse todos excepto nuevo ingreso)
+        00E        En No_Impartición -sea provisional o no- (sólo repetidores)
+        */
+
+        $table = new xmldb_table('local_ulpgccore_course');
+        $field = new xmldb_field('cstatus', XMLDB_TYPE_CHAR, '20', null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Added index to comments table to speedup question table backup/retore
+        $table = new xmldb_table('comments');
+        $index = new xmldb_index('area-component-item', XMLDB_INDEX_NOTUNIQUE, array('commentarea', 'component', 'itemid'));
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Added index to logstore_standard_log table to speedup reports and backup/retore
+        $table = new xmldb_table('logstore_standard_log');
+        $index = new xmldb_index('course-level-instance', XMLDB_INDEX_NOTUNIQUE, array('courseid', 'contextlevel', 'contextinstanceid'));
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        upgrade_plugin_savepoint(true, 2023051201, 'local', 'ulpgccore');
+    }
     return true;
 }

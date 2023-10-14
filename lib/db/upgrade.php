@@ -3051,5 +3051,53 @@ privatefiles,moodle|/user/files.php';
         upgrade_main_savepoint(true, 2022112800.03);
     }
 
+    if ($oldversion < 2022112803.03) {
+        // Add public key field to user_devices table.
+        $table = new xmldb_table('user_devices');
+        $field = new xmldb_field('publickey', XMLDB_TYPE_TEXT, null, null, null, null, null, 'uuid');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2022112803.03);
+    }
+
+    if ($oldversion < 2022112804.09) {
+        // Upgrade yaml mime type for existing yaml and yml files.
+        $filetypes = [
+            '%.yaml' => 'application/yaml',
+            '%.yml' => 'application/yaml,'
+        ];
+
+        $select = $DB->sql_like('filename', '?', false);
+        foreach ($filetypes as $extension => $mimetype) {
+            $DB->set_field_select(
+                'files',
+                'mimetype',
+                $mimetype,
+                $select,
+                [$extension]
+            );
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2022112804.09);
+    }
+
+    if ($oldversion < 2022112805.03) {
+
+        // The previous default configuration had a typo, check for its presence and correct if necessary.
+        $sensiblesettings = get_config('adminpresets', 'sensiblesettings');
+        if (strpos($sensiblesettings, 'smtppass@none') !== false) {
+            $newsensiblesettings = str_replace('smtppass@none', 'smtppass@@none', $sensiblesettings);
+            set_config('sensiblesettings', $newsensiblesettings, 'adminpresets');
+        }
+
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2022112805.03);
+    }
+
     return true;
 }

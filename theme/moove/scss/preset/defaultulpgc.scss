@@ -1,5 +1,6 @@
 // Bootstrap variables
 
+$background: $color-gray-5;
 $white:    #fff !default;
 $gray-100: #f8f9fa !default;
 $gray-200: #e9ecef !default;
@@ -14,28 +15,35 @@ $gray-800: #373a3c !default;
 $gray-900: #212529 !default;
 $black:    #000 !default;
 
-//$blue:  #1177d1 !default;
-$blue:    #004dae !default; 
+$blue:    $color-blue !default; // copy ulpgcds color into moodle moove
 $indigo:  #6610f2 !default;
 $purple:  #613d7c !default;
 $pink:    #e83e8c !default;
 $red:     #d9534f !default;
-$orange:  #f0ad4e !default;
+$orange:  $color-orange !default; // copy ulpgcds color into moodle moove
 $yellow:  #ff7518 !default;
-//$orange:  #ff9a00 !default;
-//$yellow:  #ffdd00 !default;
-$green:   #5cb85c !default;
+//$orange:  #ff9a00 !default; #FFA100
+//$yellow:  #ffdd00 !default;  #f0ad4e;
+$green:   $color-green !default; //#5cb85c !default;
 $teal:    #20c997 !default;
 $cyan:    #5bc0de !default;
 
+$unread:  $color-orange-50 !default; // copy ulpgcds color into moodle moove
+$ulpgc:   #f49a0e !default;
+
+/*
+$unread:  #ffdd9b !default; #ff9a00;
+// #ffdb99; #ffdf9f; #ffefae; #ffa100;
+*/
 $primary:       $blue !default;
 $success:       $green !default;
 $info:          $cyan !default;
 $warning:       $yellow !default;
-$danger:        $red !default;
+$danger:        $color-red !default;
 $secondary:     $gray-400 !default;
 $light:         $gray-100 !default;
 $dark:          $gray-800 !default;
+
 
 $info-outline:    #1f7e9a;
 $warning-outline: #a6670e;
@@ -52,6 +60,12 @@ $body-color:    $gray-800 !default;
 
 // Fonts
 $font-size-base: 0.9375rem !default;
+$h1-font-size:                $font-size-base * 1.75 !default;
+$h2-font-size:                $font-size-base * 1.5 !default;
+$h3-font-size:                $font-size-base * 1.35 !default;
+$h4-font-size:                $font-size-base * 1.2 !default;
+$h5-font-size:                $font-size-base * 1.1 !default;
+$h6-font-size:                $font-size-base !default;
 $rfs-base-font-size: 0.9rem !default;
 $headings-font-weight:   400 !default;
 
@@ -71,12 +85,15 @@ $breadcrumb-divider-rtl: "»" !default;
 // Alerts
 $alert-border-width:                0 !default;
 
+$link-color:                              $blue !default;
+$link-hover-color:                        darken($link-color, 20%) !default;
+
 $theme-colors: (
     primary: $primary,
     secondary: $gray-400,
     success: $success,
     info: $info,
-    warning: $orange,
+    warning: $color-orange-80,
     danger: $danger,
     light: $gray-100,
     dark: $gray-800
@@ -108,20 +125,6 @@ body {
     border-radius: 50%;
 }
 
-// Reset the default styling back to the bootstrap defaults for
-// the secondary outline button because gray-200 is much too light
-// for an outline button.
-.btn-outline-secondary {
-    @include button-outline-variant($gray-600);
-    border-color: $gray-600;
-}
 
-.btn-outline-info {
-    @include button-outline-variant($info-outline);
-}
-
-.btn-outline-warning {
-    @include button-outline-variant($warning-outline);
-}
 
 @include bg-variant(".bg-gray", $gray-200, true);

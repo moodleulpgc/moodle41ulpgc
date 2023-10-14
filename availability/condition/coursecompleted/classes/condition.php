@@ -25,10 +25,10 @@
 
 namespace availability_coursecompleted;
 
-use \completion_info;
-use \core_availability\info;
-use \coding_exception;
-use \stdClass;
+use completion_info;
+use core_availability\info;
+use coding_exception;
+use stdClass;
 
 
 /**
@@ -95,9 +95,8 @@ class condition extends \core_availability\condition {
      * @return bool True if available
      */
     public function is_available($not, info $info, $grabthelot, $userid) {
-        global $USER;
         $completioninfo = new \completion_info($info->get_course());
-        $allow = $completioninfo->is_course_complete($userid != $USER->id ? $userid : $USER->id);
+        $allow = $completioninfo->is_course_complete($userid);
         unset($completioninfo);
         if (!$this->coursecompleted) {
             $allow = !$allow;
@@ -136,5 +135,105 @@ class condition extends \core_availability\condition {
      */
     protected function get_debug_string() {
         return $this->coursecompleted ? '#' . 'True' : 'False';
+    }
+
+    /**
+     * Checks whether this condition applies to user lists.
+     *
+     * @return bool True if this condition applies to user lists
+     */
+    public function is_applied_to_user_lists() {
+        // Course completions are assumed to be 'permanent', so they affect the
+        // display of user lists for activities.
+        return true;
+    }
+
+    /**
+     * Tests against a user list. Users who cannot access the activity due to
+     * availability restrictions will be removed from the list.
+     *
+     * @param array $users Array of userid => object
+     * @param bool $not If tree's parent indicates it's being checked negatively
+     * @param info $info Info about current context
+     * @param capability_checker $checker Capability checker
+     * @return array Filtered version of input array
+     */
+    public function filter_user_list(
+        array $users,
+        $not,
+        \core_availability\info $info,
+        \core_availability\capability_checker $checker) {
+
+        global $DB;
+
+        // If the array is empty already, just return it.
+        if (!$users) {
+            return $users;
+        }
+        list($sql, $params) = $this->get_user_list_sql($not, $info, true);
+        $compusers = $DB->get_records_sql($sql, $params);
+
+        // List users who have access to the completion report.
+        $adusers = $checker->get_users_by_capability('report/completion:view');
+        // Filter the user list.
+        $result = [];
+        foreach ($users as $id => $user) {
+            // Always include users with access to completion report.
+            if (array_key_exists($id, $adusers)) {
+                $result[$id] = $user;
+                continue;
+            }
+            // Other users are included or not based on course completion.
+            $allow = array_key_exists($id, $compusers);
+            if ($not) {
+                $allow = !$allow;
+            }
+            if ($allow) {
+                $result[$id] = $user;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Obtains SQL that returns a list of enrolled users that has been filtered.
+     *
+     * If there are no conditions, the returned result is array('', array()).
+     *
+     * @param bool $not True if this condition is applying in negative mode
+     * @param \core_availability\info $info Item we're checking
+     * @param bool $onlyactive If true, only returns active enrolments
+     * @return array Array with two elements: SQL subquery and parameters array
+     * @throws \coding_exception If called on a condition that doesn't apply to user lists
+     */
+    public function get_user_list_sql($not, \core_availability\info $info, $onlyactive) {
+        $course = $info->get_course();
+        $param = ['courseid' => $course->id];
+        if ($not) {
+            $cond = $this->coursecompleted ? 'NOT' : '';
+        } else {
+            $cond = $this->coursecompleted ? '' : 'NOT';
+        }
+        $activesql = 'u.deleted = 0';
+        if ($onlyactive) {
+            $activesql = '
+                ue.status = 0 AND
+                e.status = 0 AND
+                ue.timestart < :start1 AND
+                (ue.timeend = 0 OR ue.timeend > :start2) AND
+                u.deleted = 0';
+            $param['start1'] = time();
+            $param['start2'] = time();
+        }
+        $sql = "SELECT DISTINCT u.id
+                  FROM {user} u
+                  JOIN {user_enrolments} ue ON (ue.userid = u.id)
+                  JOIN {enrol} e ON (e.id = ue.enrolid)
+                  LEFT JOIN {course_completions} cc ON (cc.userid = u.id AND cc.course = e.courseid)
+                  WHERE
+                    cc.timecompleted IS $cond NULL AND
+                    $activesql AND
+                    e.courseid = :courseid";
+        return [$sql, $param];
     }
 }

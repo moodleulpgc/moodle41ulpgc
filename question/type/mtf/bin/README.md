@@ -1,8 +1,10 @@
 ﻿#qtype_multichoice Migration > qtype_mtf
 
+**Disclaimer: Use at your own risk.**
+
 ######Description:
-The Script mig_multichoice_to_mtf.php migrates questions of the type 
-qtype_multichoice to the questiontype qtype_mtf. No questions will 
+The Script mig_multichoice_to_mtf.php migrates questions of the type
+qtype_multichoice to the questiontype qtype_mtf. No questions will
 be overwritten or deleted, the script will solely create new questions.
 
 ######Required Parameters (choose 1):
@@ -17,15 +19,15 @@ be overwritten or deleted, the script will solely create new questions.
 
   The Dryrun Option is enabled (1) by default.
   With Dryrun enabled no changes will be made to the database.
-  Use Dryrun to receive information about possible issues before 
+  Use Dryrun to receive information about possible issues before
   migrating.
 
   The MigrateSingleAnswer Option is disabled (0) by default.
-  With migratesingleanswer enabled those Multichoice Questions 
-  with only one correct option are included into the Migration 
+  With migratesingleanswer enabled those Multichoice Questions
+  with only one correct option are included into the Migration
   to MTF as well.
 
-  includesubcategories wird in Kombination mit Migration by 
+  includesubcategories wird in Kombination mit Migration by
   "categoryid" verwendet.
   Falls aktiviert (1) werden Unterkategorien mit migriert.
 
@@ -58,8 +60,8 @@ be overwritten or deleted, the script will solely create new questions.
 #qtype_mtf Migration > qtype_multichoice#
 
 ######Description:
-The Script mig_multichoice_to_mtf.php migrates questions of the type 
-qtype_mtf to the questiontype qtype_mtf. No questions will be overwritten 
+The Script mig_multichoice_to_mtf.php migrates questions of the type
+qtype_mtf to the questiontype qtype_mtf. No questions will be overwritten
 or deleted, the script will solely create new questions.
 
 ######Required Parameters (choose 1):
@@ -74,14 +76,14 @@ or deleted, the script will solely create new questions.
 
   The Dryrun Option is enabled (1) by default.
   With Dryrun enabled no changes will be made to the database.
-  Use Dryrun to receive information about possible issues before 
+  Use Dryrun to receive information about possible issues before
   migrating.
 
   The Autoweights Options is disabled (0) by default.
-  While migrating from MTF to Multichoice, grades for correct or 
-  incorrect answers are usually set equal. However in some cases 
-  the SUM of all grades does not match 100%. With Autoweights enabled 
-  different grades will be set to match a SUM of 100%. With Autoweights 
+  While migrating from MTF to Multichoice, grades for correct or
+  incorrect answers are usually set equal. However in some cases
+  the SUM of all grades does not match 100%. With Autoweights enabled
+  different grades will be set to match a SUM of 100%. With Autoweights
   disabled the affected question will be ignored in migration.
 
   includesubcategories is used in combination with migration by categoryid.

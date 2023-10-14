@@ -20,10 +20,7 @@ function (x, y, bsModels) {
 if (!this.vwr.getDrawHover () || this.simpleEllipsoids == null || this.simpleEllipsoids.isEmpty ()) return false;
 var e = this.findPickedObject (x, y, false, bsModels);
 if (e == null) return false;
-if (this.vwr.gdata.antialiasEnabled) {
-x <<= 1;
-y <<= 1;
-}this.vwr.hoverOnPt (x, y, e.label, e.id, e.center);
+this.vwr.hoverOnPt (x, y, e.label, e.id, e.center);
 return true;
 }, "~N,~N,JU.BS");
 Clazz.overrideMethod (c$, "checkObjectClicked", 
@@ -70,17 +67,18 @@ return (this.checkID (thisID) ? 1 : -1);
 }, "~S");
 Clazz.overrideMethod (c$, "setSize", 
 function (size, bsSelected) {
-if (this.atoms == null || size == 0 && this.ms.atomTensors == null) return;
+if (!this.isSet || size == 0 && this.ms.atomTensors == null) return;
 var isAll = (bsSelected == null);
 if (!isAll && this.selectedAtoms != null) bsSelected = this.selectedAtoms;
-var tensors = this.vwr.ms.getAllAtomTensors (this.typeSelected);
+var tensors = this.ms.getAllAtomTensors (this.typeSelected);
 if (tensors == null) return;
+var atoms = this.ms.at;
 for (var i = tensors.size (); --i >= 0; ) {
 var t = tensors.get (i);
 if (isAll || t.isSelected (bsSelected, -1)) {
 var e = this.atomEllipsoids.get (t);
 var isNew = (size != 0 && e == null);
-if (isNew) this.atomEllipsoids.put (t, e = J.shapespecial.Ellipsoid.getEllipsoidForAtomTensor (t, this.atoms[t.atomIndex1]));
+if (isNew) this.atomEllipsoids.put (t, e = J.shapespecial.Ellipsoid.getEllipsoidForAtomTensor (t, atoms[t.atomIndex1]));
 if (e != null) {
 e.setScale (size, true);
 }}}
@@ -293,11 +291,12 @@ sb.append (this.vwr.getCommands (temp, temp2, "select"));
 Clazz.overrideMethod (c$, "setModelVisibilityFlags", 
 function (bsModels) {
 if (!this.isActive ()) return;
-this.setVis (this.simpleEllipsoids, bsModels, this.atoms);
-this.setVis (this.atomEllipsoids, bsModels, this.atoms);
+this.setVis (this.simpleEllipsoids, bsModels);
+this.setVis (this.atomEllipsoids, bsModels);
 }, "JU.BS");
 Clazz.defineMethod (c$, "setVis", 
- function (ellipsoids, bs, atoms) {
+ function (ellipsoids, bs) {
+var atoms = this.ms.at;
 for (var e, $e = ellipsoids.values ().iterator (); $e.hasNext () && ((e = $e.next ()) || true);) {
 var t = e.tensor;
 var isOK = (t != null && e.isValid && e.isOn);
@@ -310,13 +309,14 @@ isOK = (!isModTensor && !isUnmodTensor || isModTensor == isModAtom);
 }atoms[t.atomIndex1].setShapeVisibility (this.vf, true);
 }e.visible = isOK && (e.modelIndex < 0 || bs.get (e.modelIndex));
 }
-}, "java.util.Map,JU.BS,~A");
+}, "java.util.Map,JU.BS");
 Clazz.overrideMethod (c$, "setAtomClickability", 
 function () {
 if (this.atomEllipsoids.isEmpty ()) return;
+var atoms = this.ms.at;
 for (var e, $e = this.atomEllipsoids.values ().iterator (); $e.hasNext () && ((e = $e.next ()) || true);) {
 var i = e.tensor.atomIndex1;
-var atom = this.atoms[i];
+var atom = atoms[i];
 if ((atom.shapeVisibilityFlags & this.vf) == 0 || this.ms.isAtomHidden (i)) continue;
 atom.setClickable (this.vf);
 }

@@ -83,11 +83,13 @@ function postrst_update_question_users($force = false) {
         $force = ($force == 'forced') ? true : false;
     }
 
-    $sql = "SELECT q.id, uq.id AS uqid, q.category, qc.contextid, q.createdby, q.modifiedby, uq.creatoridnumber, uq.modifieridnumber,
+    $sql = "SELECT q.id, uq.id AS uqid, qc.id AS category, qc.contextid, q.createdby, q.modifiedby, uq.creatoridnumber, uq.modifieridnumber,
                     uc.id AS ucid, um.id AS umid
             FROM {question} q
             LEFT JOIN {local_ulpgccore_questions} uq ON uq.questionid = q.id
-            JOIN {question_categories} qc ON q.category = qc.id
+            JOIN {question_versions} qv ON qv.questionid = q.id
+            JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+            JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
             JOIN {user} uc ON uq.creatoridnumber = uc.idnumber
             JOIN {user} um ON uq.modifieridnumber = um.idnumber
             WHERE ((uq.creatoridnumber IS NOT NULL AND q.createdby <> uc.id) OR ( uq.modifieridnumber IS NOT NULL AND q.modifiedby <> um.id))
@@ -114,7 +116,9 @@ function postrst_update_question_categories($force = false) {
         foreach($categories as $qc) {
             $sql = "SELECT qc.id, qc.name, qc.contextid, COUNT(q.id) AS countof
                     FROM {question_categories} qc
-                    LEFT JOIN {question} q ON qc.id = q.category
+                    LEFT JOIN {question_bank_entries} qb ON qb.questioncategoryid = qc.id
+                    LEFT JOIN {question_versions} ON qv.questionbankentryid = qb.id
+                    LEFT JOIN {question} q ON qv.questionid = q.id
                     WHERE qc.name = :name AND qc.contextid = :context
                     GROUP BY qc.id
                     ORDER BY countof DESC, id ASC ";
@@ -124,7 +128,12 @@ function postrst_update_question_categories($force = false) {
                 $main = array_shift($qcats);
                 if($qcats) {
                     foreach($qcats as $dup) {
-                        $questionids = $DB->get_records_menu('question', array('category'=>$dup->id), '', 'id,category');
+                        $sql = "SELECT q.id, qb.questioncategoryid
+                                  FROM {question} q
+                                  JOIN {question_versions} qv ON qv.questionid = q.id
+                                  JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+                                 WHERE qb.questioncategoryid = :category";
+                        $questionids = $DB->get_records_sql_menu('question', ['category'=>$dup->id]);
                         if($questionids) {
                             question_move_questions_to_category(array_keys($questionids), $main->id);
                         }
@@ -148,7 +157,9 @@ function postrst_update_question_tags($force = false) {
     $sql = "SELECT ti.id, ti.component, qc.contextid
             FROM {tag_instance} ti
             JOIN {question} q ON ti.itemid = q.id
-            JOIN {question_categories} qc ON q.category = qc.id
+            JOIN {question_versions} qv ON qv.questionid = q.id
+            JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+            JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
             WHERE ti.itemtype = :type AND ti.contextid IS NULL ";
     $params = array('type'=>'question');
 

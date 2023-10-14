@@ -37,29 +37,26 @@ class restore_examregistrar_activity_task extends restore_activity_task {
      */
     protected function define_my_settings() {
         // All the settings related to this activity will include this prefix
-        $settingprefix = $this->info->modulename . '_' . $this->info->moduleid . '_';
-        $userinfo = $this->get_setting_value('userinfo');
-        $userinfor = false; // TODO  TODO /// TODO
-        if($userinfo) {
-            $settingname = $settingprefix . 'registrarincluded';
-            $registrar_included = new restore_activity_generic_setting($settingname, base_setting::IS_BOOLEAN, true);
-            $registrar_included->get_ui()->set_icon(new pix_icon('icon', get_string('pluginname', $this->modulename),
-                $this->modulename, array('class' => 'iconlarge icon-post')));
-            $this->add_setting($registrar_included);
+        $settingprefix = $this->info->modulename . '_';
+        $settingname = $settingprefix . 'registrarincluded';
+        $registrar_included = new restore_activity_generic_setting($settingname, base_setting::IS_BOOLEAN, true);
+        $registrar_included->get_ui()->set_icon(new pix_icon('icon', get_string('pluginname', $this->modulename),
+            $this->modulename, array('class' => 'iconlarge icon-post')));
+        $this->add_setting($registrar_included);
 
-            $settingname = $settingprefix . 'examsincluded';
-            $exams_included = new restore_activity_generic_setting($settingname, base_setting::IS_BOOLEAN, true);
-            $exams_included->get_ui()->set_icon(new pix_icon('icon', get_string('pluginname', $this->modulename),
-                $this->modulename, array('class' => 'iconlarge icon-post')));
-            $this->add_setting($exams_included);
+        $settingname = $settingprefix . 'examsincluded';
+        $exams_included = new restore_activity_generic_setting($settingname, base_setting::IS_BOOLEAN, true);
+        $exams_included->get_ui()->set_icon(new pix_icon('icon', get_string('pluginname', $this->modulename),
+            $this->modulename, array('class' => 'iconlarge icon-post')));
+        $this->add_setting($exams_included);
 
-            $included = $settingprefix . 'included';
-            if ($this->plan->setting_exists($settingname)) {
-                $activity_included = $this->plan->get_setting($settingname);
-                $activity_included->add_dependency($registrar_included);
-                $activity_included->add_dependency($exams_included);
-            }
+        $included = $settingprefix . 'included';
+        if ($this->plan->setting_exists($settingname)) {
+            $activity_included = $this->plan->get_setting($settingname);
+            $activity_included->add_dependency($registrar_included);
+            $activity_included->add_dependency($exams_included);
         }
+
     }
 
     /**
@@ -132,5 +129,32 @@ class restore_examregistrar_activity_task extends restore_activity_task {
         $rules[] = new restore_log_rule('examregistrar', 'view all', 'index.php?id={course}', null);
 
         return $rules;
+    }
+
+    /**
+     * After restore - performs cleaning of tables .
+     * @throws dml_exception
+     */
+    public function after_restore() {
+        global $CFG, $DB;
+        $examregid = $this->get_activityid();
+        $courseid = $this->get_courseid();
+        if (empty($courseid) || empty($examregid)) {
+            return;
+        }
+
+        require_once($CFG->dirroot.'/mod/examregistrar/managelib.php');
+        // reconstruct location hierarchy data (parent, depth, path)
+        if($locations = $DB->get_records_menu('examregistrar_locations',
+                                                ['examreg' => $examregid], 'parent ASC', 'id, parent') ) {
+            foreach($locations as $lid => $parent) {
+                examregistrar_set_location_tree($lid);
+            }
+        }
+
+
+
+
+
     }
 }

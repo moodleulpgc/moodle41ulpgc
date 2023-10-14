@@ -22,6 +22,7 @@ use context_course;
 use context_module;
 use core\persistent;
 use mod_bigbluebuttonbn\local\proxy\recording_proxy;
+use mod_bigbluebuttonbn\local\config; // ecastro ULPGC recordings URL
 use moodle_url;
 use stdClass;
 
@@ -594,16 +595,65 @@ class recording extends persistent {
      */
     public function get_remote_playback_url(string $type): ?string {
         $this->refresh_metadata_if_required();
-
         $playbacks = $this->metadata_get('playbacks');
+
         foreach ($playbacks as $playback) {
             if ($playback['type'] == $type) {
+                // ecastro ULPGC to address problem in recordings URL
+                $bbburl = new moodle_url($playback['url']);
+                if($bbburl->get_host() == 'bigbluebutton.example.com') {
+                    $serverurl = trim(config::get('server_url'));
+                    //print_object($serverurl);
+                    $baseurl = new moodle_url($serverurl);
+                    $baseurl = $baseurl->get_scheme() . '://' . $baseurl->get_host();
+                    return $baseurl.$bbburl->get_path();
+                }
+                // ecastro ULPGC
                 return $playback['url'];
             }
         }
 
         return null;
     }
+
+    /**
+     * Get the download mp4 url, if existing
+     *
+     * @return null|string
+     * @author ecastro ULPGC
+     */
+    public function get_remote_download_url(): ?string {
+        $baseurl = new \moodle_url(trim(config::get('server_url'))) ;
+        $recordingid = $this->get('recordingid');
+        $url = $baseurl->get_scheme() . '://' . $baseurl->get_host() .
+                "/download/presentation/$recordingid/$recordingid.mp4";
+        if(!$this->check_remote_download_url($url)) {
+            $url = '';
+        }
+
+        return $url;
+    }
+
+    /**
+     * Get the download mp4 url, if existing
+     *
+     * @return bool
+     * @author ecastro ULPGC
+     */
+    public function check_remote_download_url(string $url): bool {
+        // check file exists
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+        $response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if($response != 200) {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Is protected. Return null if protected is not implemented.

@@ -61,12 +61,5 @@ class mod_attendance_sessions_page_params {
     const ACTION_DELETE_HIDDEN     = 6;
     
 
-    /**
-     *  Aadd auto session.
-     */
-    const ACTION_AUTO     = 9;     // ecastro ULPGC remove when report_attendancetools
-    
-
-    /** @var int view mode of taking attendance page*/
     public $action;
 }

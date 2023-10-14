@@ -9,6 +9,7 @@
 
 $string['pluginname'] = 'ULPGC quiz';
 $string['ulpgcquiz:manage'] = 'Manage ULPGC quizs';
+$string['ulpgcquiz:viewhiddenstatus'] = 'View hidden questions status';
 
 // settings
 $string['quizsettings'] = 'ULPGC quiz settings';

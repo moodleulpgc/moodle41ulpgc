@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use qbank_managecategories\helper;
+
 /**
  * Abstract class for feedback_plugin inherited from assign_plugin abstract class.
  *
@@ -138,11 +140,21 @@ class batchmanage_managejob_qcatdelete extends batchmanage_managejob_plugin {
         $success = false;
         
         if($data && $category) {
+            $sql = "SELECT q.id, 1
+                      FROM {question} q
+                      JOIN {question_versions} qv ON qv.questionid = q.id
+                      JOIN {question_bank_entries} qb ON qv.questionbankentryid = qb.id
+                      JOIN {question_categories} qc ON qb.questioncategoryid = qc.id
+                     WHERE qb.questioncategoryid = ? AND (qc.parent = 0 OR qc.parent = qb.questioncategoryid) ";
+            $questionids = $DB->get_records_sql_menu($sql, [$category->id]);
+/*
             $questionids = $DB->get_records_select_menu('question',
                                         'category = ? AND (parent = 0 OR parent = id)', array($category->id), '', 'id,1');
+*/
             $childs = $DB->record_exists('question_categories', array("parent" => $category->id));
-            
-            question_remove_stale_questions_from_category($category->id);
+
+            //question_remove_stale_questions_from_category($category->id);
+            helper::question_remove_stale_questions_from_category($categoryid);
                                         
             if($questionids || $childs) {
                 if($data->qcategoryforcedelete) {
@@ -158,7 +170,6 @@ class batchmanage_managejob_qcatdelete extends batchmanage_managejob_plugin {
                         $savecat = $DB->insert_record("question_categories", $cat);
                     }
                     if($savecat) {
-                
                         question_move_questions_to_category(array_keys($questionids), $savecat);
                             
                         /// Send the children categories to live with their grandparent
@@ -172,8 +183,15 @@ class batchmanage_managejob_qcatdelete extends batchmanage_managejob_plugin {
                 $success = $DB->delete_records("question_categories", array("id" => $category->id));
             }
         }
-    
+
+        if($success) {
+            // Log the deletion of this category.
+            $event = \core\event\question_category_deleted::create_from_question_category_instance($category);
+            $event->add_record_snapshot('question_categories', $category);
+            $event->trigger();
+        }
+
         return array($success, $category->name, '');
     }
-    
+
 }

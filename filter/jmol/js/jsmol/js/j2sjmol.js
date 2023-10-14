@@ -43,6 +43,7 @@
  // NOTES by Bob Hanson: 
   // J2S class changes:
 
+ // BH 4/19/22 adds TypeError.prototype.printStackTrace and ReferenceError.prototype.printStackTrace
  // BH 10/16/2017 6:30:14 AM fix for prepareCallback reducing arguments length to -1
  // BH 7/7/2017 7:10:39 AM fixes Clazz.clone for arrays
  // BH 1/14/2017 6:23:54 AM adds URL switch  j2sDebugCore
@@ -176,6 +177,8 @@ LoadClazz = function() {
 // but it is created by the compiler, and I have not found a work-around.
 // it is used as a local variable in class definitions to point to the 
 // current method. See Clazz.p0p and Clazz.pu$h
+
+TypeError.prototype.printStackTrace = ReferenceError.prototype.printStackTrace = function() { console.log(this) }
 
 c$ = null;
 

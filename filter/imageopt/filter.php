@@ -199,6 +199,10 @@ EOF;
         }
 
         $imageinfo = (object) $file->get_imageinfo();
+        if(!isset($imageinfo->width)) { // ecastro ULPGC
+            // this is not ans image file, do not process
+            return $match[0];
+        }
         if ($imageinfo->width <= $maxwidth && !local::file_is_public($file->get_contenthash())) {
             if (empty($this->config->lovallimage) || $this->config->loadonvisible == 999) {
                 return $match[0];

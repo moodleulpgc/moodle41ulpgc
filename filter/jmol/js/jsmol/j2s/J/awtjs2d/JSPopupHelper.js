@@ -36,7 +36,7 @@ return  new JS.JCheckBoxMenuItem ();
 Clazz.overrideMethod (c$, "menuAddButtonGroup", 
 function (item) {
 if (item == null) {
-this.buttonGroup = null;
+if (this.buttonGroup != null && this.buttonGroup.getButtonCount () > 0) this.buttonGroup = null;
 return;
 }if (this.buttonGroup == null) this.buttonGroup =  new JS.ButtonGroup ();
 this.buttonGroup.add (item);
@@ -85,4 +85,9 @@ function (e) {
 var jmi = e.getSource ();
 this.popup.menuFocusCallback (jmi.getName (), jmi.getActionCommand (), false);
 }, "java.awt.event.MouseEvent");
+Clazz.overrideMethod (c$, "dispose", 
+function (popupMenu) {
+this.menuClearListeners (popupMenu);
+this.popup = null;
+}, "J.api.SC");
 });

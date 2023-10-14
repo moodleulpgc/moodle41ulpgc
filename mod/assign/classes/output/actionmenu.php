@@ -45,8 +45,9 @@ class actionmenu implements templatable, renderable {
      *
      * @param int $cmid The course module ID.
      */
-    public function __construct(int $cmid) {
+    public function __construct(int $cmid, $showgradingpanel = true) { // ecastro ULPGC
         $this->cmid = $cmid;
+        $this->showgradingpanel = $showgradingpanel;
     }
 
     /**
@@ -58,7 +59,8 @@ class actionmenu implements templatable, renderable {
     public function export_for_template(\renderer_base $output): array {
         return [
             'submissionlink' => (new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'grading']))->out(false),
-            'gradelink' => (new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'grader']))->out(false)
+            'gradelink' => (new moodle_url('/mod/assign/view.php', ['id' => $this->cmid, 'action' => 'grader']))->out(false),
+            'showgradingpanel' => $this->showgradingpanel // ecastro ULPGC
         ];
     }
 

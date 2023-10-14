@@ -40,13 +40,32 @@ class check_role_permissions_table extends \core_role_capability_table_base {
      * @param context $context the context this table relates to.
      * @param string $archetype role to show 
      */
-    public function __construct($context, $archetype) {
+    public function __construct($context, $archetype, $baseurl, $skip = false) {
+        global $CFG, $DB;
+
         parent::__construct($context, 'permissions');
         $this->archetype = $archetype;
+        $this->baseurl = $baseurl;
+        $this->checkurl = new \moodle_url($CFG->wwwroot.'/admin/tool/editrolesbycap/index.php');
+        $this->skip = $skip;
+
+        $this->strcopycaps = get_string('copyarchcaps', 'local_ulpgccore');
 
         $roles = get_archetype_roles($archetype);
+        if($archetype == 'editingteacher') {
+            $teacher = $DB->get_record('role', ['shortname' => 'teacher']);
+            $roles[$teacher->id] = $teacher;
+        }
         $this->roles = role_fix_names($roles, $context, ROLENAME_ORIGINAL);
-        
+
+        $this->permissionlabels = array(
+            '-' => get_string('notset', 'core_role'), // notset
+            CAP_INHERIT => get_string('inherit', 'core_role'), // notset
+            CAP_ALLOW => get_string('allow', 'core_role'),
+            CAP_PREVENT => get_string('prevent', 'core_role'),
+            CAP_PROHIBIT => get_string('prohibit', 'core_role'),
+        );
+
         foreach($this->roles as $rid => $role) {
             $caps = get_capabilities_from_role_on_context($role, $context);
             $role->capabilities = [];
@@ -71,19 +90,33 @@ class check_role_permissions_table extends \core_role_capability_table_base {
     
     
     protected function add_header_cells() {
+        global $OUTPUT;
         //echo '<th>' . get_string('capabilities', 'core_role') . '</th>';
-        echo '<th class="rolename" >' . get_string('archetype', 'core_role') . "<br /> ({$this->rolearchetype->shortname}) "  . '</th>';
+        echo '<th class="rolename" >' . get_string('archetype', 'core_role') . "<br /> ({$this->rolearchetype->shortname}) " . '</th>';
         foreach($this->roles as $role) {
-            echo '<th class="rolename">' . $role->localname . "<br /> ({$role->shortname}) " . '</th>';
+            $this->baseurl->remove_params('reset', 'copy');
+            $this->baseurl->param('reset', $role->id);
+            $actions = $OUTPUT->action_icon($this->baseurl, new \pix_icon('t/reset', get_string('rolereset', 'local_ulpgccore')),
+                                                null, array('class' => 'resetrole', 'data-action' => 'resetrole')) . ' ';
+            $this->baseurl->remove_params('reset');
+            $this->baseurl->param('copy', $role->id);
+            $actions .= $OUTPUT->action_icon($this->baseurl, new \pix_icon('t/copy', get_string('rolecopy', 'local_ulpgccore')),
+                                            null, array('class' => 'copyrole', 'data-action' => 'copyrole'));
+
+            echo '<th class="rolename">' . $role->localname . "<br /> ({$role->shortname}) <br />" . $actions . '</th>';
+            //echo $header;
         }
+        $this->baseurl->remove_params('reset', 'copy');
+
+        echo '<th class="rolename" >' . get_string('rolecapaction', 'local_ulpgccore') . '</th>';
     }
 
     protected function num_extra_columns() {
-        return 0;
+        return 1;
     }
 
     protected function add_row_cells($capability) {
-        global $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT, $PAGE;
         
         //print_object($capability);
         
@@ -157,28 +190,58 @@ class check_role_permissions_table extends \core_role_capability_table_base {
 
         */
         
-        $archetype = '';
+        $archetype = '-';
         if(isset($this->rolearchetype->capabilities[$capability->name])) {
             $archetype =  $this->rolearchetype->capabilities[$capability->name];
         }
+        $archetypelabel = $this->permissionlabels[$archetype];
         
         if($risks = $this->get_risks($capability)) {
-            $risks = '  &nbsp;  '.$risks;
+            $risks = '<br />'.$risks;
         }
-        
-        
-        $contents = \html_writer::tag('td', $archetype.$risks, array('class' => 'permission  archetype'));
+
+        $baseurl = clone ($this->baseurl);
+        $checkurl = clone ($this->checkurl);
+        $checkurl->param('cap', $capability->name);
+        $baseurl->param('cap', $capability->id);
+
+        $label = '';
+        $contents = '';
+        $difference = false;
         foreach($this->roles as $role) {
             $permission = '-';
+            $warning = '';
             if(isset($role->capabilities[$capability->name])) {
                 $permission =  $role->capabilities[$capability->name];
             }
             if($permission === $archetype) {
-                $permission = '';
+                $label = '';
+            } else {
+                $label = $this->permissionlabels[$permission];
+                if($permission && ($permission != '-')) {
+                    $warning = 'alert-danger';
+                    $label= \html_writer::link($checkurl, $label);
+                }
+                $difference = true;
             }
-            
-            $contents .= \html_writer::tag('td', $permission, array('class' => 'permission role'));
-        }        
+            $contents .= \html_writer::tag('td', \html_writer::span($label, 'text '.$warning), array('class' => 'permission role'));
+        }
+
+        // add first & last column last, when checking done
+        $button = '';
+        if($difference) {
+            $archetypelabel = \html_writer::link($checkurl, $archetypelabel);
+            $button = \html_writer::link($baseurl, $this->strcopycaps);
+        }
+
+        $archetypecol = \html_writer::tag('td', $archetypelabel.$risks, array('class' => 'permission  archetype'));
+        $actioncol = \html_writer::tag('td', $button, array('class' => 'permission action'));
+
+
+        $contents = $archetypecol . $contents . $actioncol;
+
+
+
         return $contents;
     }
 
@@ -211,6 +274,11 @@ class check_role_permissions_table extends \core_role_capability_table_base {
      * @return boolean. If true, this row is omitted from the table.
      */
     protected function skip_row($capability) {
+
+        if(!$this->skip) {
+            return false;
+        }
+
         $archetype = '';
         if(isset($this->rolearchetype->capabilities[$capability->name])) {
             $archetype =  $this->rolearchetype->capabilities[$capability->name];

@@ -64,13 +64,17 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
             //$coursenode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'courselog', new pix_icon('i/report', ''));
             //$url = new moodle_url('/report/loglive/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id));
             //$coursenode->add(get_string('pluginname', 'report_loglive'), $url, navigation_node::TYPE_SETTING, null, 'courseloglive', new pix_icon('i/report', ''));
-
-            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin'];
+            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recyclebin', 'contextlocking', 'tool_lifecycle'];
             $name = get_string('archivereuse', 'local_ulpgccore');
             local_ulpgccore_regroup_nav_nodes($coursenode, $links, $name, 'course_archive_reuse');
+
+            if ($node = $PAGE->navigation->find('contentbank', navigation_node::TYPE_CUSTOM)) {
+                $node->set_force_into_more_menu(false);
+                $coursenode->add_node($node, 'users');
+            }
         }
     }
-    
+
    if ($settingsnode = $nav->find('users', navigation_node::TYPE_CONTAINER)) {
         $url = new moodle_url('/local/ulpgccore/exportusers.php', array('id'=>$PAGE->course->id));
         $node = $settingsnode->create(get_string('exportusers', 'local_ulpgccore'), $url, navigation_node::TYPE_SETTING, null, 'exportusers', new pix_icon('i/export', ''));
@@ -107,43 +111,33 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
                 }
             }          
         }
-        
+
         if($modnode =  $nav->find('modulesettings', navigation_node::TYPE_SETTING)) {    
-            $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
-            $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
-
-
-            if(has_any_capability(['moodle/role:assign', 'moodle/grade:edit'], $context)) {
-            $links = ['roleoverride', 'roleassign', 'rolecheck'];
-            $name = get_string('rolepermissions', 'local_ulpgccore');
-            local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
-
-            }
-            if(has_any_capability(['moodle/backup:backupcourse', 'moodle/grade:edit'], $context)) {
-            $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
-            $name = get_string('archivereuse', 'local_ulpgccore');
-            local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
-            }
-
-/*
-            $siblibgs = $modnode->get_siblings();
-            foreach($siblibgs as $n) {
-                print_object($n->get_children_key_list());
-                print_object(' SIB node coursesettings ' . $n->key);
-            }
-
-            local_ulpgccore_boostnav_get_all_childrenkeys($modnode);
-
-            foreach($modnode->get_children_key_list() as $key) {
-                $nod = $modnode->get($key);
-                if($nod->has_children  ) {
-                    print_object($nod->get_children_key_list());
-                    print_object("Children for key: $key");
+            //print_object($modnode->get_children_key_list());
+            if(has_capability('report/log:view', $context)) {
+                $url = new moodle_url('/report/log/index.php', array('chooselog' => 1,  'id'=>$PAGE->course->id, 'modid' => $PAGE->cm->id ));
+                $modnode->add(get_string('pluginname', 'report_log'), $url, navigation_node::TYPE_SETTING, null, 'modulelogs', new pix_icon('i/report', ''));
+                if ($node = $nav->find('logreport', navigation_node::TYPE_SETTING)) {
+                    $node->remove();
                 }
             }
-*/
+            if(has_any_capability(['moodle/role:assign', 'moodle/grade:edit'], $context)) {
+                $links = ['roleoverride', 'roleassign', 'rolecheck', 'contextlocking'];
+                $name = get_string('rolepermissions', 'local_ulpgccore');
+                local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_roles_overrride');
+            }
+            if(has_any_capability(['moodle/backup:backupcourse', 'moodle/grade:edit'], $context)) {
+                $links = ['import', 'backup', 'restore', 'copy', 'reset', 'tool_recycle'];
+                $name = get_string('archivereuse', 'local_ulpgccore');
+                local_ulpgccore_regroup_nav_nodes($modnode, $links, $name, 'mod_archive_reuse');
+            }
 
-
+            if ($node = $nav->find('guidegrades', navigation_node::TYPE_SETTING)) {
+                $node->set_force_into_more_menu(true);
+            }
+            if ($node = $nav->find('cgguidegrades', navigation_node::TYPE_SETTING)) {
+                $node->set_force_into_more_menu(true);
+            }
         }
     }
 
@@ -151,35 +145,25 @@ function local_ulpgccore_extend_settings_navigation(settings_navigation $nav, co
     if ($node = $nav->find('contextlocking', navigation_node::TYPE_SETTING)) {
         $node->set_force_into_more_menu(true);
     }
-    
-    //print_object("Estoy en localulpgccore");    
+
     //print_object($PAGE->navigation->get_children_key_list());
     //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->navigation));
+    //print_object(local_ulpgccore_boostnav_get_all_childrenkeys($nav));
 /*
-    print_object("Estoy en localulpgccore");    
     print_object("Estoy en localulpgccore");
     print_object($PAGE->primarynav->get_children_key_list());
     print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->primarynav));
     if(isset($PAGE->primarynav)) {
-        print_object("Primary Navigation");    
         print_object($PAGE->primarynav->get_children_key_list());
-        print_object("Primary Navigation");
     } else {print_object("NOT EXISTS  Primary Navigation");}
     
     print_object($PAGE->secondarynav->get_children_key_list());
-    print_object(local_ulpgccore_boostnav_get_all_childrenkeys($PAGE->secondarynav));
     if(!empty($PAGE->secondarynav)) {
-        print_object("Secondary Navigation");    
         print_object($PAGE->secondarynav->get_children_key_list());
-        print_object("Secondary Navigation");        
     //local_ulpgccore_boostnav_get_all_childrenkeys        
     } else {print_object("NOT EXISTS  Secondary Navigation");}        
 */
-  
-
 }
-
-
 
 /**
  * This function takes the plugin's custom nodes setting, builds the custom nodes and adds them to the given navigation_node.
@@ -230,12 +214,15 @@ function local_ulpgccore_boostnav_get_all_childrenkeys(navigation_node $navigati
     } else {
         // Get own own children keys.
         $childrennodeskeys = $navigationnode->get_children_key_list();
+        print_object($childrennodeskeys);
+
         // Get all children keys of our children recursively.
         foreach ($childrennodeskeys as $ck) {
             print_object("start key: $ck");
             $n = $navigationnode->get($ck);
             $ch = local_ulpgccore_boostnav_get_all_childrenkeys($navigationnode->get($ck));
-            print_object($ch);
+            //$ch = $n->get_children_key_list();
+            //print_object($ch);
             print_object("key end: $ck  -- name {$n->text}  type: {$n->type} ---------------------------");
             $allchildren = array_merge($allchildren, $ch);
         }
@@ -368,15 +355,15 @@ function local_ulpgccore_get_userfields() {
         'phone1'      => get_string('phone'),
         'phone2'      => get_string('phone2'),
         'url'      => get_string('webpage'),
-        'icq'      => get_string('icqnumber'),
+        //'icq'      => get_string('icqnumber'), // deprecated strings in 4.x
         'skype'      => get_string('skypeid'),
-        'yahoo'      => get_string('yahooid'),
-        'msn'      => get_string('msnid'),
+        //'yahoo'      => get_string('yahooid'),
+        //'msn'      => get_string('msnid'),
         'department'  => get_string('department'),
         'institution' => get_string('institution'),
         'city' => get_string('city'),
         'address'      => get_string('address'),
-        'aim' => get_string('aimid'),
+        //'aim' => get_string('aimid'),
         'country' => get_string('country'),
         'lang' => get_string('language'),
         'timezone'      => get_string('timezone'),
@@ -796,7 +783,7 @@ function local_ulpgccore_exportuser_row($row) {
 function local_ulpgccore_course_recent_activity($course, $username = '' ) {
     global $CFG, $DB, $USER;
 
-    if(!$username) {
+    if($username) {
         $user = $DB->get_record('user', ['username' => $username], 'id, idnumber, lastlogin, lastaccess');
         if(empty($user)) {
             return false;
@@ -811,7 +798,7 @@ function local_ulpgccore_course_recent_activity($course, $username = '' ) {
     } else {
         $user = $USER;
     }
-    
+
     if(!isset($user->ulpgclastactivity)) {
         $user->ulpgclastactivity = array();
         $user->ulpgclastactivity[$course->id] = 0;

@@ -55,15 +55,15 @@ class update_grades extends \core\task\scheduled_task {
 
         $sql = "SELECT m.*
                   FROM {moodleoverflow} m 
-                  JOIN 
-                 WHERE m.timemodified > ? 
-             OR EXISTS (SELECT 1
-                          FROM {moodleoverflow_posts} p 
-                          JOIN {moodleoverflow_discussions} d ON d.id = p.discussion AND d.moodleoverflow = m.id AND m.course = d.course
-                         WHERE d.moodleoverflow = m.id AND p.modified > ?  ) 
-             OR EXISTS (SELECT 1 
-                          FROM {moodleoverflow_ratings} r              
-                         WHERE r.moodleoverflowid = m.id AND r.lastchanged > ?  ) ) ";
+                 WHERE m.timemodified > ? AND (
+                       EXISTS (SELECT 1
+                                 FROM {moodleoverflow_posts} p 
+                                 JOIN {moodleoverflow_discussions} d ON d.id = p.discussion AND d.moodleoverflow = m.id AND m.course = d.course
+                                WHERE d.moodleoverflow = m.id AND p.modified > ?  ) 
+                       OR 
+                       EXISTS (SELECT 1 
+                                 FROM {moodleoverflow_ratings} r              
+                                WHERE r.moodleoverflowid = m.id AND r.lastchanged > ?  ) ) ";
         
         $params = [$lastrun, $lastrun, $lastrun];
         $mods = $DB->get_recordset_sql($sql, $params);

@@ -61,6 +61,14 @@ class qtype_stack_question extends question_graded_automatically_with_countback
     public $questionnote;
 
     /**
+     * @var string STACK specific: allow a question to carry some description/discussion.
+     */
+    public $questiondescription;
+
+    /** @var int one of the FORMAT_... constants */
+    public $questiondescriptionformat;
+
+    /**
      * @var string Any specific feedback for this question. This is displayed
      * in the 'yellow' feedback area of the question. It can contain PRTfeedback
      * tags, but not IEfeedback.
@@ -139,6 +147,11 @@ class qtype_stack_question extends question_graded_automatically_with_countback
      * @var castext2_evaluatable STACK specific: variant specifying castext fragment.
      */
     protected $questionnoteinstantiated = null;
+
+    /**
+     * @var castext2_evaluatable STACK specific.
+     */
+    protected $questiondescriptioninstantiated = null;
 
     /**
      * @var castext2_evaluatable instantiated version of questiontext.
@@ -297,7 +310,6 @@ class qtype_stack_question extends question_graded_automatically_with_countback
     }
 
     public function start_attempt(question_attempt_step $step, $variant) {
-
         // @codingStandardsIgnoreStart
         // Work out the right seed to use.
         if (!is_null($this->seed)) {
@@ -386,6 +398,11 @@ class qtype_stack_question extends question_graded_automatically_with_countback
                         '', $this->security);
                 $this->tas[$name] = $cs;
                 $session->add_statement($cs);
+            }
+
+            // Check for signs of errors.
+            if ($this->get_cached('static-castext-strings') === null) {
+                throw new stack_exception(implode('; ', array_keys($this->runtimeerrors)));
             }
 
             // 3.0 setup common CASText2 staticreplacer.
@@ -577,7 +594,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             return $this->generalfeedbackinstantiated;
         }
 
-        // Init a session with question-variables ant the related details.
+        // Init a session with question-variables and the related details.
         $session = new stack_cas_session2([], $this->options, $this->seed);
         if ($this->get_cached('preamble-qv') !== null) {
             $session->add_statement(new stack_secure_loader($this->get_cached('preamble-qv'), 'preamble'));
@@ -598,6 +615,53 @@ class qtype_stack_question extends question_graded_automatically_with_countback
         }
 
         return $this->generalfeedbackinstantiated;
+    }
+
+    /**
+     * Get the cattext for the question description, instantiated within the question's session.
+     * @return stack_cas_text the castext.
+     */
+    public function get_questiondescription_castext() {
+        // Could be that this is instantiated already.
+        if ($this->questiondescriptioninstantiated !== null) {
+            return $this->questiondescriptioninstantiated;
+        }
+        // We can have a failed question.
+        if ($this->get_cached('castext-gf') === null) {
+            $ct = castext2_evaluatable::make_from_compiled('"Broken question."', '/gf',
+                new castext2_static_replacer([])); // This mainly for the bulk-test script.
+                $ct->requires_evaluation(); // Makes it as if it were evaluated.
+                return $ct;
+        }
+
+        $this->questiondescriptioninstantiated = castext2_evaluatable::make_from_compiled($this->get_cached('castext-qd'),
+            '/gf', new castext2_static_replacer($this->get_cached('static-castext-strings')));
+        // Might not require any evaluation anyway.
+        if (!$this->questiondescriptioninstantiated->requires_evaluation()) {
+            return $this->questiondescriptioninstantiated;
+        }
+
+        // Init a session with question-variables and the related details.
+        $session = new stack_cas_session2([], $this->options, $this->seed);
+        if ($this->get_cached('preamble-qv') !== null) {
+            $session->add_statement(new stack_secure_loader($this->get_cached('preamble-qv'), 'preamble'));
+        }
+        if ($this->get_cached('contextvariables-qv') !== null) {
+            $session->add_statement(new stack_secure_loader($this->get_cached('contextvariables-qv'), '/qv'));
+        }
+        if ($this->get_cached('statement-qv') !== null) {
+            $session->add_statement(new stack_secure_loader($this->get_cached('statement-qv'), '/qv'));
+        }
+
+        // Then add the description code.
+        $session->add_statement($this->questiondescriptioninstantiated);
+        $session->instantiate();
+
+        if ($this->questiondescriptioninstantiated->get_errors()) {
+            $this->runtimeerrors[$this->questiondescriptioninstantiated->get_errors()] = true;
+        }
+
+        return $this->questiondescriptioninstantiated;
     }
 
     /**
@@ -727,8 +791,14 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             }
         }
         if (array_key_exists($name, $this->inputs)) {
+            $qv = [];
+            $qv['preamble-qv']         = $this->get_cached('preamble-qv');
+            $qv['contextvariables-qv'] = $this->get_cached('contextvariables-qv');
+            $qv['statement-qv']        = $this->get_cached('statement-qv');
+
             $this->inputstates[$name] = $this->inputs[$name]->validate_student_response(
-                $response, $this->options, $teacheranswer, $this->security, $rawinput);
+                $response, $this->options, $teacheranswer, $this->security, $rawinput,
+                $this->castextprocessor, $qv);
             return $this->inputstates[$name];
         }
         return '';
@@ -1372,9 +1442,10 @@ class qtype_stack_question extends question_graded_automatically_with_countback
      * This function is called by the bulk testing script on upgrade.
      * This checks if questions use features which have changed.
      */
-    public function validate_against_stackversion() {
+    public function validate_against_stackversion($context) {
         $errors = array();
-        $qfields = array('questiontext', 'questionvariables', 'questionnote', 'specificfeedback', 'generalfeedback');
+        $qfields = array('questiontext', 'questionvariables', 'questionnote', 'questiondescription',
+            'specificfeedback', 'generalfeedback');
 
         $stackversion = (int) $this->stackversion;
 
@@ -1387,7 +1458,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
         foreach ($patterns as $checkpat) {
             if ($stackversion < $checkpat['ver']) {
                 foreach ($qfields as $field) {
-                    if (strstr($this->$field, $checkpat['pat'])) {
+                    if (strstr($this->$field ?? '', $checkpat['pat'])) {
                         $a = array('pat' => $checkpat['pat'], 'ver' => $checkpat['ver'], 'qfield' => stack_string($field));
                         $err = stack_string('stackversionerror', $a);
                         if (array_key_exists('alt', $checkpat)) {
@@ -1421,7 +1492,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             }
 
             $options = $input->get_parameter('options');
-            if (trim($options) !== '') {
+            if (trim($options ?? '') !== '') {
                 $options = explode(',', $options);
                 foreach ($options as $opt) {
                     $opt = strtolower(trim($opt));
@@ -1436,6 +1507,19 @@ class qtype_stack_question extends question_graded_automatically_with_countback
         foreach ($this->prts as $name => $prt) {
             if (array_key_exists('RegExp', $prt->get_answertests())) {
                 $errors[] = stack_string('stackversionregexp');
+            }
+        }
+
+        // Check files use match the files in the question.
+        $fs = get_file_storage();
+        $pat = '/@@PLUGINFILE@@([^@"])*[\'"]/';
+        $fields = array('questiontext', 'specificfeedback', 'generalfeedback', 'questiondescription');
+        foreach ($fields as $field) {
+            $text = $this->$field;
+            $filesexpected = preg_match($pat, $text ?? '');
+            $filesfound    = $fs->get_area_files($context->id, 'question', $field, $this->id);
+            if (!$filesexpected && $filesfound != array()) {
+                $errors[] = stack_string('stackfileuseerror', stack_string($field));
             }
         }
 
@@ -1471,7 +1555,6 @@ class qtype_stack_question extends question_graded_automatically_with_countback
 
         // 2. Check alt-text exists.
         // Reminder: previous approach in Oct 2021 tried to use libxml_use_internal_errors, but this was a dead end.
-
         $tocheck = array();
         $text = '';
         if ($this->questiontextinstantiated !== null) {
@@ -1503,7 +1586,26 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             }
         }
 
-        // 3. Language warning checks.
+        // 3. Check for todo blocks.
+        $tocheck = array();
+        $fields = array('questiontext', 'specificfeedback', 'generalfeedback', 'questiondescription');
+        foreach ($fields as $field) {
+            $tocheck[stack_string($field)] = $this->$field;
+        }
+        foreach ($this->prts as $prt) {
+            $text = trim($prt->get_feedback_test());
+            if ($text !== '') {
+                $tocheck[$prt->get_name()] = $text;
+            }
+        }
+        $pat = '/\[\[todo/';
+        foreach ($tocheck as $field => $text) {
+            if (preg_match($pat, $text ?? '')) {
+                $warnings[] = stack_string_error('todowarning', array('field' => $field));
+            }
+        }
+
+        // 4. Language warning checks.
         // Put language warning checks last (see guard clause below).
         // Check multi-language versions all have the same languages.
         $ml = new stack_multilang();
@@ -1580,6 +1682,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             $warnings[] = stack_string('languageproblemsextra',
                 array('field' => $field, 'langs' => implode(', ', $langs)));
         }
+
         return $warnings;
 
     }
@@ -1609,6 +1712,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
                     $this->questionnote,
                     $this->generalfeedback, $this->generalfeedbackformat,
                     $this->specificfeedback, $this->specificfeedbackformat,
+                    $this->questiondescription, $this->questiondescriptionformat,
                     $this->prtcorrect, $this->prtcorrectformat,
                     $this->prtpartiallycorrect, $this->prtpartiallycorrectformat,
                     $this->prtincorrect, $this->prtincorrectformat, $this->penalty);
@@ -1624,7 +1728,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
 
                     // Invalidate the question definition cache.
                     // First from the next sessions.
-                    cache::make('core', 'questiondata')->delete($this->id);
+                    stack_clear_vle_question_cache($this->id);
                 }
             } catch (stack_exception $e) {
                 // TODO: what exactly do we use here as the key
@@ -1690,6 +1794,7 @@ class qtype_stack_question extends question_graded_automatically_with_countback
         $questionnote,
         $generalfeedback, $generalfeedbackformat,
         $specificfeedback, $specificfeedbackformat,
+        $questiondescription, $questiondescriptionformat,
         $prtcorrect, $prtcorrectformat,
         $prtpartiallycorrect, $prtpartiallycorrectformat,
         $prtincorrect, $prtincorrectformat, $defaultpenalty) {
@@ -1821,6 +1926,14 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             'questionid' => $id,
             'field' => 'specificfeedback'
         ]);
+        // Legacy questions may have a null description before being saved/compiled.
+        if ($questiondescription === null) {
+            $questiondescription = '';
+        }
+        $questiondescription = stack_castext_file_filter($questiondescription, [
+            'questionid' => $id,
+            'field' => 'questiondescription'
+        ]);
         $prtcorrect = stack_castext_file_filter($prtcorrect, [
             'questionid' => $id,
             'field' => 'prtcorrect'
@@ -1887,6 +2000,13 @@ class qtype_stack_question extends question_graded_automatically_with_countback
             throw new stack_exception('Error(s) in specific-feedback: ' . implode('; ', $ct->get_errors(false)));
         } else {
             $cc['castext-sf'] = $ct->get_evaluationform();
+        }
+
+        $ct = castext2_evaluatable::make_from_source($questiondescription, '/qd');
+        if (!$ct->get_valid($questiondescriptionformat, $ctoptions, $sec)) {
+            throw new stack_exception('Error(s) in question description: ' . implode('; ', $ct->get_errors(false)));
+        } else {
+            $cc['castext-qd'] = $ct->get_evaluationform();
         }
 
         $ct = castext2_evaluatable::make_from_source($prtcorrect, '/pc');

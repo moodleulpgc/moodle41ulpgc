@@ -38,25 +38,27 @@
     {{#discussions}}
         <div class="moodleoverflowdiscussion d-flex border p-2 mb-3" data-moodleoverflow-postid="{{postid}}">
             <div class="leftbox text-center mr-2">
-                <div class="votes text-center mb-1">
-                    {{> mod_moodleoverflow/postvoting }}
-                </div>
-                <div class="status moodleoverflow-icon-no-margin">
-                    {{# questionunderreview }}
-                        {{#pix}}i/duration, moodle, {{#str}}pending_review, mod_moodleoverflow{{/str}}{{/pix}}
-                    {{/ questionunderreview }}
-                    {{^ questionunderreview }}
-                        {{#statusteacher}}
-                            <a href="{{teacherlink}}">{{! avoid whitespace
-                                !}}{{# pix}} i/status-solved, moodleoverflow, {{#str}}containsteacherrating, moodleoverflow{{/str}} {{/ pix}}{{!
-                            !}}</a>
-                        {{/statusteacher}}
-                        {{#statusstarter}}
-                            <a href="{{starterlink}}">{{! avoid whitespace
-                                !}}{{# pix}} i/status-helpful, moodleoverflow, {{#str}}containsstarterrating, moodleoverflow{{/str}} {{/ pix}}{{!
-                            !}}</a>
-                        {{/ statusstarter }}
-                    {{/ questionunderreview }}
+                <div class="upper d-flex text-center">
+                    <div class="votes text-center xmb-1">
+                        {{> mod_moodleoverflow/postvoting }}
+                    </div>
+                    <div class="status d-flex moodleoverflow-icon-no-margin">
+                        {{# questionunderreview }}
+                            {{#pix}}i/duration, moodle, {{#str}}pending_review, mod_moodleoverflow{{/str}}{{/pix}}
+                        {{/ questionunderreview }}
+                        {{^ questionunderreview }}
+                            {{#markedsolution}}
+                                <a href="{{teacherlink}}">{{! avoid whitespace
+                                    !}}{{# pix}} i/status-solved, moodleoverflow, {{#str}}containsteacherrating, moodleoverflow{{/str}} {{/ pix}}{{!
+                                !}}</a>
+                            {{/markedsolution}}
+                            {{#markedhelpful}}
+                                <a href="{{starterlink}}">{{! avoid whitespace
+                                    !}}{{# pix}} i/status-helpful, moodleoverflow, {{#str}}containsstarterrating, moodleoverflow{{/str}} {{/ pix}}{{!
+                                !}}</a>
+                            {{/ markedhelpful }}
+                        {{/ questionunderreview }}
+                    </div>
                 </div>
                 <div class="d-flex flex-colum flex-wrap justify-content-around">
                     {{# canreview }}
@@ -70,32 +72,35 @@
                         {{/ needreview }}
                     {{/ canreview }}
                     <div class="replies my-1" title="{{#str}}answers, mod_moodleoverflow, {{replyamount}}{{/str}}">
-                        <span><span class="reply-correction">{{#pix}}i/reply, mod_moodleoverflow {{/pix}}</span>{{ replyamount }}</span>
+                        <span><span class="reply-correction">{{#pix}}i/reply, mod_moodleoverflow{{/pix}}</span>{{ replyamount }}</span>
                     </div>
                 </div>
 
             </div>
             <div class="w-100 d-flex flex-column justify-content-between">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-betweenxx">{{! ecastro ULPGC remove justify}}
                     <a class="subject mb-3 mr-3" href="{{{subjectlink}}}">{{{ subjecttext }}}</a>
-
-                    <div class="pt-2 text-right">
+                    {{! ecastro ULPGC}}
+                    {{#locked}}<span class="statuspromt badge ">{{#str}}statuslocked, moodleoverflow{{/str}}</span>{{/locked}}
+                    {{#needsanswer}}<span class="statuspromt badge-pill badge-light ">{{#str}}statusneedsanswer, moodleoverflow{{/str}}</span>{{/needsanswer}}
+                    {{! ecastro ULPGC}}
+                    <div class="pt-2 text-right actions d-flex ">{{! ecastro ULPGC actions d-flex}} 
                         {{#cansubtodiscussion}}
                             <div class="discussionsubscription">{{{discussionsubicon}}}</div>
                         {{/cansubtodiscussion}}
                         {{#canmovetopic}}
-                        <div class="discussionmove"><a href='{{ linktopopup }}'>{{#pix}} i/arrow-right, core, {{#str}}movetopicicon, moodleoverflow{{/str}} {{/pix}}</a></div>
+                        <div class="discussionmove"><a href='{{ linktopopup }}'>{{#pix}} t/removeright, core, {{#str}}movetopicicon, moodleoverflow{{/str}} {{/pix}}</a></div> {{! ecastro ULPGC}}
                         {{/canmovetopic}}
 
                         {{#unread}}
                             <div class="mod_moodleoverflow-no-wrap unread-part d-flex align-items-baseline">
                                 <a class="mark-read" href="{{markreadlink}}"
                                    title="{{#str}}markallread, moodleoverflow{{/str}}">
-                                    {{#pix}}i/delete, core {{/pix}}
+                                    {{#pix}}i/completion-manual-enabled, core {{/pix}} {{! ecastro ULPGC}}
                                 </a>
-                                <a class="d-inline-block mt-3" href="{{ unreadlink }}"
+                                <a class="d-inline-block xxmt-3" href="{{ unreadlink }}"
                                    title="{{#str}}amount_unread_posts_in_discussion, mod_moodleoverflow, {{unreadamount}} {{/str}}">
-                                    <span class="fa fa-envelope icon mr-0 moodleoverflow-icon-1_5x text-muted">
+                                    <span class="fa fa-message icon mr-0 moodleoverflow-icon-1_5xxx text-muted"> {{! ecastro ULPGC}}
                                     </span><span class="unread-bubble">
                                         {{ unreadamount }}
                                     </span>
@@ -127,18 +132,22 @@
                         </a>
                     {{/userlink}}
                     <div class="d-flex flex-wrap align-items-center">
-                        <span class="text-muted">Last post:</span>
+                        <span class="text-muted">{{#str}}lastpost, mod_moodleoverflow{{/str}}:</span>
                         <div>
-                            <a href="{{{lastpostlink}}}" class="user-info d-flex px-2 py-1 align-items-center">
+                            <a href="{{{lastpostuserlink}}}" class="user-info d-flex px-2 py-1 align-items-center">
                                 {{# lastpostuserpicture }}
                                     <div class="user-avatar">
                                         {{{ lastpostuserpicture }}}
                                     </div>
                                 {{/ lastpostuserpicture }}
                                 <div class="user-details line-height-3">
-                                    {{{ lastpostusername }}}<br>
+                                    {{{ lastpostusername }}} {{!<br>  ecastro ULPGC}}
+                                </div>
+                            <a href="{{{lastpostlink}}}" class="user-info d-flex px-2 align-items-center"> {{!<br>  ecastro ULPGC}}
+                                <div class="user-details line-height-3">
                                     {{{ lastpostdate }}}
                                 </div>
+
                             </a>
                         </div>
                     </div>

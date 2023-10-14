@@ -2055,7 +2055,7 @@ function  examboard_process_notifications($examboard, $course, $cm, $context, $f
     $notification->timeissued = time();
     $attachname = '';
     $sent = array();
-    $usernames = \core_user\fields::get_name_fields()
+    $usernames = \core_user\fields::get_name_fields();
     $noreplyuser = core_user::get_noreply_user();
         foreach($usernames as $field) {
         $noreplyuser->{$field} = $USER->{$field};

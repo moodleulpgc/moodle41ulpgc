@@ -47,13 +47,19 @@ class input_matrix_test extends qtype_stack_testcase {
         $this->assertEquals('<div class="matrixsquarebrackets"><table class="matrixtable" id="ans1_container" ' .
                 'style="display:inline; vertical-align: middle;" cellpadding="1" cellspacing="0"><tbody>' .
                 '<tr><td style="padding-top: 0.5em">&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_0_0" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_0_1" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_0_2" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_0" name="ans1_sub_0_0" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_1" name="ans1_sub_0_1" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_2" name="ans1_sub_0_2" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td></tr><tr><td>&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_1_0" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_1_1" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_1_2" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_0" name="ans1_sub_1_0" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_1" name="ans1_sub_1_1" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_2" name="ans1_sub_1_2" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-bottom: 0.5em">&nbsp;</td></tr></tbody></table></div>',
                 $el->render(new stack_input_state(stack_input::BLANK, array(), '', '', '', '', ''),
                         'ans1', false, null));
@@ -100,11 +106,38 @@ class input_matrix_test extends qtype_stack_testcase {
         $this->assertEquals('<div class="matrixsquarebrackets"><table class="matrixtable" id="ans1_container" ' .
                 'style="display:inline; vertical-align: middle;" cellpadding="1" cellspacing="0"><tbody><tr>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_0_0" value="a" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_0_1" value="b" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_0" name="ans1_sub_0_0" value="a" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_1" name="ans1_sub_0_1" value="b" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td></tr><tr><td>&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_1_0" value="?" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_1_1" value="d" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_0" name="ans1_sub_1_0" value="?" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_1" name="ans1_sub_1_1" value="d" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td style="padding-bottom: 0.5em">&nbsp;</td></tr></tbody></table></div>',
+                $el->render(new stack_input_state(stack_input::VALID, array(), '', '', '', '', ''),
+                        'ans1', false, null));
+    }
+
+    public function test_render_syntax_hint_placeholder() {
+        $options = new stack_options();
+        $el = stack_input_factory::make('matrix', 'ans1', 'M', $options);
+        $el->set_parameter('syntaxHint', 'matrix([a,b],[?,d])');
+        $el->set_parameter('syntaxAttribute', '1');
+        $el->adapt_to_model_answer('matrix([1,0],[0,1])');
+        $this->assertEquals('<div class="matrixsquarebrackets"><table class="matrixtable" id="ans1_container" ' .
+                'style="display:inline; vertical-align: middle;" cellpadding="1" cellspacing="0"><tbody><tr>' .
+                '<td style="padding-top: 0.5em">&nbsp;</td>' .
+                '<td><input type="text" id="ans1_sub_0_0" name="ans1_sub_0_0" placeholder="a" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_1" name="ans1_sub_0_1" placeholder="b" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td style="padding-top: 0.5em">&nbsp;</td></tr><tr><td>&nbsp;</td>' .
+                '<td><input type="text" id="ans1_sub_1_0" name="ans1_sub_1_0" placeholder="?" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_1" name="ans1_sub_1_1" placeholder="d" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-bottom: 0.5em">&nbsp;</td></tr></tbody></table></div>',
                 $el->render(new stack_input_state(stack_input::VALID, array(), '', '', '', '', ''),
                         'ans1', false, null));
@@ -117,11 +150,15 @@ class input_matrix_test extends qtype_stack_testcase {
         $this->assertEquals('<div class="matrixsquarebrackets"><table class="matrixtable" id="ans1_container" ' .
                 'style="display:inline; vertical-align: middle;" cellpadding="1" cellspacing="0"><tbody><tr>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_0_0" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_0_1" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_0" name="ans1_sub_0_0" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_1" name="ans1_sub_0_1" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td></tr><tr><td>&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_1_0" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_1_1" value="" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_0" name="ans1_sub_1_0" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_1" name="ans1_sub_1_1" value="" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-bottom: 0.5em">&nbsp;</td></tr></tbody></table></div>',
                 $el->render(new stack_input_state(stack_input::BLANK, array(), '', '', '', '', ''),
                         'ans1', false, null));
@@ -178,11 +215,15 @@ class input_matrix_test extends qtype_stack_testcase {
         $this->assertEquals('<div class="matrixroundbrackets"><table class="matrixtable" id="ans1_container" ' .
                 'style="display:inline; vertical-align: middle;" cellpadding="1" cellspacing="0"><tbody><tr>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_0_0" value="1" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_0_1" value="2" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_0" name="ans1_sub_0_0" value="1" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_1" name="ans1_sub_0_1" value="2" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td></tr><tr><td>&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_1_0" value="4" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_1_1" value="5" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_0" name="ans1_sub_1_0" value="4" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_1" name="ans1_sub_1_1" value="5" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-bottom: 0.5em">&nbsp;</td></tr></tbody></table></div>',
                 $el->render($state, 'ans1', false, null));
     }
@@ -208,11 +249,15 @@ class input_matrix_test extends qtype_stack_testcase {
         $this->assertEquals('<div class="matrixsquarebrackets"><table class="matrixtable" id="ans1_container" ' .
                 'style="display:inline; vertical-align: middle;" cellpadding="1" cellspacing="0"><tbody><tr>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_0_0" value="1" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_0_1" value="2" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_0" name="ans1_sub_0_0" value="1" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_0_1" name="ans1_sub_0_1" value="2" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-top: 0.5em">&nbsp;</td></tr><tr><td>&nbsp;</td>' .
-                '<td><input type="text" name="ans1_sub_1_0" value="4" size="5" autocapitalize="none" spellcheck="false"></td>' .
-                '<td><input type="text" name="ans1_sub_1_1" value="5" size="5" autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_0" name="ans1_sub_1_0" value="4" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
+                '<td><input type="text" id="ans1_sub_1_1" name="ans1_sub_1_1" value="5" size="5" ' .
+                    'autocapitalize="none" spellcheck="false"></td>' .
                 '<td style="padding-bottom: 0.5em">&nbsp;</td></tr></tbody></table></div>',
                 $el->render($state, 'ans1', false, null));
     }

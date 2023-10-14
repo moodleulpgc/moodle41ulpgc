@@ -792,6 +792,37 @@ function grade_get_plugin_info($courseid, $active_type, $active_plugin) {
 }
 
 /**
+ * Load a valid list of gradable users in a course.
+ *
+ * @param int $courseid The course ID.
+ * @param int|null $groupid The group ID (optional).
+ * @return array $users A list of enrolled gradable users.
+ */
+function get_gradable_users(int $courseid, ?int $groupid = null): array {
+    global $CFG;
+
+    $context = context_course::instance($courseid);
+    // Create a graded_users_iterator because it will properly check the groups etc.
+    $defaultgradeshowactiveenrol = !empty($CFG->grade_report_showonlyactiveenrol);
+    $onlyactiveenrol = get_user_preferences('grade_report_showonlyactiveenrol', $defaultgradeshowactiveenrol) ||
+        !has_capability('moodle/course:viewsuspendedusers', $context);
+
+    $course = get_course($courseid);
+    $gui = new graded_users_iterator($course, null, $groupid);
+    $gui->require_active_enrolment($onlyactiveenrol);
+    $gui->init();
+
+    // Flatten the users.
+    $users = [];
+    while ($user = $gui->next_user()) {
+        $users[$user->user->id] = $user->user;
+    }
+    $gui->close();
+
+    return $users;
+}
+
+/**
  * A simple class containing info about grade plugins.
  * Can be subclassed for special rules
  *
@@ -868,7 +899,7 @@ class grade_plugin_info {
 function print_grade_page_head(int $courseid, string $active_type, ?string $active_plugin = null, $heading = false,
        bool $return = false, $buttons = false, bool $shownavigation = true, ?string $headerhelpidentifier = null,
        ?string $headerhelpcomponent = null, ?stdClass $user = null, ?action_bar $actionbar = null, $showtitle = true) {
-    global $CFG, $OUTPUT, $PAGE;
+    global $CFG, $OUTPUT, $PAGE, $USER;
 
     // Put a warning on all gradebook pages if the course has modules currently scheduled for background deletion.
     require_once($CFG->dirroot . '/course/lib.php');
@@ -949,15 +980,16 @@ function print_grade_page_head(int $courseid, string $active_type, ?string $acti
 
     $output = '';
     // Add a help dialogue box if provided.
-    if (isset($headerhelpidentifier)) {
+    if (isset($headerhelpidentifier) && !empty($heading)) {
         $output = $OUTPUT->heading_with_help($heading, $headerhelpidentifier, $headerhelpcomponent);
-    } else {
-        if (isset($user)) {
-            $renderer = $PAGE->get_renderer('core_grades');
-            $output = $OUTPUT->heading($renderer->user_heading($user, $courseid));
-        } else {
-            $output = $OUTPUT->heading($heading);
-        }
+    } else if (isset($user)) {
+        $renderer = $PAGE->get_renderer('core_grades');
+        // If the user is viewing their own grade report, no need to show the "Message"
+        // and "Add to contact" buttons in the user heading.
+        $showuserbuttons = $user->id != $USER->id;
+        $output = $renderer->user_heading($user, $courseid, $showuserbuttons);
+    } else if (!empty($heading)) {
+        $output = $OUTPUT->heading($heading);
     }
 
     if ($return) {
@@ -1583,11 +1615,11 @@ class grade_structure {
                 !empty($element['object']->idnumber) && strlen($element['object']->itemname) > 15 ) {  // ecastro ULPGC shorten item names in gradebook
              $title = format_string($element['object']->idnumber);
         } else {
-            $title = $element['object']->get_name($fulltotal);
+            $title = shorten_text($element['object']->get_name($fulltotal));
         }
         // ecastro ULPGC
 
-        $title = $element['object']->get_name($fulltotal);
+        //$title = $element['object']->get_name($fulltotal);
         $titleunescaped = $element['object']->get_name($fulltotal, false);
         $header .= $title;
 
@@ -1608,7 +1640,6 @@ class grade_structure {
             $a->name = get_string('modulename', $element['object']->itemmodule);
             $a->title = $titleunescaped;
             $title = get_string('linktoactivity', 'grades', $a);
-
                 $header = html_writer::link($url, $header, [
                     'title' => $title,
                     'class' => 'gradeitemheader ',
@@ -3968,4 +3999,3 @@ abstract class grade_helper {
         self::$aggregationstrings = null;
     }
 }
-

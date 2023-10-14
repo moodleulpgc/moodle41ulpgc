@@ -397,17 +397,17 @@ this.cmd ("draw pts points " + pts + " dots nofill nomesh");
 }}, "JU.BZone,~S");
 Clazz.defineMethod (c$, "faceIndices", 
  function (p3s, pts) {
-J.bspt.PointIterator.withinDistPoints (0, null, pts, p3s, this.ret);
+J.bspt.PointIterator.withinDistPoints (0, null, pts, p3s, null, this.ret);
 return this.ret[0];
 }, "~A,~A");
 Clazz.defineMethod (c$, "closest", 
  function (center, ap3) {
-J.bspt.PointIterator.withinDistPoints (0, center, ap3, null, this.ret);
+J.bspt.PointIterator.withinDistPoints (0, center, ap3, null, null, this.ret);
 return this.ret[0];
 }, "JU.P3,~A");
 Clazz.defineMethod (c$, "cleanFace", 
  function (face) {
-J.bspt.PointIterator.withinDistPoints (0.01, JU.BZone.ptInner, face, null, this.ret);
+J.bspt.PointIterator.withinDistPoints (0.01, JU.BZone.ptInner, face, null, null, this.ret);
 var l = this.ret[0];
 return l.toArray ( new Array (l.size ()));
 }, "~A");

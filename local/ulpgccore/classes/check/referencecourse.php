@@ -95,7 +95,7 @@ class referencecourse extends check {
         
         $status = result::OK;
         $summary = get_string('referencecourse', 'local_ulpgccore');
-        $details = \html_writer::link get_string('check_referencecourse_details', 'local_ulpgccore', $courselink);
+        $details = get_string('check_referencecourse_details', 'local_ulpgccore', $courselink);
         return new result($status, $summary, $details);
     }
 }

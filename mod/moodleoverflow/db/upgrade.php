@@ -344,17 +344,18 @@ function xmldb_moodleoverflow_upgrade($oldversion) {
     }
 
     if ($oldversion < 2022110700) {
-
         if($DB->record_exists('capabilities', ['name' => 'mod/moodleoverflow:reviewpost'])) { // ecastro ULPGC
-            foreach (get_archetype_roles('manager') as $role) {
-                unassign_capability('mod/moodleoverflow:reviewpost', $role->id);
-            }
+            if (get_capability_info('mod/moodleoverflow:reviewpost')) {
+                foreach (get_archetype_roles('manager') as $role) {
+                    unassign_capability('mod/moodleoverflow:reviewpost', $role->id);
+                }
 
-            foreach (get_archetype_roles('teacher') as $role) {
-                assign_capability(
+                foreach (get_archetype_roles('teacher') as $role) {
+                    assign_capability(
                         'mod/moodleoverflow:reviewpost', CAP_ALLOW, $role->id, context_system::instance()
-                );
-            }
+                    );
+                }
+            } 
         }
 
         // Moodleoverflow savepoint reached.
@@ -388,5 +389,40 @@ function xmldb_moodleoverflow_upgrade($oldversion) {
         // Moodleoverflow savepoint reached.
         upgrade_mod_savepoint(true, 2023022400, 'moodleoverflow');
     }
+
+    if ($oldversion < 2023040400) {
+        // Define table moodleoverflow to be edited.
+        $table = new xmldb_table('moodleoverflow');
+
+        // Define field allowmultiplemarks to be added to moodleoverflow.
+        $field = new xmldb_field('allowmultiplemarks', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'needsreview');
+
+        // Conditionally launch add field allowmultiplemarks.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Moodleoverflow savepoint reached.
+        upgrade_mod_savepoint(true, 2023040400, 'moodleoverflow');
+    }
+
+    if ($oldversion < 2023070300.03) {
+        // make sure table has gradescalefactor 1 as default
+        $table = new xmldb_table('moodleoverflow');
+        $field = new xmldb_field('gradescalefactor', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        if ($dbman->field_exists($table, $field)) {
+            $field = new xmldb_field('gradescalefactor', XMLDB_TYPE_INTEGER, '10', null, null, null, '1');
+            $dbman->change_field_default($table, $field);
+        }
+
+        // make sure all instances has gradescalefactor as 1, not zero
+        $DB->set_field_select('moodleoverflow', 'gradescalefactor', 1,
+                            '(gradescalefactor < 1) OR gradescalefactor IS NULL ', []);
+
+        // Moodleoverflow savepoint reached.
+        upgrade_mod_savepoint(true, 2023070300.03, 'moodleoverflow');
+    }
+
     return true;
 }

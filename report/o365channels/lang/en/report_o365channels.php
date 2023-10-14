@@ -37,6 +37,7 @@ Do you want to proceed?';
 $string['error_delnonexisting'] = 'There\'s no associated o365 object to delete.';
 $string['error_noaddexisting'] = 'There\'s a current object for group {$a}.';
 $string['error_noitem'] = 'No group specified.';
+$string['error_o365'] = 'No channel added for group. reason: {$a}';
 $string['eventchannelcreated'] = 'Teams channel created';
 $string['eventchanneldeleted'] = 'Teams channel deleted';
 $string['eventchannelsynced'] = 'Updated members in channel';

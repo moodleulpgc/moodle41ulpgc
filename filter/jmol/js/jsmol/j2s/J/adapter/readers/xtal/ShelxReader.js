@@ -4,6 +4,7 @@ c$ = Clazz.decorateAsClass (function () {
 this.sfacElementSymbols = null;
 this.isCmdf = false;
 this.tokens = null;
+this.haveXYZ = false;
 Clazz.instantialize (this, arguments);
 }, J.adapter.readers.xtal, "ShelxReader", J.adapter.smarter.AtomSetCollectionReader);
 Clazz.overrideMethod (c$, "initializeReader", 
@@ -26,6 +27,9 @@ this.setFractionalCoordinates (true);
 this.asc.newAtomSet ();
 this.asc.setAtomSetName (this.line.substring (4).trim ());
 return true;
+}if (command.equals ("NOTE")) {
+this.isCmdf = true;
+return true;
 }if (!this.doProcessLines || lineLength < 3) return true;
 if (";ZERR;DISP;UNIT;LAUE;REM;MORE;TIME;HKLF;OMIT;SHEL;BASF;TWIN;EXTI;SWAT;HOPE;MERG;SPEC;RESI;MOVE;ANIS;AFIX;HFIX;FRAG;FEND;EXYZ;EXTI;EADP;EQIV;CONN;PART;BIND;FREE;DFIX;DANG;BUMP;SAME;SADI;CHIV;FLAT;DELU;SIMU;DEFS;ISOR;NCSY;SUMP;L.S.;CGLS;BLOC;DAMP;STIR;WGHT;FVAR;BOND;CONF;MPLA;RTAB;HTAB;LIST;ACTA;SIZE;TEMP;WPDB;FMAP;GRID;PLAN;MOLE;".indexOf (";" + command + ";") >= 0) return true;
 for (var i = J.adapter.readers.xtal.ShelxReader.supportedRecordTypes.length; --i >= 0; ) if (command.equals (J.adapter.readers.xtal.ShelxReader.supportedRecordTypes[i])) {
@@ -43,7 +47,6 @@ case 8:
 break;
 case 1:
 this.cell ();
-this.setSymmetryOperator ("x,y,z");
 break;
 case 2:
 this.setSpaceGroupName (JU.PT.parseTrimmedAt (this.line, 4));
@@ -72,7 +75,10 @@ this.asc.getXSymmetry ().setLatticeParameter (this.parseIntStr (this.tokens[1]))
 });
 Clazz.defineMethod (c$, "parseSymmRecord", 
  function () {
-this.setSymmetryOperator (this.line.substring (4).trim ());
+if (!this.haveXYZ) {
+this.setSymmetryOperator ("x,y,z");
+this.haveXYZ = true;
+}this.setSymmetryOperator (this.line.substring (4).trim ());
 });
 Clazz.defineMethod (c$, "cell", 
  function () {
@@ -123,16 +129,27 @@ this.sfacElementSymbols[oldCount] = elementSymbol;
 }, "~A");
 Clazz.defineMethod (c$, "assumeAtomRecord", 
  function () {
-var atomName = this.tokens[0];
-var elementIndex = this.parseIntStr (this.tokens[1]);
-var x = this.parseFloatStr (this.tokens[2]);
-var y = this.parseFloatStr (this.tokens[3]);
-var z = this.parseFloatStr (this.tokens[4]);
+var x = NaN;
+var y = NaN;
+var z = NaN;
+var elementIndex = -1;
+var atomName = null;
+try {
+atomName = this.tokens[0];
+elementIndex = this.parseIntStr (this.tokens[1]) - 1;
+x = this.parseFloatStr (this.tokens[2]);
+y = this.parseFloatStr (this.tokens[3]);
+z = this.parseFloatStr (this.tokens[4]);
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+} else {
+throw e;
+}
+}
 if (Float.isNaN (x) || Float.isNaN (y) || Float.isNaN (z)) {
 JU.Logger.error ("skipping line " + this.line);
 return;
-}elementIndex--;
-var atom = this.asc.addNewAtom ();
+}var atom = this.asc.addNewAtom ();
 atom.atomName = atomName;
 if (this.sfacElementSymbols != null && elementIndex >= 0 && elementIndex < this.sfacElementSymbols.length) atom.elementSymbol = this.sfacElementSymbols[elementIndex];
 this.setAtomCoordXYZ (atom, x, y, z);

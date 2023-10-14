@@ -97,13 +97,14 @@ class cmitem implements named_templatable, renderable {
 
         // This will apply styles to the course homepage when the activity information output component is displayed.
         $hasinfo = $showactivityconditions || $showactivitydates;
+        $hasconditions = $showactivityconditions ? ' hasconditions ' : ''; // ecastro ULPGC to implement availability info hover
 
         $item = new $this->cmclass($format, $this->section, $mod, $this->displayoptions);
         return (object)[
             'id' => $mod->id,
             'anchor' => "module-{$mod->id}",
             'module' => $mod->modname,
-            'extraclasses' => $mod->extraclasses,
+            'extraclasses' => $mod->extraclasses . $hasconditions, // ecastro ULPGC to implement availability info hover
             'cmformat' => $item->export_for_template($output),
             'hasinfo' => $hasinfo,
             'indent' => ($format->uses_indentation()) ? $mod->indent : 0,

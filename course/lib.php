@@ -1668,12 +1668,11 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
         $hasmodedit = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modedit', $modcontext): true; // ecastro ULPGC adminmods restrictions on editing mode
         //$hasmoddelete = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:moddelete', $modcontext): true;
         $hasmoddelete = ($adminmods && $mod->score) ? false: true;
-        //$hasmodmove = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modmove', $modcontext): true;
+        $hasmodmove = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modmove', $modcontext): true;
         $hasmodduplicate = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modduplicate', $modcontext): true;
         $hasmodroles = ($adminmods && $mod->score) ? has_capability('local/ulpgccore:modroles', $modcontext): true;
     // adminmods restrictions
-    
-    
+
     if (!isset($str)) {
         $str = get_strings(array('delete', 'move', 'moveright', 'moveleft',
             'editsettings', 'duplicate', 'modhide', 'makeavailable', 'makeunavailable', 'modshow'), 'moodle');
@@ -1701,7 +1700,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
     }
 
     // Move (only for component compatible formats).
-    if ($usecomponents) {
+    if ($usecomponents && $hasmodmove) { // ecastro ULPGC adminmods enforce modmove
         $actions['move'] = new action_menu_link_secondary(
             new moodle_url($baseurl, [
                 'sesskey' => sesskey(),
@@ -1723,7 +1722,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
         $indentlimits->min = 0;
         // Legacy indentation could continue using a limit of 16,
         // but components based formats will be forced to use one level indentation only.
-        $indentlimits->max = ($usecomponents) ? 1 : 16;
+        $indentlimits->max = ($usecomponents) ? 4 : 16; // ecastro ULPGC up to 4 indents
         if (right_to_left()) {   // Exchange arrows on RTL
             $rightarrow = 't/left';
             $leftarrow  = 't/right';
@@ -3478,21 +3477,20 @@ function duplicate_module($course, $cm, int $sectionid = null, bool $changename 
         // triggering a lot of create/update duplicated events.
         $newcm = get_coursemodule_from_id($cm->modname, $newcmid, $cm->course);
         if ($changename) {
-        // Add ' (copy)' to duplicates. Note we don't cleanup or validate lengths here. It comes
-        // from original name that was valid, so the copy should be too.
-        $newname = get_string('duplicatedmodule', 'moodle', $newcm->name);
-        $DB->set_field($cm->modname, 'name', $newname, ['id' => $newcm->instance]);
+            // Add ' (copy)' language string postfix to duplicated module.
+            $newname = get_string('duplicatedmodule', 'moodle', $newcm->name);
+            set_coursemodule_name($newcm->id, $newname);
         }
 
         $section = $DB->get_record('course_sections', ['id' => $sectionid ?? $cm->section, 'course' => $cm->course]);
         if (isset($sectionid)) {
             moveto_module($newcm, $section);
         } else {
-        $modarray = explode(",", trim($section->sequence));
-        $cmindex = array_search($cm->id, $modarray);
-        if ($cmindex !== false && $cmindex < count($modarray) - 1) {
-            moveto_module($newcm, $section, $modarray[$cmindex + 1]);
-        }
+            $modarray = explode(",", trim($section->sequence));
+            $cmindex = array_search($cm->id, $modarray);
+            if ($cmindex !== false && $cmindex < count($modarray) - 1) {
+                moveto_module($newcm, $section, $modarray[$cmindex + 1]);
+            }
         }
 
         // Update calendar events with the duplicated module.
@@ -3790,7 +3788,7 @@ function core_course_drawer(): string {
     }
 
     // Show course index to users can access the course only.
-    if (!can_access_course($PAGE->course)) {
+    if (!can_access_course($PAGE->course, null, '', true)) {
         return '';
     }
 

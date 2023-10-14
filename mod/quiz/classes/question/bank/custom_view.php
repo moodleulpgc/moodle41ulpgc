@@ -60,10 +60,9 @@ class custom_view extends \core_question\local\bank\view {
         parent::__construct($contexts, $pageurl, $course, $cm);
         $this->quiz = $quiz;
 
-        if(get_config('local_ulpgcquiz', 'enabledadvancedquiz')) {
-            global $CFG;
-            include_once($CFG->dirroot.'/local/ulpgcquiz/lib.php');
-            $this->questions = local_ulpgcquiz_get_all_questionids($quiz, $cm->id, true); // ecastro ULPGC
+        $this->questions = false;
+        if($this->enabledadvancedquiz) {
+            $this->questions = $this->get_all_questionids($quiz, $cm->id, true); // ecastro ULPGC
         }
 
         $this->pagesize = self::DEFAULT_PAGE_SIZE;
@@ -223,44 +222,64 @@ class custom_view extends \core_question\local\bank\view {
         echo \html_writer::end_tag('div');
     }
 
-/*
-    // ecastro ULPGC test if 'moodle/question:managecategory can see hiden
-    protected function display_options($recurse, $showhidden, $showquestiontext) {
-        debugging('display_options() is deprecated, see display_options_form() instead.', DEBUG_DEVELOPER);
-        echo '<form method="get" action="edit.php" id="displayoptions">';
-        echo "<fieldset class='invisiblefieldset'>";
-        echo \html_writer::input_hidden_params($this->baseurl,
-                array('recurse', 'showhidden', 'qbshowtext'));
-        $this->display_category_form_checkbox('recurse', $recurse,
-                get_string('includesubcategories', 'question'));
-        if(isset($this->questions) && $this->questions) {
-            $context = context_course::instance($this->get_courseid());
-            if($canviewhidden = has_capability('moodle/question:managecategory', $context)) { // ecastro ULPGC to enforce hidden questions
-                $this->display_category_form_checkbox('showhidden', $showhidden,
-                        get_string('showhidden', 'question'));
+    // ecastro ULPGC ecastro ULPGC to allow marking of used questions in question selector popup
+    protected function get_all_questionids($quiz, $cmid, $others) {
+    global $CFG, $DB;
+
+        $quizcontext = \context_module::instance($cmid);
+        $slots = \mod_quiz\question\bank\qbank_helper::get_question_structure($quiz->id, $quizcontext);
+
+        $questions = [];
+        foreach($slots as $slot) {
+            $questions[$slot->slot] = $slot->questionid;
+        }
+        unset($slots);
+
+        if($others && $makeexam = get_config('quiz_makeexam')) {
+            if($makeexam->enabled && $makeexam->uniquequestions) {
+                include_once($CFG->dirroot.'/mod/quiz/report/makeexam/lib.php');
+                if($others = quiz_makeexam_quiz_used_questionids($quiz)) {
+                    foreach($others as $key=> $qid) {
+                        $questions["o$key"] = $qid;
+                    }
+                }
             }
         }
-        $this->display_category_form_checkbox('showhidden', $showhidden,
-                get_string('showhidden', 'question'));
-        echo '<noscript><div class="centerpara"><input type="submit" value="' .
-                get_string('go') . '" />';
-        echo '</div></noscript></fieldset></form>';
+
+        if($questions) {
+            $questions = array_unique($questions);
+        }
+
+        return $questions;
     }
-*/
-    // ecastro ULPGC ecastro ULPGC to allow marking of used questions in question selector popup
-    protected function print_table_row($question, $rowcount): void { 
+
+    /**
+     * Prints the table row from child classes.
+     * To allow highligiting of used questions in question selector popup. // ecastro ULPGC.
+     *
+     * @param \stdClass $question
+     * @param int $rowcount
+     * @author Enriqye Castro @ ULPGC
+     */
+    protected function print_table_row($question, $rowcount): void {
+        // // only works if advanced interface, and $this->questions is set
         if(!isset($this->questions) || !$this->questions) {
             parent::print_table_row($question, $rowcount);
+            return;
         }
         // ecastro ULPGC to allow marking of used questions in question selector popup
-        // only works if advanced interface, flagged bu questions property
-        $rowclasses = implode(' ', $this->get_row_classes($question, $rowcount));
+        // only works if advanced interface, flagged but questions property
         $added = false;
-        if(in_array($question->id, $this->questions)) {
+        $rowclasses = implode(' ', $this->get_row_classes($question, $rowcount));
+        if(in_array($question->id, $this->questions) || $question->status != 'ready') {
             $rowclasses .= ' statusdisplay ';
             $added = true;
         }
-        
+        $attributes = [];
+        if ($rowclasses) {
+            $attributes['class'] = $rowclasses;
+        }
+
         echo \html_writer::start_tag('tr', $attributes);
         foreach ($this->visiblecolumns as $column) {
             $name = $column->get_name();

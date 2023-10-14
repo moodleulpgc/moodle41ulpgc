@@ -43,3 +43,13 @@ input.form-control[readonly][name="guestpassword"],
 input.form-control[readonly][name="guestjoinurl"] {
     background: initial;
 }
+
+/* ecastro ULPGC styles */
+.mod_bigbluebuttonbn_recordings_table .download-button {
+    text-align: center;
+}
+
+.mod_bigbluebuttonbn_recordings_table .download-button .btn {
+    padding: 0.1rem 0.75rem;
+    font-size: unset;
+}

@@ -10654,7 +10654,10 @@ return jQuery;
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
-
+// BH 8/25/2022 fixes getFileData response "" from empty file returning "OK" instead of ""
+// BH 8/15/2022 adds .lut for binary
+// BH 6/23/2022 implements Jmol._lastAppletID via setMouseOwner
+// BH 5/12/2022 adds setting file type option for drag drop
 // BH 4/30/2019 fixes write xyz "https://...."
 // BH 7/6/2017 2:22:07 AM adds BZ2 as binary
 // BH 4/13/2017 11:23:05 PM adds "binary pmesh" .pmb extension
@@ -10829,7 +10832,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: "$Date: 2021-05-26 21:16:02 -0500 (Wed, 26 May 2021) $", // svn.keywords:lastUpdated
+		_version: "$Date: 2022-06-24 05:54:49 -0500 (Fri, 24 Jun 2022) $", // svn.keywords:lastUpdated
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -11622,7 +11625,7 @@ Jmol = (function(document) {
 		return true;  
 	}
 
-	Jmol._binaryTypes = ["mmtf",".gz",".bz2",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".pmb",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd",".uk/pdbe/densities/"];
+	Jmol._binaryTypes = ["mmtf",".gz",".bz2",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".pmb",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd",".lut",".uk/pdbe/densities/"];
 
 	Jmol.isBinaryUrl = function(url) {
 		for (var i = Jmol._binaryTypes.length; --i >= 0;)
@@ -11687,7 +11690,7 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._xhrReturn = function(xhr){
-		if (!xhr.responseText || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
+		if (!xhr.responseText && xhr.responseText !== '' || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
 			// Safari or error 
 			return xhr.response || xhr.statusText;
 		} 
@@ -12267,10 +12270,12 @@ Jmol = (function(document) {
 	//////////////////// mouse events //////////////////////
 
 	Jmol._setMouseOwner = function(who, tf) {
-		if (who == null || tf)
+		if (who == null || tf) {
 			Jmol._mouseOwner = who;
-		else if (Jmol._mouseOwner == who)
+			who && who._applet && (Jmol._lastAppletID = who._applet._id);
+		} else if (Jmol._mouseOwner == who) {
 			Jmol._mouseOwner = null;
+		}
 	}
 
 	Jmol._jsGetMouseModifiers = function(ev) {
@@ -12391,6 +12396,7 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
       if (doIgnore(ev))
         return true;
+      canvas.focus();
 			Jmol._setMouseOwner(canvas, true);
 			ev.stopPropagation();
       var ui = ev.target["data-UI"];
@@ -12429,6 +12435,7 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mousemove touchmove', function(ev) { // touchmove
       if (doIgnore(ev))
         return true;
+      canvas.focus();
 		  // defer to console or menu when dragging within this canvas
 			if (Jmol._mouseOwner && Jmol._mouseOwner != canvas && Jmol._mouseOwner.isDragging) {
         if (!Jmol._mouseOwner.mouseMove)
@@ -12439,6 +12446,18 @@ Jmol = (function(document) {
 			return Jmol._drag(canvas, ev);
 		});
 		
+
+		Jmol.$bind(canvas, 'keydown keyup', function(ev) {
+      if (doIgnore(ev))
+        return true;
+			ev.stopPropagation();
+  			ev.preventDefault();
+			var xym = Jmol._jsGetXY(canvas, ev);
+			var type = (ev.type == "keydown" ? 401 : 402);
+  			canvas.applet._processKeyEvent && canvas.applet._processKeyEvent(type, xym, ev);//java.awt.Event.
+			return true;
+		});
+
 		Jmol._drag = function(canvas, ev) {
       
 			ev.stopPropagation();
@@ -13043,14 +13062,14 @@ Jmol.Cache.put = function(filename, data) {
   Jmol.Cache.fileCache[filename] = data;
 }
 
-	Jmol.Cache.setDragDrop = function(me) {
-		Jmol.$appEvent(me, "appletdiv", "dragover", function(e) {
+	Jmol.Cache.setDragDrop = function(me, divname) {
+		Jmol.$appEvent(me, divname, "dragover", function(e) {
 			e = e.originalEvent;
 			e.stopPropagation();
 			e.preventDefault();
 			e.dataTransfer.dropEffect = 'copy';
 		});
-		Jmol.$appEvent(me, "appletdiv", "drop", function(e) {
+		Jmol.$appEvent(me, divname, "drop", function(e) {
 			var oe = e.originalEvent;
 			oe.stopPropagation();
 			oe.preventDefault();
@@ -13076,6 +13095,11 @@ Jmol.Cache.put = function(filename, data) {
 				if (evt.target.readyState == FileReader.DONE) {
 					var cacheName = "cache://DROP_" + file.name;
 					var bytes = Clazz.newByteArray(-1, evt.target.result);
+					if (divname == "console_input") {
+						var s = String.instantialize(bytes);
+						Jmol.$(me,divname).val(s.indexOf('\0') < 0 ? s : bytes.length + " bytes");
+						return;
+					}
 					if (!cacheName.endsWith(".spt"))
 						me._appletPanel.cacheFileByName("cache://DROP_*",false);
 					if (me._viewType == "JSV" || cacheName.endsWith(".jdx")) // shared by Jmol and JSV
@@ -13083,8 +13107,9 @@ Jmol.Cache.put = function(filename, data) {
 					else
 						me._appletPanel.cachePut(cacheName, bytes);
 					var xym = Jmol._jsGetXY(me._canvas, e);
-					if(xym && (!me._appletPanel.setStatusDragDropped || me._appletPanel.setStatusDragDropped(0, xym[0], xym[1], cacheName))) {
-						me._appletPanel.openFileAsyncSpecial(cacheName, 1);
+					var retType = [null];
+					if(xym && (!me._appletPanel.setStatusDragDropped || me._appletPanel.setStatusDragDropped(0, xym[0], xym[1], cacheName, retType))) {
+						me._appletPanel.openFileAsyncSpecialType(cacheName, 1, retType[0]);
 					}
 				}
 			};
@@ -13098,6 +13123,7 @@ Jmol._debugCode = false;
 // author: Bob Hanson, hansonr@stolaf.edu	4/16/2012
 // author: Takanori Nakane biochem_fan 6/12/2012
 
+// BH 2022.12.16 adds key press listener for ModelKit
 // BH 2021.04.09 fix _cover(false) script in getAppletHtml() to be img onerror
 // BH 12/17/2015 4:43:05 PM adding Jmol._requestRepaint to allow for MSIE9 not having 3imationFrame
 // BH 12/13/2015 11:44:39 AM using requestAnimationFrame instead of setTimeout (fixes Chrome slowness)
@@ -13343,7 +13369,10 @@ Jmol._debugCode = false;
 			var w = Math.round(container.width());
 			var h = Math.round(container.height());
 			var canvas = document.createElement( 'canvas' );
+			canvas.tabIndex = 1;
+			canvas.outline = "none";
 			canvas.applet = this;
+			
 			this._canvas = canvas;
 			canvas.style.width = "100%";
 			canvas.style.height = "100%";
@@ -13495,6 +13524,13 @@ Jmol._debugCode = false;
 			this._appletPanel.processMouseEvent(type,xym[0],xym[1],xym[2],System.currentTimeMillis());
 		}
 
+		proto._processKeyEvent = function(type, xym, ev) {
+			this._appletPanel.processKeyEvent({ getID: function() { return type; },
+							getKeyCode: function(){ return ev.keyCode; },
+							getModifiers: function() { return xym[2]; },
+							consume: function(){}});
+		}
+		
 		proto._resize = function() {
 			var s = "__resizeTimeout_" + this._id;
 			// only at end
@@ -13618,6 +13654,8 @@ Jmol._canvasCache = {};
 })(Jmol);
 // JmolApplet.js -- Jmol._Applet and Jmol._Image
 
+// BH 2022.08.25 fixing ?j2sdebugcode to allow menu and console
+// BH 2022.01.23 updated _availableParams callbacks
 // BH 1/28/2018 7:15:09 AM adding _notifyAudioEnded
 // BH 2/14/2016 12:31:02 PM fixed local reader not disappearing after script call
 // BH 2/14/2016 12:30:41 PM Info.appletLoadingImage: "j2s/img/JSmol_spinner.gif", // can be set to "none" or some other image
@@ -13648,10 +13686,11 @@ Jmol._canvasCache = {};
 		this._isJava = true;
 		this._syncKeyword = "Select:";
 		this._availableParams = ";progressbar;progresscolor;boxbgcolor;boxfgcolor;allowjavascript;boxmessage;\
-									;messagecallback;pickcallback;animframecallback;appletreadycallback;atommovedcallback;\
-									;echocallback;evalcallback;hovercallback;language;loadstructcallback;measurecallback;\
-									;minimizationcallback;resizecallback;scriptcallback;statusform;statustext;statustextarea;\
-									;synccallback;usecommandthread;syncid;appletid;startupscript;menufile;";
+			;animframecallback;appletreadycallback;atommovedcallback;audiocallback;\
+			;clickcallback;dragdropcallback;echocallback;errorcallback;evalcallback;hovercallback;\
+			;imagecallback;loadstructcallback;measurecallback;messagecallback;minimizationcallback;modelkitcallback;pickcallback;\
+			;resizecallback;scriptcallback;selectcallback;servicecallback;structuremodifiedcallback;synccallback;\
+			;statusform;statustext;statustextarea;usecommandthread;syncid;appletid;startupscript;language;menufile;";
 		if (checkOnly)
 			return this;
 		this._isSigned = Info.isSigned;
@@ -13868,13 +13907,17 @@ Jmol._canvasCache = {};
 	}
 	
 	proto._addCoreFiles = function() {
-		Jmol._addCoreFile("jmol", this._j2sPath, this.__Info.preloadCore);
+		Jmol._addCoreFile("jmol" + (Jmol._debugCode ? "debug" : ""), this._j2sPath, this.__Info.preloadCore);
+		if (Jmol._debugCode) {
+			Jmol._addCoreFile("jmoldebug", this._j2sPath, this.__Info.preloadCore);
+		}
 		if (!this._is2D) {
 	 		Jmol._addExec([this, null, "J.export.JSExporter","load JSExporter"])
 	//		Jmol._addExec([this, this.__addExportHook, null, "addExportHook"])
 		}
-		if (Jmol._debugCode)
+		if (Jmol._debugCode) {
 			Jmol._addExec([this, null, "J.appletjs.Jmol", "load Jmol"]);
+		}
   }
   
 	proto._create = function(id, Info){
@@ -13965,7 +14008,7 @@ Jmol._canvasCache = {};
 			this._script('load "' + this._src + '"');
 		this._showInfo(true);
 		this._showInfo(false);
-		Jmol.Cache.setDragDrop(this);
+		Jmol.Cache.setDragDrop(this, "appletdiv");
 		this._readyFunction && this._readyFunction(this);
 		Jmol._setReady(this);
 		var app = this._2dapplet;
@@ -14052,11 +14095,15 @@ Jmol._canvasCache = {};
 		return true;
 	}
 
+	proto._setCallback = function(name, func) {
+		this._applet.setCallback(name, func);
+	}
+
 	proto._script = function(script) {
 		if (!this._ready)
 				return this._addScript(script);
 		Jmol._setConsoleDiv(this._console);
-    Jmol._hideLocalFileReader(this);
+		Jmol._hideLocalFileReader(this);
 		this._applet.script(script);
 	}
 
@@ -15187,6 +15234,10 @@ Jmol._canvasCache = {};
 
 ////////////////// scripting ///////////////////
 
+	Jmol.setCallback = function(applet, name, func) {
+		applet._setCallback(name, func);
+	}
+
 	Jmol.loadFile = function(applet, fileName, params){
 		applet._loadFile(fileName, params);
 	}
@@ -15560,6 +15611,7 @@ Jmol._canvasCache = {};
  // NOTES by Bob Hanson: 
   // J2S class changes:
 
+ // BH 4/19/22 adds TypeError.prototype.printStackTrace and ReferenceError.prototype.printStackTrace
  // BH 10/16/2017 6:30:14 AM fix for prepareCallback reducing arguments length to -1
  // BH 7/7/2017 7:10:39 AM fixes Clazz.clone for arrays
  // BH 1/14/2017 6:23:54 AM adds URL switch  j2sDebugCore
@@ -15693,6 +15745,8 @@ LoadClazz = function() {
 // but it is created by the compiler, and I have not found a work-around.
 // it is used as a local variable in class definitions to point to the 
 // current method. See Clazz.p0p and Clazz.pu$h
+
+TypeError.prototype.printStackTrace = ReferenceError.prototype.printStackTrace = function() { console.log(this) }
 
 c$ = null;
 
@@ -20963,6 +21017,6 @@ Sys.err.write = function (buf, offset, len) {
 })(Clazz, Jmol); // requires JSmolCore.js
 
 }; // called by external application 
-Jmol.___JmolDate="$Date: 2021-07-23 07:31:16 -0500 (Fri, 23 Jul 2021) $"
+Jmol.___JmolDate="$Date: 2023-04-19 20:17:33 -0500 (Wed, 19 Apr 2023) $"
 Jmol.___fullJmolProperties="src/org/jmol/viewer/Jmol.properties"
-Jmol.___JmolVersion="14.31.47"
+Jmol.___JmolVersion="16.1.11" // (legacy) also 16.1.12 (swingJS)

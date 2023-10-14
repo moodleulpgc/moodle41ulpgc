@@ -297,32 +297,6 @@ function mod_studentquiz_prepare_notify_data($studentquizquestion, $recepient, $
 }
 
 /**
- * Notify student that someone has change the state / visibility of his question. (Info to question author)
- *
- * @param \mod_studentquiz\local\studentquiz_question $studentquizquestion Id of the student quiz
- * @param stdClass $course course object
- * @param stdClass $module course module object
- * @param string $type Type of change
- * @return bool True if sucessfully sent, false otherwise.
- */
-function mod_studentquiz_state_notify($studentquizquestion, $course, $module, $type) {
-    if ($type == 'state') {
-        $state = $studentquizquestion->get_state();
-        $states = [
-                studentquiz_helper::STATE_DISAPPROVED => 'disapproved',
-                studentquiz_helper::STATE_APPROVED => 'approved',
-                studentquiz_helper::STATE_NEW => 'new',
-                studentquiz_helper::STATE_CHANGED => 'changed',
-                studentquiz_helper::STATE_REVIEWABLE => 'reviewable',
-        ];
-        $event = $states[$state];
-    } else {
-        $event = $type;
-    }
-    return mod_studentquiz_event_notification_question($event, $studentquizquestion, $course, $module);
-}
-
-/**
  * Notify student that someone has commented to his question. (Info to question author)
  * @param stdClass $comment that was just added to the question
  * @param stdClass $course course object
@@ -357,7 +331,8 @@ function mod_studentquiz_notify_reviewable_question($studentquizquestion, stdCla
     global $USER;
     $context = \context_course::instance($course->id);
     $actor = \core_user::get_user($USER->id);
-    $recipients = get_enrolled_users($context, 'mod/studentquiz:emailnotifyreviewablequestion', 0, 'u.*', null, 0, 0, true);
+    $recipients = get_enrolled_users($context, 'mod/studentquiz:emailnotifyreviewablequestion',
+        $studentquizquestion->get_groupid(), 'u.*', null, 0, 0, true);
     foreach ($recipients as $recipient) {
         $data = mod_studentquiz_prepare_notify_data($studentquizquestion, $recipient, $actor, $course, $module);
         mod_studentquiz_send_notification(studentquiz_helper::$statename[studentquiz_helper::STATE_REVIEWABLE],

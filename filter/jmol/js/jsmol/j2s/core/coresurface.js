@@ -227,9 +227,7 @@ break;
 }
 if (points == null) {
 if (bs == null) bs = this.vwr.getAllAtoms ();
-points =  new Array (bs.cardinality ());
-for (var i = bs.nextSetBit (0), pt = 0; i >= 0; i = bs.nextSetBit (i + 1)) points[pt++] = this.vwr.ms.at[i];
-
+points = this.bsToArray (bs);
 }} catch (e) {
 if (Clazz_exceptionOf (e, Exception)) {
 } else {
@@ -239,9 +237,16 @@ throw e;
 if (points == null || points.length < nmin) this.invArg ();
 return points;
 }, "~N,~N");
+Clazz_defineMethod (c$, "bsToArray", 
+function (bs) {
+var p =  new Array (bs.cardinality ());
+for (var i = bs.nextSetBit (0), pt = 0; i >= 0; i = bs.nextSetBit (i + 1)) p[pt++] = this.vwr.ms.at[i];
+
+return p;
+}, "JU.BS");
 });
 Clazz_declarePackage ("JS");
-Clazz_load (["JS.ScriptExt"], "JS.IsoExt", ["java.lang.Boolean", "$.Float", "$.Short", "JU.AU", "$.BS", "$.Lst", "$.M4", "$.P3", "$.PT", "$.Quat", "$.SB", "$.V3", "J.api.Interface", "J.atomdata.RadiusData", "J.c.VDW", "JS.SV", "$.ScriptEval", "$.ScriptInterruption", "$.T", "JU.BSUtil", "$.BoxInfo", "$.C", "$.Escape", "$.Logger", "$.Parser", "$.TempArray", "$.Triangulator", "JV.JC"], function () {
+Clazz_load (["JS.ScriptExt"], "JS.IsoExt", ["java.lang.Boolean", "$.Float", "$.Short", "JU.AU", "$.BS", "$.Lst", "$.M4", "$.Measure", "$.P3", "$.PT", "$.Quat", "$.SB", "$.V3", "J.api.Interface", "J.atomdata.RadiusData", "J.c.VDW", "JS.SV", "$.ScriptEval", "$.ScriptInterruption", "$.T", "JU.BSUtil", "$.BoxInfo", "$.C", "$.Escape", "$.Logger", "$.Parser", "$.TempArray", "$.Triangulator", "JV.JC"], function () {
 c$ = Clazz_declareType (JS, "IsoExt", JS.ScriptExt);
 Clazz_makeConstructor (c$, 
 function () {
@@ -423,7 +428,8 @@ var isSavedState = false;
 var isIntersect = false;
 var isFrame = false;
 var plane;
-var tokIntersect = 0;
+var pts = null;
+var tokIntersectBox = 0;
 var translucentLevel = 3.4028235E38;
 var colorArgb =  Clazz_newIntArray (-1, [-2147483648]);
 var intScale = 0;
@@ -436,22 +442,208 @@ var isWild = (idSeen && this.getShapeProperty (22, "ID") == null);
 var connections = null;
 var iConnect = 0;
 var iArray = -1;
-var uc = null;
+var iOn = -1;
+var isBest = false;
+var tok = 0;
+var lattice = null;
 for (var i = eval.iToken; i < this.slen; ++i) {
 var propertyName = null;
 var propertyValue = null;
-var tok = this.getToken (i).tok;
+tok = this.getToken (i).tok;
 switch (tok) {
-case 134217762:
-var pts = (eval.isArrayParameter (++i) ? eval.getPointArray (i, -1, false) : null);
-if (pts != null) {
+case 134217763:
+switch (tok = this.getToken (i + (this.tokAt (i + 1) == 1073741864 ? 2 : 1)).tok) {
+case 1814695966:
+case 1678381065:
+tokIntersectBox = tok;
+isIntersect = true;
+continue;
+case 1073742330:
+++i;
+propertyName = "intersect";
+propertyValue = eval.objectNameParameter (++i);
+isIntersect = true;
+havePoints = true;
+break;
+default:
+this.invArg ();
+}
+break;
+case 1073741864:
+isBest = true;
+if (iOn == i - 1) iOn++;
+switch (this.tokAt (i + 1)) {
+case 134217750:
+case 1073741998:
+case 1678381065:
+continue;
+default:
+this.invArg ();
+}
+break;
+case 1073741994:
+case 1814695966:
+case 1678381065:
+lattice = null;
+var uc = null;
+var bs = null;
+switch (tok) {
+case 1678381065:
+switch (this.tokAt (i + 1)) {
+case 1073741864:
+switch (this.tokAt (i + 2)) {
+case 134217750:
+case 1073741998:
+break;
+default:
+isBest = true;
+i++;
+}
+break;
+case 10:
+case 1073742325:
+bs = eval.getAtomsStartingAt (i + 1);
+i = eval.iToken;
+}
+break;
+case 1814695966:
+if (isBest) this.invArg ();
+if (eval.isArrayParameter (i + 1)) {
+uc = this.vwr.getSymTemp ().getUnitCell (eval.getPointArray (i + 1, -1, false), false, null);
+i = eval.iToken;
+}if (this.tokAt (i + 1) == 1073741994) {
+if (tokIntersectBox == 1814695966) tokIntersectBox = 1073741994;
+++i;
+lattice = eval.checkHKL (eval.getPointOrPlane (++i, 3));
+i = eval.iToken;
+}break;
+}
+if (this.chk) break;
+if (bs != null) {
+if (isBest) {
+uc = this.vwr.getSymTemp ().getUnitCell (this.vwr.getOrientation (1814695966, "array", bs), false, null);
+}} else if (isBest) {
+uc = this.vwr.getSymTemp ().getUnitCell (this.vwr.getOrientation (1814695966, "array", null), false, null);
+} else if (tok == 1814695966 && uc == null) {
+uc = this.vwr.getCurrentUnitCell ();
+}if (lattice == null) {
+pts = this.getBoxPoints (uc != null ? 1814695966 : tok, uc, bs, intScale / 100);
+} else {
+var cpts = JU.Measure.getLatticePoints (uc.getLatticeCentering (), Clazz_floatToInt (lattice.x), Clazz_floatToInt (lattice.y), Clazz_floatToInt (lattice.z));
+pts =  new Array (cpts.size ());
+for (var j = 0; j < cpts.size (); j++) {
+pts[j] = cpts.get (j);
+uc.toCartesian (pts[j], true);
+}
+}isBest = false;
+if (!isIntersect) {
+if (pts == null) this.invArg ();
+propertyName = "polygon";
+var v =  new JU.Lst ();
+v.addLast (pts);
+if (lattice == null) {
+this.vwr.getTriangulator ();
+v.addLast (JU.Triangulator.fullCubePolygon);
+} else {
+v.addLast (null);
+}propertyValue = v;
+havePoints = true;
+intScale = 0;
+break;
+}if (this.tokAt (i + 1) == 1073742335) {
+iOn = ++i;
+}break;
+case 1073741998:
+case 134219777:
+case 134217750:
+var isProjection = (iOn == i - 1);
+if (!havePoints && !isIntersect && tokIntersectBox == 0) {
+if (eval.theTok == 134219777) {
+havePoints = true;
+this.setShapeProperty (22, "plane", null);
+var list =  new JU.Lst ();
+plane = eval.hklParameter (++i, list, true);
+i = eval.iToken;
+propertyName = "coords";
+propertyValue = list;
+break;
+}if (!isBest) {
+propertyName = (tok == 134217750 ? "plane" : "line");
+iArray = i + 1;
+break;
+}if (!this.chk && tok != 1073741998 && pts == null) {
+uc = this.vwr.getCurrentUnitCell ();
+tokIntersectBox = (uc == null ? 1678381065 : 1814695966);
+pts = this.getBoxPoints (tokIntersectBox, uc, null, intScale / 100);
+isIntersect = true;
+}}plane = null;
+var linePts = null;
+switch (tok) {
+case 134217750:
+plane = eval.planeParameter (i, isBest);
+break;
+case 134219777:
+plane = eval.hklParameter (++i, null, true);
+break;
+case 1073741998:
+if (tokIntersectBox == 1073741994) this.invArg ();
+if (isBest) {
+linePts = this.bsToArray (eval.getAtomsStartingAt (++i));
+} else if (eval.isCenterParameter (i + 1)) {
+linePts =  Clazz_newArray (-1, [this.centerParameter (++i), this.centerParameter (eval.iToken + 1)]);
+} else {
+linePts = eval.getPointArray (++i, 2, false);
+}if (linePts.length < 2) this.invArg ();
+break;
+}
+i = eval.iToken;
+havePoints = true;
+if (this.chk) break;
+if (tok == 1073741998) {
+linePts = JU.Measure.getBestLineThroughPoints (linePts, -1);
+if (tokIntersectBox != 0) {
+var v = JU.V3.newVsub (linePts[1], linePts[0]);
+v.scale (1 / v.length ());
+linePts = (isProjection ? JU.Measure.getProjectedLineSegment (pts, -1, linePts[0], v, null) : this.vwr.getTriangulator ().intersectLine (pts, -1, linePts[0], v));
+if (linePts == null || linePts[1] == null) return;
+}if (!isInitialized) {
+this.setShapeProperty (22, "points", Integer.$valueOf (intScale));
+isInitialized = true;
+}var l =  new JU.Lst ();
+l.addLast (linePts[0]);
+l.addLast (linePts[1]);
+this.setShapeProperty (22, "coords", l);
+break;
+}if (tokIntersectBox == 0) {
+propertyValue = plane;
+propertyName = "planedef";
+} else if (tokIntersectBox == 1073741994) {
+propertyName = "polygon";
+var cpts = JU.Measure.getPointsOnPlane (pts, plane);
+pts = cpts.toArray ( new Array (cpts.size ()));
+var v =  new JU.Lst ();
+v.addLast (pts);
+v.addLast (null);
+propertyValue = v;
+intScale = 0;
+} else {
+propertyName = "polygon";
+propertyValue = this.vwr.getTriangulator ().intersectPlane (plane, pts, isProjection ? -1 : 0);
+intScale = 0;
+}break;
+case 1275068447:
+pts = (eval.isArrayParameter (++i) ? eval.getPointArray (i, -1, false) : null);
+if (pts == null && eval.isAtomExpression (i)) {
+bs = eval.atomExpressionAt (i);
+pts = this.vwr.ms.getAtomPointVector (bs).toArray ( new Array (bs.cardinality ()));
+}if (pts != null) {
 i = eval.iToken + 1;
 if (this.tokAt (i) == 12289) {
 center = eval.centerParameter (++i, null);
 i = eval.iToken + 1;
 }}var type;
 switch (this.tokAt (i)) {
-case 1073742138:
+case 536875009:
 type = "";
 break;
 case 1111490563:
@@ -482,35 +674,13 @@ default:
 type = eval.optParameterAsString (i);
 break;
 }
-var scale = 1;
+var scale = (intScale == 0 ? 1 : intScale / 100);
 var index = 0;
 if (type.length > 0) {
 if (this.isFloatParameter (++i)) index = this.intParameter (i++);
-}if (this.tokAt (i) == 1073742138) scale = this.floatParameter (++i);
+}if (this.tokAt (i) == 536875009) scale = this.floatParameter (++i);
 if (!this.chk) eval.runScript (this.vwr.ms.getPointGroupAsString (this.vwr.bsA (), type, index, scale, pts, center, thisId == null ? "" : thisId));
 return;
-case 1814695966:
-case 1678381065:
-if (this.chk) break;
-if (tok == 1678381065 && this.tokAt (i + 1) == 1073741864) {
-tok = 1814695966;
-}if (tok == 1814695966) {
-if (eval.isArrayParameter (i + 1)) {
-var oabc = eval.getPointArray (i + 1, -1, false);
-uc = this.vwr.getSymTemp ().getUnitCell (oabc, false, null);
-i = eval.iToken;
-} else if (this.tokAt (i + 1) == 1073741864) {
-i++;
-uc = this.vwr.getSymTemp ().getUnitCell (this.vwr.getOrientationText (1814695966, "array", null), false, null);
-} else {
-uc = this.vwr.getCurrentUnitCell ();
-}if (uc == null) this.invArg ();
-}var vp = this.getPlaneIntersection (tok, null, uc, intScale / 100, 0);
-intScale = 0;
-propertyName = "polygon";
-propertyValue = vp;
-havePoints = true;
-break;
 case 4106:
 connections =  Clazz_newIntArray (4, 0);
 iConnect = 4;
@@ -543,28 +713,9 @@ default:
 this.invArg ();
 }
 break;
-case 134217763:
-switch (this.getToken (i + 1).tok) {
-case 1814695966:
-case 1678381065:
-tokIntersect = eval.theTok;
-isIntersect = true;
-continue;
-case 1073742330:
-propertyName = "intersect";
-propertyValue = eval.objectNameParameter (++i);
-i = eval.iToken;
-isIntersect = true;
-havePoints = true;
-break;
-default:
-this.invArg ();
-}
-break;
 case 1275203608:
 case 134217751:
 case 1073742106:
-tok = eval.theTok;
 var isPoints = (tok == 134217751);
 propertyName = "polygon";
 havePoints = true;
@@ -631,14 +782,15 @@ v = null;
 i = eval.iToken;
 break;
 case 134217764:
-case 1296041986:
+case 1296041985:
 var xyz = null;
 var iSym = 2147483647;
 plane = null;
 var target = null;
 var bsAtoms = null;
 var options = 0;
-if (tok == 1296041986) {
+var trans = null;
+if (tok == 1296041985) {
 iSym = 0;
 switch (this.tokAt (++i)) {
 case 4:
@@ -649,8 +801,12 @@ xyz = JS.SV.sValue (this.getToken (i));
 break;
 case 2:
 default:
-if (!eval.isCenterParameter (i)) iSym = this.intParameter (i++);
-var ret =  Clazz_newArray (-1, [null, this.vwr.getFrameAtoms ()]);
+if (!eval.isCenterParameter (i)) {
+iSym = this.intParameter (i++);
+if (eval.isArrayParameter (i)) {
+trans = JU.P3.newA (eval.floatParameterSet (i, 3, 3));
+i = ++eval.iToken;
+}}var ret =  Clazz_newArray (-1, [null, this.vwr.getFrameAtoms ()]);
 if (eval.isCenterParameter (i)) center = eval.centerParameter (i, ret);
 if (eval.isCenterParameter (eval.iToken + 1)) target = eval.centerParameter (++eval.iToken, ret);
 if (this.chk) return;
@@ -671,6 +827,9 @@ i++;
 target = this.getPoint3f (i + 1, false);
 options = 1073742066;
 i = eval.iToken;
+} else if (this.tokAt (i + 1) == 1073741826) {
+options = 1073741826;
+i++;
 }eval.checkLast (eval.iToken);
 if (!this.chk) {
 var s = "";
@@ -679,11 +838,11 @@ if (bsAtoms != null) {
 s = null;
 var iatom = bsAtoms.nextSetBit (0);
 if (options != 0) {
-var o = this.vwr.getSymmetryInfo (iatom, xyz, iSym, center, target, 134217751, null, intScale / 100, nth, options);
+var o = this.vwr.getSymmetryInfo (iatom, xyz, iSym, trans, center, target, 134217751, null, intScale / 100, nth, options);
 if (Clazz_instanceOf (o, JU.P3)) target = o;
  else s = "";
 }if (thisId == null) thisId = "sym";
-if (s == null) s = this.vwr.getSymmetryInfo (iatom, xyz, iSym, center, target, 135176, thisId, intScale / 100, nth, options);
+if (s == null) s = this.vwr.getSymmetryInfo (iatom, xyz, iSym, trans, center, target, 135176, thisId, intScale / 100, nth, options);
 }eval.runBufferedSafely (s.length > 0 ? s : "draw ID \"" + thisId + "_*\" delete", eval.outputBuffer);
 }return;
 case 4115:
@@ -704,40 +863,6 @@ propertyValue = center = this.getPoint3f (i, true);
 propertyName = "coord";
 }i = eval.iToken;
 havePoints = true;
-break;
-case 134219265:
-case 134217750:
-if (!havePoints && !isIntersect && tokIntersect == 0) {
-if (eval.theTok == 134219265) {
-havePoints = true;
-this.setShapeProperty (22, "plane", null);
-plane = eval.hklParameter (++i);
-i = eval.iToken;
-propertyName = "coords";
-var list =  new JU.Lst ();
-list.addLast (JU.P3.newP (eval.pt1));
-list.addLast (JU.P3.newP (eval.pt2));
-list.addLast (JU.P3.newP (eval.pt3));
-propertyValue = list;
-} else {
-propertyName = "plane";
-iArray = i + 1;
-}break;
-}if (eval.theTok == 134217750) {
-plane = eval.planeParameter (i);
-} else {
-plane = eval.hklParameter (++i);
-}i = eval.iToken;
-if (tokIntersect != 0) {
-if (this.chk) break;
-var vpc = this.getPlaneIntersection (tokIntersect, plane, uc, intScale / 100, 0);
-intScale = 0;
-propertyName = "polygon";
-propertyValue = vpc;
-} else {
-propertyValue = plane;
-propertyName = "planedef";
-}havePoints = true;
 break;
 case 1073742000:
 propertyName = "lineData";
@@ -779,9 +904,30 @@ break;
 case 1140850693:
 propertyName = "reverse";
 break;
-case 4:
+case 1073742166:
+if (this.tokAt (++i) == 1765808134) {
+propertyValue = Integer.$valueOf (this.e.getArgbParamOrNone (++i, false));
+propertyName = "titlecolor";
+i = this.e.iToken;
+break;
+}if (this.tokAt (i) == 4114) {
+--i;
+continue;
+}case 4:
 propertyValue = this.stringParameter (i);
 propertyName = "title";
+break;
+case 4114:
+var fontSize = this.floatParameter (++i);
+var fontFace = (this.tokAt (i + 1) == 1073741824 ? this.paramAsStr (++i) : null);
+var fontStyle = (this.tokAt (i + 1) == 1073741824 ? this.paramAsStr (++i) : null);
+if (this.tokAt (i + 1) != 4 && ++i != this.slen || fontSize <= 0 || fontSize > 0xFF) this.invArg ();
+propertyName = "myfont";
+if (fontFace == null || fontStyle == null) {
+var f = this.vwr.shm.getShapePropertyIndex (22, "font", -1);
+if (fontFace == null) fontFace = f.fontFace;
+if (fontStyle == null) fontStyle = f.fontStyle;
+}propertyValue = this.vwr.getFont3D (fontFace, fontStyle, fontSize);
 break;
 case 135198:
 propertyName = "vector";
@@ -805,7 +951,7 @@ propertyValue = Integer.$valueOf (this.intParameter (i));
 } else {
 intScale = this.intParameter (i);
 }break;
-case 1073742138:
+case 536875009:
 intScale = Math.round (this.floatParameter (++i) * (this.getToken (i).tok == 2 ? 1 : 100));
 continue;
 case 1073741974:
@@ -834,11 +980,6 @@ case 1073742196:
 propertyValue = Float.$valueOf (this.floatParameter (++i));
 propertyName = "width";
 swidth = propertyName + " " + propertyValue;
-break;
-case 1073741998:
-propertyName = "line";
-propertyValue = Boolean.TRUE;
-iArray = i + 1;
 break;
 case 1073741908:
 propertyName = "curve";
@@ -1025,14 +1166,14 @@ this.setColorOptions (null, i + 1, iShape, 2);
 break;
 case 134217750:
 propertyName = "plane";
-propertyValue = (this.tokAt (this.e.iToken = ++i) == 1073742333 ? null : eval.planeParameter (i));
+propertyValue = (this.tokAt (this.e.iToken = ++i) == 1073742333 ? null : eval.planeParameter (i, false));
 break;
 case 134217751:
 this.addShapeProperty (propertyList, "randomSeed", this.tokAt (i + 2) == 2 ? Integer.$valueOf (this.intParameter (i + 2)) : null);
 propertyName = "monteCarloCount";
 propertyValue = Integer.$valueOf (this.intParameter (i + 1));
 break;
-case 1073742138:
+case 536875009:
 propertyName = "scale";
 propertyValue = Float.$valueOf (this.floatParameter (i + 1));
 break;
@@ -1262,6 +1403,7 @@ eval.sm.loadShape (iShape);
 if (this.tokAt (1) == 1073742001 && this.listIsosurface (iShape)) return;
 var iptDisplayProperty = 0;
 var isDisplay = false;
+var isBest = false;
 var isIsosurface = (iShape == 24);
 var isPmesh = (iShape == 29);
 var isPlot3d = (iShape == 30);
@@ -1315,6 +1457,7 @@ var isWild = (idSeen && this.getShapeProperty (iShape, "ID") == null);
 var isColorSchemeTranslucent = false;
 var isInline = false;
 var isSign = false;
+var colorDensity = false;
 var onlyOneModel = null;
 var filesData = null;
 var translucency = null;
@@ -1342,7 +1485,7 @@ case 603979868:
 smoothing = (this.getToken (++i).tok == 1073742335 ? Boolean.TRUE : eval.theTok == 1073742334 ? Boolean.FALSE : null);
 if (smoothing == null) this.invArg ();
 continue;
-case 553648148:
+case 553648146:
 smoothingPower = this.intParameter (++i);
 continue;
 case 4128:
@@ -1350,7 +1493,7 @@ propertyName = "moveIsosurface";
 if (this.tokAt (++i) != 12) this.invArg ();
 propertyValue = this.getToken (i++).value;
 break;
-case 1296041986:
+case 1296041985:
 var ff = this.floatArraySet (i + 2, this.intParameter (i + 1), 16);
 symops =  new Array (ff.length);
 for (var j = symops.length; --j >= 0; ) symops[j] = JU.M4.newA16 (ff[j]);
@@ -1361,7 +1504,7 @@ case 1088421903:
 if (modelIndex < 0) modelIndex = Math.min (this.vwr.am.cmi, 0);
 var needIgnore = (bsIgnore == null);
 if (bsSelect == null) bsSelect = JU.BSUtil.copy (this.vwr.bsA ());
-bsSelect.and (this.vwr.ms.getAtoms (1296041986, Integer.$valueOf (1)));
+bsSelect.and (this.vwr.ms.getAtoms (1296041985, Integer.$valueOf (1)));
 if (!needIgnore) bsSelect.andNot (bsIgnore);
 this.addShapeProperty (propertyList, "select", bsSelect);
 if (needIgnore) {
@@ -1371,7 +1514,7 @@ isFrontOnly = true;
 this.addShapeProperty (propertyList, "ignore", bsIgnore);
 sbCommand.append (" ignore ").append (JU.Escape.eBS (bsIgnore));
 }sbCommand.append (" symmetry");
-if (color == 0) this.addShapeProperty (propertyList, "colorRGB", Integer.$valueOf (1296041986));
+if (color == 0) this.addShapeProperty (propertyList, "colorRGB", Integer.$valueOf (1296041985));
 symops = this.vwr.ms.getSymMatrices (modelIndex);
 break;
 case 1073742066:
@@ -1426,9 +1569,9 @@ if (this.chk) {
 bs =  new JU.BS ();
 } else if (this.tokAt (eval.iToken + 1) == 1073742325 || this.tokAt (eval.iToken + 1) == 10) {
 bs = this.atomExpressionAt (++eval.iToken);
-bs.and (this.vwr.ms.getAtomsWithinRadius (5.0, bsSelect, false, null));
+bs.and (this.vwr.ms.getAtomsWithinRadius (5.0, bsSelect, false, null, null));
 } else {
-bs = this.vwr.ms.getAtomsWithinRadius (5.0, bsSelect, true, null);
+bs = this.vwr.ms.getAtomsWithinRadius (5.0, bsSelect, true, null, null);
 bs.andNot (this.vwr.ms.getAtoms (1094713360, bsSelect));
 }bs.andNot (bsSelect);
 sbCommand.append (" intersection ").append (JU.Escape.eBS (bsSelect)).append (" ").append (JU.Escape.eBS (bs));
@@ -1490,9 +1633,8 @@ bs = (Clazz_instanceOf (ret[0], JU.BS) ? ret[0] : null);
 i = eval.iToken;
 if (eval.fullCommand.indexOf ("# WITHIN=") >= 0) bs = JU.BS.unescape (JU.PT.getQuotedAttribute (eval.fullCommand, "# WITHIN"));
 if (!this.chk) {
-if (bs != null && modelIndex >= 0) {
-bs.and (this.vwr.getModelUndeletedAtomsBitSet (modelIndex));
-}if (ptc == null) ptc = (bs == null ?  new JU.P3 () : this.vwr.ms.getAtomSetCenter (bs));
+if (bs != null && modelIndex >= 0) bs = this.vwr.restrictToModel (bs, modelIndex);
+if (ptc == null) ptc = (bs == null ?  new JU.P3 () : this.vwr.ms.getAtomSetCenter (bs));
 pts = this.getWithinDistanceVector (propertyList, distance, ptc, bs, isDisplay);
 sbCommand.append (" within ").appendF (distance).append (" ").append (bs == null ? JU.Escape.eP (ptc) : JU.Escape.eBS (bs));
 }continue;
@@ -1574,7 +1716,7 @@ break;
 }propertyName = "modelIndex";
 propertyValue = Integer.$valueOf (modelIndex);
 break;
-case 1275082245:
+case 1275082241:
 propertyName = "select";
 var bs1 = this.atomExpressionAt (++i);
 propertyValue = bs1;
@@ -1623,6 +1765,7 @@ if (this.tokAt (i + 1) == 1073741914) {
 i++;
 propertyName = "colorDensity";
 sbCommand.append (" color density");
+colorDensity = true;
 if (this.isFloatParameter (i + 1)) {
 var ptSize = this.floatParameter (++i);
 sbCommand.append (" " + ptSize);
@@ -1707,14 +1850,17 @@ haveRadius = true;
 if (isMapped) surfaceObjectSeen = false;
 i = eval.iToken;
 break;
+case 1073741864:
+isBest = true;
+continue;
 case 134217750:
 planeSeen = true;
 propertyName = "plane";
-propertyValue = eval.planeParameter (i);
+propertyValue = eval.planeParameter (i, isBest);
 i = eval.iToken;
 sbCommand.append (" plane ").append (JU.Escape.eP4 (propertyValue));
 break;
-case 1073742138:
+case 536875009:
 propertyName = "scale";
 propertyValue = Float.$valueOf (this.floatParameter (++i));
 sbCommand.append (" scale ").appendO (propertyValue);
@@ -1731,10 +1877,10 @@ propertyName = "ellipsoid";
 i = eval.iToken;
 sbCommand.append (" ellipsoid ").append (JU.Escape.eP4 (propertyValue));
 break;
-case 134219265:
+case 134219777:
 planeSeen = true;
 propertyName = "plane";
-propertyValue = eval.hklParameter (++i);
+propertyValue = eval.hklParameter (++i, null, true);
 i = eval.iToken;
 sbCommand.append (" plane ").append (JU.Escape.eP4 (propertyValue));
 break;
@@ -1985,12 +2131,14 @@ sbCommand.append ("+").appendO (propertyValue);
 propertyName = "cutoff";
 propertyValue = Float.$valueOf (cutoff = this.floatParameter (i));
 sbCommand.appendO (propertyValue);
-} else {
+} else if (colorDensity) {
 propertyName = "cutoffRange";
 propertyValue = eval.floatParameterSet (i, 2, 2);
 this.addShapeProperty (propertyList, "cutoff", Float.$valueOf (0));
 sbCommand.append (JU.Escape.eAF (propertyValue));
 i = eval.iToken;
+} else {
+this.invArg ();
 }break;
 case 1073741928:
 propertyName = "downsample";
@@ -2333,24 +2481,26 @@ this.addShapeProperty (propertyList, "filesData", filesData);
 break;
 case 545259556:
 case 545259557:
+case 1073741914:
 case 4:
 var firstPass = (!surfaceObjectSeen && !planeSeen);
-var filename;
+var filename = null;
 propertyName = (firstPass && !isMapped ? "readFile" : "mapColor");
 if (tok == 4) {
 filename = this.paramAsStr (i);
-} else {
+} else if (tok == 1073741914) {
+filename = "=density/";
+}if (filename == null || filename.length == 0 || filename.equals ("*") || filename.equals ("=")) {
 var pdbID = this.vwr.getPdbID ();
 if (pdbID == null) eval.errorStr (22, "no PDBID available");
 filename = "*" + (tok == 545259557 ? "*" : "") + pdbID;
 }var checkWithin = false;
-var isUppsala = false;
 if (filename.startsWith ("http://eds.bmc.uu.se/eds/dfs/cb/") && filename.endsWith (".omap")) {
 filename = (filename.indexOf ("_diff") >= 0 ? "*" : "") + "*" + filename.substring (32, 36);
-}if (filename.startsWith ("*") || (isUppsala = filename.startsWith ("=")) && filename.length > 1) {
+}if (filename.startsWith ("*") || filename.startsWith ("=")) {
 var haveCutoff = (!Float.isNaN (cutoff) || !Float.isNaN (sigma));
-if (isUppsala) filename = filename.$replace ('=', '*');
 var isFull = (filename.indexOf ("/full") >= 0);
+if (isFull) filename = JU.PT.rep (filename, "/full", "");
 if (filename.indexOf ("/diff") >= 0) filename = "*" + filename.substring (0, filename.indexOf ("/diff"));
 if (filename.startsWith ("**")) {
 if (!haveCutoff) this.addShapeProperty (propertyList, "sigma", Float.$valueOf (sigma = 3));
@@ -2359,7 +2509,7 @@ isSign = true;
 sbCommand.append (" sign");
 this.addShapeProperty (propertyList, "sign", Boolean.TRUE);
 }}var fn = filename;
-filename = this.vwr.setLoadFormat (filename, (this.chk ? '?' : isFull || pts == null ? '_' : '-'), false);
+filename = this.vwr.setLoadFormat (filename, (this.chk ? '?' : isFull ? '_' : '-'), false);
 if (filename == null) eval.errorStr (22, "error parsing filename: " + fn);
 checkWithin = !isFull;
 }if (checkWithin) {
@@ -2381,16 +2531,14 @@ sbCommand.append (" cutoff " + cutoff);
 } else if ((p = filename.indexOf ("#-sigma=")) >= 0) {
 this.addShapeProperty (propertyList, "sigma", Float.$valueOf (sigma = Float.parseFloat (filename.substring (p + 8))));
 sbCommand.append (" sigma " + sigma);
-}} else if (p >= 0) {
-filename = filename.substring (0, p);
-}if (!Float.isNaN (sigma)) this.showString ("using sigma = " + sigma);
+}}if (!Float.isNaN (sigma)) this.showString ("using sigma = " + sigma);
  else if (!Float.isNaN (cutoff)) this.showString ("using cutoff = " + cutoff);
 if (firstPass && this.vwr.getP ("_fileType").equals ("Pdb") && Float.isNaN (sigma) && Float.isNaN (cutoff)) {
 this.addShapeProperty (propertyList, "sigma", Float.$valueOf (-1));
 sbCommand.append (" sigma -1.0");
 }if (filename.length == 0) {
 if (modelIndex < 0) modelIndex = this.vwr.am.cmi;
-filename = eval.getFullPathName ();
+filename = eval.getFullPathName (false);
 propertyValue = this.vwr.ms.getInfo (modelIndex, "jmolSurfaceInfo");
 }var fileIndex = -1;
 if (propertyValue == null && this.tokAt (i + 1) == 2) this.addShapeProperty (propertyList, "fileIndex", Integer.$valueOf (fileIndex = this.intParameter (++i)));
@@ -2655,6 +2803,15 @@ propertyName = "select";
 propertyValue = this.atomExpressionAt (i);
 i = eval.iToken;
 break;
+case 1140850693:
+propertyName = "reversecolor";
+propertyValue = Boolean.TRUE;
+if (this.tokAt (i + 1) == 1073742335) {
+++i;
+} else if (this.tokAt (i + 1) == 1073742334) {
+propertyValue = Boolean.FALSE;
+++i;
+}break;
 case 1765808134:
 translucency = this.setColorOptions (null, i + 1, 26, -2);
 if (translucency != null) this.setShapeProperty (26, "settranslucency", translucency);
@@ -2676,7 +2833,7 @@ if (eval.optParameterAsString (i + 1).equalsIgnoreCase ("molecular")) {
 i++;
 propertyName = "molecular";
 }break;
-case 1275082245:
+case 1275082241:
 if (eval.isAtomExpression (i + 1)) {
 propertyName = "select";
 propertyValue = this.atomExpressionAt (i + 1);
@@ -2686,7 +2843,7 @@ propertyName = "selectType";
 propertyValue = this.paramAsStr (++i);
 if (propertyValue.equals ("spacefill")) propertyValue = "cpk";
 }break;
-case 1073742138:
+case 536875009:
 propertyName = "scale";
 propertyValue = Float.$valueOf (this.floatParameter (++i));
 break;
@@ -2963,7 +3120,7 @@ var ai =  Clazz_newIntArray (-1, [i, this.slen]);
 if (!eval.getShapePropertyData (23, "data",  Clazz_newArray (-1, [this.st, ai, data, this.vwr]))) this.invArg ();
 i = ai[0];
 continue;
-case 1073742138:
+case 536875009:
 if (++i >= this.slen) this.error (34);
 switch (this.getToken (i).tok) {
 case 2:
@@ -3160,7 +3317,7 @@ d2 = this.floatParameter (++i);
 data =  Clazz_newArray (-1, [Float.$valueOf (d), Float.$valueOf (d2)]);
 tok = 1073742114;
 break;
-}plane = eval.planeParameter (++i);
+}plane = eval.planeParameter (++i, false);
 var off = (this.isFloatParameter (eval.iToken + 1) ? this.floatParameter (++eval.iToken) : NaN);
 if (!Float.isNaN (off)) plane.w -= off;
 data = plane;
@@ -3339,32 +3496,100 @@ var s = (this.slen > 3 ? "0" : this.tokAt (2) == 0 ? "" : " " + this.getToken (2
 if (!this.chk) this.showString (this.getShapeProperty (iShape, "list" + s));
 return true;
 }, "~N");
-Clazz_defineMethod (c$, "getPlaneIntersection", 
- function (type, plane, uc, scale, flags) {
-var pts = null;
+Clazz_defineMethod (c$, "getBoxPoints", 
+ function (type, uc, bsAtoms, scale) {
 switch (type) {
 case 1814695966:
-if (uc == null) return null;
-pts = uc.getCanonicalCopy (scale, true);
-break;
+return (uc == null ? null : uc.getCanonicalCopy (scale, true));
 case 1678381065:
-pts = JU.BoxInfo.getCanonicalCopy (this.vwr.ms.getBoxInfo ().getBoundBoxVertices (), scale);
-break;
+var box;
+if (bsAtoms == null) {
+box = this.vwr.ms.getBoxInfo ();
+} else {
+box =  new JU.BoxInfo ();
+this.vwr.calcAtomsMinMax (bsAtoms, box);
+}return JU.BoxInfo.getCanonicalCopy (box.getBoundBoxVertices (), scale);
+default:
+return null;
 }
-var t = this.vwr.getTriangulator ();
-if (plane != null) return t.intersectPlane (plane, pts, flags);
-var v =  new JU.Lst ();
-v.addLast (pts);
-v.addLast (JU.Triangulator.fullCubePolygon);
-return v;
-}, "~N,JU.P4,J.api.SymmetryInterface,~N,~N");
+}, "~N,J.api.SymmetryInterface,JU.BS,~N");
 });
 Clazz_declarePackage ("JU");
-Clazz_load (["JU.TriangleData"], "JU.Triangulator", ["JU.AU", "$.BS", "$.Lst", "$.P3"], function () {
+Clazz_load (["JU.TriangleData"], "JU.Triangulator", ["JU.AU", "$.BS", "$.Lst", "$.Measure", "$.P3", "$.P4", "$.V3"], function () {
 c$ = Clazz_declareType (JU, "Triangulator", JU.TriangleData);
+Clazz_defineMethod (c$, "intersectLine", 
+function (points, nPoints, ptA, unitVector) {
+if (nPoints < 0) nPoints = points.length;
+var v1 =  new JU.V3 ();
+var v2 =  new JU.V3 ();
+var v3 =  new JU.V3 ();
+var vAB =  new JU.V3 ();
+var pmin = null;
+var pmax = null;
+var p =  new JU.P3 ();
+var plane =  new JU.P4 ();
+var dmin = 3.4028235E38;
+var dmax = -3.4028235E38;
+for (var i = 0; i < 12; i++) {
+var c = JU.Triangulator.fullCubePolygon[i];
+if (i % 2 == 0) {
+JU.Measure.getPlaneThroughPoints (points[c[0]], points[c[1]], points[c[2]], v1, v2, plane);
+var ret = JU.Measure.getIntersection (ptA, unitVector, plane, p, v1, v3);
+if (ret == null) {
+i++;
+continue;
+}vAB.sub2 (p, ptA);
+}if (JU.Measure.isInTriangle (p, points[c[0]], points[c[1]], points[c[2]], v1, v2, v3)) {
+var d = unitVector.dot (vAB);
+if (d < dmin) {
+dmin = d;
+pmin = p;
+}if (d > dmax) {
+dmax = d;
+pmax = p;
+}if ((i % 2) == 0) {
+i++;
+}if (dmax - dmin > 0.01) break;
+p =  new JU.P3 ();
+}}
+return (pmin == null || (pmax == null || pmin.distance (pmax) < 0.001) && (pmax = pmin) == null ? null :  Clazz_newArray (-1, [pmin, pmax]));
+}, "~A,~N,JU.P3,JU.V3");
+Clazz_defineMethod (c$, "getCellProjection", 
+ function (plane, pts) {
+var vTemp =  new JU.V3 ();
+var d = 0;
+var dmax = -3.4028235E38;
+var imax = 0;
+var newPts =  new Array (8);
+for (var i = 0; i < 8; i++) {
+d = pts[i].dot (plane);
+if (d > dmax) {
+dmax = d;
+imax = i;
+}JU.Measure.getPlaneProjection (pts[i], plane, newPts[i] =  new JU.P3 (), vTemp);
+}
+var t = JU.Triangulator.fullCubeCorners[imax][3];
+var polygons = JU.AU.newInt2 (6);
+for (var p = 0, i = 0; i < 12; i++) {
+if ((t & JU.TriangleData.Pwr2[i]) != 0) {
+var t1 =  Clazz_newIntArray (4, 0);
+var t0 = JU.Triangulator.fullCubePolygon[i];
+t1[0] = t0[0];
+t1[1] = t0[1];
+t1[2] = t0[2];
+t1[3] = (t0[0] == imax ? 2 : t0[1] == imax ? 0 : t0[2] == imax ? 1 : 3);
+polygons[p++] = t1;
+}}
+var poly =  new JU.Lst ();
+poly.addLast (newPts);
+poly.addLast (polygons);
+return poly;
+}, "JU.P4,~A");
 Clazz_defineMethod (c$, "intersectPlane", 
 function (plane, vertices, flags) {
-var v =  new JU.Lst ();
+if (flags == -1 && vertices.length == 8) {
+return this.getCellProjection (plane, vertices);
+}var v =  new JU.Lst ();
 var edgePoints =  new Array (12);
 var insideMask = 0;
 var values =  Clazz_newFloatArray (8, 0);
@@ -3421,7 +3646,8 @@ if ((b & 4) == 4) v.addLast ( Clazz_newArray (-1, [pt1, pt3]));
 return v;
 }, "JU.P4,~A,~N");
 Clazz_defineStatics (c$,
-"fullCubePolygon",  Clazz_newArray (-1, [ Clazz_newIntArray (-1, [0, 4, 5, 3]),  Clazz_newIntArray (-1, [5, 1, 0, 3]),  Clazz_newIntArray (-1, [1, 5, 6, 2]),  Clazz_newIntArray (-1, [6, 2, 1, 3]),  Clazz_newIntArray (-1, [2, 6, 7, 2]),  Clazz_newIntArray (-1, [7, 3, 2, 3]),  Clazz_newIntArray (-1, [3, 7, 4, 2]),  Clazz_newIntArray (-1, [4, 0, 3, 2]),  Clazz_newIntArray (-1, [6, 5, 4, 0]),  Clazz_newIntArray (-1, [4, 7, 6, 0]),  Clazz_newIntArray (-1, [0, 1, 2, 0]),  Clazz_newIntArray (-1, [2, 3, 0, 0])]));
+"fullCubePolygon",  Clazz_newArray (-1, [ Clazz_newIntArray (-1, [0, 4, 5, 3]),  Clazz_newIntArray (-1, [5, 1, 0, 3]),  Clazz_newIntArray (-1, [1, 5, 6, 2]),  Clazz_newIntArray (-1, [6, 2, 1, 3]),  Clazz_newIntArray (-1, [2, 6, 7, 2]),  Clazz_newIntArray (-1, [7, 3, 2, 3]),  Clazz_newIntArray (-1, [3, 7, 4, 2]),  Clazz_newIntArray (-1, [4, 0, 3, 2]),  Clazz_newIntArray (-1, [6, 5, 4, 0]),  Clazz_newIntArray (-1, [4, 7, 6, 0]),  Clazz_newIntArray (-1, [0, 1, 2, 0]),  Clazz_newIntArray (-1, [2, 3, 0, 0])]),
+"fullCubeCorners",  Clazz_newArray (-1, [ Clazz_newIntArray (-1, [1, 4, 3, 3267]),  Clazz_newIntArray (-1, [0, 2, 5, 3087]),  Clazz_newIntArray (-1, [1, 3, 6, 3132]),  Clazz_newIntArray (-1, [2, 0, 7, 3312]),  Clazz_newIntArray (-1, [0, 5, 7, 963]),  Clazz_newIntArray (-1, [1, 6, 4, 783]),  Clazz_newIntArray (-1, [2, 7, 5, 828]),  Clazz_newIntArray (-1, [3, 4, 6, 1008])]));
 });
 Clazz_declarePackage ("JU");
 Clazz_load (["JU.P3i"], "JU.TriangleData", null, function () {
@@ -3459,7 +3685,6 @@ this.isPhaseColored = false;
 this.isColorExplicit = false;
 this.scriptAppendix = "";
 this.sg = null;
-this.jvxlData = null;
 this.withinDistance2 = 0;
 this.isWithinNot = false;
 this.withinPoints = null;
@@ -3625,12 +3850,15 @@ this.sg.params.modelIndex = Math.abs (this.modelIndex);
 var info = value;
 if (!this.explicitID) {
 this.setPropertySuper ("thisID", null, null);
-}if (!this.sg.setProp ("lcaoCartoonCenter", info[2], null)) this.drawLcaoCartoon (info[0], info[1], info[3], ("lonePair" === propertyName ? 2 : "radical" === propertyName ? 1 : 0));
+}if (!this.sg.setProp ("lcaoCartoonCenter", info[2], null)) this.drawLcaoCartoon (info[0], info[1], info[3], ("lonePair" === propertyName ? 2 : "radical" === propertyName ? 1 : 0), this.thisMesh == null ? false : this.thisMesh.reverseColor);
 return;
 }if ("select" === propertyName) {
 if (this.iHaveBitSets) return;
 }if ("ignore" === propertyName) {
 if (this.iHaveBitSets) return;
+}if ("reversecolor" === propertyName) {
+if (this.thisMesh != null) this.thisMesh.reverseColor = (value === Boolean.TRUE);
+return;
 }if ("meshcolor" === propertyName) {
 var rgb = (value).intValue ();
 this.meshColix = JU.C.getColix (rgb);
@@ -3658,7 +3886,7 @@ this.displayWithinDistance2 = (o[0]).floatValue ();
 this.isDisplayWithinNot = (this.displayWithinDistance2 < 0);
 this.displayWithinDistance2 *= this.displayWithinDistance2;
 this.displayWithinPoints = o[3];
-if (this.displayWithinPoints.size () == 0) this.displayWithinPoints = this.vwr.ms.getAtomPointVector (o[2]);
+if (this.displayWithinPoints.size () == 0) this.displayWithinPoints = this.ms.getAtomPointVector (o[2]);
 return;
 }if ("finalize" === propertyName) {
 if (this.thisMesh != null) {
@@ -3672,12 +3900,9 @@ return;
 }if ("connections" === propertyName) {
 if (this.currentMesh != null) {
 this.connections = value;
-if (this.connections[0] >= 0 && this.connections[0] < this.vwr.ms.ac) this.currentMesh.connectedAtoms = this.connections;
+if (this.connections[0] >= 0 && this.connections[0] < this.ms.ac) this.currentMesh.connectedAtoms = this.connections;
  else this.connections = this.currentMesh.connectedAtoms = null;
 }return;
-}if ("cutoffRange" === propertyName) {
-this.cutoffRange = value;
-return;
 }if ("fixLattice" === propertyName) {
 if (this.thisMesh != null) this.thisMesh.fixLattice ();
 return;
@@ -3736,7 +3961,7 @@ if (this.thisMesh != null) this.thisMesh.atomIndex = this.atomIndex;
 this.center.setT (value);
 } else if ("colorRGB" === propertyName) {
 var rgb = (value).intValue ();
-if (rgb == 1296041986) {
+if (rgb == 1296041985) {
 this.colorType = rgb;
 } else {
 this.colorType = 0;
@@ -3752,7 +3977,7 @@ if (this.thisMesh != null) {
 var bsSets;
 if (Clazz_instanceOf (value, JU.BS)) {
 bsSets = (value);
-if (bsSets.cardinality () == 0) bsSets = null;
+if (bsSets.isEmpty ()) bsSets = null;
 } else {
 bsSets =  new JU.BS ();
 var a = value;
@@ -3800,9 +4025,11 @@ this.withinDistance2 = (o[0]).floatValue ();
 this.isWithinNot = (this.withinDistance2 < 0);
 this.withinDistance2 *= this.withinDistance2;
 this.withinPoints = o[3];
-if (this.withinPoints.size () == 0) this.withinPoints = this.vwr.ms.getAtomPointVector (o[2]);
+if (this.withinPoints.size () == 0) this.withinPoints = this.ms.getAtomPointVector (o[2]);
 } else if (("nci" === propertyName || "orbital" === propertyName) && this.sg != null) {
 this.sg.params.testFlags = (this.vwr.getBoolean (603979962) ? 2 : 0);
+} else if ("cutoffRange" === propertyName) {
+this.cutoffRange = value;
 }if (this.sg != null && this.sg.setProp (propertyName, value, bs)) {
 if (this.sg.isValid) {
 if ("molecularOrbital" === propertyName) {
@@ -3898,7 +4125,7 @@ var vertexColixes = this.thisMesh.vcs;
 var colix = (this.thisMesh.isColorSolid ? this.thisMesh.colix : 0);
 this.setProperty ("init", null, null);
 this.setProperty ("map", Boolean.FALSE, null);
-this.setProperty ("property",  Clazz_newFloatArray (this.vwr.ms.ac, 0), null);
+this.setProperty ("property",  Clazz_newFloatArray (this.ms.ac, 0), null);
 if (colix != 0) {
 this.thisMesh.colorCommand = "color isosurface " + JU.C.getHexCode (colix);
 this.setProperty ("color", Integer.$valueOf (JU.C.getArgb (colix)), null);
@@ -3993,8 +4220,10 @@ if (property === "message") {
 var s = "";
 if (!this.jvxlData.isValid) return "invalid! (no atoms selected?)";
 if (!Float.isNaN (this.jvxlData.integration)) s += "integration " + this.jvxlData.integration;
-if (this.shapeID == 24 || this.shapeID == 27 || this.shapeID == 28) s += " with cutoff=" + this.jvxlData.cutoff;
-if (this.shapeID == 27 || this.shapeID == 28) return s;
+if (this.shapeID == 24 || this.shapeID == 27 || this.shapeID == 28) {
+if (this.jvxlData.cutoffRange == null) s += " with cutoff=" + this.jvxlData.cutoff;
+ else s += " with cutoffRange=" + JU.Escape.eAF (this.jvxlData.cutoffRange);
+}if (this.shapeID == 27 || this.shapeID == 28) return s;
 if (this.jvxlData.dataMin != 3.4028235E38) s += " min=" + this.jvxlData.dataMin + " max=" + this.jvxlData.dataMax;
 s += "; " + JV.JC.shapeClassBases[this.shapeID].toLowerCase () + " count: " + this.getPropMC ("count", index);
 return s + this.getPropI ("dataRangeStr", index) + this.jvxlData.msg;
@@ -4016,6 +4245,7 @@ if (m == null) return null;
 if (property === "output") {
 return (m.jvxlData.sbOut == null && m.jvxlData.jvxlFileTitle == null ? null : m.jvxlData.jvxlFileTitle + "\n" + (m.jvxlData.sbOut == null ? "" : m.jvxlData.sbOut.toString ()));
 }if (property === "cutoff") return Float.$valueOf (this.jvxlData.cutoff);
+if (property === "cutoffRange") return this.jvxlData.cutoffRange;
 if (property === "minMaxInfo") return  Clazz_newFloatArray (-1, [this.jvxlData.dataMin, this.jvxlData.dataMax]);
 if (property === "plane") return this.jvxlData.jvxlPlane;
 if (property === "contours") return m.getContours ();
@@ -4038,7 +4268,7 @@ return J.jvxl.data.JvxlCoder.jvxlGetInfo (this.jvxlData);
 }if (property === "command") {
 var sb =  new JU.SB ();
 var list = this.getMeshList ((index < 0 ? this.previousMeshID : m.thisID), false);
-for (var i = list.size (); --i >= 0; ) this.getMeshCommand (sb, i);
+for (var i = list.size (); --i >= 0; ) this.getMeshCommand (sb, list.get (i).index);
 
 return sb.toString ();
 }if (property === "atoms") {
@@ -4110,7 +4340,7 @@ Clazz_defineMethod (c$, "getMeshCommand",
 var imesh = this.meshes[i];
 if (imesh == null || imesh.scriptCommand == null) return;
 var cmd = imesh.scriptCommand;
-var modelCount = this.vwr.ms.mc;
+var modelCount = this.ms.mc;
 if (modelCount > 1) J.shape.Shape.appendCmd (sb, "frame " + this.vwr.getModelNumberDotted (imesh.modelIndex));
 cmd = JU.PT.rep (cmd, ";; isosurface map", " map");
 cmd = JU.PT.rep (cmd, "; isosurface map", " map");
@@ -4125,7 +4355,7 @@ if (imesh.linkedMesh != null) cmd += " LINK";
 if (this.myType === "lcaoCartoon" && imesh.atomIndex >= 0) cmd += " ATOMINDEX " + imesh.atomIndex;
 J.shape.Shape.appendCmd (sb, cmd);
 var id = this.myType + " ID " + JU.PT.esc (imesh.thisID);
-if (imesh.jvxlData.thisSet != null && imesh.jvxlData.thisSet.cardinality () > 0) {
+if (imesh.jvxlData.thisSet != null && !imesh.jvxlData.thisSet.isEmpty ()) {
 J.shape.Shape.appendCmd (sb, id + (imesh.jvxlData.thisSet.cardinality () == 1 ? " set " + (imesh.jvxlData.thisSet.nextSetBit (0) + 1) : " subset " + imesh.jvxlData.thisSet));
 }if (imesh.mat4 != null && !imesh.isModelConnected) J.shape.Shape.appendCmd (sb, id + " move " + JU.Escape.matrixToScript (imesh.mat4));
 if (imesh.scale3d != 0) J.shape.Shape.appendCmd (sb, id + " scale3d " + imesh.scale3d);
@@ -4176,7 +4406,7 @@ if (bsCmd == null) this.sg.setProp ("ignore", bs, null);
 if ((i = script.indexOf ("/({", j)) == j + 2) {
 if ((j = script.indexOf ("})", i)) < 0) return false;
 bs = JU.BS.unescape (script.substring (i + 3, j + 1));
-if (bsCmd == null) this.vwr.ms.setTrajectoryBs (bs);
+if (bsCmd == null) this.ms.setTrajectoryBs (bs);
  else bsCmd[2] = bs;
 }return true;
 }, "~S,~A");
@@ -4233,7 +4463,7 @@ this.sg.initState ();
 Clazz_defineMethod (c$, "setMeshI", 
  function () {
 this.thisMesh.visible = true;
-if ((this.thisMesh.atomIndex = this.atomIndex) >= 0) this.thisMesh.modelIndex = this.vwr.ms.at[this.atomIndex].mi;
+if ((this.thisMesh.atomIndex = this.atomIndex) >= 0) this.thisMesh.modelIndex = this.ms.at[this.atomIndex].mi;
  else if (this.isFixed) this.thisMesh.modelIndex = -1;
  else if (this.modelIndex >= 0) this.thisMesh.modelIndex = this.modelIndex;
  else this.thisMesh.modelIndex = this.vwr.am.cmi;
@@ -4256,12 +4486,19 @@ var argb = (this.sg.params.cutoff >= 0 ? -11525984 : -6283184);
 return JU.C.getColix (argb);
 });
 Clazz_defineMethod (c$, "drawLcaoCartoon", 
- function (z, x, rotAxis, nElectrons) {
+ function (z, x, rotAxis, nElectrons, reverseColor) {
 var lcaoCartoon = this.sg.setLcao ();
-var rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
+var addAnti = (lcaoCartoon.indexOf ("anti-sp") >= 0);
+if (addAnti) {
+lcaoCartoon = lcaoCartoon.substring (5);
+}var rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
 this.defaultColix = JU.C.getColix (this.sg.params.colorPos);
 var colixNeg = JU.C.getColix (this.sg.params.colorNeg);
-var y =  new JU.V3 ();
+if (reverseColor) {
+var c = colixNeg;
+colixNeg = this.defaultColix;
+this.defaultColix = c;
+}var y =  new JU.V3 ();
 var isReverse = (lcaoCartoon.length > 0 && lcaoCartoon.charAt (0) == '-');
 if (isReverse) lcaoCartoon = lcaoCartoon.substring (1);
 var sense = (isReverse ? -1 : 1);
@@ -4284,7 +4521,7 @@ var meshA = this.thisMesh;
 this.createLcaoLobe (x, sense, nElectrons);
 if (nElectrons > 0) return;
 this.setProperty ("thisID", id + "b", null);
-this.createLcaoLobe (x, -sense, nElectrons);
+this.createLcaoLobe (x, -sense, 0);
 this.thisMesh.colix = colixNeg;
 this.linkedMesh = this.thisMesh.linkedMesh = meshA;
 return;
@@ -4294,23 +4531,29 @@ var meshA = this.thisMesh;
 this.createLcaoLobe (y, sense, nElectrons);
 if (nElectrons > 0) return;
 this.setProperty ("thisID", id + "b", null);
-this.createLcaoLobe (y, -sense, nElectrons);
+this.createLcaoLobe (y, -sense, 0);
 this.thisMesh.colix = colixNeg;
 this.linkedMesh = this.thisMesh.linkedMesh = meshA;
 return;
-}if (lcaoCartoon.equals ("pz")) {
-this.thisMesh.thisID += "a";
-var meshA = this.thisMesh;
+}var meshA = this.thisMesh;
+if (lcaoCartoon.equals ("pz")) {
+meshA.thisID += "a";
 this.createLcaoLobe (z, sense, nElectrons);
 if (nElectrons > 0) return;
 this.setProperty ("thisID", id + "b", null);
-this.createLcaoLobe (z, -sense, nElectrons);
+this.createLcaoLobe (z, -sense, 0);
 this.thisMesh.colix = colixNeg;
 this.linkedMesh = this.thisMesh.linkedMesh = meshA;
 return;
 }if (lcaoCartoon.equals ("pza") || lcaoCartoon.indexOf ("sp") == 0 || lcaoCartoon.indexOf ("d") == 0 || lcaoCartoon.indexOf ("lp") == 0) {
 this.createLcaoLobe (z, sense, nElectrons);
-return;
+if (addAnti && nElectrons == 0) {
+meshA.thisID += "a";
+this.setProperty ("thisID", id + "b", null);
+this.createLcaoLobe (z, -sense / 2, 0);
+this.thisMesh.colix = colixNeg;
+this.linkedMesh = this.thisMesh.linkedMesh = meshA;
+}return;
 }if (lcaoCartoon.equals ("pzb")) {
 this.createLcaoLobe (z, -sense, nElectrons);
 return;
@@ -4327,11 +4570,11 @@ return;
 this.createLcaoLobe (y, -sense, nElectrons);
 return;
 }if (lcaoCartoon.equals ("spacefill") || lcaoCartoon.equals ("cpk")) {
-this.createLcaoLobe (null, 2 * this.vwr.ms.at[this.atomIndex].getRadius (), nElectrons);
+this.createLcaoLobe (null, 2 * this.ms.at[this.atomIndex].getRadius (), nElectrons);
 return;
 }this.createLcaoLobe (null, 1, nElectrons);
 return;
-}, "JU.V3,JU.V3,JU.V3,~N");
+}, "JU.V3,JU.V3,JU.V3,~N,~B");
 Clazz_defineMethod (c$, "createLcaoLobe", 
  function (lobeAxis, factor, nElectrons) {
 this.initState ();
@@ -4570,10 +4813,7 @@ return true;
 }if (!this.vwr.getDrawHover ()) return false;
 var s = this.findValue (x, y, false, bsVisible);
 if (s == null) return false;
-if (this.vwr.gdata.antialiasEnabled) {
-x <<= 1;
-y <<= 1;
-}this.vwr.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
+this.vwr.hoverOnPt (x, y, s, this.pickedMesh.thisID, this.pickedPt);
 return true;
 }, "~N,~N,JU.BS");
 Clazz_defineMethod (c$, "hoverKey", 
@@ -4596,9 +4836,6 @@ s = "" + (vContours[i].get (2)).floatValue ();
 var g = this.thisMesh.colorEncoder.quantize (f, true);
 f = this.thisMesh.colorEncoder.quantize (f, false);
 s = "" + g + " - " + f;
-}if (this.vwr.gdata.isAntialiased ()) {
-x <<= 1;
-y <<= 1;
 }this.vwr.hoverOnPt (x, y, s, null, null);
 } catch (e) {
 if (Clazz_exceptionOf (e, Exception)) {
@@ -4761,7 +4998,7 @@ return data.toString ();
 var isHeaderOnly = ("HEADERONLY".equals (msg));
 if (includeHeader) {
 JU.XmlUtil.openDocument (data);
-JU.XmlUtil.openTagAttr (data, "jvxl",  Clazz_newArray (-1, ["version", "2.3", "jmolVersion", jvxlData.version, "xmlns", "http://jmol.org/jvxl_schema", "xmlns:cml", "http://www.xml-cml.org/schema"]));
+JU.XmlUtil.openTagAttr (data, "jvxl",  Clazz_newArray (-1, ["version", "2.4", "jmolVersion", jvxlData.version, "xmlns", "http://jmol.org/jvxl_schema", "xmlns:cml", "http://www.xml-cml.org/schema"]));
 JU.XmlUtil.appendCdata (data, "jvxlFileTitle", null, jvxlData.jvxlFileTitle == null ? "\n" : "\n" + jvxlData.jvxlFileTitle);
 if (jvxlData.moleculeXml != null) data.append (jvxlData.moleculeXml);
 var volumeDataXml = (vertexDataOnly ? null : jvxlData.jvxlVolumeDataXml);
@@ -4870,7 +5107,7 @@ var bytesUncompressedEdgeData = (vertexDataOnly ? 0 : jvxlData.jvxlEdgeData.leng
 var nColorData = (jvxlData.jvxlColorData == null ? -1 : (jvxlData.jvxlColorData.length - 1));
 J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  isModelConnected", "" + jvxlData.isModelConnected);
 if (!vertexDataOnly) {
-J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  cutoff", "" + jvxlData.cutoff);
+J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  cutoff", (jvxlData.cutoffRange == null ? "" + jvxlData.cutoff : jvxlData.cutoffRange[0] + " " + jvxlData.cutoffRange[1]));
 J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  isCutoffAbsolute", "" + jvxlData.isCutoffAbsolute);
 J.jvxl.data.JvxlCoder.addAttrib (attribs, "\n  pointsPerAngstrom", "" + jvxlData.pointsPerAngstrom);
 var n = jvxlData.jvxlSurfaceData.length + bytesUncompressedEdgeData + nColorData + 1;
@@ -5047,20 +5284,25 @@ var valueBlue = jvxlData.valueMappedToBlue;
 var valueRed = jvxlData.valueMappedToRed;
 var vertexCount = (jvxlData.saveVertexCount > 0 ? jvxlData.saveVertexCount : jvxlData.vertexCount);
 if (vertexCount > vertexValues.length) System.out.println ("JVXLCODER ERROR");
-var min = jvxlData.mappedDataMin;
-var max = jvxlData.mappedDataMax;
+var isPrecisionColor = jvxlData.isJvxlPrecisionColor;
+var min = (isPrecisionColor ? jvxlData.mappedDataMin : jvxlData.valueMappedToRed);
+var max = (isPrecisionColor ? jvxlData.mappedDataMax : jvxlData.valueMappedToBlue);
+if (vertexValues.length < vertexCount) System.out.println ("JVXLCOLOR OHOHO");
+jvxlData.jvxlColorData = J.jvxl.data.JvxlCoder.jvxlEncodeColorData (vertexValues, min, max, colorFractionBase, colorFractionRange, jvxlData.isTruncated, isPrecisionColor);
+}, "J.jvxl.data.JvxlData,~A");
+c$.jvxlEncodeColorData = Clazz_defineMethod (c$, "jvxlEncodeColorData", 
+function (vertexValues, min, max, colorFractionBase, colorFractionRange, doTruncate, isPrecisionColor) {
 var list1 =  new JU.SB ();
 var list2 =  new JU.SB ();
-if (vertexValues.length < vertexCount) System.out.println ("JVXLCOLOR OHOHO");
-for (var i = 0; i < vertexCount; i++) {
+for (var i = 0, n = vertexValues.length; i < n; i++) {
 var value = vertexValues[i];
 if (Float.isNaN (value)) value = min;
 if (doTruncate) value = (value > 0 ? 0.999 : -0.999);
-if (writePrecisionColor) J.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (value, min, max, colorFractionBase, colorFractionRange, list1, list2);
- else list1.appendC (J.jvxl.data.JvxlCoder.jvxlValueAsCharacter (value, valueRed, valueBlue, colorFractionBase, colorFractionRange));
+if (isPrecisionColor) J.jvxl.data.JvxlCoder.jvxlAppendCharacter2 (value, min, max, colorFractionBase, colorFractionRange, list1, list2);
+ else list1.appendC (J.jvxl.data.JvxlCoder.jvxlValueAsCharacter (value, min, max, colorFractionBase, colorFractionRange));
 }
-jvxlData.jvxlColorData = list1.appendSB (list2).appendC ('\n').toString ();
-}, "J.jvxl.data.JvxlData,~A");
+return list1.appendSB (list2).appendC ('\n').toString ();
+}, "~A,~N,~N,~N,~N,~B,~B");
 c$.appendXmlVertexOnlyData = Clazz_defineMethod (c$, "appendXmlVertexOnlyData", 
  function (sb, jvxlData, meshData, escapeXml) {
 var vertexIdNew =  Clazz_newIntArray (meshData.vc, 0);
@@ -5438,7 +5680,7 @@ if (sb.length () == 0) sb.append ("Line 1\nLine 2\n");
 }, "J.jvxl.data.VolumeData,JU.SB");
 Clazz_defineStatics (c$,
 "JVXL_VERSION1", "2.0",
-"JVXL_VERSION_XML", "2.3",
+"JVXL_VERSION_XML", "2.4",
 "haveXMLUtil", false,
 "CONTOUR_NPOLYGONS", 0,
 "CONTOUR_BITSET", 1,
@@ -5842,6 +6084,7 @@ c$ = Clazz_decorateAsClass (function () {
 this.msg = "";
 this.wasJvxl = false;
 this.wasCubic = false;
+this.jvxlFileSource = null;
 this.jvxlFileTitle = null;
 this.jvxlFileMessage = null;
 this.jvxlSurfaceData = null;
@@ -5874,6 +6117,7 @@ this.mappedDataMax = 0;
 this.valueMappedToRed = 0;
 this.valueMappedToBlue = 0;
 this.cutoff = 0;
+this.cutoffRange = null;
 this.pointsPerAngstrom = 0;
 this.nPointsX = 0;
 this.nPointsY = 0;
@@ -5968,7 +6212,6 @@ this.voxelVolume = 0;
 Clazz_defineMethod (c$, "setSurfaceInfo", 
 function (thePlane, mapLattice, nSurfaceInts, surfaceData) {
 this.jvxlSurfaceData = surfaceData;
-if (this.jvxlSurfaceData.indexOf ("--") == 0) this.jvxlSurfaceData = this.jvxlSurfaceData.substring (2);
 this.jvxlPlane = thePlane;
 this.mapLattice = mapLattice;
 this.nSurfaceInts = nSurfaceInts;
@@ -6464,21 +6707,31 @@ if (JU.Logger.debugging) for (var i = 0; i < this.params.title.length; i++) if (
 }return true;
 }if ("sigma" === propertyName) {
 this.params.cutoff = this.params.sigma = (value).floatValue ();
+this.params.cutoffRange = null;
 this.params.cutoffAutomatic = false;
 return true;
 }if ("cutoff" === propertyName) {
 this.params.cutoff = (value).floatValue ();
+this.params.cutoffRange = null;
+this.params.isPositiveOnly = false;
+this.params.cutoffAutomatic = false;
+return true;
+}if ("cutoffPositive" === propertyName) {
+this.params.cutoff = (value).floatValue ();
+this.params.cutoffRange = null;
+this.params.isPositiveOnly = true;
+this.params.isCutoffAbsolute = false;
+this.params.cutoffAutomatic = false;
+return true;
+}if ("cutoffRange" === propertyName) {
+this.params.cutoffRange = value;
+this.params.cutoff = this.params.cutoffRange[0];
 this.params.isPositiveOnly = false;
 this.params.cutoffAutomatic = false;
 return true;
 }if ("parameters" === propertyName) {
 this.params.parameters = JU.AU.ensureLengthA (value, 2);
 if (this.params.parameters.length > 0 && this.params.parameters[0] != 0) this.params.cutoff = this.params.parameters[0];
-return true;
-}if ("cutoffPositive" === propertyName) {
-this.params.cutoff = (value).floatValue ();
-this.params.isPositiveOnly = true;
-this.params.isCutoffAbsolute = false;
 return true;
 }if ("cap" === propertyName || "slab" === propertyName) {
 if (value != null) this.params.addSlabInfo (value);
@@ -6933,6 +7186,7 @@ return;
 }if (!this.surfaceReader.createIsosurface (false)) {
 JU.Logger.error ("Could not create isosurface");
 this.params.cutoff = NaN;
+this.params.cutoffRange = null;
 this.surfaceReader.closeReader ();
 return;
 }if (this.params.probes != null) {
@@ -6976,6 +7230,7 @@ if (this.params.thePlane != null) {
 var isSquared = this.params.isSquared;
 this.params.isSquared = false;
 this.params.cutoff = 0;
+this.params.cutoffRange = null;
 this.surfaceReader.volumeData.setMappingPlane (this.params.thePlane);
 this.surfaceReader.createIsosurface (!this.params.isPeriodic);
 this.surfaceReader.volumeData.setMappingPlane (null);
@@ -7029,8 +7284,10 @@ value = JU.Rdr.getBR (value);
 }if (Clazz_instanceOf (value, Array)) {
 var a = (value)[0];
 var b =  new Array (a.length);
-for (var i = 0; i < a.length; i++) b[i] = this.setFileData (vwr, a[i]);
-
+for (var i = 0; i < a.length; i++) {
+this.fileType = fileType;
+b[i] = this.setFileData (vwr, a[i]);
+}
 (value)[0] = b;
 this.readerData = value;
 return this.newReader ("IsoIntersectGridReader");
@@ -7290,6 +7547,7 @@ this.isXLowToHigh = false;
 this.insideOut = false;
 this.dataXYReversed = false;
 this.cutoff = 3.4028235E38;
+this.cutoffRange = null;
 this.sigma = 3.4028235E38;
 this.cutoffAutomatic = true;
 this.isCutoffAbsolute = false;
@@ -7864,6 +8122,7 @@ this.jvxlDataIsPrecisionColor = false;
 this.jvxlDataIs2dContour = false;
 this.jvxlDataIsColorDensity = false;
 this.jvxlCutoff = 0;
+this.jvxlCutoffRange = null;
 this.jvxlNSurfaceInts = 0;
 this.cJvxlEdgeNaN = '\0';
 this.contourVertexCount = 0;
@@ -7935,6 +8194,7 @@ function (justForPlane) {
 this.resetIsosurface ();
 if (this.params.showTiming) JU.Logger.startTimer ("isosurface creation");
 this.jvxlData.cutoff = NaN;
+this.jvxlData.cutoffRange = null;
 if (!this.readAndSetVolumeParameters (justForPlane)) return false;
 if (!justForPlane && !Float.isNaN (this.params.sigma) && !this.allowSigma) {
 if (this.params.sigma > 0) JU.Logger.error ("Reader does not support SIGMA option -- using cutoff 1.6");
@@ -7962,10 +8222,13 @@ if (!this.readVolumeData (false)) return false;
 this.generateSurfaceData ();
 }if (this.jvxlFileHeaderBuffer == null) {
 this.jvxlData.jvxlFileTitle = "";
+this.jvxlData.jvxlFileSource = null;
+this.jvxlData.jvxlFileMessage = null;
 } else {
 var s = this.jvxlFileHeaderBuffer.toString ();
 var i = s.indexOf ('\n', s.indexOf ('\n', s.indexOf ('\n') + 1) + 1) + 1;
 this.jvxlData.jvxlFileTitle = s.substring (0, i);
+this.jvxlData.jvxlFileSource = this.params.fileName;
 }if (this.params.contactPair == null) this.setBBoxAll ();
 this.jvxlData.isValid = (this.xyzMin.x != 3.4028235E38);
 if (!this.params.isSilent) {
@@ -7974,7 +8237,8 @@ if (!this.jvxlData.isValid) JU.Logger.error ("no isosurface points were found!")
 }this.jvxlData.boundingBox =  Clazz_newArray (-1, [this.xyzMin, this.xyzMax]);
 this.jvxlData.dataMin = this.dataMin;
 this.jvxlData.dataMax = this.dataMax;
-this.jvxlData.cutoff = (this.isJvxl ? this.jvxlCutoff : this.params.cutoff);
+this.jvxlData.cutoffRange = (this.isJvxl ? this.jvxlCutoffRange : this.params.cutoffRange);
+this.jvxlData.cutoff = (this.jvxlCutoffRange != null ? this.jvxlData.cutoffRange[0] : this.isJvxl ? this.jvxlCutoff : this.params.cutoff);
 this.jvxlData.isCutoffAbsolute = this.params.isCutoffAbsolute;
 this.jvxlData.isModelConnected = this.params.isModelConnected;
 this.jvxlData.pointsPerAngstrom = 1 / this.volumeData.volumetricVectorLengths[0];
@@ -8480,6 +8744,7 @@ this.bsExcludedTriangles = null;
 this.bsExcludedPlanes = null;
 this.edgeData = null;
 this.excludePartialCubes = true;
+this.isDensityRange = false;
 this.mode = 0;
 this.vertexValues = null;
 this.edgeCount = 0;
@@ -8542,6 +8807,7 @@ this.colorDensity = params.colorDensity;
 this.isContoured = params.thePlane == null && params.isContoured && !this.colorDensity;
 this.cutoff = params.cutoff;
 this.isCutoffAbsolute = params.isCutoffAbsolute;
+this.isDensityRange = (params.cutoffRange != null);
 this.contourType = params.contourType;
 this.isSquared = params.isSquared;
 this.isXLowToHigh = params.isXLowToHigh;
@@ -8675,7 +8941,7 @@ this.$isInside = (this.allInside || this.bsVoxels.get (pti));
 break;
 case 2:
 this.$isInside = (this.allInside || this.bsVoxels.get (pti));
-v = this.vertexValues[i] = (this.bsExcludedVertices.get (pti) ? NaN : this.$isInside ? 1 : 0);
+v = this.vertexValues[i] = ((this.isDensityRange ? !this.$isInside : this.bsExcludedVertices.get (pti)) ? NaN : this.$isInside ? 1 : 0);
 break;
 default:
 case 1:
@@ -9612,7 +9878,7 @@ return ipt;
 }, "JU.MeshSurface,~N,~N,~A");
 Clazz_overrideMethod (c$, "getUnitCell", 
 function () {
-return (this.unitCell != null || (this.unitCell = this.vwr.ms.am[this.modelIndex].biosymmetry) != null || (this.unitCell = this.vwr.ms.getUnitCell (this.modelIndex)) != null || this.oabc != null && (this.unitCell = J.api.Interface.getSymmetry (this.vwr, "symmetry").getUnitCell (this.oabc, true, null)) != null ? this.unitCell : null);
+return (this.unitCell != null || (this.unitCell = this.vwr.ms.am[this.modelIndex].biosymmetry) != null || (this.unitCell = this.vwr.ms.getUnitCell (this.modelIndex)) != null || this.oabc != null && (this.unitCell = this.vwr.getSymTemp ().getUnitCell (this.oabc, true, null)) != null ? this.unitCell : null);
 });
 Clazz_defineMethod (c$, "fixLattice", 
 function () {
@@ -9691,7 +9957,7 @@ this.mat4.mul2 (m, this.mat4);
 Clazz_defineMethod (c$, "getDataMinMax", 
 function () {
 var min = 3.4028235E38;
-var max = 1.4E-45;
+var max = -3.4028235E38;
 for (var i = this.vvs.length; --i >= 0; ) {
 var v = this.vvs[i];
 if (v < min) min = v;
@@ -11194,7 +11460,6 @@ JU.Logger.info ("downsampling axis " + (i + 1) + " from " + n + " to " + this.vo
 }if (!this.vertexDataOnly) for (var i = 0; i < 3; ++i) {
 if (!this.isAngstroms) this.volumetricVectors[i].scale (0.5291772);
 this.line = this.voxelCounts[i] + " " + this.volumetricVectors[i].x + " " + this.volumetricVectors[i].y + " " + this.volumetricVectors[i].z;
-this.jvxlFileHeaderBuffer.append (this.line).appendC ('\n');
 JU.Logger.info ("voxel grid count/vector:" + this.line);
 }
 this.scaleIsosurface (this.params.scale);
@@ -11237,11 +11502,15 @@ this.nSkipZ = this.downsampleRemainders[1] * this.nSkipZ + (this.downsampleFacto
 }if (this.params.thePlane != null) {
 this.params.cutoff = 0;
 } else if (this.isJvxl) {
-this.params.cutoff = (this.params.isBicolorMap || this.params.colorBySign ? 0.01 : 0.5);
+this.params.cutoff = (this.params.isBicolorMap || this.params.colorBySign ? 0.01 : this.getJVXLCutoff ());
 }this.nDataPoints = 0;
 this.next[0] = 0;
 this.line = "";
 this.jvxlNSurfaceInts = 0;
+});
+Clazz_defineMethod (c$, "getJVXLCutoff", 
+function () {
+return 0.5;
 });
 Clazz_overrideMethod (c$, "readSurfaceData", 
 function (isMapData) {
@@ -11498,7 +11767,7 @@ this.params.insideOut = !this.params.insideOut;
 });
 });
 Clazz_declarePackage ("J.jvxl.readers");
-Clazz_load (["J.jvxl.readers.VolumeFileReader"], "J.jvxl.readers.JvxlXmlReader", ["java.lang.Float", "$.NullPointerException", "java.util.Hashtable", "JU.AU", "$.BS", "$.CU", "$.Lst", "$.P3", "$.P4", "$.PT", "$.SB", "J.jvxl.data.JvxlCoder", "$.MeshData", "J.jvxl.readers.XmlReader", "J.shapesurface.IsosurfaceMesh", "JU.C", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
+Clazz_load (["J.jvxl.readers.VolumeFileReader"], "J.jvxl.readers.JvxlXmlReader", ["java.lang.Double", "$.Float", "$.NullPointerException", "java.util.Hashtable", "JU.AU", "$.BS", "$.CU", "$.Lst", "$.P3", "$.P4", "$.PT", "$.SB", "J.jvxl.data.JvxlCoder", "$.MeshData", "J.jvxl.readers.XmlReader", "J.shapesurface.IsosurfaceMesh", "JU.C", "$.ColorEncoder", "$.Escape", "$.Logger"], function () {
 c$ = Clazz_decorateAsClass (function () {
 this.JVXL_VERSION = "2.3";
 this.surfaceDataCount = 0;
@@ -11605,6 +11874,10 @@ JU.Logger.info ("using default edge fraction base and range");
 JU.Logger.info ("using default color fraction base and range");
 this.cJvxlEdgeNaN = String.fromCharCode (this.edgeFractionBase + this.edgeFractionRange);
 });
+Clazz_overrideMethod (c$, "getJVXLCutoff", 
+function () {
+return this.params.cutoff;
+});
 Clazz_defineMethod (c$, "readVector", 
 function (voxelVectorIndex) {
 var data = this.xr.getXmlData ("jvxlVolumeVector", this.tempDataXml, true, true);
@@ -11632,11 +11905,17 @@ this.xr.skipTag ("jvxlSurface");
 }, "~N,~B");
 Clazz_defineMethod (c$, "jvxlReadSurfaceInfo", 
 function () {
-var s;
 var data = this.xr.getXmlData ("jvxlSurfaceInfo", null, true, true);
 this.isXLowToHigh = J.jvxl.readers.XmlReader.getXmlAttrib (data, "isXLowToHigh").equals ("true");
-this.jvxlCutoff = this.parseFloatStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "cutoff"));
-if (!Float.isNaN (this.jvxlCutoff)) JU.Logger.info ("JVXL read: cutoff " + this.jvxlCutoff);
+var s = J.jvxl.readers.XmlReader.getXmlAttrib (data, "cutoff");
+if (s.indexOf (" ") < 0) {
+this.jvxlCutoff = this.parseFloatStr (s);
+if (!Double.isNaN (this.jvxlCutoff)) JU.Logger.info ("JVXL read: cutoff " + this.jvxlCutoff);
+} else {
+this.jvxlCutoffRange = this.parseFloatArrayStr (s);
+this.jvxlCutoff = this.jvxlCutoffRange[0];
+JU.Logger.info ("JVXL read: cutoff " + JU.Escape.eAF (this.jvxlCutoffRange));
+}this.params.cutoff = this.jvxlCutoff;
 var nContourData = this.parseIntStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "nContourData"));
 this.haveContourData = (nContourData > 0);
 this.params.isContoured = this.jvxlData.isModelConnected = J.jvxl.readers.XmlReader.getXmlAttrib (data, "contoured").equals ("true");
@@ -12402,7 +12681,7 @@ var slabPoints = ((this.volumeRender || this.mesh.pc == 0) && this.selectedPolyO
 var incr = this.imesh.vertexIncrement;
 var diam;
 if (this.mesh.diameter <= 0) {
-diam = this.vwr.getInt (553648142);
+diam = this.vwr.getInt (553648140);
 this.frontOnly = this.isShell = false;
 } else {
 diam = Clazz_doubleToInt (this.vwr.getScreenDim () / (this.volumeRender ? 50 : 100));
@@ -12410,7 +12689,7 @@ diam = Clazz_doubleToInt (this.vwr.getScreenDim () / (this.volumeRender ? 50 : 1
 if (diam < 1) diam = 1;
 var cX = (this.showNumbers ? Clazz_doubleToInt (this.vwr.getScreenWidth () / 2) : 0);
 var cY = (this.showNumbers ? Clazz_doubleToInt (this.vwr.getScreenHeight () / 2) : 0);
-if (this.showNumbers) this.vwr.gdata.setFontFid (this.vwr.gdata.getFontFidFS ("Monospaced", 24));
+if (this.showNumbers) this.vwr.gdata.setFontBold ("Monospaced", 24);
 for (var i = (!this.imesh.hasGridPoints || this.imesh.firstRealVertex < 0 ? 0 : this.imesh.firstRealVertex); i < this.vertexCount; i += incr) {
 if (this.vertexValues != null && Float.isNaN (this.vertexValues[i]) || this.frontOnly && !this.isVisibleNormix (this.normixes[i]) || this.imesh.jvxlData.thisSet != null && !this.imesh.jvxlData.thisSet.get (this.mesh.vertexSets[i]) || !this.mesh.isColorSolid && this.mesh.vcs != null && !this.setColix (this.mesh.vcs[i]) || this.haveBsDisplay && !this.mesh.bsDisplay.get (i) || slabPoints && !this.bsPolygons.get (i)) continue;
 this.hasColorRange = true;
@@ -12552,7 +12831,7 @@ return diam;
 Clazz_defineMethod (c$, "renderNormals", 
  function () {
 if (!this.g3d.setC (JU.C.copyColixTranslucency (this.mesh.colix, 8))) return;
-this.vwr.gdata.setFontFid (this.vwr.gdata.getFontFidFS ("Monospaced", 24));
+this.vwr.gdata.setFontBold ("Monospaced", 24);
 var vertexVectors = JU.Normix.getVertexVectors ();
 for (var i = this.vertexCount; --i >= 0; ) {
 if (this.vertexValues != null && Float.isNaN (this.vertexValues[i])) continue;

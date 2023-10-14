@@ -1,6 +1,7 @@
 .path-mod-ratingallocate ul.horizontal.choices {
     margin: 0;
 }
+
 .path-mod-ratingallocate .horizontal.choices .option {
     padding-right: 20px;
     display: inline-block;
@@ -22,6 +23,7 @@
     /* necessary for containing absolute position values */
     position: relative;
 }
+
 .ratingallocate_ratings_table span input[type=radio]:checked ~ label::before {
     content: url('[[pix:i/checked]]');
     position: absolute;
@@ -33,6 +35,7 @@
     background: url('[[pix:ratingallocate|checkbox-selected]]');
     background-size: 13px 13px;
 }
+
 .ratingallocate_ratings_table span input[type=radio][checked] ~ label {
     font-weight: bold;
 }
@@ -47,6 +50,7 @@
     background: url('[[pix:ratingallocate|checkbox]]');
     background-size: 13px 13px;
 }
+
 .ratingallocate_ratings_table span input[type=radio] {
     display: none;
 }
@@ -54,6 +58,69 @@
 .ratingallocate_ratings_box {
     overflow: auto; /* Scrolling tables */
 }
+
 .path-mod-ratingallocate .mod-ratingallocate-choice-maxno {
     text-align: right;
+}
+
+.ratingallocate_distribute_unallocated {
+    margin: 1em 1em 0 0;
+}
+
+.ratingallocate_ratings_table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.ratingallocate_ratings_table thead th:first-child,
+.ratingallocate_ratings_table tbody td:first-child {
+    position: sticky;
+    left: 0;
+    min-width: 10rem;
+    max-width: 10rem;
+}
+
+.ratingallocate_ratings_table.includegroups tbody td:nth-child(2),
+.ratingallocate_ratings_table.includegroups thead th:nth-child(2) {
+    position: sticky;
+    left: 10rem;
+    border-right: 2px solid #dee2e6;
+}
+
+.ratingallocate_ratings_table:not(.includegroups) tbody td:first-child,
+.ratingallocate_ratings_table:not(.includegroups) thead th:first-child {
+    border-right: 2px solid #dee2e6;
+}
+
+.ratingallocate_ratings_table thead th:first-child,
+.ratingallocate_ratings_table.includegroups thead th:nth-child(2) {
+    z-index: 3;
+}
+
+.ratingallocate_ratings_table .groupsinchoiceheadings {
+    font-size: xx-small;
+}
+
+.ratingallocate_ratings_table tr.ratingallocate_summary td {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+}
+
+.ratingallocate_ratings_table thead th {
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.ratingallocate_ratings_table tbody td:first-child,
+.ratingallocate_ratings_table.includegroups tbody td:nth-child(2) {
+    background-color: #fff;
+    z-index: 1;
+    font-weight: bold;
+}
+
+.ratingallocate_ratings_table_container .no-overflow {
+    overflow: unset;
 }

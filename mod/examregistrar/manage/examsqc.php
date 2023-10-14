@@ -42,9 +42,17 @@ $annuality = examregistrar_get_annuality($examregistrar);
 
 echo $output->heading(get_string('examsqc', 'examregistrar'));
 
-add_to_log($course->id, 'examregistrar', "manage edit examqc", "manage.php?id={$cm->id}&edit=$edit&action=qc", $examregistrar->name, $cm->id);
-
 $period   = optional_param('period', '', PARAM_INT);
+
+//add_to_log($course->id, 'examregistrar', "manage edit examqc", "manage.php?id={$cm->id}&edit=$edit&action=qc", $examregistrar->name, $cm->id);
+        $eventdata = array();
+        $eventdata['context'] = $context;
+        $eventdata['other'] = array();
+        $eventdata['other']['examregid'] = $examregistrar->id;
+        $eventdata['other']['action'] = 'Reviewd quality control examsqc';
+        $eventdata['other']['extra'] = $period ? " period: $period " : '';
+        $event = \mod_examregistrar\event\manage_action::create($eventdata);
+        $event->trigger();
 
 /// Period selector
 

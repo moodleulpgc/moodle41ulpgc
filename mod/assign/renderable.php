@@ -593,7 +593,8 @@ class assign_grading_summary implements renderable {
                                 $coursestartdate,
                                 $cangrade = true,
                                 $isvisible = true,
-                                cm_info $cm = null) {
+                                cm_info $cm = null,
+                                $showgradingpanel = true) {
         $this->participantcount = $participantcount;
         $this->submissiondraftsenabled = $submissiondraftsenabled;
         $this->submissiondraftscount = $submissiondraftscount;
@@ -611,6 +612,8 @@ class assign_grading_summary implements renderable {
         $this->cangrade = $cangrade;
         $this->isvisible = $isvisible;
         $this->cm = $cm;
+        // ecastro ULPGC
+        $this->showgradingpanel = $showgradingpanel;
     }
 }
 

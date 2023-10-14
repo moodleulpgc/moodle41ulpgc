@@ -36,6 +36,44 @@ require_once(__DIR__.'/lib.php');
 // general                                                                    /
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Updates baseurl with optional params in the
+ *
+ * @param moodle_url $url, the url to update
+ * @return void, url
+ */
+function examregistrar_url_update(moodle_url $url) {
+
+    $urlparams = $url->params();
+
+    $options = ['etype','sannuality','sprogramme','sshortname',
+                'sterm','sscope','sbooked','slocationtype',
+                'usort','rsort'];
+    foreach($options as $param) {
+        $value = optional_param($param, '', PARAM_ALPHANUMEXT);
+        if($value != '') {
+            $urlparams[$param] = $value;
+        }
+    }
+
+    $options = ['speriod','scallnum','ssession','sparent',
+                'venue'];
+    foreach($options as $param) {
+        $value = optional_param($param, 0, PARAM_INT);
+        if($value != '') {
+            $urlparams[$param] = $value;
+        }
+    }
+
+    $sel_delivery  = optional_param('sdelivery', null, PARAM_ALPHANUMEXT);
+    if(isset($sel_delivery) && $sel_delivery) {
+        $urlparams['sdelivery'] = $sel_delivery;
+    }
+
+    $url->params($urlparams);
+}
+
+
 
 /**
  * Returns a menu of table records items, (id, name) for selected table
@@ -711,7 +749,7 @@ function examregistrar_exam_delivery_instances($exam, $manageurl, $withdate = fa
         $date = '';
         if($withdate) {
             $timeformat = get_string('strftimedaydatetime');
-            if($delivery->timeopen && (usergetmidnight($delivery->timeopen) ==  usergetmidnight($exam->examdate))) {
+            if($delivery->timeopen && (usergetmidnight((int)$delivery->timeopen) ==  usergetmidnight((int)$exam->examdate))) {
                 $timeformat = get_string('strftimetime24', 'langconfig');
             }
             
@@ -1182,10 +1220,14 @@ function examregistrar_loadcsv_sessions($examregistrar, $data, $ignoremodified, 
     }
 
     /// now specific items
-    $tz = usertimezone();
-    $record->examdate = strtotime($record->examdate.' '.$tz);
+    $tz = get_user_timezone();
+    $record->examdate = strtotime($record->examdate . " $tz");
+
     if(isset($record->visible)) {
         $record->visible = (int)$record->visible;
+    }
+    if(!isset($record->timeslot)) {
+        $record->timeslot = '10.00';
     }
     if(!isset($record->duration)) {
         $record->duration = 2*60*60;
@@ -1566,7 +1608,7 @@ function examregistrar_generateexams_fromcourses($examregistrar, $formdata) {
     foreach($rs_courses as $course) {
         $category = new stdClass;
         $category->id = $course->category;
-        $category->idumber = $course->catidnumber;
+        $category->idnumber = $course->catidnumber;
         $category->degree = $course->degree;
         $programme = examregistrar_programme_fromcourse($examregistrar, $course, $category, $options);
         $examperiods = examregistrar_examperiods_fromcourse($examregistrar, $course, $periods, $options);

@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/lib/completionlib.php');
+require_once($CFG->dirroot.'/local/sinculpgc/lib.php');
 use local_sinculpgc\sinculpgcrule;
 use context_user;
 use moodle_url;
@@ -690,7 +691,7 @@ class helper {
                 //TODO mtrace messages
                 if(isset($course->customint8) && $course->customint8) {
                     // we have an instance, we are updating
-                    $plugin->update_instance($course, $instance); 
+                    $plugin->update_instance($course, $instance);
                     $instances[] = $course->enrolid;
                     self::mtrace("... Updated enrol instance {$course->enrolid} in course {$course->shortname} \n");
                 } else {

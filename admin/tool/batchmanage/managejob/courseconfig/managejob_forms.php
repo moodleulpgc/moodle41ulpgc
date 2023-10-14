@@ -85,6 +85,10 @@ class batchmanage_course_config_form extends batchmanageform {
         $mform->setDefault('coursedisplay', $courseconfig->coursedisplay);
         $this->add_grouped_element($element, 'coursedisplay');
 
+        $element = $mform->createElement('selectyesno', 'activityindentation', get_string('activityindentation'));
+        $mform->setDefault('activityindentation', $courseconfig->activityindentation);
+        $this->add_grouped_element($element, 'activityindentation');
+
 
 //--------------------------------------------------------------------------------
         $mform->addElement('header', 'appearancehdr', get_string('appearance'));
@@ -137,6 +141,12 @@ class batchmanage_course_config_form extends batchmanageform {
         //$mform->addHelpButton('showreports', 'showreports');
         $mform->setDefault('showreports', $courseconfig->showreports);
         $this->add_grouped_element($element, 'showreports');
+
+        // Show activity dates.
+        $element = $mform->createElement('selectyesno', 'showactivitydates', get_string('showactivitydates'));
+        //$mform->addHelpButton('showactivitydates', 'showactivitydates');
+        $mform->setDefault('showactivitydates', $courseconfig->showactivitydates);
+        $this->add_grouped_element($element, 'showactivitydates');
 
 //--------------------------------------------------------------------------------
         $mform->addElement('header', 'filehdr', get_string('filesanduploads'));

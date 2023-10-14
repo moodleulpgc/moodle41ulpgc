@@ -136,7 +136,7 @@ abstract class simplified_parser_processor extends progressive_parser_processor 
                 $data['tags'][$key] = isset($value['cdata']) ? $value['cdata'] : null;
 
                 // Check $alltagswhitespace continues being true
-                if ($alltagswhitespace && strlen($data['tags'][$key]) !== 0 && trim($data['tags'][$key]) !== '') {
+                if ($alltagswhitespace && !empty($data['tags'][$key]) && trim($data['tags'][$key]) !== '') { // ecastro ULPGC avoid null warning in PHP8.1
                     $alltagswhitespace = false; // Found non-whitespace value
                 }
             }

@@ -40,7 +40,7 @@ Clazz.defineMethod (c$, "check",
 function () {
 for (var i = 0; i < this.type; i++) {
 var iAtom = this.search.patternAtoms[this.indices[i]].getMatchingAtomIndex ();
-this.points[i] = this.search.targetAtoms[iAtom];
+this.points[i] = this.search.target.nodes[iAtom];
 }
 var d = 0;
 switch (this.type) {

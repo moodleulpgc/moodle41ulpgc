@@ -1,0 +1,461 @@
+/* ------------------------------- ateigh.com ------------------------------- 
+ *
+ * Typografy and texts styles for theme from ULPGC Design system
+ *
+ * ------------------------------- ateigh.com -------------------------------
+ */
+
+/** Icomoon styles and fonts **/
+@font-face {
+  font-family: '#{$icomoon-font-family}';
+  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?20200427_02');
+  src:  url('#{$icomoon-font-path}/#{$icomoon-font-family}.eot?20200427_02#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?20200427_02') format('truetype'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.woff?20200427_02') format('woff'),
+    url('#{$icomoon-font-path}/#{$icomoon-font-family}.svg?20200427_02##{$icomoon-font-family}') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+%icon, [class^="ulpgcds-icon-"], [class*=" ulpgcds-icon-"], .ulpgcds-icon , %ulpgcds-icon{
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: '#{$icomoon-font-family}' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  margin-right:8px;
+}
+
+.ulpgcds-icon--left{
+    margin-right:8px;
+}
+.ulpgcds-icon--right{
+    margin-left:8px;
+    margin-right:0;
+}
+
+
+.ulpgcds-icon-add-folder, .icon-add-folder {
+  &:before {
+    content: $icon-add-folder; 
+  }
+}
+.ulpgcds-icon-bell, .icon-bell {
+  &:before {
+    content: $icon-bell; 
+  }
+}
+.ulpgcds-icon-comment, .icon-comment {
+  &:before {
+    content: $icon-comment; 
+  }
+}
+.ulpgcds-icon-exit, .icon-exit {
+  &:before {
+    content: $icon-exit; 
+  }
+}
+.ulpgcds-icon-eye, .icon-eye {
+  &:before {
+    content: $icon-eye; 
+  }
+}
+.ulpgcds-icon-heart, .icon-heart {
+  &:before {
+    content: $icon-heart; 
+  }
+}
+.ulpgcds-icon-papers, .icon-papers {
+  &:before {
+    content: $icon-papers; 
+  }
+}
+.ulpgcds-icon-tools, .icon-tools {
+  &:before {
+    content: $icon-tools; 
+  }
+}
+.ulpgcds-icon-research, .icon-research {
+  &:before {
+    content: $icon-research; 
+  }
+}
+.ulpgcds-icon-moodle, .icon-moodle {
+  &:before {
+    content: $icon-moodle; 
+  }
+}
+.ulpgcds-icon-hat, .icon-hat {
+  &:before {
+    content: $icon-hat; 
+  }
+}
+.ulpgcds-icon-tick, .icon-tick {
+  &:before {
+    content: $icon-tick; 
+  }
+}
+.ulpgcds-icon-teacher, .icon-teacher {
+  &:before {
+    content: $icon-teacher; 
+  }
+}
+
+.ulpgcds-icon-computer,.icon-computer   {
+  &:before {
+    content: $icon-computer; 
+  }
+}
+.ulpgcds-icon-exterior,.icon-exterior   {
+  &:before {
+    content: $icon-exterior; 
+  }
+}
+.ulpgcds-icon-fax,.icon-fax   {
+  &:before {
+    content: $icon-fax; 
+  }
+}
+.ulpgcds-icon-list,.icon-list  {
+  &:before {
+    content: $icon-list; 
+  }
+}
+.ulpgcds-icon-reload,.icon-reload {
+  &:before {
+    content: $icon-reload; 
+  }
+}
+.ulpgcds-icon-add-file,.icon-add-file {
+  &:before {
+    content: $icon-add-file; 
+  }
+}
+.ulpgcds-icon-add-group,.icon-add-group {
+  &:before {
+    content: $icon-add-group; 
+  }
+}
+.ulpgcds-icon-add-image,.icon-add-image {
+  &:before {
+    content: $icon-add-image; 
+  }
+}
+.ulpgcds-icon-add-user,.icon-add-user {
+  &:before {
+    content: $icon-add-user; 
+  }
+}
+.ulpgcds-icon-add,.icon-add {
+  &:before {
+    content: $icon-add; 
+  }
+}
+.ulpgcds-icon-alert,.icon-alert {
+  &:before {
+    content: $icon-alert; 
+  }
+}
+.ulpgcds-icon-arrow-down ,.icon-arrow-down{
+  &:before {
+    content: $icon-arrow-down; 
+  }
+}
+.ulpgcds-icon-arrow-left,.icon-arrow-left {
+  &:before {
+    content: $icon-arrow-left; 
+  }
+}
+.ulpgcds-icon-arrow-right,.icon-arrow-right {
+  &:before {
+    content: $icon-arrow-right; 
+  }
+}
+.ulpgcds-icon-arrow-up,.icon-arrow-up {
+  &:before {
+    content: $icon-arrow-up; 
+  }
+}
+.ulpgcds-icon-audio,.icon-audio {
+  &:before {
+    content: $icon-audio; 
+  }
+}
+.ulpgcds-icon-book,.icon-book {
+  &:before {
+    content: $icon-book; 
+  }
+}
+.ulpgcds-icon-calendar,.icon-calendar {
+  &:before {
+    content: $icon-calendar; 
+  }
+}
+.ulpgcds-icon-campus ,.icon-campus{
+  &:before {
+    content: $icon-campus; 
+  }
+}
+.ulpgcds-icon-caret-down ,.icon-caret-down{
+  &:before {
+    content: $icon-caret-down; 
+  }
+}
+.ulpgcds-icon-caret-left,.icon-caret-left {
+  &:before {
+    content: $icon-caret-left; 
+  }
+}
+.ulpgcds-icon-caret-right ,.icon-caret-right{
+  &:before {
+    content: $icon-caret-right; 
+  }
+}
+.ulpgcds-icon-caret-up,.icon-caret-up {
+  &:before {
+    content: $icon-caret-up; 
+  }
+}
+.ulpgcds-icon-check,.icon-check {
+  &:before {
+    content: $icon-check; 
+  }
+}
+.ulpgcds-icon-chevron-down,.icon-chevron-down {
+  &:before {
+    content: $icon-chevron-down; 
+  }
+}
+.ulpgcds-icon-chevron-left,.icon-chevron-left {
+  &:before {
+    content: $icon-chevron-left; 
+  }
+}
+.ulpgcds-icon-chevron-right,.icon-chevron-right {
+  &:before {
+    content: $icon-chevron-right; 
+  }
+}
+.ulpgcds-icon-chevron-up ,.icon-chevron-up{
+  &:before {
+    content: $icon-chevron-up; 
+  }
+}
+.ulpgcds-icon-clock,.icon-clock {
+  &:before {
+    content: $icon-clock; 
+  }
+}
+.ulpgcds-icon-close,.icon-close {
+  &:before {
+    content: $icon-close; 
+  }
+}
+.ulpgcds-icon-code ,.icon-code{
+  &:before {
+    content: $icon-code; 
+  }
+}
+.ulpgcds-icon-dots,.icon-dots {
+  &:before {
+    content: $icon-dots; 
+  }
+}
+.ulpgcds-icon-download,.icon-download {
+  &:before {
+    content: $icon-download; 
+  }
+}
+.ulpgcds-icon-edit,.icon-edit {
+  &:before {
+    content: $icon-edit; 
+  }
+}
+.ulpgcds-icon-envelope ,.icon-envelope{
+  &:before {
+    content: $icon-envelope; 
+  }
+}
+.ulpgcds-icon-expand,.icon-expand {
+  &:before {
+    content: $icon-expand; 
+  }
+}
+.ulpgcds-icon-facebook,.icon-facebook {
+  &:before {
+    content: $icon-facebook; 
+  }
+}
+.ulpgcds-icon-file,.icon-file {
+  &:before {
+    content: $icon-file; 
+  }
+}
+.ulpgcds-icon-filter,.icon-filter {
+  &:before {
+    content: $icon-filter; 
+  }
+}
+.ulpgcds-icon-flickr,.icon-flickr {
+  &:before {
+    content: $icon-flickr; 
+  }
+}
+.ulpgcds-icon-folder,.icon-folder {
+  &:before {
+    content: $icon-folder; 
+  }
+}
+.ulpgcds-icon-group,.icon-group {
+  &:before {
+    content: $icon-group; 
+  }
+}
+.ulpgcds-icon-image,.icon-image {
+  &:before {
+    content: $icon-image; 
+  }
+}
+.ulpgcds-icon-info ,.icon-info{
+  &:before {
+    content: $icon-info; 
+  }
+}
+.ulpgcds-icon-instagram ,.icon-instagram{
+  &:before {
+    content: $icon-instagram; 
+  }
+}
+.ulpgcds-icon-less,.icon-less {
+  &:before {
+    content: $icon-less; 
+  }
+}
+.ulpgcds-icon-linkedin,.icon-linkedin {
+  &:before {
+    content: $icon-linkedin; 
+  }
+}
+.ulpgcds-icon-lock,.icon-lock {
+  &:before {
+    content: $icon-lock; 
+  }
+}
+.ulpgcds-icon-menu,.icon-menu {
+  &:before {
+    content: $icon-menu; 
+  }
+}
+.ulpgcds-icon-miulpgc,.icon-miulpgc {
+  &:before {
+    content: $icon-miulpgc; 
+  }
+}
+.ulpgcds-icon-more,.icon-more {
+  &:before {
+    content: $icon-more; 
+  }
+}
+.ulpgcds-icon-phone,.icon-phone {
+  &:before {
+    content: $icon-phone; 
+  }
+}
+.ulpgcds-icon-place,.icon-place {
+  &:before {
+    content: $icon-place; 
+  }
+}
+.ulpgcds-icon-play,.icon-play {
+  &:before {
+    content: $icon-play; 
+  }
+}
+.ulpgcds-icon-power ,.icon-power{
+  &:before {
+    content: $icon-power; 
+  }
+}
+.ulpgcds-icon-remove ,.icon-remove{
+  &:before {
+    content: $icon-remove; 
+  }
+}
+.ulpgcds-icon-search,.icon-search {
+  &:before {
+    content: $icon-search; 
+  }
+}
+.ulpgcds-icon-sort,.icon-sort {
+  &:before {
+    content: $icon-sort; 
+  }
+}
+.ulpgcds-icon-thinker,.icon-thinker {
+  &:before {
+    content: $icon-thinker; 
+  }
+}
+.ulpgcds-icon-twitter,.icon-twitter {
+  &:before {
+    content: $icon-twitter; 
+  }
+}
+.ulpgcds-icon-upload,.icon-upload {
+  &:before {
+    content: $icon-upload; 
+  }
+}
+.ulpgcds-icon-user ,.icon-user{
+  &:before {
+    content: $icon-user; 
+  }
+}
+.ulpgcds-icon-whatsapp,.icon-whatsapp {
+  &:before {
+    content: $icon-whatsapp; 
+  }
+}
+.ulpgcds-icon-youtube,.icon-youtube {
+  &:before {
+    content: $icon-youtube; 
+  }
+}
+.ulpgcds-icon-ulpgc, .icon-ulpgc {
+  &:before {
+    content: $icon-ulpgc; 
+  }
+}
+
+.ulpgcds-icon-issuu{
+  &:before {
+    content: $icon-issuu; 
+  }
+}
+
+.ulpgcds-icon-ivoox{
+  &:before {
+    content: $icon-ivoox; 
+  }
+}
+
+.ulpgcds-icon-spotify{
+  &:before {
+    content: $icon-spotify 
+  }
+}
+
+.ulpgcds-icon-pinterest{
+  &:before {
+    content: $icon-pinterest; 
+  }
+}

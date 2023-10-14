@@ -175,7 +175,15 @@ function attendance_delete_calendar_events($sessionsids) {
  */
 function attendance_existing_calendar_events_ids($sessionsids) {
     global $DB;
-    $caleventsids = array_keys($DB->get_records_list('attendance_sessions', 'id', $sessionsids, '', 'caleventid'));
+    //$caleventsids = array_keys($DB->get_records_list('attendance_sessions', 'id', $sessionsids, '', 'caleventid'));
+    // ecastro ULPGC avoid warning make the first column something unique
+    $caleventsids = [];
+    if(!empty($sessionsids)) {
+        list($insql, $params) = $DB->get_in_or_equal($sessionsids);
+        $caleventsids = array_values($DB->get_records_select_menu('attendance_sessions', "id $insql", $params, '', 'id, caleventid'));
+    }
+    // ecastro ULPGC
+
     $existingcaleventsids = array_filter($caleventsids);
     if (! empty($existingcaleventsids)) {
         return $existingcaleventsids;

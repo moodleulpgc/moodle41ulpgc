@@ -250,7 +250,7 @@ this.push (this.getObjects (this.getMark ()));
 break;
 case 76:
 var val =  String.instantialize (this.readStringAsBytes ());
-if (val != null && val.endsWith ("L")) {
+if (val.endsWith ("L")) {
 val = val.substring (0, val.length - 1);
 }this.push (Long.$valueOf (val));
 break;
@@ -2476,7 +2476,7 @@ offset = md.text.pymolOffset;
 }var nDigits = Clazz_floatToInt (this.floatSetting (J.adapter.readers.pymol.PyMOLScene.MEAS_DIGITS[nCoord - 2]));
 var strFormat = nCoord + ": " + (drawLabel ? "%0." + (nDigits < 0 ? 1 : nDigits) + "VALUE" : "");
 var text = this.newTextLabel (strFormat, offset, clabel, Clazz_floatToInt (this.floatSetting (328)), this.floatSetting (453));
-md.set (12290, null, null, null, strFormat, "angstroms", null, false, false, null, false, Clazz_floatToInt (rad * 2000), colix, text, NaN);
+md.set (12290, null, null, null, strFormat, "angstroms", null, false, false, null, false, Clazz_floatToInt (rad * 2000), colix, text, NaN, null);
 this.addJmolObject (6, bs, md);
 }
 return true;
@@ -3158,7 +3158,7 @@ this.desiredModelNumber = pymolState;
 }var n = names.size ();
 for (var j = 0; j < this.stateCount; j++) {
 if (!this.doGetModel (++this.nModels, null)) continue;
-this.model (this.nModels);
+this.model (this.nModels, null);
 this.pymolScene.currentAtomSetIndex = this.asc.iSet;
 if (this.isTrajectory) {
 this.trajectoryStep =  new Array (this.totalAtomCount);
@@ -3354,7 +3354,7 @@ this.allStates = true;
 this.pymolScene.setFrameObject (4115, Integer.$valueOf (-1));
 }}var objectHeader = J.adapter.readers.pymol.PyMOLReader.listAt (pymolObject, 0);
 var parentGroupName = (execObject.size () < 8 ? null : J.adapter.readers.pymol.PyMOLReader.stringAt (execObject, 6));
-if ("".equals (parentGroupName.trim ())) parentGroupName = null;
+if (parentGroupName != null && "".equals (parentGroupName.trim ())) parentGroupName = null;
 this.pymolScene.setReaderObjectInfo (this.objectName, type, parentGroupName, this.isHidden, J.adapter.readers.pymol.PyMOLReader.listAt (objectHeader, 8), stateSettings, (moleculeOnly ? "_" + (iState + 1) : ""));
 var bsAtoms = null;
 var doExclude = (this.bsBytesExcluded != null);

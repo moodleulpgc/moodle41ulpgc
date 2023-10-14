@@ -258,4 +258,9 @@ if ($hassiteconfig) {
     $url = new moodle_url('/local/ulpgccore/profilefieldpresets.php', array());
     $ADMIN->add('local_ulpgccore_settings', new admin_externalpage('local_ulpgccore_profilefieldpresets',
                     get_string('profilefieldpresets', 'local_ulpgccore'), $url, 'local/ulpgccore:manage'));
+
+    $url = new moodle_url('/local/ulpgccore/bsetounilabel.php', array());
+    $ADMIN->add('local_ulpgccore_settings', new admin_externalpage('local_ulpgccore_bsetounilabel',
+                    get_string('bsetounilabel', 'local_ulpgccore'), $url, 'local/ulpgccore:manage'));
+
 }

@@ -40,7 +40,7 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 global $DB;
 
 // Determina si se intenta aplicar plantilla / restaurar curso (0:no; 1:si)
-$restore = 1;
+$restore = 0;
 
 // Variables que pueden variar al inicio de curso
 // TODO Ofrecer interfaz de configuración
@@ -99,7 +99,7 @@ function restore_curso($file, $newcourse, $now, $sourcedir, $mode) {
 
 // Obtención de registros en BBDD externa
 $extdb = db_init();
-$sqlcursosulpgc = "SELECT c.shortname, c.aadenc AS fullname, c.ccuatrim AS term, ca.idnumber AS category, c.idnumber, c.creditos AS credits, u.codigo AS departamento, c.estado
+$sqlcursosulpgc = "SELECT c.shortname, c.aadenc AS fullname, c.ccuatrim AS term, ca.idnumber AS category, c.idnumber, c.creditos AS credits, u.codigo AS departamento, c.estado, c.citdoa, c.cstatus
                      FROM tmocursos c, tmocategorias ca, tmoplataformasactivas p, tmounidades u
                     WHERE ca.id = c.categoriaid
                       AND p.id = ca.plataformaid
@@ -301,6 +301,9 @@ if ((! isset($cursos)) or (count($cursos) == 0)) {
 					$newcourseulpgc->term = $curso->term;
 					$newcourseulpgc->credits = $curso->credits;
 					$newcourseulpgc->department = $curso->department;
+     				        $newcourseulpgc->cstatus = $curso->cstatus;
+                                        $newcourseulpgc->ctype = $curso->citdoa;
+
 
 					$newcourseulpgc->id = $DB->insert_record('local_ulpgccore_course', $newcourseulpgc);
 

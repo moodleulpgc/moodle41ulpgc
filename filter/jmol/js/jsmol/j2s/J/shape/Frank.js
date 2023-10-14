@@ -39,10 +39,7 @@ return (width > 0 && height > 0 && x > width - this.frankWidth - 4 && y > height
 Clazz.overrideMethod (c$, "checkObjectHovered", 
 function (x, y, bsVisible) {
 if (!this.vwr.getShowFrank () || !this.wasClicked (x, y) || !this.vwr.menuEnabled ()) return false;
-if (this.vwr.gdata.antialiasEnabled && !this.vwr.isSingleThreaded) {
-x <<= 1;
-y <<= 1;
-}this.vwr.hoverOnPt (x, y, J.i18n.GT.$ ("Click for menu..."), null, null);
+this.vwr.hoverOnPt (x, y, J.i18n.GT.$ ("Click for menu..."), null, null);
 return true;
 }, "~N,~N,JU.BS");
 Clazz.defineMethod (c$, "calcMetrics", 

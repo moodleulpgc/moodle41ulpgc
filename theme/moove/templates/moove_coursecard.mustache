@@ -19,7 +19,7 @@
     <div class="card-body course-info-container">
         <div class="d-flex align-items-start">
             <div class="w-100">
-                <a href="{{config.wwwroot}}/course/view.php?id={{{id}}}" class="aalink coursename mr-2 mb-1">
+                <a href="{{config.wwwroot}}/course/view.php?id={{{id}}}" class="aalink coursename {{^visible}}dimmed{{/visible}} mr-2 mb-1">
                     {{{fullname}}}
                 </a>
             </div>
@@ -48,7 +48,9 @@
         <div class="course-contacts">
             {{#contacts}}
                 <a href="{{config.wwwroot}}/user/profile.php?id={{{id}}}" class="contact" data-toggle="tooltip" title="{{{fullname}}}">
+                    {{#userpicture}} {{! ecastro disablepic}}
                     <img src="{{{userpicture}}}" class="rounded-circle" alt="{{{fullname}}}">
+                    {{/userpicture}}
                     <div class="info">
                         <p class="name">{{{fullname}}}</p>
                         <p class="role">{{{role}}}</p>

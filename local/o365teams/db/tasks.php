@@ -45,6 +45,15 @@ $tasks = [
         'month' => '*'
     ],
     [
+        'classname' => 'local_o365teams\task\teamnamesync',
+        'blocking' => 0,
+        'minute' => '7',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
+    [
         'classname' => 'local_o365teams\task\groupmembersync',
         'blocking' => 0,
         'minute' => '*',

@@ -25,11 +25,21 @@ class batchmanage_section_selector_form extends batchmanageform {
         
         $this->base_definition();
         
+        $options = [0 => get_string('sectionempty', 'managejob_sectiondelete'),
+                    1 => get_string('sectiondelete', 'managejob_sectiondelete')];
+        $mform->addElement('select', 'sectionemptydel', get_string('sectionemptydel', 'managejob_sectiondelete'), $options);
+        $mform->setType('sectionemptydel', PARAM_INT);
+        $mform->setDefault('sectionemptydel', 0);
+        $mform->addHelpButton('sectionemptydel', 'sectionemptydel', 'managejob_sectiondelete');
+
+
         $mform->addElement('selectyesno', 'sectionforcedelete', get_string('forcedelete', 'managejob_sectiondelete'));
         $mform->setType('sectionforcedelete', PARAM_INT);
         $mform->setDefault('sectionforcedelete', 0);
         $mform->addHelpButton('sectionforcedelete', 'forcedelete', 'managejob_sectiondelete');
-        
+        $mform->disabledIf('sectionforcedelete', 'sectionemptydel', 'eq', 0);
+
+
         $this->add_action_buttons(true, $next);
     }
     

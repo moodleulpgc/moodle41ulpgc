@@ -68,6 +68,7 @@ $download = optional_param('download', '', PARAM_ALPHA);
 $perpage  = optional_param('perpage', 100, PARAM_INT);
 
 $baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit' => $edit));
+examregistrar_url_update($baseurl);
 
 $includefile = '';
 
@@ -82,7 +83,6 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_activity_record($examregistrar);
 
 if($edit) {
-    $baseurl->param('edit', $edit);
     $PAGE->navbar->add(get_string($edit, 'examregistrar'), $baseurl);
 } else {
     $PAGE->navbar->add(get_string('manage', 'examregistrar'), $baseurl);
@@ -348,35 +348,34 @@ if($upload) {
     
     $delay = 5;
     if($edit && $itemid) {
-            $formclass = 'examregistrar_'.$itemname.'_form';
-            $mform = new $formclass(null, array('exreg' => $examregistrar, 'item'=>$itemid, 'cmid'=>$cm->id));
-            $element = false;
-            if($itemid > 0) {
-                // we are updating an existing element
-                // process editable item, for instance, exams table, delivery modes
-                if($element = examregistrar_get_editable_item($edit, $itemtable, $itemid)) {
-                    $mform->set_data($element);
-                }
-                $heading = get_string('update'.$itemname, 'examregistrar');
-            } else {
-                $heading = get_string('add'.$itemname, 'examregistrar');
+        $formclass = 'examregistrar_'.$itemname.'_form';
+        $mform = new $formclass($baseurl, array('exreg' => $examregistrar, 'item'=>$itemid, 'cmid'=>$cm->id));
+        $element = false;
+        if($itemid > 0) {
+            // we are updating an existing element
+            // process editable item, for instance, exams table, delivery modes
+            if($element = examregistrar_get_editable_item($edit, $itemtable, $itemid)) {
+                $mform->set_data($element);
             }
+            $heading = get_string('update'.$itemname, 'examregistrar');
+        } else {
+            $heading = get_string('add'.$itemname, 'examregistrar');
+        }
 
-            if ($mform->is_cancelled()) {
+        if ($mform->is_cancelled()) {
 
-            } elseif ($formdata = $mform->get_data()) {
-                /// process form & store element in database
-                // manage deliver modes for exams & hierarchy tree for locations 
-                examregistrar_process_addupdate_editable_item($edit, $itemtable, $examregprimaryid,
-                                                            $formdata, $element, $eventdata);
-            } else {
-                $output->print_input_form_and_die($mform, $heading);        
-            }
+        } elseif ($formdata = $mform->get_data()) {
+            /// process form & store element in database
+            // manage deliver modes for exams & hierarchy tree for locations
+            examregistrar_process_addupdate_editable_item($edit, $itemtable, $examregprimaryid,
+                                                        $formdata, $element, $eventdata);
+        } else {
+            $output->print_input_form_and_die($mform, $heading);
+        }
     }
 
     /// confirm delete examregistrar element record
     if($edit && $delete) {
-        $delete = optional_param('del', 0, PARAM_INT);
         $delete = $DB->get_record($itemtable, array('id'=>$delete));
         if(isset($delete->id) && $delete->id) {
             $info = new stdClass;
@@ -403,6 +402,9 @@ if($upload) {
                     list($items, $taken) = examregistrar_delete_exams_dependencies([$delete->id]);
                     if(in_array($delete->id, $taken)) {
                         $delete->id = 0;
+                        \core\notification::add(get_string('examtaken', 'examregistrar', $info->name),
+                                                \core\output\notification::NOTIFY_WARNING);
+
                     }
                 }
                 if ($DB->delete_records($itemtable, array('id'=>$delete->id))) {

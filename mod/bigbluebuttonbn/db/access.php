@@ -157,4 +157,14 @@ $capabilities = [
             'editingteacher' => CAP_ALLOW,
         ],
     ],
+
+    // Ability to download/export recordings.
+    'mod/bigbluebuttonbn:downloadrecordings' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+        ],
+    ],
 ];

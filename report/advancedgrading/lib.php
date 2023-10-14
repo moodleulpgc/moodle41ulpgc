@@ -37,7 +37,7 @@ global $PAGE;
  * @return void
  */
 function report_advancedgrading_extend_navigation_module(navigation_node $navigation, cm_info $cm) {
-    $context = context_module::instance($cm->id);
+    $context = \context_module::instance($cm->id);
     $gradingmanager = get_grading_manager($context, 'mod_assign', 'submissions');
     switch ($gradingmanager->get_active_method()) {
         case 'rubric':
@@ -49,8 +49,10 @@ function report_advancedgrading_extend_navigation_module(navigation_node $naviga
             $url = new moodle_url('/report/advancedgrading/guide.php', array('id' => $cm->course, 'modid' => $cm->id));
             $navigation->add(get_string('guidegrades', 'report_advancedgrading'), $url, navigation_node::TYPE_SETTING, null,
                     'guidegrades');
-
+                    break;
+        case 'btec':
+            $url = new moodle_url('/report/advancedgrading/btec.php', array('id' => $cm->course, 'modid' => $cm->id));
+            $navigation->add(get_string('btecgrades', 'report_advancedgrading'), $url, navigation_node::TYPE_SETTING, null,
+                    'btecgrades');
     }
 }
-
-

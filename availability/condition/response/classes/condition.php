@@ -83,8 +83,8 @@ class condition extends \core_availability\condition {
 
         // Get field type.
         if (property_exists($structure, 'rf')) {
-            if (is_string($structure->rf)) {
-                $this->choiceinstance = $structure->rf;
+            if (is_string($structure->rf) || is_int($structure->rf)) {
+                $this->choiceinstance = (int)$structure->rf;
             } else {
                 throw new \coding_exception('Invalid ->rf for response condition');
             }
@@ -145,6 +145,12 @@ class condition extends \core_availability\condition {
         // Display the fieldname into current lang.
 
         $instance = $this->get_choice_instance();
+
+        // just in case not existing
+        if(!isset($instance->name)) {
+            $instance = new \stdClass();
+            $instance->name = get_string('unknownchoice','availability_response', $this->choiceinstance);
+        }
 
         $context = \context_course::instance($course->id);
         $a = new \stdClass();
@@ -273,4 +279,42 @@ class condition extends \core_availability\condition {
     public function is_applied_to_user_lists() {
         return false;
     }
+
+    public function update_dependency_id($table, $oldid, $newid) {
+        if ($table === 'choiche' && (int)$this->choiceinstance === (int)$oldid) {
+            $this->choiceinstance = $newid;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function update_after_restore($restoreid, $courseid, \base_logger $logger, $name): bool {
+        global $DB;
+
+        // Recode choice id.
+        $questionidchanged = false;
+        $rec = \restore_dbops::get_backup_ids_record($restoreid, 'choice', $this->choiceinstance);
+        if ($rec && $rec->newitemid) {
+            // New choice id found.
+            $this->choiceinstance = (int) $rec->newitemid;
+            return true;
+        }
+
+        // If we are on the same course (e.g. duplicate) then we can just
+        // use the existing one.
+        if ($DB->record_exists('choice',
+                ['id' => $this->choiceinstance, 'course' => $courseid])) {
+            return $questionidchanged;
+        }
+
+        // Otherwise it's a warning.
+        $this->choiceinstance = 0;
+        $logger->process('Restored item (' . $name .
+                ') has availability condition on module that was not restored',
+                \backup::LOG_WARNING);
+        return $questionidchanged;
+
+    }
+
 }

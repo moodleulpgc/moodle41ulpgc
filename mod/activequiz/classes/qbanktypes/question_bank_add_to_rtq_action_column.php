@@ -26,11 +26,11 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2014 University of Wisconsin - Madison
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class question_bank_add_to_rtq_action_column extends \core_question\bank\action_column_base {
+class question_bank_add_to_rtq_action_column extends \core_question\local\bank\action_column_base { // ecastro ULPGC adapt 4.1
 
     protected $stradd;
 
-    public function init() {
+    public function init(): void { // ecastro ULPGC adapt qbank 4.1
         parent::init();
         $this->stradd = get_string('addtoquiz', 'activequiz');
     }
@@ -46,7 +46,7 @@ class question_bank_add_to_rtq_action_column extends \core_question\bank\action_
         $this->print_icon('t/add', $this->stradd, $this->qbank->add_to_rtq_url($question->id));
     }
 
-    public function get_required_fields() {
+    public function get_required_fields(): array {
         return array('q.id');
     }
 

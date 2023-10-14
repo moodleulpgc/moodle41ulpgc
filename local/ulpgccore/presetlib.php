@@ -40,7 +40,6 @@ function local_ulpgccore_import_xml_preset(string $presetfile): array {
             $info[$key] = (string)$value;
         }
     }
-    //print_object($info);
     return $info;
 }
 
@@ -144,6 +143,52 @@ function local_ulpgccore_block_url($block) {
 
     return html_writer::link($url, $block->blockname);
 }
+
+function local_ulpgccore_get_custom_block_manager(&$info) {
+    global $CFG, $DB, $PAGE; 
+    
+    require_once($CFG->dirroot.'/my/lib.php');
+    
+    $mycoursespage = null;
+    $select = 'name = :name AND private = 0 AND userid IS NULL ';
+    if($cpage = $DB->get_record_select('my_pages', $select, ['name' => '__courses'])) {
+        $mycoursespage = $cpage->id;
+    }    
+    
+    $page = clone $PAGE;
+    $page->set_pagetype($info['pagetypepattern']);
+    
+    //cleanup, ensure if subpage that subpage id is current __courses  
+    if(empty($info['subpagepattern'])) {
+        $info['subpagepattern'] = null;
+    } else {
+        $info['subpagepattern'] = $mycoursespage;
+    }
+    
+    if($info['subpagepattern'] == $mycoursespage) {
+        $layout = 'mycourses';
+    } else {
+        $layout = (substr($info['pagetypepattern'], 0, 3) ==  'my-') ? 'mydashboard' : 'course';
+    }
+    $page->set_pagelayout($layout);
+    if($layout == 'mycourses') {
+        $page->set_subpage($mycoursespage);
+    }
+
+    // add all regions known by theme for this layout
+    $page->blocks->add_regions($page->theme->layouts[$layout]['regions'], false);
+    if(($layout == 'mycourses') || ($layout == 'mydashboard')) {
+        $page->blocks->add_region('content', false);
+    }
+    
+    $bm = new \my_syspage_block_manager($page);
+
+    //add regions in the block manager
+    $bm->add_regions($page->blocks->get_regions(), false);
+
+    return $bm;
+}
+
 
 
 function local_ulpgccore_extract_backup_file($filename) {

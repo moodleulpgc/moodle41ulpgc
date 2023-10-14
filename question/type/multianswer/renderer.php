@@ -209,18 +209,22 @@ abstract class qtype_multianswer_subq_renderer_base extends qtype_renderer {
      * @return string
      */
     protected function get_feedback_image(string $icon, string $feedbackcontents): string {
+        global $PAGE;
         if ($icon === '') {
             return '';
         }
 
-        return html_writer::tag('button', $icon, [
-            'type' => 'button',
-            'class' => 'btn btn-link p-0',
+        $PAGE->requires->js_call_amd('qtype_multianswer/feedback', 'initPopovers');
+
+        return html_writer::link('#', $icon, [
+            'role' => 'button',
+            'tabindex' => 0,
+            'class' => 'feedbacktrigger btn btn-link p-0',
             'data-toggle' => 'popover',
             'data-container' => 'body',
             'data-content' => $feedbackcontents,
             'data-placement' => 'right',
-            'data-trigger' => 'focus',
+            'data-trigger' => 'hover focus',
             'data-html' => 'true',
         ]);
     }

@@ -72,6 +72,19 @@ class qbank_action_menu implements templatable, renderable {
         $menu[$importlink->out(false)] = get_string('import', 'question');
         $menu[$exportlink->out(false)] = get_string('export', 'question');
 
+        // ecastro ULPGC to make dynamic tertiary navigation by local: massive bulkupdate
+        global $PAGE;        
+        if($banknode = $PAGE->secondarynav->find('questionbank', \navigation_node::TYPE_CONTAINER)) {
+            $menuitems = ['questions', 'categories', 'import', 'export'];
+            foreach($banknode->children as $node) {
+                if(!in_array($node->key, $menuitems)) {
+                    $menuitems[] = $node->key;
+                    $menu[$node->action->out(false)] = $node->text;
+                }
+            }
+        }
+        // ecastro ULPGC to make dynamic tertiary navigation by local: massive bulkupdate
+
         $addcategory = null;
         if (strpos($this->currenturl->get_path(), 'category.php') !== false &&
                 $this->currenturl->param('edit') === null) {

@@ -335,9 +335,6 @@ class moodle_gradereport_quizanalytics_external extends external_api {
         } else {
             $averageattempt = 0;
         }
-        for ($i = 0; $i <= round($averageattempt); $i++) {
-            $cutoffarray[] = round((($quiz->sumgrades * $CFG->gradereport_quizanalytics_cutoff) / 100), 2);
-        }
         $usersattempts = $DB->get_records_sql("SELECT * FROM {quiz_attempts} WHERE  state = 'finished' AND quiz = ? AND userid = ?", array($quizid, $USER->id));
         $attemptnum = $scored = array(0);
         $count = 1;
@@ -351,6 +348,9 @@ class moodle_gradereport_quizanalytics_external extends external_api {
             }
             $count++;
         }
+        for ($i = 0; $i < $count; $i++) {
+            $cutoffarray[] = round((($quiz->sumgrades * $CFG->gradereport_quizanalytics_cutoff) / 100), 2);
+        }
         if (round($averageattempt) >= $count) {
             for ($j = $count; $j <= round($averageattempt); $j++) {
                 array_push($attemptnum, $j);
@@ -360,7 +360,7 @@ class moodle_gradereport_quizanalytics_external extends external_api {
             'labels' => $attemptnum,
             'datasets' => array(
                 array(
-                    'label' => get_string('cutoffscore', 'gradereport_quizanalytics'),
+                    'label' => get_string('cutOffscore', 'gradereport_quizanalytics'),
                     'borderColor' => "#3e95cd",
                     'data' => $cutoffarray,
                     'fill' => true
@@ -423,7 +423,7 @@ class moodle_gradereport_quizanalytics_external extends external_api {
         /* quesanalysis */
         $totalquestions = $DB->get_records_sql("SELECT qs.id, q.qtype FROM {quiz_slots} qs, {question} q WHERE q.id = qs.id AND qs.quizid= ? AND q.qtype != ?", array($quizid, 'description'));
         $count = 1;
-        $sql = "SELECT COUNT(qatt.id) as qnum FROM {question_attempts} qatt, {quiz_attempts} quizatt, {question_attempt_steps} qas WHERE qas.questionattemptid = qatt.id AND quizatt.uniqueid = qatt.questionusageid AND qas.sequencenumber = ? AND quizatt.sumgrades <> 'NULL' AND quizatt.quiz= ? AND qatt.questionid = ? AND quizatt.userid = ? AND";
+        $sql = "SELECT COUNT(qatt.id) as qnum FROM {question_attempts} qatt, {quiz_attempts} quizatt, {question_attempt_steps} qas WHERE qas.questionattemptid = qatt.id AND quizatt.uniqueid = qatt.questionusageid AND qas.sequencenumber = ? AND quizatt.sumgrades <> 'NULL' AND quizatt.quiz= ? AND qatt.questionid = ? AND";
         foreach ($totalquestions as $totalquestion) {
             if ($totalquestion->qtype == "essay") {
                  $sequencenumber = 3;

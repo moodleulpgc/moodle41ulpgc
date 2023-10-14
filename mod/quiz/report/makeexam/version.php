@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020082302; 
-$plugin->requires  = 2015111000;
+$plugin->version   = 2023080102;
+$plugin->requires  = 2022112800;
 $plugin->component = 'quiz_makeexam';
 $plugin->dependencies = array('mod_examregistrar' => ANY_VERSION);

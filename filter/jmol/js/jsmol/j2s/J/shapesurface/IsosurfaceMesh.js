@@ -565,7 +565,7 @@ return ipt;
 }, "JU.MeshSurface,~N,~N,~A");
 Clazz.overrideMethod (c$, "getUnitCell", 
 function () {
-return (this.unitCell != null || (this.unitCell = this.vwr.ms.am[this.modelIndex].biosymmetry) != null || (this.unitCell = this.vwr.ms.getUnitCell (this.modelIndex)) != null || this.oabc != null && (this.unitCell = J.api.Interface.getSymmetry (this.vwr, "symmetry").getUnitCell (this.oabc, true, null)) != null ? this.unitCell : null);
+return (this.unitCell != null || (this.unitCell = this.vwr.ms.am[this.modelIndex].biosymmetry) != null || (this.unitCell = this.vwr.ms.getUnitCell (this.modelIndex)) != null || this.oabc != null && (this.unitCell = this.vwr.getSymTemp ().getUnitCell (this.oabc, true, null)) != null ? this.unitCell : null);
 });
 Clazz.defineMethod (c$, "fixLattice", 
 function () {
@@ -644,7 +644,7 @@ this.mat4.mul2 (m, this.mat4);
 Clazz.defineMethod (c$, "getDataMinMax", 
 function () {
 var min = 3.4028235E38;
-var max = 1.4E-45;
+var max = -3.4028235E38;
 for (var i = this.vvs.length; --i >= 0; ) {
 var v = this.vvs[i];
 if (v < min) min = v;

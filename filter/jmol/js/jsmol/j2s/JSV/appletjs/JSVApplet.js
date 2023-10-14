@@ -65,10 +65,6 @@ Clazz.overrideMethod (c$, "isSigned",
 function () {
 return this.app.isSigned ();
 });
-Clazz.overrideMethod (c$, "finalize", 
-function () {
-System.out.println ("JSpecView " + this + " finalized");
-});
 Clazz.overrideMethod (c$, "destroy", 
 function () {
 this.app.dispose ();
@@ -237,9 +233,9 @@ function () {
 return this.app;
 });
 Clazz.overrideMethod (c$, "setStatusDragDropped", 
-function (mode, x, y, fileName) {
+function (mode, x, y, fileName, retType) {
 return true;
-}, "~N,~N,~N,~S");
+}, "~N,~N,~N,~S,~A");
 Clazz.overrideMethod (c$, "cacheFileByName", 
 function (fileName, isAdd) {
 return 0;
@@ -275,6 +271,10 @@ Clazz.overrideMethod (c$, "openFileAsyncSpecial",
 function (fileName, flags) {
 this.app.vwr.openFileAsyncSpecial (fileName, flags);
 }, "~S,~N");
+Clazz.overrideMethod (c$, "openFileAsyncSpecialType", 
+function (fileName, flags, type) {
+this.openFileAsyncSpecial (fileName, flags);
+}, "~S,~N,~S");
 Clazz.overrideMethod (c$, "processTwoPointGesture", 
 function (touches) {
 this.app.vwr.processTwoPointGesture (touches);
@@ -289,4 +289,7 @@ var s = this.app.checkScript (script);
 if (s != null) System.out.println (s);
 return s;
 }, "~S");
+Clazz.overrideMethod (c$, "processKeyEvent", 
+function (event) {
+}, "~O");
 });

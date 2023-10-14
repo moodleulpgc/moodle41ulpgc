@@ -13,10 +13,7 @@
 check_program php php5
 PHP=$PROGRAM
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "$PHP -v" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -v
 fi
 
 get_source_files php NOERROR
@@ -24,7 +21,7 @@ SIFS=$IFS
 IFS=$'\n'
 for file_name in $SOURCE_FILES
 do
-	php -l "$file_name" > /dev/null
+	$PHP -l "$file_name" > /dev/null
 done
 if [ -f index.php ] ; then
     IFS=$SIFS
@@ -55,7 +52,7 @@ $path = urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
 $file = '.' . $path;
 if(is_file($file) ||
    is_file($file . '/index.php') ||
-   is_file($file . '/index.html') {
+   is_file($file . '/index.html')) {
       unset($path, $file);
       return false;
 }
@@ -86,6 +83,6 @@ END_OF_SCRIPT
 else
 	get_first_source_file php
     cat common_script.sh > vpl_execution
-    echo "$PHP -n -f "\"$FIRST_SOURCE_FILE\"" \$@" >>vpl_execution
+    echo "$PHP -f "\"$FIRST_SOURCE_FILE\"" \$@" >>vpl_execution
     chmod +x vpl_execution
 fi

@@ -24,13 +24,14 @@ class stack_algebraic_input extends stack_input {
 
     protected $extraoptions = array(
         'hideanswer' => false,
+        'allowempty' => false,
         'simp' => false,
         'rationalized' => false,
-        'allowempty' => false,
         'nounits' => false,
         'align' => 'left',
         'consolidatesubscripts' => false,
-        'checkvars' => 0
+        'checkvars' => 0,
+        'validator' => false
     );
 
     public function render(stack_input_state $state, $fieldname, $readonly, $tavalue) {

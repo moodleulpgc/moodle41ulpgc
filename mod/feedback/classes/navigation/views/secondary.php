@@ -33,6 +33,8 @@ use navigation_node;
 class secondary extends core_secondary {
     protected function get_default_module_mapping(): array {
         $basenodes = parent::get_default_module_mapping();
+        // ecastro ULPGC reordered 
+/*
         $basenodes[self::TYPE_CUSTOM] += [
             'templatenode' => 12,
             'mapcourse' => 13,
@@ -40,7 +42,14 @@ class secondary extends core_secondary {
             'responses' => 15,
             'nonrespondents' => 15.1
         ];
-
+*/
+        $basenodes[self::TYPE_CUSTOM] += [
+            'templatenode' => 13,
+            //'mapcourse' => 14,
+            'feedbackanalysis' => 24,
+            'responses' => 25,
+            'nonrespondents' => 16,
+        ];
         return $basenodes;
     }
 
@@ -56,7 +65,7 @@ class secondary extends core_secondary {
         $rootnode = $rootnode ?? $this;
         $mainnode = $settingsnav->find('modulesettings', self::TYPE_SETTING);
         $nodes = $this->get_default_module_mapping();
-
+        
         if ($mainnode) {
             $url = new \moodle_url('/mod/' . $this->page->activityname . '/view.php', ['id' => $this->page->cm->id]);
             $setactive = $url->compare($this->page->url, URL_MATCH_BASE);
@@ -71,10 +80,14 @@ class secondary extends core_secondary {
 
             // Reorder the existing nodes in settings so the active node scan can pick it up.
             $existingnode = $settingsnav->find('questionnode', self::TYPE_CUSTOM);
+            /*
+            // ecastro ULPGC removed 
             if ($existingnode) {
                 $node->add_node($existingnode);
                 $nodes[self::TYPE_CUSTOM] += ['questionnode' => 3];
             }
+            */
+            $existingnode->remove(); // ecastro ULPGC removed
             // We have finished inserting the initial structure.
             // Populate the menu with the rest of the nodes available.
             $this->load_remaining_nodes($mainnode, $nodes, $rootnode);

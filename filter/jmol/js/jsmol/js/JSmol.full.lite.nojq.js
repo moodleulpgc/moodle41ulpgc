@@ -296,7 +296,10 @@
 
 // see JSmolApi.js for public user-interface. All these are private functions
 
-
+// BH 8/25/2022 fixes getFileData response "" from empty file returning "OK" instead of ""
+// BH 8/15/2022 adds .lut for binary
+// BH 6/23/2022 implements Jmol._lastAppletID via setMouseOwner
+// BH 5/12/2022 adds setting file type option for drag drop
 // BH 4/30/2019 fixes write xyz "https://...."
 // BH 7/6/2017 2:22:07 AM adds BZ2 as binary
 // BH 4/13/2017 11:23:05 PM adds "binary pmesh" .pmb extension
@@ -471,7 +474,7 @@ Jmol = (function(document) {
 		}
 	};
 	var j = {
-		_version: "$Date: 2021-05-26 21:16:02 -0500 (Wed, 26 May 2021) $", // svn.keywords:lastUpdated
+		_version: "$Date: 2022-06-24 05:54:49 -0500 (Fri, 24 Jun 2022) $", // svn.keywords:lastUpdated
 		_alertNoBinary: true,
 		// this url is used to Google Analytics tracking of Jmol use. You may remove it or modify it if you wish. 
 		_allowedJmolSize: [25, 2048, 300],   // min, max, default (pixels)
@@ -1264,7 +1267,7 @@ Jmol = (function(document) {
 		return true;  
 	}
 
-	Jmol._binaryTypes = ["mmtf",".gz",".bz2",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".pmb",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd",".uk/pdbe/densities/"];
+	Jmol._binaryTypes = ["mmtf",".gz",".bz2",".jpg",".gif",".png",".zip",".jmol",".bin",".smol",".spartan",".pmb",".mrc",".map",".ccp4",".dn6",".delphi",".omap",".pse",".dcd",".lut",".uk/pdbe/densities/"];
 
 	Jmol.isBinaryUrl = function(url) {
 		for (var i = Jmol._binaryTypes.length; --i >= 0;)
@@ -1329,7 +1332,7 @@ Jmol = (function(document) {
 	}
 	
 	Jmol._xhrReturn = function(xhr){
-		if (!xhr.responseText || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
+		if (!xhr.responseText && xhr.responseText !== '' || self.Clazz && Clazz.instanceOf(xhr.response, self.ArrayBuffer)) {
 			// Safari or error 
 			return xhr.response || xhr.statusText;
 		} 
@@ -1909,10 +1912,12 @@ Jmol = (function(document) {
 	//////////////////// mouse events //////////////////////
 
 	Jmol._setMouseOwner = function(who, tf) {
-		if (who == null || tf)
+		if (who == null || tf) {
 			Jmol._mouseOwner = who;
-		else if (Jmol._mouseOwner == who)
+			who && who._applet && (Jmol._lastAppletID = who._applet._id);
+		} else if (Jmol._mouseOwner == who) {
 			Jmol._mouseOwner = null;
+		}
 	}
 
 	Jmol._jsGetMouseModifiers = function(ev) {
@@ -2033,6 +2038,7 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mousedown touchstart', function(ev) {
       if (doIgnore(ev))
         return true;
+      canvas.focus();
 			Jmol._setMouseOwner(canvas, true);
 			ev.stopPropagation();
       var ui = ev.target["data-UI"];
@@ -2071,6 +2077,7 @@ Jmol = (function(document) {
 		Jmol.$bind(canvas, 'mousemove touchmove', function(ev) { // touchmove
       if (doIgnore(ev))
         return true;
+      canvas.focus();
 		  // defer to console or menu when dragging within this canvas
 			if (Jmol._mouseOwner && Jmol._mouseOwner != canvas && Jmol._mouseOwner.isDragging) {
         if (!Jmol._mouseOwner.mouseMove)
@@ -2081,6 +2088,18 @@ Jmol = (function(document) {
 			return Jmol._drag(canvas, ev);
 		});
 		
+
+		Jmol.$bind(canvas, 'keydown keyup', function(ev) {
+      if (doIgnore(ev))
+        return true;
+			ev.stopPropagation();
+  			ev.preventDefault();
+			var xym = Jmol._jsGetXY(canvas, ev);
+			var type = (ev.type == "keydown" ? 401 : 402);
+  			canvas.applet._processKeyEvent && canvas.applet._processKeyEvent(type, xym, ev);//java.awt.Event.
+			return true;
+		});
+
 		Jmol._drag = function(canvas, ev) {
       
 			ev.stopPropagation();
@@ -2685,14 +2704,14 @@ Jmol.Cache.put = function(filename, data) {
   Jmol.Cache.fileCache[filename] = data;
 }
 
-	Jmol.Cache.setDragDrop = function(me) {
-		Jmol.$appEvent(me, "appletdiv", "dragover", function(e) {
+	Jmol.Cache.setDragDrop = function(me, divname) {
+		Jmol.$appEvent(me, divname, "dragover", function(e) {
 			e = e.originalEvent;
 			e.stopPropagation();
 			e.preventDefault();
 			e.dataTransfer.dropEffect = 'copy';
 		});
-		Jmol.$appEvent(me, "appletdiv", "drop", function(e) {
+		Jmol.$appEvent(me, divname, "drop", function(e) {
 			var oe = e.originalEvent;
 			oe.stopPropagation();
 			oe.preventDefault();
@@ -2718,6 +2737,11 @@ Jmol.Cache.put = function(filename, data) {
 				if (evt.target.readyState == FileReader.DONE) {
 					var cacheName = "cache://DROP_" + file.name;
 					var bytes = Clazz.newByteArray(-1, evt.target.result);
+					if (divname == "console_input") {
+						var s = String.instantialize(bytes);
+						Jmol.$(me,divname).val(s.indexOf('\0') < 0 ? s : bytes.length + " bytes");
+						return;
+					}
 					if (!cacheName.endsWith(".spt"))
 						me._appletPanel.cacheFileByName("cache://DROP_*",false);
 					if (me._viewType == "JSV" || cacheName.endsWith(".jdx")) // shared by Jmol and JSV
@@ -2725,8 +2749,9 @@ Jmol.Cache.put = function(filename, data) {
 					else
 						me._appletPanel.cachePut(cacheName, bytes);
 					var xym = Jmol._jsGetXY(me._canvas, e);
-					if(xym && (!me._appletPanel.setStatusDragDropped || me._appletPanel.setStatusDragDropped(0, xym[0], xym[1], cacheName))) {
-						me._appletPanel.openFileAsyncSpecial(cacheName, 1);
+					var retType = [null];
+					if(xym && (!me._appletPanel.setStatusDragDropped || me._appletPanel.setStatusDragDropped(0, xym[0], xym[1], cacheName, retType))) {
+						me._appletPanel.openFileAsyncSpecialType(cacheName, 1, retType[0]);
 					}
 				}
 			};

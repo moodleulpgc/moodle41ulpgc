@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
 require_capability('mod/examregistrar:editelements',$context);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id'=>$cm->id,'edit'=>$edit));
-
 /// filter form parameters
 
 $elementtype  = optional_param('etype', '', PARAM_ALPHANUMEXT);

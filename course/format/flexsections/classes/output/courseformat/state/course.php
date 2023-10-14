@@ -37,11 +37,12 @@ class course extends \core_courseformat\output\local\state\course {
     public function export_for_template(\renderer_base $output): \stdClass {
         $data = parent::export_for_template($output);
 
+        // Build list of first-level sections (used by courseindex).
         $data->sectionlist = array_values(array_filter($data->sectionlist,
-            function($sectionid) {
-                $section = $this->format->get_modinfo()->get_section_info_by_id($sectionid);
-                return $section && !$section->parent;
-            }));
+        function($sectionid) {
+            $section = $this->format->get_modinfo()->get_section_info_by_id($sectionid);
+            return $section && !$section->parent;
+        }));
 
         // Build sections hierarchy.
         $allsections = $this->format->get_modinfo()->get_section_info_all();
@@ -65,6 +66,10 @@ class course extends \core_courseformat\output\local\state\course {
         // too early, before saving them in the 'dettachedelements'. To avoid accidentally losing sections during
         // reordering we pass the empty lists in the end.
         $data->hierarchy = array_merge($res1, $res2);
+        $data->maxsectiondepth = $this->format->get_max_section_depth();
+        if ($this->format->get_accordion_setting()) {
+            $data->accordion = 1;
+        }
 
         return $data;
     }

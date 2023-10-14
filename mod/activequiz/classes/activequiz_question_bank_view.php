@@ -28,7 +28,7 @@ use mod_activequiz\qbanktypes\question_bank_add_to_rtq_action_column;
  * @copyright   2014 University of Wisconsin - Madison
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class activequiz_question_bank_view extends \core_question\bank\view {
+class activequiz_question_bank_view extends \core_question\local\bank\view {
 
 
     /**
@@ -36,29 +36,29 @@ class activequiz_question_bank_view extends \core_question\bank\view {
      *
      * @return array
      */
-    protected function wanted_columns() {
+    protected function wanted_columns(): array {
 
         $defaultqbankcolums = array(
             'question_bank_add_to_rtq_action_column',
             'checkbox_column',
-            'question_type_column',
-            'question_name_column',
-            'preview_action_column',
+            'qbank_viewquestiontype\\question_type_column',
+            'qbank_viewquestionname\\viewquestionname_column_helper',
+            'qbank_previewquestion\\preview_action_column',
         );
 
         foreach ($defaultqbankcolums as $fullname) {
             if (!class_exists($fullname)) {
                 if (class_exists('mod_activequiz\\qbanktypes\\' . $fullname)) {
                     $fullname = 'mod_activequiz\\qbanktypes\\' . $fullname;
-                } else if (class_exists('core_question\\bank\\' . $fullname)) {
-                    $fullname = 'core_question\\bank\\' . $fullname;
+                } else if (class_exists('core_question\\local\\bank\\' . $fullname)) {
+                    $fullname = 'core_question\\local\\bank\\' . $fullname;
                 } else if (class_exists('question_bank_' . $fullname)) {
                     // debugging('Legacy question bank column class question_bank_' .
                     //    $fullname . ' should be renamed to mod_activequiz\\qbanktypes\\' .
                     //    $fullname, DEBUG_DEVELOPER);
                     $fullname = 'question_bank_' . $fullname;
                 } else {
-                    throw new coding_exception("No such class exists: $fullname");
+                    throw new \coding_exception("No such class exists: $fullname");
                 }
             }
             $this->requiredcolumns[ $fullname ] = new $fullname($this);
@@ -79,16 +79,32 @@ class activequiz_question_bank_view extends \core_question\bank\view {
      * Other actions:
      * category      Chooses the category
      * displayoptions Sets display options
+     * , $page, $perpage, $cat,
+                            $recurse, $showhidden, $showquestiontext // ecastro ULPGC removed by adapted to 4.1 qbank view display
      */
-    public function display($tabname, $page, $perpage, $cat,
-                            $recurse, $showhidden, $showquestiontext) {
+    public function display($pagevars, $tabname): void {
         global $PAGE, $OUTPUT;
 
+        $page = $pagevars['qpage'];
+        $perpage = $pagevars['qperpage'];
+        $cat = $pagevars['cat'];
+        $recurse = $pagevars['recurse'];
+        $showhidden = $pagevars['showhidden'];
+        $showquestiontext = $pagevars['qbshowtext'];
+        $tagids = [];
+        if (!empty($pagevars['qtagids'])) {
+            $tagids = $pagevars['qtagids'];
+        }
+
+        /*
         if ($this->process_actions_needing_ui()) {
             return;
         }
+        */
+
         $editcontexts = $this->contexts->having_one_edit_tab_cap($tabname);
         // Category selection form.
+
         echo $OUTPUT->heading(get_string('questionbank', 'question'), 2);
         array_unshift($this->searchconditions, new \core_question\bank\search\hidden_condition(!$showhidden));
         array_unshift($this->searchconditions, new \core_question\bank\search\category_condition(
@@ -97,10 +113,19 @@ class activequiz_question_bank_view extends \core_question\bank\view {
         $this->display_options_form($showquestiontext, '/mod/activequiz/edit.php');
 
         // Continues with list of questions.
+        /*
         $this->display_question_list($this->contexts->having_one_edit_tab_cap($tabname),
             $this->baseurl, $cat, $this->cm,
             null, $page, $perpage, $showhidden, $showquestiontext,
             $this->contexts->having_cap('moodle/question:add'));
+            */
+
+        // Show the filters and search options.
+        //$this->wanted_filters($cat, $tagids, $showhidden, $recurse, $editcontexts, $showquestiontext);
+
+        // Continues with list of questions.
+        $this->display_question_list($this->baseurl, $cat, null, $page, $perpage,
+                                        $this->contexts->having_cap('moodle/question:add'));
     }
 
 
@@ -131,7 +156,7 @@ class activequiz_question_bank_view extends \core_question\bank\view {
      * @param $canadd
      * @throws \coding_exception
      */
-    protected function create_new_question_form($category, $canadd) {
+    protected function create_new_question_form($category, $canadd): void { // ecastro ULPGC adapt base method return
         global $CFG;
         echo '<div class="createnewquestion">';
         if ($canadd) {

@@ -19,7 +19,8 @@ return parser.set (null, br, false).getAllCifData ();
 c$.fixUTF = Clazz.defineMethod (c$, "fixUTF", 
 function (bytes) {
 var encoding = JU.Rdr.getUTFEncoding (bytes);
-if (encoding !== JU.Encoding.NONE) try {
+if (encoding !== JU.Encoding.NONE) {
+try {
 var s =  String.instantialize (bytes, encoding.name ().$replace ('_', '-'));
 switch (encoding) {
 case JU.Encoding.UTF8:
@@ -38,7 +39,7 @@ System.out.println (e);
 throw e;
 }
 }
-return  String.instantialize (bytes);
+}return  String.instantialize (bytes);
 }, "~A");
 c$.getUTFEncoding = Clazz.defineMethod (c$, "getUTFEncoding", 
  function (bytes) {
@@ -131,14 +132,15 @@ return (bytes.length >= 4 && bytes[0] == 0x50 && bytes[1] == 0x4B && bytes[2] ==
 }, "~A");
 c$.getMagic = Clazz.defineMethod (c$, "getMagic", 
 function (is, n) {
-var abMagic = (n > 264 ?  Clazz.newByteArray (n, 0) : JU.Rdr.b264 == null ? (JU.Rdr.b264 =  Clazz.newByteArray (264, 0)) : JU.Rdr.b264);
+var abMagic = (n > 264 ?  Clazz.newByteArray (n, 0) : JU.Rdr.b264 == null ? (JU.Rdr.b264 =  Clazz.newByteArray (265, 0)) : JU.Rdr.b264);
 {
 is.resetStream();
 }try {
+abMagic[264] = -1;
 is.mark (n + 1);
 var i = is.read (abMagic, 0, n);
 if (i < n) {
-abMagic[0] = abMagic[257] = 0;
+abMagic[0] = abMagic[264] = 0;
 }} catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
 } else {
@@ -336,8 +338,25 @@ return (pt < 0 ? fileName : fileName.substring (0, pt));
 c$.isTar = Clazz.defineMethod (c$, "isTar", 
 function (bis) {
 var bytes = JU.Rdr.getMagic (bis, 264);
-return (bytes[0] != 0 && (bytes[257] & 0xFF) == 0x75 && (bytes[258] & 0xFF) == 0x73 && (bytes[259] & 0xFF) == 0x74 && (bytes[260] & 0xFF) == 0x61 && (bytes[261] & 0xFF) == 0x72);
+return (bytes[264] == -1 && (bytes[257] & 0xFF) == 0x75 && (bytes[258] & 0xFF) == 0x73 && (bytes[259] & 0xFF) == 0x74 && (bytes[260] & 0xFF) == 0x61 && (bytes[261] & 0xFF) == 0x72);
 }, "java.io.BufferedInputStream");
+c$.streamToBytes = Clazz.defineMethod (c$, "streamToBytes", 
+function (is) {
+var bytes = JU.Rdr.getLimitedStreamBytes (is, -1);
+is.close ();
+return bytes;
+}, "java.io.InputStream");
+c$.streamToString = Clazz.defineMethod (c$, "streamToString", 
+function (is) {
+return  String.instantialize (JU.Rdr.streamToBytes (is));
+}, "java.io.InputStream");
+c$.isBinary = Clazz.defineMethod (c$, "isBinary", 
+function (bis, n) {
+var bytes = JU.Rdr.getMagic (bis, n);
+if (JU.Rdr.b264[264] == -1) for (var i = 0; i < n; i++) if (bytes[i] < 9) return true;
+
+return false;
+}, "java.io.BufferedInputStream,~N");
 Clazz.pu$h(self.c$);
 c$ = Clazz.decorateAsClass (function () {
 this.stream = null;
@@ -362,5 +381,6 @@ return this.stream;
 });
 c$ = Clazz.p0p ();
 Clazz.defineStatics (c$,
+"UNDERFLOW", 264,
 "b264", null);
 });

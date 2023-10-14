@@ -11,10 +11,7 @@
 . common_script.sh
 check_program minizinc mzn-fzn
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "$PROGRAM --version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi
 get_first_source_file mzn
 if [ "$PROGRAM" == "minizinc" ] ; then
@@ -26,9 +23,13 @@ if [ -f "$DATAFILEBASE.dzn" ] ; then
 else
 	DATAFILE=
 fi
+# Show only first line if saying Hello
+if [[ $VPL_HELLO_MODE = "yes" ]] ; then
+	HELLO_FILTER="| head -n1"
+fi
 echo "#!/bin/bash" > vpl_execution
 if [ "$DATAFILE" == "" ] ; then
-	echo "$PROGRAM $SOLVER \"$FIRST_SOURCE_FILE\"" >> vpl_execution
+	echo "$PROGRAM $SOLVER \"$FIRST_SOURCE_FILE\" $HELLO_FILTER" >> vpl_execution
 else
 	echo "$PROGRAM $SOLVER \"$FIRST_SOURCE_FILE\" \"$DATAFILE\"" >> vpl_execution
 fi

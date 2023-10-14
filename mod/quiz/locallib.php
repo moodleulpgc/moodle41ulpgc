@@ -40,6 +40,7 @@ require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/questionlib.php');
 
 use mod_quiz\question\bank\qbank_helper;
+use qbank_previewquestion\question_preview_options;
 
 /**
  * @var int We show the countdown timer if there is less than this amount of time left before the
@@ -409,7 +410,7 @@ function quiz_get_user_attempt_unfinished($quizid, $userid) {
  *      (row of the quiz_attempts table).
  * @param object $quiz the quiz object.
  */
-function quiz_delete_attempt($attempt, $quiz, $nocheck=false) { // ecastro to enforce preservation negative delete
+function quiz_delete_attempt($attempt, $quiz) {
     global $DB;
     if (is_numeric($attempt)) {
         if (!$attempt = $DB->get_record('quiz_attempts', array('id' => $attempt))) {
@@ -428,22 +429,8 @@ function quiz_delete_attempt($attempt, $quiz, $nocheck=false) { // ecastro to en
         $quiz->cmid = $cm->id;
     }
 
-    if(get_config('quiz_makeexam', 'enabled')) {  // ecastro ULPGC to be used with makeexam
-        // ecastro ULPGC for correct usage make exam
-        $makexam = false;
-        if(!$nocheck && $attempt->uniqueid > 0) {
-            $makexam = $DB->record_exists('quiz_attempts', array('uniqueid' => - abs($attempt->uniqueid)));
-        }
-        if(!$makexam) { // ecastro ULPGC for correct usage make exam
-            question_engine::delete_questions_usage_by_activity($attempt->uniqueid);
-        }
-        if($attempt->uniqueid > 0 || $nocheck) {
-            $DB->delete_records('quiz_attempts', array('id' => $attempt->id));
-        }
-    } else { // this is the regular moodle action
-        question_engine::delete_questions_usage_by_activity($attempt->uniqueid);
-        $DB->delete_records('quiz_attempts', array('id' => $attempt->id));
-    }
+    question_engine::delete_questions_usage_by_activity($attempt->uniqueid);
+    $DB->delete_records('quiz_attempts', array('id' => $attempt->id));
 
     // Log the deletion of the attempt if not a preview.
     if (!$attempt->preview) {
@@ -1526,17 +1513,22 @@ function quiz_question_preview_url($quiz, $question, $variant = null, $restartve
  * @param bool $label if true, show the preview question label after the icon
  * @param int $variant which question variant to preview (optional).
  * @param bool $random if question is random, true.
- * @return the HTML for a preview question icon.
+ * @return string the HTML for a preview question icon.
  */
 function quiz_question_preview_button($quiz, $question, $label = false, $variant = null, $random = null) {
     global $PAGE;
     if (!question_has_capability_on($question, 'use')) {
         return '';
     }
-    $slotinfo = quiz::create($quiz->id)->get_structure()->get_slot_by_number($question->slot);
-    return $PAGE->get_renderer('mod_quiz', 'edit')
-        ->question_preview_icon($quiz, $question, $label, $variant,
-                $slotinfo->requestedversion ?: \qbank_previewquestion\question_preview_options::ALWAYS_LATEST);
+    $structure = quiz::create($quiz->id)->get_structure();
+    if (!empty($question->slot)) {
+        $requestedversion = $structure->get_slot_by_number($question->slot)->requestedversion
+                ?? question_preview_options::ALWAYS_LATEST;
+    } else {
+        $requestedversion = question_preview_options::ALWAYS_LATEST;
+    }
+    return $PAGE->get_renderer('mod_quiz', 'edit')->question_preview_icon(
+            $quiz, $question, $label, $variant, $requestedversion);
 }
 
 /**
@@ -2395,9 +2387,11 @@ function quiz_add_quiz_question($questionid, $quiz, $page = 0, $maxmark = null) 
               JOIN {question_bank_entries} qbe ON qbe.id = qr.questionbankentryid
              WHERE slot.quizid = ?
                AND qr.component = ?
-               AND qr.questionarea = ?";
+               AND qr.questionarea = ?
+               AND qr.usingcontextid = ?";
 
-    $questionslots = $DB->get_records_sql($sql, [$quiz->id, 'mod_quiz', 'slot']);
+    $questionslots = $DB->get_records_sql($sql, [$quiz->id, 'mod_quiz', 'slot',
+            context_module::instance($quiz->cmid)->id]);
 
     $currententry = get_question_bank_entry($questionid);
 

@@ -32,6 +32,7 @@ this.f16 = null;
 this.primitiveVolume = 0;
 this.primitiveDensity = 0;
 this.firstLine = null;
+this.type = null;
 Clazz.instantialize (this, arguments);
 }, J.adapter.readers.xtal, "CrystalReader", J.adapter.smarter.AtomSetCollectionReader);
 Clazz.prepareFields (c$, function () {
@@ -151,7 +152,7 @@ this.energy = Double.$valueOf (Double.parseDouble (tokens[2]));
 this.setEnergy ();
 this.rd ();
 if (this.line.startsWith (" ********")) this.discardLinesUntilContains ("SYMMETRY ALLOWED");
- else if (this.line.startsWith (" TTTTTTTT")) this.discardLinesUntilContains (" ********");
+ else if (this.line.startsWith (" TTTTTTTT")) this.discardLinesUntilContains (" *******");
 return true;
 }if (this.line.startsWith (" MULLIKEN POPULATION ANALYSIS")) return this.readPartialCharges ();
 if (this.line.startsWith (" TOTAL ATOMIC CHARGES")) return this.readTotalAtomicCharges ();
@@ -298,6 +299,7 @@ JU.Logger.info ("state:" + this.state + " Symmop " + this.symops.size () + ": " 
 });
 Clazz.overrideMethod (c$, "finalizeSubclassReader", 
 function () {
+this.asc.setInfo ("symmetryType", (this.isSlab ? "2D - SLAB" : this.isPolymer ? "1D - POLYMER" : this.type));
 this.processCoordLines ();
 if (this.energy != null) this.setEnergy ();
 this.finalizeReaderASCR ();
@@ -364,23 +366,22 @@ name = this.rd ().trim ();
 } else {
 name = this.line.trim ();
 this.rd ();
-}var type = this.rd ().trim ();
-var pt = type.indexOf ("- PROPERTIES");
+}this.type = this.rd ().trim ();
+var pt = this.type.indexOf ("- PROPERTIES");
 if (pt >= 0) {
 this.isProperties = true;
-type = type.substring (0, pt).trim ();
+this.type = this.type.substring (0, pt).trim ();
 }this.asc.setCollectionName (name + (!this.isProperties && this.desiredModelNumber == 0 ? " (optimized)" : ""));
-if (type.indexOf ("GEOMETRY INPUT FROM EXTERNAL FILE") >= 0) {
+if (this.type.indexOf ("GEOMETRY INPUT FROM EXTERNAL FILE") >= 0) {
 this.firstLine = this.line;
-type = this.rd ().trim ();
-}this.isPolymer = (type.equals ("1D - POLYMER") || type.equals ("POLYMER CALCULATION"));
-this.isSlab = (type.equals ("2D - SLAB") || type.equals ("SLAB CALCULATION"));
-this.asc.setInfo ("symmetryType", (this.isSlab ? "2D - SLAB" : this.isPolymer ? "1D - POLYMER" : type));
+this.type = this.rd ().trim ();
+}this.isPolymer = (this.type.equals ("1D - POLYMER") || this.type.equals ("POLYMER CALCULATION"));
+this.isSlab = (this.type.equals ("2D - SLAB") || this.type.equals ("SLAB CALCULATION"));
 if ((this.isPolymer || this.isSlab) && !this.isPrimitive) {
 JU.Logger.error ("Cannot use FILTER \"conventional\" with POLYMER or SLAB");
 this.isPrimitive = true;
 }this.asc.setInfo ("unitCellType", (this.isPrimitive ? "primitive" : "conventional"));
-if (type.indexOf ("MOLECULAR") >= 0) {
+if (this.type.indexOf ("MOLECULAR") >= 0) {
 this.isMolecular = this.doProcessLines = true;
 this.rd ();
 this.asc.setInfo ("molecularCalculationPointGroup", this.line.substring (this.line.indexOf (" OR ") + 4).trim ());
@@ -405,13 +406,19 @@ this.primitiveVolume = this.parseFloatStr (this.line.substring (43));
 this.primitiveDensity = this.parseFloatStr (this.line.substring (66));
 }
 var tokens = JU.PT.getTokens (this.rd ());
-if (this.isSlab) {
-if (isPrimitive) this.setUnitCell (this.parseFloatStr (tokens[0]) * f, this.parseFloatStr (tokens[1]) * f, -1, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
- else this.setUnitCell (this.parseFloatStr (tokens[0]) * f, this.parseFloatStr (tokens[1]) * f, -1, 90, 90, this.parseFloatStr (tokens[2]));
+var a = this.parseFloatStr (tokens[0]);
+var b = this.parseFloatStr (tokens[1]);
+if (!this.isSlab && !this.isPolymer && tokens.length == 7) {
+this.primitiveVolume = this.parseFloatStr (tokens[6]);
+if (Math.abs (this.primitiveVolume - a * b) < 0.1) {
+this.isSlab = true;
+}}if (this.isSlab) {
+if (isPrimitive) this.setUnitCell (a * f, b * f, -1, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
+ else this.setUnitCell (a * f, b * f, -1, 90, 90, this.parseFloatStr (tokens[2]));
 } else if (this.isPolymer) {
-this.setUnitCell (this.parseFloatStr (tokens[0]) * f, -1, -1, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
+this.setUnitCell (a, -1, -1, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 } else {
-this.setUnitCell (this.parseFloatStr (tokens[0]) * f, this.parseFloatStr (tokens[1]) * f, this.parseFloatStr (tokens[2]) * f, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
+this.setUnitCell (a * f, b * f, this.parseFloatStr (tokens[2]) * f, this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]), this.parseFloatStr (tokens[5]));
 }}}, "~B");
 Clazz.defineMethod (c$, "getAtomIndexFromPrimitiveIndex", 
  function (iPrim) {

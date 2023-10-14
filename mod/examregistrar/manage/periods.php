@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die;
 
 require_capability('mod/examregistrar:manageperiods',$context);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id'=>$cm->id,'edit'=>$edit));
-
 /// filter form parameters
 
 $sel_annuality  = optional_param('sannuality', '', PARAM_INT);
@@ -42,7 +40,7 @@ $params = array('id'=>$cm->id, 'edit'=>$edit,
                       'sterm' => $sel_term,
                       'speriodtype' => $sel_periodtype);
 
-$manageurl = new moodle_url($baseurl, $params);
+$manageurl = new moodle_url($baseurl, array_filter($params));
 
 $annuality =  examregistrar_get_annuality($examregistrar);
 

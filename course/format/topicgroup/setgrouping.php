@@ -31,9 +31,8 @@ require_once($CFG->libdir.'/formslib.php');
  *
  */
 class format_topicgroup_setgrouping_form extends moodleform {
-    function definition() {
-        global $CFG, $DB;
 
+    function add_static_elements() {
         $mform =& $this->_form;
         $thissection = $this->_customdata['section'];
         $course = $this->_customdata['course'];
@@ -57,10 +56,12 @@ class format_topicgroup_setgrouping_form extends moodleform {
         }
         $mform->addElement('static', 'currentgrouping', get_string('currentgrouping', 'format_topicgroup'), $groupingname); //  get_string('modsettings', 'format_topicgroup')
 
-        $mform->addElement('select', 'grouping', get_string('grouping', 'format_topicgroup'), $groupings);
-        $mform->setDefault('grouping', $thissection->groupingid);
-        $mform->setType('grouping', PARAM_INT);
-        $mform->addRule('grouping', null, 'required');
+        return $groupings;
+    }
+
+    function add_required_elements() {
+        $mform =& $this->_form;
+        $thissection = $this->_customdata['section'];
 
         $mform->addElement('selectyesno', 'applyother', get_string('applyother', 'format_topicgroup'));
         $mform->setDefault('applyother', 0);
@@ -79,11 +80,27 @@ class format_topicgroup_setgrouping_form extends moodleform {
         $mform->addElement('hidden', 'id', $thissection->id);
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement('hidden', 'unset', 0);
-        $mform->setType('unset', PARAM_INT);
-
         $mform->addElement('hidden', 'process', 'confirmed');
         $mform->setType('process', PARAM_TEXT);
+    }
+
+    function definition() {
+        global $CFG, $DB;
+
+        $mform =& $this->_form;
+        $thissection = $this->_customdata['section'];
+
+        $groupings = $this->add_static_elements();
+
+        $mform->addElement('select', 'grouping', get_string('grouping', 'format_topicgroup'), $groupings);
+        $mform->setDefault('grouping', $thissection->groupingid);
+        $mform->setType('grouping', PARAM_INT);
+        $mform->addRule('grouping', null, 'required');
+
+        $this->add_required_elements();
+
+        $mform->addElement('hidden', 'unset', 0);
+        $mform->setType('unset', PARAM_INT);
 
         $this->add_action_buttons(true);
     }
@@ -93,54 +110,18 @@ class format_topicgroup_setgrouping_form extends moodleform {
  * This class define form for unlocking grouping association
  *
  */
-class format_topicgroup_unsetgrouping_form extends moodleform {
+class format_topicgroup_unsetgrouping_form extends format_topicgroup_setgrouping_form {
     function definition() {
         global $CFG, $DB;
 
         $mform =& $this->_form;
-        $thissection = $this->_customdata['section'];
-        $course = $this->_customdata['course'];
 
-        $groupings = array();
-        $groupings[0] = get_string('choose');
-        if ($cgroupings = groups_get_all_groupings($thissection->course)) {
-            foreach ($cgroupings as $grouping) {
-                $groupings[$grouping->id] = format_string($grouping->name);
-            }
-        }
-        $sectionname = get_section_name($course, $thissection->section);
+        $this->add_static_elements();
 
-        $mform->addElement('header', 'settings', get_string('setsettings', 'format_topicgroup'));
-        $mform->addElement('static', 'currentsection', get_string('currentsection', 'format_topicgroup'), $sectionname); //  get_string('modsettings', 'format_topicgroup')
-        if($thissection->groupingid) {
-            $groupingname = $groupings[$thissection->groupingid];
-        } else {
-            $groupingname = get_string('none');
-        }
-        $mform->addElement('static', 'currentgrouping', get_string('currentgrouping', 'format_topicgroup'), $groupingname); //  get_string('modsettings', 'format_topicgroup')
-
-        $mform->addElement('selectyesno', 'applyall', get_string('applyall', 'format_topicgroup'));
-        $mform->setDefault('applyall', 0);
-        $mform->addHelpButton('applyall', 'applyall', 'format_topicgroup');
-
-        $groupmodes = array(-1 => get_string('keepgroupmode', 'format_topicgroup'),
-                             NOGROUPS       => get_string('groupsnone'),
-                             SEPARATEGROUPS => get_string('groupsseparate'),
-                             VISIBLEGROUPS  => get_string('groupsvisible'));
-
-        $mform->addElement('select', 'groupmode', get_string('groupmode', 'format_topicgroup'), $groupmodes);
-        $mform->setDefault('groupmode', -1);
-        $mform->setType('groupmode', PARAM_INT);
-        $mform->addHelpButton('groupmode', 'groupmode', 'format_topicgroup');
-
-        $mform->addElement('hidden', 'id', $thissection->id);
-        $mform->setType('id', PARAM_INT);
+        $this->add_required_elements();
 
         $mform->addElement('hidden', 'unset', 1);
         $mform->setType('unset', PARAM_INT);
-
-        $mform->addElement('hidden', 'process', 'confirmed');
-        $mform->setType('process', PARAM_TEXT);
 
         $this->add_action_buttons(true);
     }
@@ -183,7 +164,7 @@ if (($formdata = data_submitted()) && confirm_sesskey()) {
     $multiple = false;
     if($formdata->unset) {
         $groupingid = 0;
-        if($formdata->applyall && $section->groupingid) {
+        if($formdata->applyother && $section->groupingid) {
             $multiple = true;
         }
     } else {
@@ -196,7 +177,7 @@ if (($formdata = data_submitted()) && confirm_sesskey()) {
     if($multiple) {
         $sql = "SELECT tg.*, cs.section AS section
                     FROM {format_topicgroup_sections} tg
-                    JOIN {course_sections} cs ON cs.id = tg.section AND cs.course = tg.course
+                    JOIN {course_sections} cs ON cs.id = tg.sectionid AND cs.course = tg.course
                 WHERE tg.course = :course AND tg.groupingid = :groupingid ";
         $tgsections = $DB->get_records_sql($sql, array('course'=>$tgsection->course, 'groupingid'=>$tgsection->groupingid));
     } else {
@@ -255,5 +236,3 @@ echo $OUTPUT->heading(get_string($mode, 'format_topicgroup'));
 
 $mform->display();
 echo $OUTPUT->footer();
-
-

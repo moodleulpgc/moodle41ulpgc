@@ -27,7 +27,7 @@ import BaseComponent from 'core_courseformat/local/content';
 import {getCurrentCourseEditor} from 'core_courseformat/courseeditor';
 import inplaceeditable from 'core/inplace_editable';
 import Section from 'format_multitopic/courseformat/content/section';
-import CmItem from 'core_courseformat/local/content/section/cmitem';
+import CmItem from 'format_multitopic/courseformat/content/section/cmitem';
 import Templates from 'core/templates';
 
 export default class Component extends BaseComponent {
@@ -41,7 +41,7 @@ export default class Component extends BaseComponent {
      * @return {Component}
      */
     static init(target, selectors, sectionReturn) {
-        return new Component({ // CHANGED.
+        return new this({ // CHANGED.
             element: document.getElementById(target),
             reactive: getCurrentCourseEditor(),
             selectors,
@@ -75,16 +75,25 @@ export default class Component extends BaseComponent {
             /* eslint-enable no-unused-vars */
 
         // Find the specified section.
-        const anchor = window.location.hash.substr(1);
-        const selSectionDom = anchor ?
-            document.querySelector("body.format-multitopic .course-content ul.sections li.section.section-topic." + anchor)
-            : null;
+        let anchor = window.location.hash;
+        if (!anchor.match(/^#sectionid-\d+(?:-title)?$/)) {
+            return;
+        }
+        let oldStyle = false;
+        if (anchor.match(/^#sectionid-\d+$/)) {
+            anchor = anchor + "-title";
+            oldStyle = true;
+            history.replaceState(history.state, "", anchor);
+        }
+        const selSectionHeaderDom =
+            document.querySelector(".course-content ul.sections li.section.section-topic .sectionname" + anchor);
 
         // Exit if there is no recognised section.
-        if (!selSectionDom) {
+        if (!selSectionHeaderDom) {
             return;
         }
 
+        const selSectionDom = selSectionHeaderDom.closest("li.section.section-topic");
         const sectionId = selSectionDom.getAttribute('data-id');
         const section = this.reactive.get('section', sectionId);
 
@@ -100,7 +109,9 @@ export default class Component extends BaseComponent {
         }
 
         // Scroll to the specified section.
-        selSectionDom.scrollIntoView();
+        if (oldStyle) {
+            selSectionDom.scrollIntoView();
+        }
 
     }
 
@@ -231,6 +242,9 @@ export default class Component extends BaseComponent {
         for (let sdi = 0; sdi < sectionsDom.length; sdi++) {
             const sectionDom = sectionsDom[sdi];
             const section = this.reactive.get("section", sectionDom.dataset.id);
+            if (!section) {
+                continue;
+            }
             let refreshCms = false;
             const pageSectionDom = this.element.querySelector(".course-section[data-id='" + section.pageid + "']");
             const pageSectionDisplay = pageSectionDom.dataset.fmtonpage;
@@ -286,7 +300,7 @@ export default class Component extends BaseComponent {
             this.selectors.CM,
             this.cms,
             (item) => {
-                return new CmItem(item);
+                return new CmItem(item); // CHANGED.
             }
         );
     }

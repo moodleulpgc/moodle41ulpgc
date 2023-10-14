@@ -27,9 +27,10 @@ require_once($CFG->dirroot . '/question/type/recordrtc/classes/privacy/provider.
 /**
  * Privacy provider tests class.
  *
- * @package    qtype_recordrtc
- * @copyright  2021 The Open university
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_recordrtc
+ * @copyright 2021 The Open university
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \qtype_recordrtc\privacy\provider
  */
 class privacy_provider_test extends \core_privacy\tests\provider_testcase {
     // Include the privacy helper which has assertions on it.
@@ -86,6 +87,7 @@ class privacy_provider_test extends \core_privacy\tests\provider_testcase {
                 'default mark 2' => ['defaultmark', '1.5', '1.5'],
                 'mediatype audio' => ['mediatype', 'audio', get_string('audio', 'qtype_recordrtc')],
                 'mediatype video' => ['mediatype', 'video', get_string('video', 'qtype_recordrtc')],
+                'mediatype screen' => ['mediatype', 'screen', get_string('screen', 'qtype_recordrtc')],
                 'mediatype customav' => ['mediatype', 'customav', get_string('customav', 'qtype_recordrtc')],
                 'Max recording duration 1' => ['timelimitinseconds', '15', '15 seconds'],
                 'Max recording duration 2' => ['timelimitinseconds', '60', '1 minutes'],

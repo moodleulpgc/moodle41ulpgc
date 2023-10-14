@@ -36,7 +36,7 @@ if ($ADMIN->fulltree) {
     // Introductory explanation that all the settings are defaults for the add offlinequiz form.
     $settings->add(new admin_setting_heading('offlinequizintro', '', get_string('configintro', 'offlinequiz')));
 
-    // ecastro ULPGC
+    // User identification.
     $options = array(0 => get_string('phpwordmod', 'offlinequiz'), 
                      1 => get_string('phpwordlib', 'offlinequiz'));
     $settings->add(new admin_setting_configselect('offlinequiz/phpworduse',
@@ -71,6 +71,10 @@ if ($ADMIN->fulltree) {
     // Admin setting to disable display of copyright statement.
     $settings->add(new admin_setting_configcheckbox('offlinequiz/showcopyright', get_string('showcopyright', 'offlinequiz'),
             get_string('showcopyrightdesc', 'offlinequiz'), 1));
+
+    // Admin setting to set if participant usage is possible.
+    $settings->add(new admin_setting_configcheckbox('offlinequiz/defaultparticipantsusage', get_string('defaultparticipantsusage', 'offlinequiz'),
+            get_string('defaultparticipantsusagedesc', 'offlinequiz'), 1));
 
     // Disable newlines around images.
     $settings->add(new admin_setting_configcheckbox('offlinequiz/disableimgnewlines',
