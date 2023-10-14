@@ -146,7 +146,7 @@ class restore_examregistrar_activity_task extends restore_activity_task {
         require_once($CFG->dirroot.'/mod/examregistrar/managelib.php');
         // reconstruct location hierarchy data (parent, depth, path)
         if($locations = $DB->get_records_menu('examregistrar_locations',
-                                                ['examreg' => $examregid], 'parent ASC', 'id, parent') ) {
+                                                ['examregid' => $examregid], 'parent ASC', 'id, parent') ) {
             foreach($locations as $lid => $parent) {
                 examregistrar_set_location_tree($lid);
             }

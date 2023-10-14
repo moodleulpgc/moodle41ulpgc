@@ -241,7 +241,7 @@ class assign {
         $this->hidegradingpanel = get_user_preferences('assign_hidegradingpanel', false); // ecastro ULPGC 
 
         $this->showgradingpanel = get_string('gradeverb');
-        if(!empty($this->enabledadvancedassign)) {
+        if(!empty($this->enabledadvancedassign) && !empty($this->coursemodule)) {
             $this->showgradingpanel = false;
             $allownewui = get_config('local_ulpgcassign', 'allownewui');
             $allowedui =  $allownewui ? explode(',', $allownewui) : array();
@@ -251,7 +251,6 @@ class assign {
                     $enabledplugins[] = $plugin->get_type();
                 }
             }
-            //print_object(($enabledplugins));
             if(array_intersect($allowedui, $enabledplugins)) {
                 $this->showgradingpanel = get_string('onlineassess', 'local_ulpgcassign');
             }

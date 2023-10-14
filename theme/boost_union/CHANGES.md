@@ -4,6 +4,37 @@ moodle-theme_boost_union
 Changes
 -------
 
+### Unreleased
+
+* 2023-09-22 - Make codechecker happier
+* 2023-09-24 - Test: Behat scenario 'Show hint for self enrolment without an enrolment key' was broken, solves #398.
+* 2023-09-22 - Improvement: Reuse Moodle core function remove_dir(), solves #369.
+
+### v4.1-r12
+
+* 2023-09-19 - Bugfix: Fix fatal mustache rendering errors, solves #390.
+               This issue was a regression of #385 which adopted Moodle core changes from MDL-78656 into Boost Union.
+               During this adoption into Boost Union, it was overseen to raise the minimum required Moodle core version for Boost Union at the same time.
+               If you intend to use this release of Boost Union, please update Moodle core to the latest Moodle core 4.1.5+ or wait some more days for 4.1.6. Thank you for your understanding.
+
+### v4.1-r11
+
+* 2023-09-17 - Bugfix: Fix double-labeling and FontAwesome issues with the 'Mark external links' feature, solves #323 and #327.
+* 2023-09-17 - Improvement: Adopt Moodle core bugfix from MDL-78138 which fixed the category breadcrumbs in Boost core, removing the 'Do not change anything' option from the 'Display the category breadcrumbs in the course header' setting, solves #388
+* 2023-09-17 - Bugfix: Adopt Moodle core bugfix from MDL-78644 to allow .ico files as favicons again, solves #387.
+* 2023-09-17 - Updated Moodle Plugin CI to latest upstream recommendations
+
+### v4.1-r10
+
+* 2023-09-09 - Release: Adopt theme_boost changes from MDL-78656 to moremenu_children.mustache template, align menu item icon and tooltip handling at the same time, solves #385.
+* 2023-08-30 - Improvement: Align actions column on flavours and smart menus settings pages, solves #381.
+* 2023-08-19 - Improvement: Fix more mustache linter warnings, solves #360.
+* 2023-08-02 - Improvement: Add 'aboutus', 'offers', 'page1', 'page2' and 'page3' static pages, solves #351.
+* 2023-08-19 - Bugfix: Fix unparsable example JSON in Mustache template, solves #348.
+* 2023-08-18 - Improvement: Add CSS and Scripts for local_och5p local_och5pcore to the theme renderer.
+* 2023-08-13 - Improvement: Make the fonts in the dark navbar variants always fully white (not only when hovered) to improve the contrast.
+* 2023-08-13 - Feature: Smart menus, solves #137
+
 ### v4.1-r9
 
 * 2023-07-24 - Improvement: Only add load OffCanvas module when offcanvas region is enabled, solves #343.

@@ -274,7 +274,6 @@
     border-radius: 4px;
 }
 
-
 .path-grade-report-grader .action-menu {
     display: inline-block;
     margin-right: -0.5rem;
@@ -332,4 +331,9 @@
 .collapsecolumndropdown.show {
     width: 275px;
     max-height: 300px;
+}
+@media only screen and (min-width: 768px) {
+    .path-grade-report-grader .gradeparent table {
+        padding-right: 6em;
+    }
 }

@@ -66,6 +66,7 @@ define('OFFLINEQUIZ_GROUP_LETTERS', "ABCDEFGHIJKL");  // Letters for naming offl
 define('OFFLINEQUIZ_PDF_FORMAT', 0);   // PDF file format for question sheets.
 define('OFFLINEQUIZ_DOCX_FORMAT', 1);  // DOCX file format for question sheets.
 define('OFFLINEQUIZ_LATEX_FORMAT', 2);  // LATEX file format for question sheets.
+define('OFFLINEQUIZ_ODT_FORMAT', 5);  // ODT file format for question sheets.  // ecastro ULPGC
 
 define('OFFLINEQUIZ_QUESTIONINFO_NONE', 0); // No info is printed.
 define('OFFLINEQUIZ_QUESTIONINFO_QTYPE', 1); // The question type is printed.
@@ -2426,4 +2427,36 @@ function offlinequiz_remove_questionlist($offlinequiz, $questionids) {
 
         $trans->allow_commit();
     }
+}
+
+
+/**
+ * Randomly add a number of multichoice questions to an offlinequiz group.
+ *
+ * @author Enrique Castro @ULPGC  ecastro ULPGC
+ * @param int $questionspercolumn desired number, from offlinequiz instance
+ * @param int $maxquestions
+ * @param int $maxanswers
+ * @return int $formtype number of columns in answers form
+ */
+function offlinequiz_get_formtype($questionspercolumn, $maxquestions, $maxanswers) {
+    global $DB;
+
+    $numcols = ceil($maxquestions/$questionspercolumn);
+ 
+    $formtype = min(4, $numcols);
+    if ($maxanswers > 5) {
+        $formtype = min(3, $numcols);
+    }
+    if ($maxanswers > 7) {
+        $formtype = min(2, $numcols);
+    }
+    if ($maxanswers > 12) {
+        $formtype = 1;
+    }
+    if ($maxanswers > 26) {
+        print_error('Too many answers in one question');
+    }    
+    
+    return $formtype;
 }

@@ -40,10 +40,10 @@ h3.my-term {
 
 */
 
-.block_course_termlist .my-course-name .fa {
-    color: #ff9a00;
-    font-size: x-small;
-    vertical-align: super;
+.block.card .my-course-name .fa {
+  /* color: $color-orange; */
+  font-size: x-small;
+  vertical-align: super;
 }
 
 .block_course_termlist .dimmed {

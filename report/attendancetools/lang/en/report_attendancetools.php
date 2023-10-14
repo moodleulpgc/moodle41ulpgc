@@ -55,3 +55,4 @@ $string['start_quarter'] = 'Quarters';
 $string['start_whole'] = 'Whole hours only';
 $string['start_half'] = 'Whole and half hours';
 $string['start_quarter'] = 'Quarters';
+$string['synccruestatusestask'] = 'Add CRUE attendance status';

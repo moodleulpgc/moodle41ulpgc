@@ -67,7 +67,7 @@
 }
 
 
-.icon.fa, 
+.icon.fa,
 .dropdown-toggle::after,
 .dropdown-toggle::before {
   /* font-family: 'Fontawesome'; */
@@ -76,7 +76,7 @@
 
 .dropdown-item span.currentcourse::before {
   font-family: 'fontawesome';
-  content: "\f115";  
+  content: "\f115";
 margin-left: -1.2rem;
 padding-right: 0.2rem;
 }
@@ -85,6 +85,18 @@ padding-right: 0.2rem;
   background-color: $color-orange-50;
 }
 
+
+@media (min-width: 1200px) {
+  .container, .container-sm, .container-md, .container-lg, .container-xl {
+    max-width: 95%;
+  }
+}
+
+@media (min-width: 992px) {
+  .container, .container-sm, .container-md, .container-lg {
+    max-width: 95%;
+  }
+}
 
 /*---------------------------------------
  * rules: navbar navigation
@@ -123,11 +135,11 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 .secondary-navigation .moremenu-toggles{
     height: 36px;
     margin-left: auto;
-    float: right;     
+    float: right;
 }
 
 body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
-  display: none;  
+  display: none;
 }
 
 .secondary-navigation .moremenu-toggles .menupanel {
@@ -163,7 +175,7 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
     margin-left: 2px;
     font-size: 12px;
     width: 9px;
-    border: 0; 
+    border: 0;
 }
 
 /* Change the block column width on the Dashboard if setting 'blockcolumnwidthdashboard' is different from setting 'blockcolumnwidth'. */
@@ -274,7 +286,7 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
     float: left;
     padding-left: 2.0%;
     padding-right: 2.0%;
-    
+
     p {
         line-height: 1.2;
         margin-bottom: 0.25rem;
@@ -293,10 +305,10 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
     .btn-footer-popover {
         bottom: 4.5rem;
     }
-    
+
     .btn-footer-popover.help {
         bottom: 7.5rem;
-    }   
+    }
 }
 
 
@@ -342,14 +354,14 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
   margin-top: 0.15rem;
 }
 
-.pagelayout-frontpage .dashboard-card .course-contacts .contact img, 
+.pagelayout-frontpage .dashboard-card .course-contacts .contact img,
 .pagelayout-standard .dashboard-card .course-contacts .contact img {
   width: 36px;
   height: 36px;
   border: 1px solid #dee2e6;
 }
 
-.pagelayout-frontpage .dashboard-card .course-contacts .contact, 
+.pagelayout-frontpage .dashboard-card .course-contacts .contact,
 .pagelayout-standard .dashboard-card .course-contacts .contact {
   display: flex;
   align-items: center;
@@ -588,6 +600,10 @@ span.unread,
   border-radius: 0.25rem;
 }
 
+.moodleoverflowpost.border.unread {
+    border-left: 5px solid $unread !important;
+}
+
 .badge .badge-pill .badge-warning {
 	background-color: #000066;
 }
@@ -782,8 +798,6 @@ span.unread,
 
 .block.card .my-course-name .fa {
   color: $color-orange;
-  font-size: x-small;
-  vertical-align: super;
 }
 
 .path-backup .mform .normal_setting {
@@ -1076,6 +1090,7 @@ body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-
 .moodleoverflowpost.unread .answercell .post-info,
 .moodleoverflowpost.unread .commentcell .post-info {
   background-color: $unread;
+  border-radius: 0.5rem;
 }
 
 .moodleoverflowpost .answercell .leftbox, .moodleoverflowpost .commentcell .leftbox {
@@ -1138,7 +1153,8 @@ body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-
 }
 
 .moodleoverflowpost .questioner {
-  background-color: $unread;
+  background-color: $color-gray-10;
+  border-radius: 0.5rem;
 }
 
 .moodleoverflowdiscussion .questioner .user-details {

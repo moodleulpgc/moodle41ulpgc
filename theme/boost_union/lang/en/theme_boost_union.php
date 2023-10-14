@@ -353,13 +353,13 @@ $string['navigationtab'] = 'Navigation';
 $string['primarynavigationheading'] = 'Primary navigation';
 // ... ... Settings: Hide nodes in primary navigation.
 $string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
-$string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.';
+$string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.<br /><br />
+Please note: Here, you can just remove navigation nodes. But if you want to add custom navigation nodes, please consider using <a href="{$a->url}">Boost Union\'s smart menu functionality</a>.';
 // ... Section: Breadcrumbs.
 $string['breadcrumbsheading'] = 'Breadcrumbs';
 // ... ... Setting: Course category breadcrumb.
 $string['categorybreadcrumbs'] = 'Display the category breadcrumbs in the course header';
-$string['categorybreadcrumbs_desc'] = 'By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.<br/><br/>
-Please note: The "Do not change anything" option does not change anything about the course category breadcrumbs like they are presented by Moodle core. Whereas the "No" option takes care that course category breadcrumbs are never shown at all. This might be a difference as Boost in Moodle core might indeed show course category breadcrumbs beginning on deeper nested course category levels (which the Boost Union developers assess to be a glitch).';
+$string['categorybreadcrumbs_desc'] = 'By default, the course category breadcrumbs are not shown on course pages in the course header. With this setting, you can show the course category breadcrumbs in the course header above the course name.';
 // ... Section: Navigation.
 $string['navigationheading'] = 'Navigation';
 // ... ... Setting: Back to top button.
@@ -479,6 +479,44 @@ $string['footnotesetting_desc'] = 'Whatever you add to this textarea will be dis
 
 // Settings: Static pages tab.
 $string['staticpagestab'] = 'Static pages';
+// ... Section: About us.
+$string['aboutusheading'] = 'About us';
+// ... ... Setting: Enable about us page.
+$string['enableaboutussetting'] = 'Enable about us page';
+$string['aboutusdisabled'] = 'The about us page is disabled for this site. There is nothing to see here.';
+// ... ... Setting: About us content.
+$string['aboutuscontentsetting'] = 'About us content';
+$string['aboutuscontentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on the about us page.';
+// ... ... Setting: About us page title.
+$string['aboutuspagetitledefault'] = 'About us';
+$string['aboutuspagetitlesetting'] = 'About us page title';
+$string['aboutuspagetitlesetting_desc'] = 'In this setting, you can define the title of the about us page. This text will be used as link text to the about us page as well if you configure \'About us link position\' accordingly.';
+// ... ... Setting: About us link position.
+$string['aboutuslinkpositionnone'] = 'Do not automatically show a link to the about us page';
+$string['aboutuslinkpositionfootnote'] = 'Add a link to the about us page to the footnote';
+$string['aboutuslinkpositionfooter'] = 'Add a link to the about us page to the footer (questionmark) icon';
+$string['aboutuslinkpositionboth'] = 'Add a link to the about us page to the footnote and to the footer (questionmark) icon';
+$string['aboutuslinkpositionsetting'] = 'About us link position';
+$string['aboutuslinkpositionsetting_desc'] = 'In this setting, you can configure if a link to the about us page should be added automatically to the Moodle page. If you do not want to show a link automatically, you can add a link to {$a->url} from anywhere in Moodle manually.';
+// ... Section: Offers.
+$string['offersheading'] = 'Offers';
+// ... ... Setting: Enable offers page.
+$string['enableofferssetting'] = 'Enable offers page';
+$string['offersdisabled'] = 'The offers page is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Offers content.
+$string['offerscontentsetting'] = 'Offers content';
+$string['offerscontentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on the offers page.';
+// ... ... Setting: Offers page title.
+$string['offerspagetitledefault'] = 'Offers';
+$string['offerspagetitlesetting'] = 'Offers page title';
+$string['offerspagetitlesetting_desc'] = 'In this setting, you can define the title of the offers page. This text will be used as link text to the offers page as well if you configure \'Offers link position\' accordingly.';
+// ... ... Setting: Offers link position.
+$string['offerslinkpositionnone'] = 'Do not automatically show a link to the offers page';
+$string['offerslinkpositionfootnote'] = 'Add a link to the offers page to the footnote';
+$string['offerslinkpositionfooter'] = 'Add a link to the offers page to the footer (questionmark) icon';
+$string['offerslinkpositionboth'] = 'Add a link to the offers page to the footnote and to the footer (questionmark) icon';
+$string['offerslinkpositionsetting'] = 'Offers link position';
+$string['offerslinkpositionsetting_desc'] = 'In this setting, you can configure if a link to the offers page should be added automatically to the Moodle page. If you do not want to show a link automatically, you can add a link to {$a->url} from anywhere in Moodle manually.';
 // ... Section: Imprint.
 $string['imprintheading'] = 'Imprint';
 // ... ... Setting: Enable imprint.
@@ -555,6 +593,63 @@ $string['maintenancelinkpositionfooter'] = 'Add a link to the maintenance inform
 $string['maintenancelinkpositionboth'] = 'Add a link to the maintenance information page to the footnote and to the footer (questionmark) icon';
 $string['maintenancelinkpositionsetting'] = 'Maintenance information page link position';
 $string['maintenancelinkpositionsetting_desc'] = 'In this setting, you can configure if a link to the maintenance information page should be added automatically to the Moodle page. If you do not want to show a link automatically, you can add a link to {$a->url} from anywhere in Moodle manually.';
+// ... Section: Generic page 1.
+$string['page1heading'] = 'Generic page 1';
+// ... ... Setting: Enable generic page 1.
+$string['enablepage1setting'] = 'Enable generic page 1';
+$string['page1disabled'] = 'The generic page 1 is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Generic page 1 content.
+$string['page1contentsetting'] = 'Generic page 1 content';
+$string['page1contentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on the generic page 1.';
+// ... ... Setting: Generic page 1 title.
+$string['page1pagetitledefault'] = 'Generic page 1';
+$string['page1pagetitlesetting'] = 'Generic page 1 title';
+$string['page1pagetitlesetting_desc'] = 'In this setting, you can define the title of the generic page 1. This text will be used as link text to the generic page 1 as well if you configure \'Generic page 1 link position\' accordingly.';
+// ... ... Setting: Generic page 1 link position.
+$string['page1linkpositionnone'] = 'Do not automatically show a link to the generic page 1';
+$string['page1linkpositionfootnote'] = 'Add a link to the generic page 1 to the footnote';
+$string['page1linkpositionfooter'] = 'Add a link to the generic page 1 to the footer (questionmark) icon';
+$string['page1linkpositionboth'] = 'Add a link to the generic page 1 to the footnote and to the footer (questionmark) icon';
+$string['page1linkpositionsetting'] = 'Generic page 1 link position';
+$string['page1linkpositionsetting_desc'] = 'In this setting, you can configure if a link to the generic page 1 should be added automatically to the Moodle page. If you do not want to show a link automatically, you can add a link to {$a->url} from anywhere in Moodle manually.';
+// ... Section: Generic page 2.
+$string['page2heading'] = 'Generic page 2';
+// ... ... Setting: Enable generic page 2.
+$string['enablepage2setting'] = 'Enable generic page 2';
+$string['page2disabled'] = 'The generic page 2 is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Generic page 2 content.
+$string['page2contentsetting'] = 'Generic page 2 content';
+$string['page2contentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on the generic page 2.';
+// ... ... Setting: Generic page 2 title.
+$string['page2pagetitledefault'] = 'Generic page 2';
+$string['page2pagetitlesetting'] = 'Generic page 2 title';
+$string['page2pagetitlesetting_desc'] = 'In this setting, you can define the title of the generic page 2. This text will be used as link text to the generic page 2 as well if you configure \'Generic page 2 link position\' accordingly.';
+// ... ... Setting: Generic page 2 link position.
+$string['page2linkpositionnone'] = 'Do not automatically show a link to the generic page 2';
+$string['page2linkpositionfootnote'] = 'Add a link to the generic page 2 to the footnote';
+$string['page2linkpositionfooter'] = 'Add a link to the generic page 2 to the footer (questionmark) icon';
+$string['page2linkpositionboth'] = 'Add a link to the generic page 2 to the footnote and to the footer (questionmark) icon';
+$string['page2linkpositionsetting'] = 'Generic page 2 link position';
+$string['page2linkpositionsetting_desc'] = 'In this setting, you can configure if a link to the generic page 2 should be added automatically to the Moodle page. If you do not want to show a link automatically, you can add a link to {$a->url} from anywhere in Moodle manually.';
+// ... Section: Generic page 3.
+$string['page3heading'] = 'Generic page 3';
+// ... ... Setting: Enable generic page 3.
+$string['enablepage3setting'] = 'Enable generic page 3';
+$string['page3disabled'] = 'The generic page 3 is disabled for this site. There is nothing to see here.';
+// ... ... Setting: Generic page 3 content.
+$string['page3contentsetting'] = 'Generic page 3 content';
+$string['page3contentsetting_desc'] = 'In this setting, you can add rich text content which will be shown on the generic page 3.';
+// ... ... Setting: Generic page 3 title.
+$string['page3pagetitledefault'] = 'Generic page 3';
+$string['page3pagetitlesetting'] = 'Generic page 3 title';
+$string['page3pagetitlesetting_desc'] = 'In this setting, you can define the title of the generic page 3. This text will be used as link text to the generic page 3 as well if you configure \'Generic page 3 link position\' accordingly.';
+// ... ... Setting: Generic page 3 link position.
+$string['page3linkpositionnone'] = 'Do not automatically show a link to the generic page 3';
+$string['page3linkpositionfootnote'] = 'Add a link to the generic page 3 to the footnote';
+$string['page3linkpositionfooter'] = 'Add a link to the generic page 3 to the footer (questionmark) icon';
+$string['page3linkpositionboth'] = 'Add a link to the generic page 3 to the footnote and to the footer (questionmark) icon';
+$string['page3linkpositionsetting'] = 'Generic page 3 link position';
+$string['page3linkpositionsetting_desc'] = 'In this setting, you can configure if a link to the generic page 3 should be added automatically to the Moodle page. If you do not want to show a link automatically, you can add a link to {$a->url} from anywhere in Moodle manually.';
 // Settings: Info banners tab.
 $string['infobannertab'] = 'Info banner';
 // ... Section: Info banners.
@@ -710,6 +805,173 @@ $string['flavourspreviewflavour'] = 'Preview flavour';
 $string['flavourspreviewblindtext'] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nunc id cursus metus aliquam eleifend mi in nulla. Felis imperdiet proin fermentum leo vel orci porta. Sed nisi lacus sed viverra tellus in hac habitasse. Vivamus arcu felis bibendum ut. Nisi porta lorem mollis aliquam ut porttitor. Odio euismod lacinia at quis risus sed vulputate odio. Sed felis eget velit aliquet sagittis id consectetur purus. Nec ullamcorper sit amet risus nullam eget. Pellentesque sit amet porttitor eget dolor. Cursus mattis molestie a iaculis at erat pellentesque.';
 $string['flavourstitle'] = 'Title';
 $string['flavourstitle_help'] = 'The flavour\'s title is just used internally to allow you to document a particular flavour in the list of flavours.';
+
+// Settings: Smart menus page.
+$string['smartmenus'] = 'Smart menus';
+$string['error:smartmenusmenuitemnotfound'] = 'Smart menu item not found';
+$string['error:smartmenusmenunotfound'] = 'Smart menu not found';
+$string['smartmenus_desc'] = '<p>Smart menus allow site administrators to create customizable menus that can be placed in different locations on the site, such as the site main menu, bottom mobile menu, and user menu. The menus can be configured to display different types of content, including links to other pages or resources, category links, or user profile links.</p><p>Site administrators can create a new menu and specify the menu items, and display settings. The administrator can also choose where the menu will be displayed on the site and whether it should be visible to all users or only to certain user roles.</p>';
+$string['smartmenusbycohort'] = 'By cohort';
+$string['smartmenusbycohort_help'] = 'Restrict the visibility based on the user\'s cohorts.';
+$string['smartmenusbydate'] = 'By date';
+$string['smartmenusbydate_help'] = 'Restrict the visibility based on the date';
+$string['smartmenusbydatefrom'] = 'From';
+$string['smartmenusbydatefrom_help'] = 'Restrict the visibility before the given date is reached';
+$string['smartmenusbydateuntil'] = 'Until';
+$string['smartmenusbydateuntil_help'] = 'Restrict the visibility after the given date is reached';
+$string['smartmenusbylanguage'] = 'By language';
+$string['smartmenusbylanguage_help'] = 'Restrict the visibility based on the user\'s language';
+$string['smartmenusbyrole'] = 'By role';
+$string['smartmenusbyrole_help'] = 'Restrict the visibility based on the user\'s roles.';
+$string['smartmenusdynamiccoursescompletionstatus'] = 'Completion status';
+$string['smartmenusdynamiccoursescompletionstatus_help'] = 'The dynamic courses menu item list will contain all courses of the user which match the selected completion status. For example, if you select \'In progress\' as the completion status, the dynamic courses menu item list will only contain courses that the current user is currently working on.';
+$string['smartmenusdynamiccoursescompletionstatuscompleted'] = 'Completed';
+$string['smartmenusdynamiccoursescompletionstatusenrolled'] = 'Enrolled';
+$string['smartmenusdynamiccoursescompletionstatusinprogress'] = 'In progress';
+$string['smartmenusdynamiccoursescoursecategory'] = 'Course category';
+$string['smartmenusdynamiccoursescoursecategory_help'] = 'The dynamic courses menu item list will contain all courses from the selected course categories.';
+$string['smartmenusdynamiccoursesdaterange'] = 'Date range';
+$string['smartmenusdynamiccoursesdaterange_help'] = 'The dynamic courses menu item list will contain all courses which fall into the selected date range.';
+$string['smartmenusdynamiccoursesdaterangefuture'] = 'Future';
+$string['smartmenusdynamiccoursesdaterangepast'] = 'Past';
+$string['smartmenusdynamiccoursesdaterangepresent'] = 'Present';
+$string['smartmenusdynamiccoursesenrolmentrole'] = 'Enrolment role';
+$string['smartmenusdynamiccoursesenrolmentrole_help'] = 'The dynamic courses menu item list will contain all courses where the user is enrolled with the selected role.';
+$string['smartmenusexperimental'] = 'Please note: The smart menus functionality is fully usable in the current state of implementation, but has to be <em>considered as experimental</em> due to the large amount of setting combinations which still might trigger unexpected issues. Against this background, please test your smart menus with your individual menu settings thoroughly. If you encounter any issues with smart menus, please report them on <a href="https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues">Github</a> with clear steps to reproduce.';
+$string['smartmenusgeneralsectionheader'] = 'General settings';
+$string['smartmenusmenuaddnewitem'] = 'Add menu item';
+$string['smartmenusmenucardform'] = 'Card form';
+$string['smartmenusmenucardform_help'] = 'Select the form of the card for card-style menus, choosing between square, portrait, landscape or fullwidth.';
+$string['smartmenusmenucardformfullwidth'] = 'Full width';
+$string['smartmenusmenucardformlandscape'] = 'Landscape';
+$string['smartmenusmenucardformportrait'] = 'Portrait';
+$string['smartmenusmenucardformsquare'] = 'Square';
+$string['smartmenusmenucardoverflowbehavior'] = 'Card overflow behavior';
+$string['smartmenusmenucardoverflowbehavior_help'] = 'Select how the menu should behave when it overflows its container, choosing between showing a scrollbar or wrapping the overflowing items.';
+$string['smartmenusmenucardoverflowbehaviornowrap'] = 'No wrap';
+$string['smartmenusmenucardoverflowbehaviorwrap'] = 'Wrap';
+$string['smartmenusmenucardsize'] = 'Card size';
+$string['smartmenusmenucardsize_help'] = 'Select the size of the card for card-style menus, choosing between tiny, small, medium, or large.';
+$string['smartmenusmenucardsizelarge'] = 'Large';
+$string['smartmenusmenucardsizemedium'] = 'Medium';
+$string['smartmenusmenucardsizesmall'] = 'Small';
+$string['smartmenusmenucardsizetiny'] = 'Tiny';
+$string['smartmenusmenucreate'] = 'Create menu';
+$string['smartmenusmenucreatesuccess'] = 'Smart menu created successfully';
+$string['smartmenusmenucssclass'] = 'CSS class';
+$string['smartmenusmenucssclass_help'] = 'Enter a CSS class for the menu. This can be used to apply custom styling to the menu.';
+$string['smartmenusmenudeleteconfirm'] = 'Are you sure you want to delete this menu from the smart menus?';
+$string['smartmenusmenudeletesuccess'] = 'Smart menu deleted successfully';
+$string['smartmenusmenudescription'] = 'Description';
+$string['smartmenusmenudescription_help'] = 'The description of the menu. This will be primarily used as internal documentation, but you can also show it within the menu by using the \'Show description\' option.';
+$string['smartmenusmenuduplicate'] = 'Duplicate menu and its items';
+$string['smartmenusmenuduplicatesuccess'] = 'Menu and its menu items duplicated successfully';
+$string['smartmenusmenuedit'] = 'Edit menu';
+$string['smartmenusmenueditsuccess'] = 'Smart menu updated successfully';
+$string['smartmenusmenuitemcardappearanceheader'] = 'Card appearance';
+$string['smartmenusmenuitemcardbackgroundcolor'] = 'Card background color';
+$string['smartmenusmenuitemcardbackgroundcolor_help'] = 'Select the background color for the card of the menu item';
+$string['smartmenusmenuitemcardimage'] = 'Card image';
+$string['smartmenusmenuitemcardimage_help'] = 'Select an image to display next to the menu item title in the card.';
+$string['smartmenusmenuitemcardtextcolor'] = 'Card text color';
+$string['smartmenusmenuitemcardtextcolor_help'] = 'Select the color for the card of the menu item.';
+$string['smartmenusmenuitemcreate'] = 'Create menu item';
+$string['smartmenusmenuitemcreatesuccess'] = 'Smart menu item created successfully';
+$string['smartmenusmenuitemcssclass'] = 'CSS class';
+$string['smartmenusmenuitemcssclass_help'] = 'Enter a CSS class for the menu item. This can be used to apply custom styling to the menu item.';
+$string['smartmenusmenuitemdeleteconfirm'] = 'Are you sure you want to delete this menu item from the smart menu?';
+$string['smartmenusmenuitemdeletesuccess'] = 'Smart menu item deleted successfully';
+$string['smartmenusmenuitemdisplayfield'] = 'Course name presentation';
+$string['smartmenusmenuitemdisplayfield_help'] = 'The course name which will be used as the title of the dynamic courses menu items. Choose between course full name and course short name';
+$string['smartmenusmenuitemdisplayfieldcoursefullname'] = 'Course full name';
+$string['smartmenusmenuitemdisplayfieldcourseshortname'] = 'Course short name';
+$string['smartmenusmenuitemdisplayoptions'] = 'Title presentation';
+$string['smartmenusmenuitemdisplayoptions_help'] = 'Choose how you want the menu item title to be displayed.';
+$string['smartmenusmenuitemdisplayoptionshidetitle'] = 'Hide title text and show only icon (on all devices)';
+$string['smartmenusmenuitemdisplayoptionshidetitlemobile'] = 'Hide title text and show only icon (on mobile devices)';
+$string['smartmenusmenuitemdisplayoptionsshowtitleicon'] = 'Show text and icon as title';
+$string['smartmenusmenuitemduplicate'] = 'Duplicate menu item';
+$string['smartmenusmenuitemduplicatesuccess'] = 'Menu item duplicated successfully';
+$string['smartmenusmenuitemedit'] = 'Edit menu item';
+$string['smartmenusmenuitemeditsuccess'] = 'Smart menu item updated successfully';
+$string['smartmenusmenuitemicon'] = 'Icon';
+$string['smartmenusmenuitemicon_help'] = 'The icon to display next to the menu item title.';
+$string['smartmenusmenuitemlinktarget'] = 'Link target';
+$string['smartmenusmenuitemlinktarget_help'] = 'The target for the link of the menu item. The menu item link will open in this target when clicked (i.e. in the same window or in a new tab).';
+$string['smartmenusmenuitemlinktargetnewtab'] = 'New tab';
+$string['smartmenusmenuitemlinktargetsamewindow'] = 'Same window';
+$string['smartmenusmenuitemmode'] = 'Menu item mode';
+$string['smartmenusmenuitemmode_help'] = '<p>Select the mode how the menu item should be displayed within the menu.</p><ul><li>Inline: The menu item is displayed as a regular menu item within the menu. This is the default option.</li><li>Submenu: The menu item is displayed as a submenu item, which can be expanded or collapsed by clicking on the parent item. This mode is useful for building a third navigation level as well as for dynamic courses menu items, where course lists can be displayed as submenu items of this menu item. The title of this menu item is used as the text for the submenu item.</li></ul>';
+$string['smartmenusmenuitemnothingtodisplay'] = 'There aren\'t any items added to this smart menu yet. Please add an item to this menu.';
+$string['smartmenusmenuitemorder'] = 'Order';
+$string['smartmenusmenuitemorder_help'] = 'Rearrange the position of item if needed. All menu items in the menu will be ordered by this order value.';
+$string['smartmenusmenuitempresentationheader'] = 'Menu item presentation';
+$string['smartmenusmenuitemresponsive'] = 'Responsive hiding';
+$string['smartmenusmenuitemresponsive_help'] = 'By enabling any of these checkboxes, the menu item will be hidden on devices with the given display size.';
+$string['smartmenusmenuitemresponsivedesktop'] = 'Desktop';
+$string['smartmenusmenuitemresponsivemobile'] = 'Mobile';
+$string['smartmenusmenuitemresponsivetablet'] = 'Tablet';
+$string['smartmenusmenuitemrestriction'] = 'Access rules';
+$string['smartmenusmenuitems'] = 'Menu items';
+$string['smartmenusmenuitemstructureheader'] = 'Menu item structure';
+$string['smartmenusmenuitemtextcount'] = 'Number of words';
+$string['smartmenusmenuitemtextcount_help'] = 'Specify the maximum number of words to be displayed as title in the dynamic courses menu items. If you leave this field empty, the title will be displayed in full length.';
+$string['smartmenusmenuitemtextposition'] = 'Card text position';
+$string['smartmenusmenuitemtextposition_help'] = '<p>Select the position of the menu item text in relation to the card image, choosing from below image, top overlay and bottom overlay.</p><ul><li>Top overlay: Displays the menu item title over the overlay and at the top of the card.</li><li>Bottom overlay: Displays the menu item title over the overlay and at the bottom of the card.</li><li>Below image: Displays the menu item title below the card image.</li></ul>';
+$string['smartmenusmenuitemtextpositionbelowimage'] = 'Below image';
+$string['smartmenusmenuitemtextpositionoverlaybottom'] = 'Bottom overlay';
+$string['smartmenusmenuitemtextpositionoverlaytop'] = 'Top overlay';
+$string['smartmenusmenuitemtitle'] = 'Title';
+$string['smartmenusmenuitemtitle_help'] = 'The title of the menu. This will be used as the label of this menu item. If you want to display a separator in the menu, choose Heading as type and use hash signs (###) as title.';
+$string['smartmenusmenuitemtooltip'] = 'Tooltip';
+$string['smartmenusmenuitemtooltip_help'] = 'The tooltip which will be displayed when the user hovers over the menu item.';
+$string['smartmenusmenuitemtype'] = 'Menu item type';
+$string['smartmenusmenuitemtype_help'] = '<p>Select the type of menu item you want to create, choosing between static, heading and dynamic courses.</p><ul><li>Static: A static menu item is simply a link to a fixed URL that does not change.</li><li>Heading: A heading menu item is used to group related menu items together under a common heading. It does not have a link and is not clickable.</li><li>Dynamic courses: A dynamic courses menu item is used to display a list of courses based on certain criteria, such as course category, course enrolment role, course completion status or date range. The content displayed in a dynamic courses menu item will update automatically as the criteria changes.</li></ul>';
+$string['smartmenusmenuitemtypedynamiccourses'] = 'Dynamic courses';
+$string['smartmenusmenuitemtypeheading'] = 'Heading';
+$string['smartmenusmenuitemtypestatic'] = 'Static';
+$string['smartmenusmenuitemurl'] = 'Menu item URL';
+$string['smartmenusmenuitemurl_help'] = 'The static URL for the menu item. This is the link that will be followed when the menu item is clicked.';
+$string['smartmenusmenulocation'] = 'Menu location(s)';
+$string['smartmenusmenulocation_help'] = '<p>Select the location(s) where you want the menu to appear on the page:</p><ul><li>The main navigation is at the top of the page where Moodle core shows the Home, Dashboard, My courses and Site administration navigation items already.</li><li>The menu bar is located above the main navigation, at the top of the page.</li><li>The user menu can be accessed by clicking on the user avatar in the navigation bar.</li><li>The bottom bar is placed at the bottom of the screen and can be used to implement a thumb navigation for easy access to important areas, such as the dashboard, the my courses page or the home page.</li></ul><p>Please note that upon enabling the bottom bar, the hamburger icon will be replaced by your site\'s logo, because users can reach the main navigation then using the bottom bar.</p>';
+$string['smartmenusmenulocationbottom'] = 'Bottom bar';
+$string['smartmenusmenulocationmain'] = 'Main navigation';
+$string['smartmenusmenulocationmenu'] = 'Menu bar';
+$string['smartmenusmenulocationuser'] = 'User menu';
+$string['smartmenusmenumode'] = 'Menu mode';
+$string['smartmenusmenumode_help'] = '<p>Select the mode how the menu\'s items should be displayed.</p><ul><li>Submenu: The menu items is displayed as a submenu with the menu\'s title as parent node. This is the default option.</li><li>Inline: The menu\'s items are displayed directly in the navigation, one after another. Please note that this option is not supported for card type menus.</li></ul>';
+$string['smartmenusmenumoremenubehavior'] = 'More menu behavior';
+$string['smartmenusmenumoremenubehavior_help'] = '<p>Select what should happen if there are too many menus to fit in the menu location.</p><ul><li>Do not change anything: No particular behaviour will be enforced, excess menus will be moved into the \'More\' menu automatically.</li><li>Force into more menu: This mode moves the menu directly into the \'More\' menu even if there would still be space.</li><li>Keep outside of more menu: This mode keeps the menu outside of the \'More\' menu as long as possible.</li></ul>';
+$string['smartmenusmenumoremenubehaviorforceinto'] = 'Force into more menu';
+$string['smartmenusmenumoremenubehaviorkeepoutside'] = 'Keep outside of more menu';
+$string['smartmenusmenunothingtodisplay'] = 'There aren\'t any smart menus created yet. Please create your first smart menu to get things going.';
+$string['smartmenusmenupresentationheader'] = 'Menu presentation';
+$string['smartmenusmenushowdescription'] = 'Show description';
+$string['smartmenusmenushowdescription_help'] = '<p>Select if / how the description should be shown in the menu, choosing between Never, Above, Below and Help.</p><ul><li>Never: Do not show the description in the menu and use it only for internal purposes. This is the default option.</li><li>Above: Show the description at the top of the menu\'s list of menu items.</li><li>Below: Show the description at the end of the menu\'s list of menu items.</li><li>Help: Show the description as help icon near the menu\'s list of menu items.</li></ul>';
+$string['smartmenusmenushowdescriptionabove'] = 'Above';
+$string['smartmenusmenushowdescriptionbelow'] = 'Below';
+$string['smartmenusmenushowdescriptionhelp'] = 'Help';
+$string['smartmenusmenushowdescriptionnever'] = 'Never';
+$string['smartmenusmenustructureheader'] = 'Menu structure';
+$string['smartmenusmenutitle'] = 'Title';
+$string['smartmenusmenutitle_help'] = 'The title of the menu. This will be used as the label of the parent node of this menu.';
+$string['smartmenusmenutype'] = 'Presentation type';
+$string['smartmenusmenutype_help'] = '<p>Select the type of presentation for the menu, choosing between list and card.</p><ul><li>List: A list menu is composed of simple text links. This is the default option.</li><li>Card: A card menu is composed of cards.</li></ul>';
+$string['smartmenusmenutypecard'] = 'Card';
+$string['smartmenusmenutypelist'] = 'List';
+$string['smartmenusmodeinline'] = 'Inline';
+$string['smartmenusmodesubmenu'] = 'Submenu';
+$string['smartmenusnorestrict'] = 'Not restricted';
+$string['smartmenusoperator'] = 'Operator';
+$string['smartmenusoperator_help'] = 'Select the operator for the cohort condition (Any or All)';
+$string['smartmenusrestrictbycohortsheader'] = 'Restrict visibility by cohorts';
+$string['smartmenusrestrictbydateheader'] = 'Restrict visibility by date';
+$string['smartmenusrestrictbylanguageheader'] = 'Restrict visibility by language';
+$string['smartmenusrestrictbyrolesheader'] = 'Restrict visibility by roles';
+$string['smartmenusrolecontext'] = 'Context';
+$string['smartmenusrolecontext_help'] = 'Select the context for which the user\'s role should be checked (Any context or system context only)';
+$string['smartmenussavechangesandconfigure'] = 'Save and configure items';
+$string['smartmenussettings'] = 'Smart menu settings';
 
 // Privacy API.
 $string['privacy:metadata'] = 'The Boost Union theme does not store any personal data about any user.';

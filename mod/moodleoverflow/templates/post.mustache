@@ -68,6 +68,10 @@
             <div class="post-text">
                 <a href="{{{permalink}}}" class="anchor" title="{{#str}}permalink, mod_moodleoverflow{{/str}}">
                     <i class="fa fa-hashtag text-muted icon moodleoverflow-icon-1_5x moodleoverflow-icon-no-margin"></i></a>
+                    {{! ecastro ULPGC }}
+                    {{^isread}}
+                        <span class="anchor unreadlabel">{{#str}}new, moodle{{/str}}</span>
+                    {{/isread}}
                 {{{ postcontent }}}
             </div>
             <div class="attachments flex-grow-1">

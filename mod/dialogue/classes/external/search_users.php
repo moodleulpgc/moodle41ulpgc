@@ -82,7 +82,15 @@ class search_users extends external_api {
 
         // ecastro ULPGC courseid is really cmid passed from form 
         list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'dialogue');
+        $context = context_module::instance($cm->id);
         $courseid = $course->id;
+
+        // ecastro ULPGC to enforce getting ALL teachers, even last in list
+        $perpage = 200;
+        if(!has_capability('mod/dialogue:openasstaff', $context)) {
+            $perpage = 3000;
+        }
+
         $params = self::validate_parameters(
             self::execute_parameters(),
             [
@@ -93,8 +101,8 @@ class search_users extends external_api {
                 'perpage'        => $perpage
             ]
         );
-        list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'dialogue');
-        $context = context_module::instance($cm->id);
+        //list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'dialogue');
+        //$context = context_module::instance($cm->id);
         try {
             self::validate_context($context);
         } catch (Exception $e) {

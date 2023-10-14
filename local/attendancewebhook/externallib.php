@@ -80,6 +80,7 @@ class local_attendancewebhook_external extends external_api {
                     } else {
                         $tempuser = \local_attendancewebhook\lib::get_tempuser($attendance, $course);
                         if (!$tempuser) {
+                            $attendance->set_attendance_note(" - no tempuser");
                             $errors[] = $attendance;
                             continue;
                         }
@@ -88,12 +89,14 @@ class local_attendancewebhook_external extends external_api {
 
                 $status = \local_attendancewebhook\lib::get_status($cm, $attendance);
                 if (!$status) {
+                    $attendance->set_attendance_note(" - no status");
                     $errors[] = $attendance;
                     continue;
                 }
 
                 $log = \local_attendancewebhook\lib::get_log($session, $user, $tempuser, $status, $attendance);
                 if (!$log) {
+                    $attendance->set_attendance_note(" - no log ");
                     $errors[] = $attendance;
                 }
             }

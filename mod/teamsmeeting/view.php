@@ -125,6 +125,7 @@ if ($groupmode) {
 }
 
 //print_object("join: $canjoin || create: $cancreate ");
+$teamsmeeting = teamsmeeting_update_group_dates($teamsmeeting, $groupid);
 
 if($canjoin || $cancreate) {
     // when accessed by teacher, resets waiting

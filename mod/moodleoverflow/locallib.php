@@ -438,7 +438,7 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
            $canmarksolved = has_capability('mod/moodleoverflow:marksolved', $context);
         }
         $preparedarray[$i]['locked'] = false;
-        $preparedarray[$i]['needanswer'] = false;
+        $preparedarray[$i]['needsanswer'] = false;
 
         if(!$canmarksolved && $moodleoverflow->lockdiscussions) {
             $locked = \mod_moodleoverflow\ratings::moodleoverflow_discussion_is_locked($moodleoverflow, $discussion->discussion, $markedsolution, $markedhelpful);
@@ -451,6 +451,10 @@ function moodleoverflow_print_latest_discussions($moodleoverflow, $cm, $page = -
                 }
             }
         }
+        if($preparedarray[$i]['unread'] && !$preparedarray[$i]['needsanswer']) {
+            $preparedarray[$i]['subjectlink'] .= '#unread'; // ecastro ULPGC unread
+        }
+
         //ecastro ULPGC discussion blocking end//
 
         // Go to the next discussion.

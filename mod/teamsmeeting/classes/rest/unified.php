@@ -307,7 +307,8 @@ class unified extends \local_o365\rest\unified {
         if($teamsmeeting->openingtime) {        
             $starttime = $teamsmeeting->openingtime;
         } else {
-            $starttime = strftime('%Y-%m-%d %H:%M');
+            $time = new \DateTime();
+            $starttime = $time->format('Y-m-d H:i');
             $min = substr($starttime, -2); 
             $starttime = substr($starttime, 0, -2);
             $minute = (int)$min;
@@ -344,8 +345,10 @@ class unified extends \local_o365\rest\unified {
         }
         
         $endtime = $teamsmeeting->closingtime ? $teamsmeeting->closingtime : $starttime + 3600;
-        $meetingdata['endDateTime'] = self::format_time($endtime);    
-    
+        //print_object("starttime:   $starttime  |  open: {$teamsmeeting->openingtime} ");
+        //print_object("endtime:   $endtime  |  close: {$teamsmeeting->closingtime} ");
+        $meetingdata['endDateTime'] = self::format_time($endtime);
+
         return $meetingdata;
     }
     
@@ -492,12 +495,19 @@ class unified extends \local_o365\rest\unified {
         if(1 && !$this->is_working()) {
             return false;
         }
-        
+
         $meetingdata = $this->build_common_meetingdata($teamsmeeting);
         $presenters = $this->load_presenters($teamsmeeting, $groupid);
 
+        //print_object($presenters);
+        //print_object("presenters");
+        $attendees = [];
         $attendees = $this->load_enrolled_users($groupid);
-        $chatinfo = $this->add_channel_chatinfo($teamsmeeting->course, $groupid);
+        //print_object($attendees);
+        //print_object("attendees");
+
+        $chatinfo = false;
+        //$chatinfo = $this->add_channel_chatinfo($teamsmeeting->course, $groupid);
         
         /*
         if($teamsmeeting->membership == TEAMSMEETING_MEMBER_AUTO) {
@@ -588,7 +598,13 @@ class unified extends \local_o365\rest\unified {
             }
         } else {
             //Error.
+            //print_object($endpoint);
+            //print_object("endpoint");
+
             $response = json_decode($response);
+
+            //print_object($response);
+            //print_object("fullresponse");
             \core\notification::error(get_string('error_o365', 'mod_teamsmeeting', $response->error->message));
         }
 

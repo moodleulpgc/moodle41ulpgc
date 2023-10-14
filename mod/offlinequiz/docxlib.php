@@ -82,7 +82,9 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
         if (empty($numbering)) {
             $textrun = $section->createTextRun();
         } else {
-            $textrun = $listItemRun;
+            //$textrun = $listItemRun;
+            $textrun = $section->createTextRun('questionTab');
+            $textrun->addText("\t", 'nStyle');
         }
         $counter = count($blocks);
         foreach ($blocks as $block) {

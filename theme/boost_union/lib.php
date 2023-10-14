@@ -86,8 +86,6 @@ define('THEME_BOOST_UNION_SETTING_NAVBARCOLOR_DARK', 'dark');
 define('THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYLIGHT', 'primarylight');
 define('THEME_BOOST_UNION_SETTING_NAVBARCOLOR_PRIMARYDARK', 'primarydark');
 
-define('THEME_BOOST_UNION_SETTING_COURSEBREADCRUMBS_DONTCHANGE', 'dontchange');
-
 define('THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEXTMAINCONTENT', 'nextmaincontent');
 define('THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEARWINDOW', 'nearwindowedges');
 define('THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH', 'fullwidth');
@@ -124,7 +122,7 @@ function theme_boost_union_get_main_scss_content($theme) {
  * Get SCSS to prepend.
  *
  * @param theme_config $theme The theme config object.
- * @return array
+ * @return string
  */
 function theme_boost_union_get_pre_scss($theme) {
     global $CFG;
@@ -174,7 +172,7 @@ function theme_boost_union_get_pre_scss($theme) {
 
     // Overwrite Boost core SCSS variables which are stored in a SCSS map and thus couldn't be added to $configurable above.
     // Set variables for the activity icon colors.
-    $activityiconcolors = array();
+    $activityiconcolors = [];
     if (get_config('theme_boost_union', 'activityiconcoloradministration')) {
         $activityiconcolors[] = '"administration": '.get_config('theme_boost_union', 'activityiconcoloradministration');
     }
@@ -369,7 +367,7 @@ function theme_boost_union_get_precompiled_css() {
  * @param array $options
  * @return bool
  */
-function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $CFG;
 
     // Serve the (general) logo files or favicon file from the theme settings.
@@ -415,18 +413,14 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
             send_file_not_found();
         }
 
-        // No need for resizing, but if the file should be cached we save it so we can serve it fast next time.
-        if (empty($maxwidth) && empty($maxheight)) {
+        // Check whether width/height are specified, and we can resize the image (some types such as ICO cannot be resized).
+        if (($maxwidth === 0 && $maxheight === 0) ||
+                !$filedata = $file->resize_image($maxwidth, $maxheight)) {
+
             if ($lifetime) {
                 file_safe_save_content($file->get_content(), $candidate);
             }
             send_stored_file($file, $lifetime, 0, false, $options);
-        }
-
-        // Proceed with the resizing.
-        $filedata = $file->resize_image($maxwidth, $maxheight);
-        if (!$filedata) {
-            send_file_not_found();
         }
 
         // If we don't want to cached the file, serve now and quit.
@@ -481,6 +475,20 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
         // Send stored file (and cache it for 90 days, similar to other static assets within Moodle).
         send_stored_file($file, DAYSECS * 90, 0, $forcedownload, $options);
 
+        // Serve the files from the smart menu card images.
+    } else if ($filearea === 'smartmenus_itemimage' && $context->contextlevel === CONTEXT_SYSTEM) {
+        // Get file storage.
+        $fs = get_file_storage();
+
+        // Get the file from the filestorage.
+        $file = $fs->get_file($context->id, 'theme_boost_union', $filearea, $args[0], '/', $args[1]);
+        if (!$file) {
+            send_file_not_found();
+        }
+
+        // Send stored file (and cache it for 90 days, similar to other static assets within Moodle).
+        send_stored_file($file, DAYSECS * 90, 0, $forcedownload, $options);
+
     } else {
         send_file_not_found();
     }
@@ -516,4 +524,55 @@ function theme_boost_union_before_standard_html_head() {
 
     // Return an empty string to keep the caller happy.
     return $html;
+}
+
+/**
+ * Fetches the list of icons and creates an icon suggestion list to be sent to a fragment.
+ *
+ * @param array $args An array of arguments.
+ * @return string The rendered HTML of the icon suggestion list.
+ */
+function theme_boost_union_output_fragment_icons_list($args) {
+    global $OUTPUT, $PAGE;
+
+    // Proceed only if a context was given as argument.
+    if ($args['context']) {
+        // Initialize rendered icon list.
+        $icons = [];
+
+        // Load the theme config.
+        $theme = \theme_config::load($PAGE->theme->name);
+
+        // Get the FA system.
+        $faiconsystem = \core\output\icon_system_fontawesome::instance($theme->get_icon_system());
+
+        // Get the icon list.
+        $iconlist = $faiconsystem->get_core_icon_map();
+
+        // Add an empty element to the beginning of the icon list.
+        array_unshift($iconlist, '');
+
+        // Iterate over the icons.
+        foreach ($iconlist as $iconkey => $icontxt) {
+            // Split the component from the icon key.
+            $icon = explode(':', $iconkey);
+
+            // Pick the icon key.
+            $iconstr = isset($icon[1]) ? $icon[1] : 'moodle';
+
+            // Pick the component.
+            $component = isset($icon[0]) ? $icon[0] : '';
+
+            // Render the pix icon.
+            $icon = new \pix_icon($iconstr,  "", $component);
+            $icons[] = [
+                'icon' => $faiconsystem->render_pix_icon($OUTPUT, $icon),
+                'value' => $iconkey,
+                'label' => $icontxt,
+            ];
+        }
+
+        // Return the rendered icon list.
+        return $OUTPUT->render_from_template('theme_boost_union/fontawesome-iconpicker-popover', ['options' => $icons]);
+    }
 }

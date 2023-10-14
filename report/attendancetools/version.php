@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2023042400;
+$plugin->version   = 2023100105;
 $plugin->requires  = 2011120500;
 $plugin->component = 'report_attendancetools';
 $plugin->maturity  = MATURITY_STABLE;

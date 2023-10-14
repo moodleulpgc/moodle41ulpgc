@@ -1,7 +1,7 @@
 moodle-theme_boost_union
 ========================
 
-[![Moodle Plugin CI](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/workflows/Moodle%20Plugin%20CI/badge.svg?branch=master)](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3Amaster)
+[![Moodle Plugin CI](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/workflows/Moodle%20Plugin%20CI/badge.svg?branch=MOODLE_401_STABLE)](https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3AMOODLE_401_STABLE)
 
 Theme Boost Union is an enhanced child theme of Boost which is intended, on the one hand, to make Boost simply more configurable and, on the other hand, to provide helpful additional features for the daily Moodle operation of admins, teachers and students.
 
@@ -9,7 +9,7 @@ Theme Boost Union is an enhanced child theme of Boost which is intended, on the 
 Requirements
 ------------
 
-This theme requires Moodle 4.0+
+This theme requires Moodle 4.1+
 
 
 Motivation for this theme
@@ -379,6 +379,14 @@ Whatever you add to this textarea will be displayed at the end of a page, in the
 
 In this tab there are the following settings:
 
+##### About us
+
+With these settings, you can add rich text content which will be shown on an about us page.
+
+##### Offers
+
+With these settings, you can add rich text content which will be shown on an offers page.
+
 ##### Imprint
 
 With these settings, you can add rich text content which will be shown on the imprint page.
@@ -394,6 +402,18 @@ With these settings, you can add rich text content which will be shown on a help
 ##### Maintenance
 
 With these settings, you can add rich text content which will be shown on a maintenance information page (which is not the same as the built-in Moodle maintenance page).
+
+##### Generic page 1
+
+With these settings, you can add rich text content which will be shown on a generic page 1.
+
+##### Generic page 2
+
+With these settings, you can add rich text content which will be shown on a generic page 2.
+
+##### Generic page 3
+
+With these settings, you can add rich text content which will be shown on a generic page 3.
 
 #### Tab "Information banners"
 
@@ -431,6 +451,10 @@ With this setting a hint will appear in the course header if the course is visib
 
 Boost Union's flavours offer a possibility to override particular Moodle look & feel settings in particular contexts. On this page, you can create and manage flavours.
 
+### Settings page "Smart menus"
+
+Smart menus allow site administrators to create customizable menus that can be placed in different locations on the site, such as the site main menu, bottom mobile menu, and user menu. The menus can be configured to display different types of content, including links to other pages or resources, category links, or user profile links. On this page, you can create and manage smart menus.
+
 
 Capabilities
 ------------
@@ -462,6 +486,19 @@ How this theme works
 --------------------
 
 This Boost child theme is implemented with minimal code duplication in mind. It inherits / requires as much code as possible from theme_boost and only implements the extended or modified functionalities.
+
+
+Support for companion plugins
+-----------------------------
+
+This theme ships with some additions for companion plugins:
+
+* block_dash / local_dash:
+  * Style improvements for Dash dashboards in combination with Boost Union block regions
+* local_learningtools:
+  * Style improvements for the learning tools button in combination with the Boost Union bottom navigation
+* local_och5p / local_och5pcore:
+  * Renderer additions to add necessary additional CSS and JS files.
 
 
 Plugin repositories
@@ -565,8 +602,9 @@ Moodle an Hochschulen e.V. would like to thank these main contributors (in alpha
 * bdecent GmbH, Stefan Scholz: Code, Ideating, Funding
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
 * Carinthia University of Applied Sciences, Mario Wehr: Code
+* ELAN e.V., Farbod Zamani: Code
 * FernUniversität in Hagen, Daniel Poggenpohl: Code, Ideating
-* Hochschule Hannover - University of Applied Sciences and Arts: Funding, Ideating
+* Hochschule Hannover - University of Applied Sciences and Arts: Code, Funding, Ideating
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
 * lern.link GmbH, Beata Waloszczyk: Code

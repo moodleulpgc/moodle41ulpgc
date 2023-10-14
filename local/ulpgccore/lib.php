@@ -1199,25 +1199,59 @@ function local_ulpgccore_update_ldap($user, $message = '') {
         } catch ( SoapFault $fault ) {
             trigger_error ( "SOAP Fault: (faultcode: {$fault->faultcode}, faultstring: {$fault->faultstring})", E_USER_ERROR );
         }
-        if ($resultado -> TotalResult == '0') {
-            $usuario['dni'] = $user->username;
-            $usuario['credencial'] = $user->username;
-            $usuario['nombre'] =$user->firstname;
-            $usuario['apellidos'] = $user->lastname;
-            $usuario['mail'] = $user->email;
-            $usuario['rama'] = "Externos";
-            $usuario['comentario'] = "$message, plataforma $CFG->plataforma";
+	if ($resultado -> TotalResult == '0') {
+        // Modificado 6/Mar/2023 por Víctor Armas para usar la tabla YRegistrosWeb1     
+            $clienterux = new SoapClient ( null, array (
+                    'location' => 'https://ws.ulpgc.es/rux/',
+                    'uri' => 'urn:wsdl'
+            ) );
+
+
+        // División rudimentaria preliminar de los apellidos en dos
+            $pos = strrpos($user->lastname, " ");
+            if ($pos === false)
+            {
+                    $ape1=$user->lastname;
+                    $ape2="";
+            } else {
+                $ape1=substr($user->lastname,0,$pos);
+                $ape2=substr($user->lastname,$pos+1);
+            }
+
+            $wsPassword = md5($user->username."rux");
+            $parametros = array ("dni" => $user->username, 'wsPassword' => $wsPassword, 'ape1' => $ape1, 'ape2' => $ape2, 'nombre' => $user->firstname, 'email' => $user->email, 'nmeses' => 18, 'email_responsable' => "victor.armas@ulpgc.es" );
+
+            // print_object($parametros);
             try {
-                $parametros = array (
-                        "usuario" => $usuario,
-                        'binddn' => 'cn=PermisosAdmin,dc=ulpgc,dc=es',
-                        'bindpw' => 'ucppmb,aeylf'
-                );
-                $crea_usuario = $cliente->__soapCall ( "AltaUsuario", $parametros );
+                $crea_usuario = $clienterux->__soapCall ( "AltaUsuario", $parametros );
             } catch ( SoapFault $fault ) {
                 trigger_error ( "SOAP Fault: (faultcode: {$fault->faultcode}, faultstring: {$fault->faultstring})", E_USER_ERROR );
             }
-        }
+
+
+
+
+
+
+//            $usuario['dni'] = $user->username;
+//            $usuario['credencial'] = $user->username;
+//            $usuario['nombre'] =$user->firstname;
+//            $usuario['apellidos'] = $user->lastname;
+//            $usuario['mail'] = $user->email;
+//            $usuario['rama'] = "Externos";
+//            $usuario['comentario'] = "$message, plataforma $CFG->plataforma";
+//            try {
+//                $parametros = array (
+//                        "usuario" => $usuario,
+//                        'binddn' => 'cn=PermisosAdmin,dc=ulpgc,dc=es',
+//                        'bindpw' => 'ucppmb,aeylf'
+//                );
+//                $crea_usuario = $cliente->__soapCall ( "AltaUsuario", $parametros );
+//            } catch ( SoapFault $fault ) {
+//                trigger_error ( "SOAP Fault: (faultcode: {$fault->faultcode}, faultstring: {$fault->faultstring})", E_USER_ERROR );
+//            }
+
+	}
     }
 }
 

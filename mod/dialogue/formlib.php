@@ -254,7 +254,7 @@ class mod_dialogue_conversation_form extends mod_dialogue_message_form {
 
         $options = [
             'ajax' => 'mod_dialogue/form-user-selector',
-            'multiple' => true,
+            'multiple' => has_capability('mod/dialogue:openasstaff', $context), // to avoid students to send to multiple users
             'placeholder' => get_string('searchpotentials', 'dialogue'),
             'cmid' => $cm->id,
             'valuehtmlcallback' => function($value) {
