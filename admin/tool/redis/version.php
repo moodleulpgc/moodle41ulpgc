@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_redis';
-$plugin->version = 2023010501;
-$plugin->release = 'v4.1-r2';
+$plugin->version = 2023010502;
+$plugin->release = 'v4.1-r3';
 $plugin->requires = 2022112800;
 $plugin->supported = [401, 401];
 $plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array('cachestore_redis' => 2022112800);
+$plugin->dependencies = ['cachestore_redis' => 2022112800];

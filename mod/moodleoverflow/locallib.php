@@ -2024,6 +2024,7 @@ function moodleoverflow_delete_post($post, $deletechildren, $cm, $moodleoverflow
             // ecastro ULPGC completion
             if (!$skipcompletion) {
                 // Update completion state if we are tracking completion based on number of posts
+                $course = get_course($cm->course); // ecastro ULPGC added course, missing
                 $completion = new completion_info($course);
                 if ($completion->is_enabled($cm) == COMPLETION_TRACKING_AUTOMATIC &&
                 ($moodleoverflow->completiondiscussions || $moodleoverflow->completionanswers || $moodleoverflow->completioncomments)) {

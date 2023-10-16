@@ -284,7 +284,6 @@ class Soap extends SoapClient {
     }
 
     public function __doRequest($request, $location, $action, $version, $one_way = 0): string { // ecastro ULPGC PHP 8.1 compat
-
         $http_headers = array(
             'Content-type: text/xml;charset="utf-8"',
             'Accept: text/xml',

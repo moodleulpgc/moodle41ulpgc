@@ -308,7 +308,7 @@ if (!$ajax) {
     ];
     $htmlout = '';
     $htmlout .= '   '.get_string('unapprovedquestionvisibility', 'hotquestion')
-                     .' <select onchange="this.form.submit()" id="pref_visibility" name="vispreference">';
+                     .' <select onchange="this.form.submit()" id="pref_visibility" class="custom-select" name="vispreference">';
     // Get the ID and name of each preference in the DB.
     foreach ($listoptions as $akey => $aval) {
         // The first if is executed ONLY when the drop down menu is clicked to change the preference.
