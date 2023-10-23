@@ -383,6 +383,7 @@ class mod_hotquestion {
      */
     public function get_questions() {
         global $DB;
+
         if ($this->currentround->endtime == 0) {
             $this->currentround->endtime = 0xFFFFFFFF;  // Hack.
         }

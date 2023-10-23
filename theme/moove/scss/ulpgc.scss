@@ -1,6 +1,9 @@
 //Import additional ULPGC scss moove files. //ecastro ULPGC
 @import "ulpgc/modchooser";
 
+// Styles for atto_styles
+@import "atto_styles";
+
 .path-user .main-inner,
 .path-mod .main-inner {
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -67,7 +70,7 @@
 }
 
 
-.icon.fa,
+.icon.fa, 
 .dropdown-toggle::after,
 .dropdown-toggle::before {
   /* font-family: 'Fontawesome'; */
@@ -76,7 +79,7 @@
 
 .dropdown-item span.currentcourse::before {
   font-family: 'fontawesome';
-  content: "\f115";
+  content: "\f115";  
 margin-left: -1.2rem;
 padding-right: 0.2rem;
 }
@@ -135,11 +138,11 @@ body.has-secondarynavigation #page, body.has-secondarynavigation #page.drawers {
 .secondary-navigation .moremenu-toggles{
     height: 36px;
     margin-left: auto;
-    float: right;
+    float: right;     
 }
 
 body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
-  display: none;
+  display: none;  
 }
 
 .secondary-navigation .moremenu-toggles .menupanel {
@@ -175,7 +178,7 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
     margin-left: 2px;
     font-size: 12px;
     width: 9px;
-    border: 0;
+    border: 0; 
 }
 
 /* Change the block column width on the Dashboard if setting 'blockcolumnwidthdashboard' is different from setting 'blockcolumnwidth'. */
@@ -286,7 +289,7 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
     float: left;
     padding-left: 2.0%;
     padding-right: 2.0%;
-
+    
     p {
         line-height: 1.2;
         margin-bottom: 0.25rem;
@@ -305,10 +308,10 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
     .btn-footer-popover {
         bottom: 4.5rem;
     }
-
+    
     .btn-footer-popover.help {
         bottom: 7.5rem;
-    }
+    }   
 }
 
 
@@ -354,14 +357,14 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
   margin-top: 0.15rem;
 }
 
-.pagelayout-frontpage .dashboard-card .course-contacts .contact img,
+.pagelayout-frontpage .dashboard-card .course-contacts .contact img, 
 .pagelayout-standard .dashboard-card .course-contacts .contact img {
   width: 36px;
   height: 36px;
   border: 1px solid #dee2e6;
 }
 
-.pagelayout-frontpage .dashboard-card .course-contacts .contact,
+.pagelayout-frontpage .dashboard-card .course-contacts .contact, 
 .pagelayout-standard .dashboard-card .course-contacts .contact {
   display: flex;
   align-items: center;
@@ -580,12 +583,6 @@ span.unread {
 /*@media (min-width: 768px) */
 .path-admin #page-navbar.d-md-block {
   max-width: 12.0rem;
-}
-
-.forumpost.unread .row.header {
-  background-color: $unread;
-  padding: 0.2rem 0.2rem;
-  border-radius: 0.25rem;
 }
 
 .path-course-view .unread,
@@ -828,6 +825,11 @@ span.unread,
   color: #212529;
 }
 
+div.moodle-dialogue.moodle-has-zindex.yui3-panel {
+  min-width: 986px;
+}
+
+
 /*---------------------------------------
  * Activity modules: Attendance.
  --------------------------------------*/
@@ -1005,12 +1007,22 @@ body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-
   white-space: pre-wrap;
 }
 
+.forumpost.unread .row.header {
+  background-color: $unread;
+  padding: 0.2rem 0.2rem;
+  border-radius: 0.25rem;
+}
+
 .path-mod-forum .forumpost .header.row {
   border-bottom: 1px solid $gray-200;
 }
 
 .forum-post-container .forumpost .header.row .mb-3 {
   margin-bottom: 0.25rem !important;
+}
+
+.path-mod-forum div.post-actions {
+  margin-bottom: 4px;
 }
 
 .path-mod-forum .forumpost .post-actions .btn {

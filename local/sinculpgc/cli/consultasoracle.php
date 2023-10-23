@@ -27,7 +27,7 @@ $extdb = db_init();
 8.- Grupos de un curso
 9.- Listado general de grupos
 */
-$opcion=4;
+$opcion=5;
  
  
 switch($opcion){
@@ -99,7 +99,7 @@ switch($opcion){
  
 case 6:
       // Obtencion de los Grupos de un usuario
-       $sqlasignacionesulpgc = "SELECT lower(u.username) || '|' || c.idnumber || '|' || g.cod_grupo AS asignacion, u.username, c.idnumber, g.cod_grupo, gu.estado
+       $sqlasignacionesulpgc = "SELECT lower(u.username) || '|' || c.idnumber || '|' || g.cod_grupo AS asignacion, u.username, c.shortname, c.aadenc, g.cod_grupo, g.desc_grupo, c.idnumber, gu.estado
                                FROM tmoplataformasactivas p, tmocursos c, tmocategorias ca, tmogrupos g, tmogruposusuarios gu, tmousuarios u
                               WHERE p.aacada = '$CFG->aacada'
                                     AND p.plataforma = '$CFG->plataforma'

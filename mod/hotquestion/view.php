@@ -155,7 +155,7 @@ if ($canask) {
 if (!empty($action)) {
     switch ($action) {
         case 'tpriority':
-            if (has_capability('mod/hotquestion:manageentries', $context)) {
+            if (has_capability('mod/hotquestion:rate', $context)) {
                 $u = required_param('u',  PARAM_INT);  // Flag to change priority up or down.
                 $q = required_param('q',  PARAM_INT);  // Question id to change priority.
                 $hq->tpriority_change($u, $q);
@@ -165,28 +165,31 @@ if (!empty($action)) {
         case 'vote':
             if (has_capability('mod/hotquestion:vote', $context)) {
                 // 20230122 Prevent voting when closed.
-                if ((hqavailable::is_hotquestion_ended($hq) && !$hotquestion->viewaftertimeclose)
+                if ((hqavailable::is_hotquestion_active($hq))
                     || (has_capability('mod/hotquestion:rate', $context))
+                    || ((!hqavailable::is_hotquestion_active($hq))
+                        && !$hotquestion->viewaftertimeclose)
                     ) {
                     $q = required_param('q',  PARAM_INT);  // Question id to vote.
                     $hq->vote_on($q);
-                    redirect('view.php?id='.$hq->cm->id, null); // Needed to prevent heat toggle on page reload.
                 }
             }
             break;
         case 'removevote':
             if (has_capability('mod/hotquestion:vote', $context)) {
                 // 20230122 Prevent vote remove when closed.
-                if ((hqavailable::is_hotquestion_ended($hq) && !$hotquestion->viewaftertimeclose) ||
-                    (has_capability('mod/hotquestion:manageentries', $context))) {
+                if ((hqavailable::is_hotquestion_active($hq))
+                    || (has_capability('mod/hotquestion:rate', $context))
+                    || ((!hqavailable::is_hotquestion_active($hq))
+                        && !$hotquestion->viewaftertimeclose)
+                    ) {
                     $q = required_param('q',  PARAM_INT);  // Question id to vote.
                     $hq->remove_vote($q);
-                    redirect('view.php?id='.$hq->cm->id, null); // Needed to prevent heat toggle on page reload.
                 }
             }
             break;
         case 'newround':
-            if (has_capability('mod/hotquestion:manage', $context)) {
+            if (has_capability('mod/hotquestion:rate', $context)) {
                 $hq->add_new_round();
                 // Added to make new empty round start without having to click the Reload icon.
                 redirect('view.php?id='.$hq->cm->id, get_string('newroundsuccess', 'hotquestion'));
@@ -237,7 +240,7 @@ if (!$ajax) {
         echo $OUTPUT->heading($hotquestionname);
     }
 
-    // Allow access at any time to manager and editing teacher but prevent access to students.
+    // Allow access at any time to manager, non-editing teacher and editing teacher but prevent access to students.
     // Check availability timeopen and timeclose. Added 10/2/16. Modified 20230120 to add viewaftertimeclose.
     // Modified 20230125 to create hqavailable class. This controls availability restrictions.
     if (!(has_capability('mod/hotquestion:manage', $context)
@@ -362,7 +365,7 @@ if (($entriesmanager || $canrate || $canask) && ($hotquestion->grade <> 0)) {
     echo $output->single_button($url, get_string('viewgrades', 'hotquestion'));
 }
 // End contrib by ecastro ULPGC.
-echo $output->toolbar(has_capability('mod/hotquestion:manageentries', $context));
+echo $output->toolbar(has_capability('mod/hotquestion:rate', $context));
 echo $output->container_end();
 
 // Print questions list from the current round, function questions is in renderer.php file.

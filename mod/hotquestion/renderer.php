@@ -240,7 +240,7 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
             }
 
             // Admin, manager and teachers headings for questions, priority, heat, remove and approved headings.
-            if (has_capability('mod/hotquestion:manageentries', $context)) {
+            if (has_capability('mod/hotquestion:rate', $context)) {
                 // 20210924 Changed to format_text questionlabel column setting.
                 $table->head = [
                     format_text($this->hotquestion->instance->questionlabel,
@@ -361,7 +361,7 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
                         // Question is approved and user preference is set to hide unapproved questions.
                         (($question->approved)
                             && (get_user_preferences('hotquestion_seeunapproved'.$question->hotquestion) == 2))
-                        // OR User is a manager and user preference is set to see unapproved questions.
+                        // OR User is a manager, non-ed or editing teacher and user preference is set to see unapproved questions.
                         || ((has_capability('mod/hotquestion:manageentries', $context)
                             || has_capability('mod/hotquestion:rate', $context))
                             && (get_user_preferences('hotquestion_seeunapproved'.$question->hotquestion) == 1))
@@ -435,7 +435,7 @@ class mod_hotquestion_renderer extends plugin_renderer_base {
                         }
                         // Process priority code here.
                         // Had to add width/height to priority and heat due to now using svg in Moodle 3.6.
-                        if (has_capability('mod/hotquestion:manageentries', $context)) {
+                        if (has_capability('mod/hotquestion:rate', $context)) {
                             // Process priority column.
                             $tpriority .= '&nbsp;<a href="view.php?id='
                                        .$this->hotquestion->cm->id.'&action=tpriority&u=1&q='

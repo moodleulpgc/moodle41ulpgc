@@ -77,7 +77,7 @@ function atto_styles_params_for_js($elementid, $options, $fpoptions) {
  */
 function atto_styles_get_fontawesome_icon_map() {
     return [
-        'atto_styles:icon' => 'fa-tint',
+        'atto_styles:icon' => 'fa-highlighter', // ecastro change tint
     ];
 }
 

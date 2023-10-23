@@ -1,0 +1,93 @@
+// Styles for atto_styles
+.text-xlarge {
+  font-size: x-large;
+}
+.text-xsmall {
+  font-size: x-small;
+}
+
+.alert_alert-success {
+  @extend .alert;
+  @extend .alert-success;
+}
+
+.alert_alert-danger {
+  @extend .alert;
+  @extend .alert-danger;
+}
+
+.alert_alert-warning {
+  @extend .alert;
+  @extend .alert-warning;
+}
+
+.alert_alert-info {
+  @extend .alert;
+  @extend .alert-info;
+}
+
+.badge_badge-success {
+  @extend .badge;
+  @extend .badge-success;
+}
+
+.badge_badge-danger {
+  @extend .badge;
+  @extend .badge-danger;
+}
+
+.badge_badge-warning {
+  @extend .badge;
+  @extend .badge-warning;
+}
+
+.badge_badge-info {
+  @extend .badge;
+  @extend .badge-info;
+}
+
+.btn_btn-success {
+  @extend .btn;
+  @extend .btn-success;
+}
+
+.btn_btn-danger {
+  @extend .btn;
+  @extend .btn-danger;
+}
+
+.btn_btn-warning {
+  @extend .btn;
+  @extend .btn-warning;
+}
+
+.btn_btn-info {
+  @extend .btn;
+  @extend .btn-info;
+}
+
+.btn_btn-dark {
+  @extend .btn;
+  @extend .btn-dark;
+}
+
+.btn_btn-outline-primary {
+  @extend .btn;
+  @extend .btn-outline-primary;
+}
+
+.well-inner {
+  border: 1px solid $color-gray-20;
+  border-radius: 0.5rem;
+  padding: 1.0rem;
+
+  background-color: $color-gray-5;
+}
+
+.blockquote::before {
+  font-family: "Fontawesome" !important;
+  font-weight: 200;
+  font-size: smaller;
+  content: "\f08d  ";
+  font-variant-position: super;
+}

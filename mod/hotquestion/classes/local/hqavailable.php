@@ -59,7 +59,7 @@ class hqavailable {
      * @return bool
      */
     public static function is_hotquestion_ended($hq) {
-        return $hq->instance->timeclose !== 0 && time() > $hq->instance->timeclose;
+        return $hq->instance->timeclose !== '0' && time() > $hq->instance->timeclose;
     }
 
     /**

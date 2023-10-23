@@ -217,12 +217,7 @@ class mod_hotquestion_mod_form extends moodleform_mod {
             get_string('viewaftertimeclose', 'hotquestion')
         );
         $mform->addHelpButton('viewaftertimeclose', 'viewaftertimeclose', 'hotquestion');
-        if ($hotquestionconfig->viewaftertimeclose) {
-            $mform->setDefault('viewaftertimeclose', $hotquestionconfig->viewaftertimeclose);
-            $mform->hideIf('viewaftertimeclose', 'timeclose[enabled]');
-        } else {
-            $mform->setDefault('viewaftertimeclose', '');
-        }
+        $mform->setDefault('viewaftertimeclose', $hotquestionconfig->viewaftertimeclose);
 
         // Contrib by ecastro ULPGC.
         // Add standard grading elements, common to all modules.
@@ -259,6 +254,22 @@ class mod_hotquestion_mod_form extends moodleform_mod {
 
         // Add standard buttons, common to all modules.
         $this->add_action_buttons();
+    }
+
+    /**
+     * Perform minimal validation on the settings form
+     * @param array $data
+     * @param array $files
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        if (empty($data['timeclose']) && !empty($data['viewaftertimeclose'])) {
+            if ($data['timeclose'] < $data['viewaftertimeclose'] ) {
+                $errors['timeclose'] = get_string('viewaftertimeclosevalidation', 'hotquestion');
+            }
+        }
+        return $errors;
     }
 
     /**

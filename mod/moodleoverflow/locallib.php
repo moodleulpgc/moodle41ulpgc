@@ -1960,7 +1960,7 @@ function moodleoverflow_delete_discussion($discussion, $course, $cm, $moodleover
  *
  * @return bool Whether the deletion was successful
  */
-function moodleoverflow_delete_post($post, $deletechildren, $cm, $moodleoverflow) {
+function moodleoverflow_delete_post($post, $deletechildren, $cm, $moodleoverflow, $skipcompletion=false) { // // ecastro ULPGC skipcompletion
     global $DB, $USER;
 
     // Iterate through all children and delete them.
@@ -1972,7 +1972,7 @@ function moodleoverflow_delete_post($post, $deletechildren, $cm, $moodleoverflow
         $childposts = $DB->get_records('moodleoverflow_posts', array('parent' => $post->id));
         if ($deletechildren && $childposts) {
             foreach ($childposts as $childpost) {
-                moodleoverflow_delete_post($childpost, true, $cm, $moodleoverflow);
+                moodleoverflow_delete_post($childpost, true, $cm, $moodleoverflow, $skipcompletion); // ecastro ULPGC
             }
         }
 
@@ -2030,6 +2030,8 @@ function moodleoverflow_delete_post($post, $deletechildren, $cm, $moodleoverflow
                 ($moodleoverflow->completiondiscussions || $moodleoverflow->completionanswers || $moodleoverflow->completioncomments)) {
                     $completion->update_state($cm, COMPLETION_INCOMPLETE, $post->userid);
                 }
+                $userrating = \mod_moodleoverflow\ratings::moodleoverflow_get_reputation($moodleoverflow, $post->userid, true);
+                moodleoverflow_update_user_grade($moodleoverflow, $userrating, $post->userid);
             }
 
             // The post has been deleted.

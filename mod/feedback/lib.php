@@ -1924,7 +1924,6 @@ function feedback_save_tmp_values($feedbackcompletedtmp, $feedbackcompleted) {
                     $ditem = null;
                 }
             }
-
         } else {
             $check = true;
         }
@@ -2101,6 +2100,7 @@ function feedback_compare_item_value($completedid, $item, $dependvalue, $tmp = f
     $dbvalue = feedback_get_item_value($completedid, $item->id, $tmp);
 
     $itemobj = feedback_get_item_class($item->typ);
+
     return $itemobj->compare_value($item, $dbvalue, $dependvalue); //true or false
 }
 

@@ -118,6 +118,7 @@ git submodule add https://github.com/moodleou/moodle-quiz_gradingstudents.git   
 git submodule add https://github.com/juacas/quizaccess_activatedelayedattempt.git       mod/quiz/accessrule/delayed
 git submodule add https://github.com/moodleou/moodle-quizaccess_honestycheck.git        mod/quiz/accessrule/honestycheck
 git submodule add https://github.com/timhunt/moodle-quizaccess_offlinemode              mod/quiz/accessrule/offlinemode
+git submodule add https://github.com/ethz-let/moodle-quizaccess_wifiresilience.git      mod/quiz/accessrule/wifiresilience
 git submodule add https://github.com/catalyst/moodle-quizaccess_passgrade               mod/quiz/accessrule/passgrade
 # no more needed git submodule add https://github.com/moodleou/moodle-quizaccess_safeexambrowser.git     mod/quiz/accessrule/safeexambrowser  
 git submodule add https://github.com/daveyboond/moodle-quiz_mcq.git                     mod/quiz/report/mcq

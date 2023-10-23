@@ -4,6 +4,14 @@ moodle-block_cohortspecifichtml
 Changes
 -------
 
+### v4.1-r3
+
+* 2023-10-23 - Adopt Moodle core change in block_html from MDL-77164
+* 2023-10-23 - Adopt Moodle core change in block_html to show the block config directly when adding the block from MDL-74465
+* 2023-10-23 - Adopt Moodle core change in block_html from MDL-76583
+* 2023-10-23 - Adopt Moodle core change in block_html from MDL-76577
+* 2023-10-22 - Adopt additional privacy PHPUnit tests from block_html
+
 ### v4.1-r2
 
 * 2023-10-14 - Add automated release to moodle.org/plugins

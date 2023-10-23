@@ -8,12 +8,19 @@ This files describes changes in the Hot Question code.
     Activity completion should reflect that. See the ticket for details.
 20220821 HotQuestion_911 - Need to see about including grades in the Export tool.
 20230120 HotQuestion_995 - The grade table needs more info included in the download. 
+    Some items (3) have been done. Still have others (3) to do.
+
+
+
+=== 4.1.8+=== 2023101701 released 20231021
 20230601 HotQuestion_1051 - $hotquestion->viewaftertimeclose in view.php at line 167
-    does not appear to work correctly.
+    does not appear to work correctly. Made code changes to the mod_form.php plus
+    made some other changes in view.php and renderer.php.
 
-
-
-=== 4.1.8 === 2023101000
+=== 4.1.8 === 2023101700
+20230601 HotQuestion_1051 - $hotquestion->viewaftertimeclose in view.php at line 167
+    does not appear to work correctly. Made code changes to the mod_form.php plus
+    made some other changes in view.php and renderer.php.
 20230926 HotQuestion_1076 - Need to implement suffix on mod_for.php for Moodle 4.3.
     Added needed code to the mod_form.php file for both add_completion_rules and for
     completion_rule_enabled. Made code changes as needed. See ticket for details.
@@ -31,10 +38,12 @@ This files describes changes in the Hot Question code.
     Modified capability checks in two places in the view.php file. Down around line
     343 and line 244.
 20231011 HotQuestion_1097 - Non-editing teacher cannot remove questions or change the
-    approval status of a question. Made code modifications for capability to rate,
-    at two places in the renderer.php file. Down around line 365 and 502. Also added
-    rate capability check at line 220 of the view.php file.
-
+    approval status of a question. See the ticket for further details where I have
+    changed capability checks from manageentries, to rate so the non-editing teacher
+    has capabilities similar to other plugins.
+20231013 HotQuestion_1099 - Have a pull request to fix an SQL error in provider.php
+    at line 171. Did the merge and checked that it fixed the code. Hmm, Allie Katt's
+    reuest to export all data expired without delivery of anything, and nothing logged.
 
 
 

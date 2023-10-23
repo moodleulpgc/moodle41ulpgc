@@ -128,21 +128,26 @@ class locallib_test extends \advanced_testcase {
      *
      * @return array of testcases
      */
-    public function prepare_response_provider() {
+    public static function prepare_response_provider(): array {
         return [
             'Description written with Latin script' => [
                 'Ennyn Durin, Aran Moria: pedo mellon a minno',
                 'Mellon!',
                 '<?xml version="1.0" encoding="UTF-8"?><methodResponse><params><param><value><string>Mellon!</string></value>'
-                . '</param></params></methodResponse>'
+                . '</param></params></methodResponse>',
             ],
             'Description with non-Latin glyphs' => [
                 'What biscuits do you have?',
                 // V         Unicode 9!         V.
                 '😂🤵😂 𝒪𝓃𝓁𝓎 𝓉𝒽𝑒 𝒻𝒾𝓃𝑒𝓈𝓉 𝐼𝓉𝒶𝓁𝒾𝒶𝓃 𝒷𝒾𝓈𝒸𝓊𝒾𝓉𝓈 😂🤵😂',
                 '<?xml version="1.0" encoding="UTF-8"?><methodResponse><params><param><value><string>'
-                . '😂🤵😂 𝒪𝓃𝓁𝓎 𝓉𝒽𝑒 𝒻𝒾𝓃𝑒𝓈𝓉 𝐼𝓉𝒶𝓁𝒾𝒶𝓃 𝒷𝒾𝓈𝒸𝓊𝒾𝓉𝓈 😂🤵😂</string></value></param></params></methodResponse>'
-            ]
+                . '😂🤵😂 𝒪𝓃𝓁𝓎 𝓉𝒽𝑒 𝒻𝒾𝓃𝑒𝓈𝓉 𝐼𝓉𝒶𝓁𝒾𝒶𝓃 𝒷𝒾𝓈𝒸𝓊𝒾𝓉𝓈 😂🤵😂</string></value></param></params></methodResponse>',
+            ],
+            'Null returned data' => [
+                'Some desc is coming!',
+                null,
+               '<?xml version="1.0" encoding="UTF-8"?><methodResponse><params/></methodResponse>',
+            ],
         ];
     }
 
@@ -151,7 +156,7 @@ class locallib_test extends \advanced_testcase {
      *
      * @return array of testcases
      */
-    public function generate_error_provider() {
+    public static function generate_error_provider(): array {
         $glyphs = 'P̓͊r̨ͧa͚ͬẏ͎e͐̉rͮ̓ ͨ́n̗͗o͛̂t͂̌ ̊̆fͤͦo͒̿uͥͭń̇d̿͒';
         return [
             'Standard exception with default faultcode' => [
@@ -160,7 +165,7 @@ class locallib_test extends \advanced_testcase {
                 '<?xml version="1.0" encoding="UTF-8"?><methodResponse><fault><value><struct>' .
                 '<member><name>faultCode</name><value><int>404</int></value></member>' .
                 '<member><name>faultString</name><value><string/></value></member>' .
-                '</struct></value></fault></methodResponse>'
+                '</struct></value></fault></methodResponse>',
             ],
             'Standard exception with default faultcode and exception content' => [
                 new \Exception('PC LOAD LETTER'),
@@ -168,7 +173,7 @@ class locallib_test extends \advanced_testcase {
                 '<?xml version="1.0" encoding="UTF-8"?><methodResponse><fault><value><struct>' .
                 '<member><name>faultCode</name><value><int>404</int></value></member>' .
                 '<member><name>faultString</name><value><string>PC LOAD LETTER</string></value></member>' .
-                '</struct></value></fault></methodResponse>'
+                '</struct></value></fault></methodResponse>',
             ],
             'Standard exception with really messed up non-Latin glyphs' => [
                 new \Exception($glyphs),
@@ -176,8 +181,8 @@ class locallib_test extends \advanced_testcase {
                 '<?xml version="1.0" encoding="UTF-8"?><methodResponse><fault><value><struct>' .
                 '<member><name>faultCode</name><value><int>404</int></value></member>' .
                 '<member><name>faultString</name><value><string>' . $glyphs . '</string></value></member>' .
-                '</struct></value></fault></methodResponse>'
-            ]
+                '</struct></value></fault></methodResponse>',
+            ],
         ];
     }
 }

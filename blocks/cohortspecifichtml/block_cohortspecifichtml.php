@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_external\util as external_util;
+
 /**
  * Form for editing Text block (on cohorts) instances.
  * @package   block_cohortspecifichtml
@@ -159,7 +161,6 @@ class block_cohortspecifichtml extends block_base {
      */
     public function get_content_for_external($output) {
         global $CFG;
-        require_once($CFG->libdir . '/externallib.php');
         require_once($CFG->libdir . '/filelib.php');
         require_once($CFG->dirroot . '/cohort/lib.php');
         require_once($CFG->dirroot . '/blocks/cohortspecifichtml/locallib.php');
@@ -191,9 +192,15 @@ class block_cohortspecifichtml extends block_base {
                 if (isset($this->config->format)) {
                     $format = $this->config->format;
                 }
-                list($bc->content, $bc->contentformat) =
-                    external_format_text($this->config->text, $format, $this->context, 'block_cohortspecifichtml',
-                        'content', null, $filteropt);
+                [$bc->content, $bc->contentformat] = \core_external\util::format_text(
+                    $this->config->text,
+                    $format,
+                    $this->context,
+                    'block_cohortspecifichtml',
+                    'content',
+                    null,
+                    $filteropt
+                );
                 $bc->files = external_util::get_area_files($this->context->id, 'block_cohortspecifichtml',
                     'content', false, false);
             }
@@ -246,13 +253,11 @@ class block_cohortspecifichtml extends block_base {
     public function instance_copy($fromid) {
         $fromcontext = context_block::instance($fromid);
         $fs = get_file_storage();
-        // This extra check if file area is empty adds one query if it is not empty but saves several if it is.
-        if (!$fs->is_area_empty($fromcontext->id, 'block_cohortspecifichtml', 'content', 0, false)) {
-            $draftitemid = 0;
-            file_prepare_draft_area($draftitemid, $fromcontext->id, 'block_cohortspecifichtml',
-                'content', 0, ['subdirs' => true]);
-            file_save_draft_area_files($draftitemid, $this->context->id, 'block_cohortspecifichtml',
-                'content', 0, ['subdirs' => true]);
+        // Do not use draft files hacks outside of forms.
+        $files = $fs->get_area_files($fromcontext->id, 'block_cohortspecifichtml', 'content', 0, 'id ASC', false);
+        foreach ($files as $file) {
+            $filerecord = ['contextid' => $this->context->id];
+            $fs->create_file_from_storedfile($filerecord, $file);
         }
         return true;
     }
