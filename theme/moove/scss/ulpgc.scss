@@ -1,9 +1,6 @@
 //Import additional ULPGC scss moove files. //ecastro ULPGC
 @import "ulpgc/modchooser";
 
-// Styles for atto_styles
-@import "atto_styles";
-
 .path-user .main-inner,
 .path-mod .main-inner {
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -88,18 +85,6 @@ padding-right: 0.2rem;
   background-color: $color-orange-50;
 }
 
-
-@media (min-width: 1200px) {
-  .container, .container-sm, .container-md, .container-lg, .container-xl {
-    max-width: 95%;
-  }
-}
-
-@media (min-width: 992px) {
-  .container, .container-sm, .container-md, .container-lg {
-    max-width: 95%;
-  }
-}
 
 /*---------------------------------------
  * rules: navbar navigation
@@ -585,6 +570,12 @@ span.unread {
   max-width: 12.0rem;
 }
 
+.forumpost.unread .row.header {
+  background-color: $unread;
+  padding: 0.2rem 0.2rem;
+  border-radius: 0.25rem;
+}
+
 .path-course-view .unread,
 span.unread,
 .badge-secondary,
@@ -595,10 +586,6 @@ span.unread,
   font-weight: normal;
   padding: 0.2rem 0.5rem;
   border-radius: 0.25rem;
-}
-
-.moodleoverflowpost.border.unread {
-    border-left: 5px solid $unread !important;
 }
 
 .badge .badge-pill .badge-warning {
@@ -795,6 +782,8 @@ span.unread,
 
 .block.card .my-course-name .fa {
   color: $color-orange;
+  font-size: x-small;
+  vertical-align: super;
 }
 
 .path-backup .mform .normal_setting {
@@ -824,11 +813,6 @@ span.unread,
 .show > .btn-outline-secondary.dropdown-toggle {
   color: #212529;
 }
-
-div.moodle-dialogue.moodle-has-zindex.yui3-panel {
-  min-width: 986px;
-}
-
 
 /*---------------------------------------
  * Activity modules: Attendance.
@@ -1007,22 +991,12 @@ body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-
   white-space: pre-wrap;
 }
 
-.forumpost.unread .row.header {
-  background-color: $unread;
-  padding: 0.2rem 0.2rem;
-  border-radius: 0.25rem;
-}
-
 .path-mod-forum .forumpost .header.row {
   border-bottom: 1px solid $gray-200;
 }
 
 .forum-post-container .forumpost .header.row .mb-3 {
   margin-bottom: 0.25rem !important;
-}
-
-.path-mod-forum div.post-actions {
-  margin-bottom: 4px;
 }
 
 .path-mod-forum .forumpost .post-actions .btn {
@@ -1102,7 +1076,6 @@ body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-
 .moodleoverflowpost.unread .answercell .post-info,
 .moodleoverflowpost.unread .commentcell .post-info {
   background-color: $unread;
-  border-radius: 0.5rem;
 }
 
 .moodleoverflowpost .answercell .leftbox, .moodleoverflowpost .commentcell .leftbox {
@@ -1165,8 +1138,7 @@ body.path-mod-dialogue #region-main .label-info, body.path-mod-dialogue #region-
 }
 
 .moodleoverflowpost .questioner {
-  background-color: $color-gray-10;
-  border-radius: 0.5rem;
+  background-color: $unread;
 }
 
 .moodleoverflowdiscussion .questioner .user-details {
