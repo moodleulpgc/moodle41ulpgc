@@ -68,7 +68,6 @@ function theme_moove_get_main_scss_content($theme) {
 
     // Moove scss.
     $moovevariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/moove/_variables.scss');
-
     // ensure add ULPGC variables after standard ones but before regular css
     $ulpgcvariables = file_get_contents($CFG->dirroot . '/theme/moove/scss/ulpgc/variables.scss');
     $moovevariables = $moovevariables . "\n" . $ulpgcvariables  ;
