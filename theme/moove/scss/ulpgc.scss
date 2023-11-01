@@ -548,6 +548,10 @@ span.unread {
   background-color: $color-orange-80;
 }
 
+.course-section.current h3.sectionname {
+  font-weight: bold;
+}
+
 .section .activity {
   padding: 0.15rem 0;
 }
