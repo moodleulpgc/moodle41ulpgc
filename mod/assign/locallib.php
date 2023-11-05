@@ -243,16 +243,18 @@ class assign {
         $this->showgradingpanel = get_string('gradeverb');
         if(!empty($this->enabledadvancedassign) && !empty($this->coursemodule)) {
             $this->showgradingpanel = false;
-            $allownewui = get_config('local_ulpgcassign', 'allownewui');
-            $allowedui =  $allownewui ? explode(',', $allownewui) : array();
-            $enabledplugins = [];
-            foreach ($this->submissionplugins as $plugin) {
-                if ($plugin->is_enabled() && $plugin->is_visible()) {
-                    $enabledplugins[] = $plugin->get_type();
+            if(!$this->hidegradingpanel) {
+                $allownewui = get_config('local_ulpgcassign', 'allownewui');
+                $allowedui =  $allownewui ? explode(',', $allownewui) : array();
+                $enabledplugins = [];
+                foreach ($this->submissionplugins as $plugin) {
+                    if ($plugin->is_enabled() && $plugin->is_visible()) {
+                        $enabledplugins[] = $plugin->get_type();
+                    }
                 }
-            }
-            if(array_intersect($allowedui, $enabledplugins)) {
-                $this->showgradingpanel = get_string('onlineassess', 'local_ulpgcassign');
+                if(array_intersect($allowedui, $enabledplugins)) {
+                    $this->showgradingpanel = get_string('onlineassess', 'local_ulpgcassign');
+                }
             }
         }
     }
