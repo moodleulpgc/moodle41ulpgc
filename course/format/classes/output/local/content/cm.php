@@ -270,7 +270,6 @@ class cm implements named_templatable, renderable {
         return $result;
     }
 
-
     /**
      * Add course editor attributes to the data structure.
      *

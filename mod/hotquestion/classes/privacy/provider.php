@@ -363,7 +363,7 @@ class provider implements \core_privacy\local\metadata\provider,
             if ($itemids) {
                 list($isql, $params) = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED);
                 $params['userid'] = $userid;
-                $DB->delete_records_select('hotquestion_votes', "id $isql AND userid = :userid", $params);
+                $DB->delete_records_select('hotquestion_votes', "id $isql AND voter = :userid", $params);
                 $params = ['instanceid' => $cm->instance, 'userid' => $userid];
                 $DB->delete_records_select('hotquestion_questions', 'hotquestion = :instanceid AND userid = :userid', $params);
             }
@@ -405,7 +405,7 @@ class provider implements \core_privacy\local\metadata\provider,
         // Delete comments made by a teacher about a particular item for a student.
         $DB->delete_records_select(
             'hotquestion_votes',
-            "userid $insql AND itemid $itsql",
+            "voter $insql AND id $itsql",
             array_merge($inparams, $itparams)
         );
     }

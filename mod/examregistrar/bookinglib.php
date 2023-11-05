@@ -155,7 +155,7 @@ function examregistrar_booking_get_bookable_courses($examregistrar, $course, $bo
     $noexamcourses = array();
     $excludespecials = '';
     if(!$canbookothers) {
-        $excludespecials = ' AND e.callnum > 0 ';
+        //$excludespecials = ' AND e.callnum > 0 ';
     }
                                
     $examregprimaryid = examregistrar_check_primaryid($examregistrar->id);
@@ -181,7 +181,7 @@ function examregistrar_booking_get_bookable_courses($examregistrar, $course, $bo
                 JOIN {examregistrar_elements} se ON e.examregid = se.examregid AND se.type = 'scopeitem' AND e.examscope = se.id
                 JOIN {examregistrar_elements} es ON s.examregid = es.examregid AND es.type = 'examsessionitem' AND s.examsession = es.id
                 WHERE e.examregid = :examregid AND e.courseid = :courseid AND e.period = :period $excludespecials AND e.visible = 1
-                ORDER BY s.examdate ASC, se.name ";
+                ORDER BY s.examdate ASC, se.name ASC";
 
         if($exams = $DB->get_records_sql($sql, array('examregid'=>$examregprimaryid, 'courseid'=>$cid, 'period'=>$period ))) {
             $usercourse->exams = $exams;
@@ -205,7 +205,7 @@ function examregistrar_booking_get_bookable_courses($examregistrar, $course, $bo
     return [$examcourses, $noexamcourses];
 }
 
-function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid) {
+function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid, $canbookothers = false) {
     global $DB;
 
     $bookings = array();
@@ -237,12 +237,24 @@ function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $per
                     $visible = true;
                     $booking->numcalls += 1;
                 }
+                $userbooking = [];
+                $booking->voucher = '';
                 if($userbooking = $DB->get_records('examregistrar_bookings', array('userid'=>$userid, 'examid'=>$exam->id), 'booked DESC, timemodified DESC', '*', 0, 1)) {
                     $userbooking = reset($userbooking);
                     $booking->examid = $exam->id;
                     $booking->booked = $userbooking->booked;
                     $booking->bookedsite = $userbooking->bookedsite;
                     $booking->voucher = $DB->get_record('examregistrar_vouchers', array('examregid'=>$examregprimaryid, 'bookingid'=> $userbooking->id));
+                }
+                if($exam->callnum < 0) {
+                    if(!$canbookothers && (empty($userbooking) || empty($booking->booked)) ) {
+                        unset($booking->exams[$exam->id]);
+                        $visible = false;
+                    }
+                    if($booking->booked) {
+                        // important to preserve correct $booking->voucher, not overwriting  with other
+                        break;
+                    }
                 }
             }
             $booking->visible = $visible;

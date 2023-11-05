@@ -308,7 +308,7 @@ class assign_submission_peers extends assign_submission_plugin {
         global $DB, $USER, $PAGE;
         
         $renderer = $PAGE->get_renderer('assignsubmission_peers');
-        $header = $renderer->render(new assign_header($this->assignment->get_instance(),
+        $header = $renderer->render(new mod_assign\output\assign_header($this->assignment->get_instance(),
                                                         $this->assignment->get_context(),
                                                         false,
                                                         $this->assignment->get_course_module()->id,

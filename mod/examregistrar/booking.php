@@ -122,7 +122,8 @@ list($examcourses, $noexamcourses) = examregistrar_booking_get_bookable_courses(
                                                                                 $canviewall, $canbookothers, $canmanageexams);
 
 // get existing user bookings in those course 
-$bookings =  examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid);
+$bookings =  examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid, $canbookothers);
+
 unset($examcourses);
 // build sessions array for structure bookings in separate sessions 
 $sessions = examregistrar_booking_booked_sessions($bookings, $userid);
@@ -130,8 +131,8 @@ $sessions = examregistrar_booking_booked_sessions($bookings, $userid);
 /// get period name & code
 if($period) {
     list($periodname, $periodidnumber) = examregistrar_get_namecodefromid($period, 'periods', 'period');
-
 }
+
 echo $output->heading(get_string('examsforperiod', 'examregistrar', $periodname));
 $session = examregistrar_next_sessionid($examregistrar, time(), true);
 $info = new stdClass();

@@ -840,7 +840,7 @@ function hotquestion_get_user_grades(stdclass $hotquestion, int $userid = 0) {
     $grade->rawgrade = null;
     foreach ($users as $userid => $rating) {
         if (isset($rating->rawrating)) {
-            $factor = $rating->rawrating / $hotquestion->postmaxgrade;
+            $factor = $rating->rawrating / max($hotquestion->postmaxgrade, 1);
             if ($factor > 1.0) {
                 $factor = 1.0;
             }

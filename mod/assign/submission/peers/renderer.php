@@ -24,8 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-include_once($CFG->dirroot.'/mod/assign/renderer.php');
-
 /**
  * A custom renderer class that extends the plugin_renderer_base and is used by the assign module.
  *
@@ -33,7 +31,7 @@ include_once($CFG->dirroot.'/mod/assign/renderer.php');
  * @copyright 2016 Enrique Castro
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignsubmission_peers_renderer extends mod_assign_renderer {
+class assignsubmission_peers_renderer extends \mod_assign\output\renderer {
 
     /**
      * Render the assessmentable table.

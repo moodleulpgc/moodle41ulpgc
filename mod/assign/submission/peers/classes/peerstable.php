@@ -116,10 +116,11 @@ class assignsubmission_peers_table extends assign_grading_table implements rende
         $params = array();
         $params['assignmentid1'] = (int)$instance->id;
 
-        $fields = user_picture::fields('u') . ', u.id as userid, u.firstname as firstname, u.lastname as lastname, ';
+        $userfields = \core_user\fields::for_userpic();
+        $fields = $userfields->get_sql('u', false, '', 'id', false)->selects ;
+        $fields .= ', u.id as userid, u.firstname as firstname, u.lastname as lastname, ';
         $fields .= 's.status as status, s.id as submissionid, s.timecreated as firstsubmission, s.timemodified as timesubmitted, s.attemptnumber ';
         $from = '{user} u LEFT JOIN {assign_submission} s ON u.id = s.userid AND s.assignment = :assignmentid1 AND s.latest = 1';
-
 
         $teamsubmissions = false;
         if ($instance->teamsubmission && $instance->teamsubmissiongroupingid) {  
@@ -153,7 +154,6 @@ class assignsubmission_peers_table extends assign_grading_table implements rende
         }
         $this->set_sql($fields, $from, $where." AND s.status != 'draft' " , $params);
 
-
         // Set the columns.
         $this->define_columns($columns);
         $this->define_headers($headers);
@@ -162,8 +162,6 @@ class assignsubmission_peers_table extends assign_grading_table implements rende
         if ($this->is_downloading()) {
             $this->start_output();
         }
-        
-
     }
 
     /**

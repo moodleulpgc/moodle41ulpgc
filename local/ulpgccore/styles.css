@@ -1,5 +1,7 @@
 /* ULPGC additional classes
 -------------------------*/
+@import url("//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+/*      //cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css */
 
 .path-admin-local-ulpgccore .installpresets {
   padding-top: 0 !important;
@@ -20,7 +22,7 @@
 
 .path-admin-local-ulpgccore table.rolecap th.rolename {
   padding: 0 1.0rem;
-  
+
 }
 
 
@@ -73,7 +75,7 @@
     opacity: 1;
     z-index: 100;
     top: inherit;
-    right: 6.5em;    
+    right: 6.5em;
 }
 
 
@@ -150,7 +152,7 @@
 
 .path-mod-forum .forumheaderlist th {
     border: 1px solid;
-    border-color: #bbb; 
+    border-color: #bbb;
     border-style: solid;
     background-color: #e9e9e9;
 }
@@ -211,7 +213,7 @@ body.path-mod-dialogue #region-main  .btn.btn-small.disabled {
 .chooser-container .optionicon {
     margin-top: 0.25rem !important;
 }
-   
+
 .popover-region-notifications.ulpgc .fa-bullhorn::before {
   font-family: 'fontawesome';
 }

@@ -36,6 +36,8 @@ class examregistrar_booking_form extends moodleform {
         $now = time();
         //$now = strtotime('4 may 2014') + 3605;
 
+        //print_object($coursebookings);
+
         // to check for groups and set separators
         $lastkey = '';
         foreach($coursebookings as $key => $booking) {
@@ -97,6 +99,7 @@ class examregistrar_booking_form extends moodleform {
 */
             $examids = array();
             // $booking->exams is sorted by examdate ASC. Last $exam is later on time
+            $numcallfreeze = 0;
             foreach($booking->exams as $exam) {
                 if($exam->visible) {
                     $visible = true;
@@ -115,6 +118,7 @@ class examregistrar_booking_form extends moodleform {
                     }
                     $star = '** ';
                     $freeze = $canmanageexams ? false: true;
+                    $numcallfreeze = $freeze ? $exam->callnum : 0;
                     //$booking->numcalls -= 1;
                 }
 
@@ -183,8 +187,11 @@ class examregistrar_booking_form extends moodleform {
 
             $mform->disabledIf("booking[$index][booked]", "booking[$index][bookedsite]", 'eq', '');
             if($freeze || $softfreeze) {
-                $mform->disabledIf("booking[$index][booked]", "booking[$index][numcalls]", 'neq', 0);
-                $mform->disabledIf("booking[$index][bookedsite]", "booking[$index][numcalls]", 'neq', 0);
+                $mform->disabledIf("booking[$index][booked]", "booking[$index][numcalls]", 'neq', $numcallfreeze);
+                $mform->disabledIf("booking[$index][bookedsite]", "booking[$index][numcalls]", 'neq', $numcallfreeze);
+                if($numcallfreeze < 0) {
+                    $mform->disabledIf("booking[$index][examid]", "booking[$index][numcalls]", 'neq', $numcallfreeze);
+                }
             }
 
             $separator = $passmsg;

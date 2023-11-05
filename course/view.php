@@ -161,7 +161,7 @@ if (file_exists($CFG->dirroot . '/course/externservercourse.php')) {
     // Preload course format renderer before output starts.
     // This is a little hacky but necessary since
     // format.php is not included until after output starts
-    $format->get_renderer($PAGE);
+    $renderer = $format->get_renderer($PAGE);
 
     if ($reset_user_allowed_editing) {
         // ugly hack
@@ -209,6 +209,12 @@ if (file_exists($CFG->dirroot . '/course/externservercourse.php')) {
                 set_section_visible($course->id, $show, '1');
                 redirect($PAGE->url);
             }
+        }
+
+        if (!empty($section) && !empty($coursesections) && !empty($duplicatesection)
+            && has_capability('moodle/course:update', $context) && confirm_sesskey() ) {
+            $newsection = $format->duplicate_section($coursesections);
+            redirect(course_get_url($course, $newsection->section));
         }
 
         if (!empty($section) && !empty($move) &&
@@ -266,6 +272,12 @@ if (file_exists($CFG->dirroot . '/course/externservercourse.php')) {
         ));
     } else {
         $PAGE->set_title(get_string('coursetitle' . $editingtitle, 'moodle', array('course' => $course->fullname)));
+    }
+
+    // Add bulk editing control.
+    $bulkbutton = $renderer->bulk_editing_button($format);
+    if (!empty($bulkbutton)) {
+        $PAGE->add_header_action($bulkbutton);
     }
 
     $PAGE->set_heading($course->fullname);

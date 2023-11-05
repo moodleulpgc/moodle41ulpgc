@@ -368,16 +368,16 @@ class mod_hotquestion_mod_form extends moodleform_mod {
 
         // Set up the completion checkboxes which aren't part of standard data.
         // We also make the default value (if you turn on the checkbox) for those
-        // numbers to be 1, this will not apply unless checkbox is ticked.
+        // numbers to be 0, this will not apply unless checkbox is ticked.
         $defaultvalues['completionpostenabled'] =
             !empty($defaultvalues['completionpost']) ? 1 : 0;
         if (empty($defaultvalues['completionpost'])) {
-            $defaultvalues['completionpost'] = 1;
+            $defaultvalues['completionpost'] = 0;
         }
         $defaultvalues['completionvoteenabled'] =
             !empty($defaultvalues['completionvote']) ? 1 : 0;
         if (empty($defaultvalues['completionvote'])) {
-            $defaultvalues['completionvote'] = 1;
+            $defaultvalues['completionvote'] = 0;
         }
     }
 
