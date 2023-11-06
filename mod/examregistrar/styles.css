@@ -284,6 +284,9 @@ i.fa.responseicon:hover {
 #page-mod-examregistrar-view .bookingform .fitemtitle  {width:40%; text-align:left;}
 #page-mod-examregistrar-view .bookingform .felement  {width:50%; text-align:left;}
 
+.bookingform .voucherdownload {
+    margin-left: 0.30rem;
+}
 
 #id_headeruserdata .fitem.fitem_fgroup  div.fitemtitle {
     width: 400px;

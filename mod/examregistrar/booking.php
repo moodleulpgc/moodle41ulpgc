@@ -122,7 +122,7 @@ list($examcourses, $noexamcourses) = examregistrar_booking_get_bookable_courses(
                                                                                 $canviewall, $canbookothers, $canmanageexams);
 
 // get existing user bookings in those course 
-$bookings =  examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid, $canbookothers);
+$bookings =  examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid, $canbookothers, $canmanageexams);
 
 unset($examcourses);
 // build sessions array for structure bookings in separate sessions 
@@ -173,7 +173,6 @@ if($formdata = $mform->get_data()) {
                 $newid = $record->id;
                 // recover exam voucher if record_exists
                 $voucher = $DB->get_record('examregistrar_vouchers', array('examregid'=>$examregprimaryid, 'bookingid'=> $record->id));
-                
             } else {
                 if(!$exam) {
                     $booking['error'] = 'noexamid';
@@ -187,8 +186,11 @@ if($formdata = $mform->get_data()) {
                             
                         if($record = examregistrar_booking_store_new($booking, $userid, $now)) {
                             if(!empty($record) && $newid = $record->id) {
-                            $voucher = examregistrar_set_booking_voucher($examregprimaryid, $newid, $now);
+                                $voucher = examregistrar_set_booking_voucher($examregprimaryid, $newid, $now);
                             }
+                        } else {
+                            $booking['error'] = 'unbookfirst';
+                            $errors[$key] = $booking;
                         }
                     } else {
                         $booking['error'] = 'offbounds';

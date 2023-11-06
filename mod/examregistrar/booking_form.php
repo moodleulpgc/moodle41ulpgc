@@ -154,6 +154,7 @@ class examregistrar_booking_form extends moodleform {
                 $downloadurl = new moodle_url('/mod/examregistrar/download.php', array('id' => $cmid, 'down'=>'voucher', 'v'=>$vouchernum));
                 //$vouchernum = $OUTPUT->action_link($downloadurl, $vouchernum, null, null, $icon);
                 $voucherlink = get_string('vouchernum', 'examregistrar',  $OUTPUT->action_link($downloadurl, $vouchernum, null, array('class'=>'voucherdownload'), $icon));
+                $voucherlink = $OUTPUT->container($voucherlink, 'voucherlink');
             }
             
             $examgroup[] = $mform->createElement('static', '', '',$scope[0]);

@@ -773,6 +773,8 @@ $string['bookingerror_nosite'] = '{$a} : No puede inscribirse en el examen {$a} 
 $string['bookingerror_twosites'] = '{$a} : No puede inscribirse en {$a} debido a que ya se ha inscrito para otro examen en la misma fecha en otra Sede.';
 $string['bookingerror_noexamid'] = '{$a} : No puede inscribirse en {$a} debido a que la ID del examen es inválida.';
 $string['bookingerror_offbounds'] = '{$a} : No puede inscribirse en {$a} debido a que está fuera del plazo de inscripción.';
+$string['bookingerror_unbookfirst'] = '{$a} : Existe una inscripción previa activa. Por favor, primero marque que NO se presenta en tal sede, y luego inscribase en otra sede.';
+
 $string['setbooking'] = 'Submit bookings';
 $string['downloadassignseats'] = 'Exportar asignación de aulas';
 $string['exambookedstudents'] = 'Estudiantes inscritos en este examen: {$a}.';

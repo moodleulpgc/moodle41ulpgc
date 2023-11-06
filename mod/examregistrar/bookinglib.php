@@ -205,7 +205,7 @@ function examregistrar_booking_get_bookable_courses($examregistrar, $course, $bo
     return [$examcourses, $noexamcourses];
 }
 
-function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid, $canbookothers = false) {
+function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $period, $userid, $canbookothers = false, $canmanageexams = false) {
     global $DB;
 
     $bookings = array();
@@ -238,7 +238,6 @@ function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $per
                     $booking->numcalls += 1;
                 }
                 $userbooking = [];
-                $booking->voucher = '';
                 if($userbooking = $DB->get_records('examregistrar_bookings', array('userid'=>$userid, 'examid'=>$exam->id), 'booked DESC, timemodified DESC', '*', 0, 1)) {
                     $userbooking = reset($userbooking);
                     $booking->examid = $exam->id;
@@ -249,9 +248,8 @@ function examregistrar_bookings_in_courses($examcourses, $examregprimaryid, $per
                 if($exam->callnum < 0) {
                     if(!$canbookothers && (empty($userbooking) || empty($booking->booked)) ) {
                         unset($booking->exams[$exam->id]);
-                        $visible = false;
                     }
-                    if($booking->booked) {
+                    if($booking->booked > 0) {
                         // important to preserve correct $booking->voucher, not overwriting  with other
                         break;
                     }
@@ -300,7 +298,7 @@ function examregistrar_booking_booked_sessions($bookings, $userid) {
 
 function examregistrar_clean_userbookings($bookings, $sessions) {
     global $DB;
-    
+
     $errors = array();
     $sites = array();
     foreach($bookings as $key => $booking) {

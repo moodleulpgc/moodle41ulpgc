@@ -816,6 +816,8 @@ $string['bookingerror_nosite'] = '{$a} : Cannot book exam {$a} due to lack of ve
 $string['bookingerror_twosites'] = '{$a} : Cannot book exam {$a} due to already booked for the same date in a different venue.';
 $string['bookingerror_noexamid'] = '{$a} : Cannot book due to invalid exam ID.';
 $string['bookingerror_offbounds'] = '{$a} : Cannot book due date out of bounds.';
+$string['bookingerror_unbookfirst'] = '{$a} : A previous booking is recorded. Please first unbook.';
+
 $string['setbooking'] = 'Submit bookings';
 $string['downloadassignseats'] = 'Download Rooms assignments';
 $string['exambookedstudents'] = 'Students booking this exam: {$a}.';
