@@ -25,6 +25,7 @@
 
 require_once('../../../config.php');
 require_once($CFG->dirroot.'/mod/examregistrar/locallib.php');
+require_once($CFG->dirroot.'/mod/examregistrar/managelib.php');
 //require_once($CFG->dirroot."/mod/examregistrar/manage/action_forms.php");
 //require_once($CFG->dirroot."/mod/examregistrar/manage/manage_forms.php");
 //require_once($CFG->dirroot."/mod/examregistrar/manage/manage_table.php");
@@ -68,7 +69,7 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $usort = optional_param('usort', '', PARAM_ALPHANUMEXT);
 $rsort = optional_param('rsort', '', PARAM_ALPHANUMEXT);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit, 'tab'=>'session')));
+$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit, 'tab'=>'session'));
 examregistrar_url_update($baseurl);
 
 $params =  array('id' => $cm->id, 'edit'=>$edit, 'session'=>$session, 'venue'=>$bookedsite);
@@ -118,7 +119,7 @@ $canmanage = $caneditelements || $canmanageperiods || $canmanageexams || $canman
     $eventdata['context'] = $context;
     $eventdata['userid'] = $USER->id;
     $eventdata['other'] = array();
-    $eventdata['other']['examregid'] = $examregistrar->examregprimaryid;
+    $eventdata['other']['examregid'] = $examregprimaryid;
     $eventdata['other']['session'] = $session;
     if($bookedsite) {
         $eventdata['other']['bookedsite'] = $bookedsite;
