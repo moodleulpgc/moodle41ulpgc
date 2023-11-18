@@ -30,6 +30,7 @@ use core_xapi\handler as handler_base;
 use core_xapi\event\xapi_test_statement_post;
 use context_system;
 use core\event\base;
+use core_xapi\local\state;
 
 defined('MOODLE_INTERNAL') || die();
 

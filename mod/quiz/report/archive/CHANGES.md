@@ -4,9 +4,19 @@ moodle-quiz_archive
 Changes
 -------
 
-
 ### Unreleased
 
+* 2023-11-12 - Name the person who made a change in the question response history (if not the student)
+
+### Release v4.3-r2
+
+* 2023-11-09 - Add options to show/hide history & correct answer
+
+### Release v4.3-r1
+
+* 2023-11-08 - Assure PHP 8.2 compatibility.
+* 2023-11-08 - Remove deprecated imports and references.
+* 2023-01-19 - Do not archive quiz preview attempt.
 * 2022-11-18 - Check to work with Moodle ≥ 4.0 hence question versions.
 * 2021-07-31 - Cosmetic change (newline at the end of file) for phpcs check.
 * 2021-07-31 - Adding Moodle plugin CI info in README.md.

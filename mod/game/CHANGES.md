@@ -1,3 +1,15 @@
+Changes in version 2023-11-16
+* Fix Crossword: When it can't create a crossword with minimum words select the max it can.
+
+Changes in version 2023-11-04
+* Fix Crossword: Problem showing clues where there are two in a line or column.
+
+Changes in version 2023-11-06-01
+* Fix warning: Short array syntax must be used to define arrays.
+
+Changes in version 2023-11-06
+* Fix warning: Short array syntax must be used to define arrays.
+
 Changes in version 2023-11-02
 * Fix:  Wrong questions is shown in Moodle 4.0+ for quizzes.
 
@@ -58,22 +70,12 @@ Changes in version 2023-01-08
 Changes in version 2023-01-04
 * Fix: Modle 4.1 compatibility.
 
-Changes in version 2022-10-19
+Changes for year 2022
 * Fix: Problem in Millionaire when using quiz for Moodle 4.0.
-
-Changes in version 2022-07-20
 * Fix: Problem in showanswers.php for Moodle 4.0.
-
-Changes in version 2022-05-10
 * Fix: Problem in millionaire for Moodle 4.0.
-
-Changes in version 2022-03-21
 * Fix: Warning of tool "Code Checker".
-
-Changes in version 2022-03-20
 * Fix: Warning of tool "Code Checker".
-
-Changes in version 2022-03-19
 * Fix: Moodle 4.0 compatibility.
 
 Changes for year 2021

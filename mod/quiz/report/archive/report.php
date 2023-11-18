@@ -23,13 +23,29 @@
  */
 
 use mod_quiz\local\reports\report_base;
+use mod_quiz\quiz_attempt;
+use mod_quiz\question\display_options;
+use mod_quiz\local\reports\attempts_report;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport.php');
+// This work-around is required until Moodle 4.2 is the lowest version we support.
+if (class_exists('\mod_quiz\local\reports\report_base')) {
+    class_alias('\mod_quiz\local\reports\attempts_report', '\quiz_archive_report_parent_class_alias');
+    class_alias('\mod_quiz\quiz_attempt', '\quiz_archive_quiz_attempt');
+    class_alias('\mod_quiz\question\display_options', '\quiz_archive_mod_quiz_display_options');
+} else {
+    require_once($CFG->dirroot . '/mod/quiz/report/attemptsreport.php');
+    require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
+    class_alias('\quiz_attempts_report', '\quiz_archive_report_parent_class_alias');
+    class_alias('\quiz_attempt', '\quiz_archive_quiz_attempt');
+    class_alias('\mod_quiz_display_options', '\quiz_archive_mod_quiz_display_options');
+}
+
+require_once($CFG->dirroot . '/mod/quiz/report/archive/archive_options.php');
+require_once($CFG->dirroot . '/mod/quiz/report/archive/archive_form.php');
 require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
-require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
 require_once($CFG->libdir . '/pagelib.php');
 
 /**
@@ -43,17 +59,15 @@ require_once($CFG->libdir . '/pagelib.php');
  * @copyright 2018 Luca Bösch <luca.boesch@bfh.ch>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quiz_archive_report extends quiz_default_report {
+class quiz_archive_report extends quiz_archive_report_parent_class_alias {
     /** @var object the questions that comprise this quiz.. */
     protected $questions;
     /** @var object course module object. */
     protected $cm;
-    /** @var object the quiz settings object. */
-    protected $quiz;
-    /** @var context the quiz context. */
-    protected $context;
-    /** @var students the students having attempted the quiz. */
-    protected $students;
+    /** @var object course object. */
+    protected $course;
+    /** @var object display options for the report. */
+    protected $options;
 
     /**
      * Display the report.
@@ -65,27 +79,36 @@ class quiz_archive_report extends quiz_default_report {
      * @throws moodle_exception
      */
     public function display($quiz, $cm, $course) {
-        global $PAGE;
+        global $OUTPUT;
 
-        $this->quiz = $quiz;
+        $this->init('archive', 'quiz_archive_settings_form', $quiz, $cm, $course);
+
+        $this->options = new quiz_archive_options('archive', $quiz, $cm, $course);
+
+        if ($fromform = $this->form->get_data()) {
+            $this->options->process_settings_from_form($fromform);
+
+        } else {
+            $this->options->process_settings_from_params();
+        }
+
+        $this->form->set_data($this->options->get_initial_form_data());
+
+        $this->quizobj = $quiz;
         $this->cm = $cm;
         $this->course = $course;
 
         // Get the URL options.
         $slot = optional_param('slot', null, PARAM_INT);
-        $questionid = optional_param('qid', null, PARAM_INT);
         $grade = optional_param('grade', null, PARAM_ALPHA);
 
-        if (!in_array($grade, array('all', 'needsgrading', 'autograded', 'manuallygraded'))) {
+        if (!in_array($grade, ['all', 'needsgrading', 'autograded', 'manuallygraded'])) {
             $grade = null;
         }
-        $page = optional_param('page', 0, PARAM_INT);
 
         // Check permissions.
         $this->context = context_module::instance($cm->id);
         require_capability('mod/quiz:grade', $this->context);
-        $shownames = has_capability('quiz/grading:viewstudentnames', $this->context);
-        $showidnumbers = has_capability('quiz/grading:viewidnumber', $this->context);
 
         // Get the list of questions in this quiz.
         $this->questions = quiz_report_get_significant_questions($quiz);
@@ -98,9 +121,11 @@ class quiz_archive_report extends quiz_default_report {
         // Start output.
         $this->print_header_and_tabs($cm, $course, $quiz, 'archive');
 
+        $this->form->display();
+
         // What sort of page to display?
         if (!$hasquestions) {
-            echo quiz_no_questions_message($quiz, $cm, $this->context);
+            echo $OUTPUT->notification(get_string('nothingfound', 'quiz_grading'));
         } else {
             $this->display_archive();
         }
@@ -108,20 +133,14 @@ class quiz_archive_report extends quiz_default_report {
     }
 
     /**
-     * Get the URL of the front page of the report that lists all the questions.
-     * @return string the URL.
-     */
-    protected function base_url() {
-        return new moodle_url('/mod/quiz/report.php',
-            array('id' => $this->cm->id, 'mode' => 'archive'));
-    }
-
-    /**
      * Display all attempts.
      */
     protected function display_archive() {
-        global $OUTPUT, $PAGE;
-        $studentattempts = $this->quizreportgetstudentandattempts($this->quiz);
+        global $OUTPUT;
+        $studentattempts = $this->quizreportgetstudentandattempts($this->quizobj);
+        if (count($studentattempts) === 0) {
+            echo $OUTPUT->notification(get_string('nothingfound', 'quiz_grading'));
+        }
         foreach ($studentattempts as $studentattempt) {
             echo $this->quiz_report_get_student_attempt($studentattempt['attemptid'], $studentattempt['userid']);
         }
@@ -140,11 +159,11 @@ class quiz_archive_report extends quiz_default_report {
         $sql = "SELECT DISTINCT quiza.id attemptid, u.id userid, u.firstname, u.lastname FROM {user} u " .
             "LEFT JOIN {quiz_attempts} quiza " .
             "ON quiza.userid = u.id WHERE quiza.quiz = :quizid AND quiza.preview = 0 ORDER BY u.lastname ASC, u.firstname ASC";
-        $params = array('quizid' => $this->quiz->id);
+        $params = ['quizid' => $this->quizobj->id];
         $results = $DB->get_records_sql($sql, $params);
-        $students = array();
+        $students = [];
         foreach ($results as $result) {
-            array_push($students, array('userid' => $result->userid, 'attemptid' => $result->attemptid));
+            array_push($students, ['userid' => $result->userid, 'attemptid' => $result->attemptid]);
         }
         return $students;
     }
@@ -164,11 +183,11 @@ class quiz_archive_report extends quiz_default_report {
         // Work out some time-related things.
         $attempt = $attemptobj->get_attempt();
         $quiz = $attemptobj->get_quiz();
-        $options = mod_quiz_display_options::make_from_quiz($this->quiz, quiz_attempt_state($quiz, $attempt));
+        $options = quiz_archive_mod_quiz_display_options::make_from_quiz($this->quizobj, quiz_attempt_state($quiz, $attempt));
         $options->flags = quiz_get_flag_option($attempt, context_module::instance($this->cm->id));
         $overtime = 0;
 
-        if ($attempt->state == quiz_attempt::FINISHED) {
+        if ($attempt->state == quiz_archive_quiz_attempt::FINISHED) {
             if ($timetaken = ($attempt->timefinish - $attempt->timestart)) {
                 if ($quiz->timelimit && $timetaken > ($quiz->timelimit + 60)) {
                     $overtime = $timetaken - $quiz->timelimit;
@@ -183,59 +202,64 @@ class quiz_archive_report extends quiz_default_report {
         }
 
         // Prepare summary information about the whole attempt.
-        $summarydata = array();
+        $summarydata = [];
         // We want the user information no matter what.
-        $student = $DB->get_record('user', array('id' => $attemptobj->get_userid()));
+        $student = $DB->get_record('user', ['id' => $attemptobj->get_userid()]);
         $userpicture = new user_picture($student);
         $userpicture->courseid = $attemptobj->get_courseid();
-        $summarydata['user'] = array(
+        $summarydata['user'] = [
             'title'   => $userpicture,
-            'content' => new action_link(new moodle_url('/user/view.php', array(
-                'id' => $student->id, 'course' => $attemptobj->get_courseid())),
+            'content' => new action_link(new moodle_url('/user/view.php', [
+                'id' => $student->id, 'course' => $attemptobj->get_courseid(), ]),
                 fullname($student, true)),
-        );
+        ];
 
         // Timing information.
-        $summarydata['startedon'] = array(
+        $summarydata['startedon'] = [
             'title'   => get_string('startedon', 'quiz'),
             'content' => userdate($attempt->timestart),
-        );
+        ];
 
-        $summarydata['state'] = array(
+        $summarydata['state'] = [
             'title'   => get_string('attemptstate', 'quiz'),
-            'content' => quiz_attempt::state_name($attempt->state),
-        );
+            'content' => quiz_archive_quiz_attempt::state_name($attempt->state),
+        ];
 
-        if ($attempt->state == quiz_attempt::FINISHED) {
-            $summarydata['completedon'] = array(
+        if ($attempt->state == quiz_archive_quiz_attempt::FINISHED) {
+            $summarydata['completedon'] = [
                 'title'   => get_string('completedon', 'quiz'),
                 'content' => userdate($attempt->timefinish),
-            );
-            $summarydata['timetaken'] = array(
+            ];
+            $summarydata['timetaken'] = [
                 'title'   => get_string('timetaken', 'quiz'),
                 'content' => $timetaken,
-            );
+            ];
         }
 
         if (!empty($overtime)) {
-            $summarydata['overdue'] = array(
+            $summarydata['overdue'] = [
                 'title'   => get_string('overdue', 'quiz'),
                 'content' => $overtime,
-            );
+            ];
         }
 
         // Show marks (if the user is allowed to see marks at the moment).
         $grade = quiz_rescale_grade($attempt->sumgrades, $quiz, false);
-        if ($options->marks >= question_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
+        if ($options->marks >= quiz_archive_mod_quiz_display_options::MARK_AND_MAX && quiz_has_grades($quiz)) {
 
-            if ($attempt->state != quiz_attempt::FINISHED) {
+            if ($attempt->state != quiz_archive_quiz_attempt::FINISHED) {
                 // Cannot display grade.
                 echo '';
             } else if (is_null($grade)) {
-                $summarydata['grade'] = array(
-                    'title'   => get_string('grade', 'quiz'),
+                if (get_string_manager()->string_exists('gradenoun', 'moodle')) {
+                    $gradenounstring = get_string('gradenoun');
+                } else {
+                    $gradenounstring = get_string('grade', 'quiz');
+                }
+                $summarydata['grade'] = [
+                    'title'   => $gradenounstring,
                     'content' => quiz_format_grade($quiz, $grade),
-                );
+                ];
 
             } else {
                 // Show raw marks only if they are different from the grade (like on the view page).
@@ -243,10 +267,10 @@ class quiz_archive_report extends quiz_default_report {
                     $a = new stdClass();
                     $a->grade = quiz_format_grade($quiz, $attempt->sumgrades);
                     $a->maxgrade = quiz_format_grade($quiz, $quiz->sumgrades);
-                    $summarydata['marks'] = array(
+                    $summarydata['marks'] = [
                         'title'   => get_string('marks', 'quiz'),
                         'content' => get_string('outofshort', 'quiz', $a),
-                    );
+                    ];
                 }
 
                 // Now the scaled grade.
@@ -260,10 +284,15 @@ class quiz_archive_report extends quiz_default_report {
                 } else {
                     $formattedgrade = get_string('outof', 'quiz', $a);
                 }
-                $summarydata['grade'] = array(
-                    'title'   => get_string('grade', 'quiz'),
+                if (get_string_manager()->string_exists('gradenoun', 'moodle')) {
+                    $gradenounstring = get_string('gradenoun');
+                } else {
+                    $gradenounstring = get_string('grade', 'quiz');
+                }
+                $summarydata['grade'] = [
+                    'title'   => $gradenounstring,
                     'content' => $formattedgrade,
-                );
+                ];
             }
         }
 
@@ -273,10 +302,10 @@ class quiz_archive_report extends quiz_default_report {
         // Feedback if there is any, and the user is allowed to see it now.
         $feedback = $attemptobj->get_overall_feedback($grade);
         if ($options->overallfeedback && $feedback) {
-            $summarydata['feedback'] = array(
+            $summarydata['feedback'] = [
                 'title' => get_string('feedback', 'quiz'),
                 'content' => $feedback,
-            );
+            ];
         }
 
         // Summary table end.
@@ -303,7 +332,8 @@ class quiz_archive_report extends quiz_default_report {
             $displayoptions->marks = 2;
             $displayoptions->manualcomment = 1;
             $displayoptions->feedback = 1;
-            $displayoptions->history = true;
+            $displayoptions->history = $this->options->showhistory;
+            $displayoptions->rightanswer = $this->options->showright;
             $displayoptions->correctness = 1;
             $displayoptions->numpartscorrect = 1;
             $displayoptions->flags = 1;
@@ -314,6 +344,9 @@ class quiz_archive_report extends quiz_default_report {
                     $attemptobj->get_question_attempt($originalslot)->get_max_mark());
             }
             $quba = question_engine::load_questions_usage_by_activity($attemptobj->get_uniqueid());
+            if (method_exists($quba, 'preload_all_step_users')) {
+                $quba->preload_all_step_users();
+            }
             $string .= $quba->render_question($slot, $displayoptions, $number);
 
         }

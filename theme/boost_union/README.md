@@ -114,6 +114,10 @@ Here, you can upload a custom image that the browser will show as the favicon of
 This setting is already available in the Moodle core theme Boost. For more information how to use it, please have a look at the official Moodle documentation: http://docs.moodle.org/en/Boost_theme
 Please note: This will not interfere with the setting "theme_boost_union | loginbackgroundimage" which means that the pictures uploaded here will be shown on all pages except the login page.
 
+###### Background image position
+
+With this setting, you control the positioning of the background image within the browser window. The first value is the horizontal position, the second value is the vertical position.
+
 ##### Brand colors
 
 ###### Brand color
@@ -154,6 +158,10 @@ With this setting, you can modify the icons for activities and resources which a
 
 This setting is already available in the Moodle core theme Boost.
 However, in Boost Union you can not only add one but up to 25 files as a background image for the login page. One of these images will be picked randomly and shown when the user visits the login page.
+
+###### Login page background image position
+
+With this setting, you control the positioning of the login page background image within the browser window. The first value is the horizontal position, the second value is the vertical position.
 
 ###### Display text for login background images
 
@@ -447,6 +455,16 @@ With this setting a hint will appear in the course header when a user is accessi
 
 With this setting a hint will appear in the course header if the course is visible and an enrolment without enrolment key is currently possible.
 
+#### Tab "Administration"
+
+In this tab there are the following settings:
+
+##### Course management
+
+###### Show view course icon
+
+By default, on the course management page, Moodle requires you to either open the course details or to pass through the course settings before you can click an additional UI element to view the course. By enabling this setting, you can add a 'View course' icon directly to the category listing on the course management page.
+
 ### Settings page "Flavours"
 
 Boost Union's flavours offer a possibility to override particular Moodle look & feel settings in particular contexts. On this page, you can create and manage flavours.
@@ -519,7 +537,10 @@ This plugin is carefully developed and thoroughly tested, but bugs and problems 
 Please report bugs and problems on Github:
 https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues
 
-We will do our best to solve your problems, but please note that due to limited resources we can't always provide per-case support.
+Support thread:
+https://moodle.org/mod/forum/discuss.php?d=452129
+
+We kindly invite you to use this support thread in case of any questions you might have. We are a team of many (sometimes power) users of Boost Union and will try to answer or collectively according to our measures. If any other users know answers or are quicker, don't hesitate to answer. We will do our best to solve your problems, but please note that due to limited resources we can't always provide per-case support.
 
 
 Feature proposals

@@ -419,8 +419,8 @@ class quiz_makeexam_report extends quiz_default_report {
                 if ($attemptids = optional_param_array('attemptid', array(), PARAM_INT)) {
                     require_capability('mod/quiz:deleteattempts', $this->context);
 
-                    print_object("aqui");
-                    die;
+                    //print_object("aqui");
+                    //die;
                     $this->delete_selected_attempts($quiz, $cm, $attemptids, $allowed);
                     redirect($reporturl);
                 }
@@ -1141,7 +1141,7 @@ class quiz_makeexam_report extends quiz_default_report {
             $fields = 'qms.slot, qv.questionid, qms.questionbankentryid';
             $slots = $this->attempt_real_questions($quiz->id, $newid, $fields);
             foreach($slots as $slot) {
-                print_object("Hiding question with qid: {$slot->questionid}  qbeid: {$slot->questionbankentryid}");
+                //print_object("Hiding question with qid: {$slot->questionid}  qbeid: {$slot->questionbankentryid}");
                 update_question_version_status::execute($slot->questionid,
                                                         question_version_status::QUESTION_STATUS_HIDDEN);
             }

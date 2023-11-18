@@ -78,6 +78,9 @@ $string['backgroundimagesheading'] = 'General background images';
 // ... ... Setting: Background image
 $string['backgroundimagesetting'] = 'Background image';
 $string['backgroundimagesetting_desc'] = 'Here, you can upload a custom image to display as a background of the site. The background image you upload here will override the background image in your theme preset files.';
+// ... ... Setting: Background image position
+$string['backgroundimagepositionsetting'] = 'Background image position';
+$string['backgroundimagepositionsetting_desc'] = 'With this setting, you control the positioning of the background image within the browser window. The first value is the horizontal position, the second value is the vertical position.';
 // ... Section: Brand colors.
 $string['brandcolorsheading'] = 'Brand colors';
 // ... Section: Bootstrap colors.
@@ -168,6 +171,9 @@ $string['loginbackgroundimagesheading'] = 'Login page background images';
 // ... ... Setting: Login page background image.
 $string['loginbackgroundimage'] = 'Login page background images';
 $string['loginbackgroundimage_desc'] = 'The images to display as a background of the login page. One of these images will be picked randomly and shown when the user visits the login page. Please make sure not to use non-ASCII-characters in the filename if you want to display text for login background images.';
+// ... ... Setting: Login page background image position.
+$string['loginbackgroundimagepositionsetting'] = 'Login page background image position';
+$string['loginbackgroundimagepositionsetting_desc'] = 'With this setting, you control the positioning of the login page background image within the browser window. The first value is the horizontal position, the second value is the vertical position.';
 // ... ... Setting: Login page background image text.
 $string['loginbackgroundimagetextsetting'] = 'Display text for login background images';
 $string['loginbackgroundimagetextsetting_desc'] = 'With this optional setting you can add text, e.g. a copyright notice to your uploaded background images. This text will appear on top of the page footer on the login page. However, for screen real estate reasons, it is only shown on larger screen sizes.<br/>
@@ -761,6 +767,14 @@ $string['showhintcourseselfenrolfromuntil'] = 'The <strong>{$a->name}</strong> e
 $string['showhintcourseselfenrolsinceuntil'] = 'The <strong>{$a->name}</strong> enrolment instance allows unrestricted self enrolment until {$a->until}.';
 $string['showhintcourseselfenrolinstancecallforaction'] = 'If you don\'t want any Moodle user to have access to this course freely, please restrict the self enrolment settings.';
 
+// Settings: Administration tab.
+$string['administrationtab'] = 'Administration';
+// ... Section: Course management.
+$string['coursemanagementheading'] = 'Course management';
+// ... ... Setting: Show view course icon in course management.
+$string['showviewcourseiconincoursemgntsetting'] = 'Show view course icon';
+$string['showviewcourseiconincoursemgntsesetting_desc'] = 'By default, on the <a href="{$a}">course management page</a>, Moodle requires you to either open the course details or to pass through the course settings before you can click an additional UI element to view the course. By enabling this setting, you can add a \'View course\' icon directly to the category listing on the course management page.';
+
 // Settings: Flavours page.
 $string['configtitleflavours'] = 'Flavours';
 $string['flavoursappliesto'] = 'Applies to';
@@ -1010,6 +1024,8 @@ $string['boost_union:editregionoffcanvascenter'] = 'To be able to edit the Off-c
 // Caches.
 $string['cachedef_fontawesome'] = 'FontAwesome files (which are uploaded in the Boost Union settings)';
 $string['cachedef_flavours'] = 'Flavours which apply to a given page category ID for the current user';
+$string['cachedef_smartmenus'] = 'Smart menus';
+$string['cachedef_smartmenu_items'] = 'Smart menu items';
 
 // Upgrade notices.
 $string['upgradenotice_2022080922'] = 'From this release on, Boost Union has its own logo and compact logo settings and does not use these files from the Moodle core settings anymore.';

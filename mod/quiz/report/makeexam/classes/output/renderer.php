@@ -61,11 +61,6 @@ class renderer extends plugin_renderer_base {
         $button->add_confirm_action(get_string('clear_confirm', 'quiz_makeexam'));
         echo $this->container($this->render($button), ' makeexambuttonform clearfix ');
         echo $this->container('', 'clearfix');
-/*
-        print_object($this->page->context);
-        print_object($this->page->url);
-        print_object($this->page->course->id);
-*/
     }
 
     /**

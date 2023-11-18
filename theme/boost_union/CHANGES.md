@@ -4,6 +4,16 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r15
+
+* 2023-11-11 - Bugfix: Bulk actions widget overlaid course header image, solves #469.
+* 2023-11-09 - Bugfix: Hide back to top button on small screens as soon as the right hand drawer is opened, solves #379.
+* 2023-11-09 - Bugfix: Styles of styled e-mail previews leaked into the rest of the admin UI, solves #413.
+* 2023-11-04 - Bugfix: Pass footnote content without text_to_html div generation, solves #442.
+* 2023-10-09 - Improvement: Add a direct 'view course' icon on the course management pages, solves #129.
+* 2023-10-05 - Improvement: Allow the admin to set the background-position of the background and login background images, solves #111.
+* 2023-11-03 - Bugfix: Add missing cachedef strings to the language pack, solves #441.
+
 ### v4.1-r14
 
 * 2023-10-29 - Test: Add missing Behat tests for Scroll-spy implementation, solves #86.
