@@ -713,12 +713,17 @@ function set_downloadcontent(int $id, bool $downloadcontent): bool {
  * has been moved to {@link set_section_visible()} which was the only place from which
  * the parameter was used.
  *
+ * If $rebuildcache is set to false, the calling code is responsible for ensuring the cache is purged
+ * and rebuilt as appropriate. Consider using this if set_coursemodule_visible is called multiple times
+ * (e.g. in a loop).
+ *
  * @param int $id of the module
  * @param int $visible state of the module
  * @param int $visibleoncoursepage state of the module on the course page
+ * @param bool $rebuildcache If true (default), perform a partial cache purge and rebuild.
  * @return bool false when the module was not found, true otherwise
  */
-function set_coursemodule_visible($id, $visible, $visibleoncoursepage = 1) {
+function set_coursemodule_visible($id, $visible, $visibleoncoursepage = 1, bool $rebuildcache = true) {
     global $DB, $CFG;
     require_once($CFG->libdir.'/gradelib.php');
     require_once($CFG->dirroot.'/calendar/lib.php');
@@ -775,8 +780,10 @@ function set_coursemodule_visible($id, $visible, $visibleoncoursepage = 1) {
         }
     }
 
-    \course_modinfo::purge_course_module_cache($cm->course, $cm->id);
-    rebuild_course_cache($cm->course, false, true);
+    if ($rebuildcache) {
+        \course_modinfo::purge_course_module_cache($cm->course, $cm->id);
+        rebuild_course_cache($cm->course, false, true);
+    }
     return true;
 }
 
@@ -1458,7 +1465,6 @@ function course_update_section($course, $section, $data) {
     );
     $event->trigger();
 
-
     if(!$ulpgc = get_config('local_ulpgccore', 'enabledadminmods')) { // prevent hide all modules, conflict with TF registry
         // If section visibility was changed, hide the modules in this section too.
         if ($changevisibility && !empty($section->sequence)) {
@@ -1467,16 +1473,16 @@ function course_update_section($course, $section, $data) {
                 if ($cm = get_coursemodule_from_id(null, $moduleid, $courseid)) {
                     if ($data['visible']) {
                         // As we unhide the section, we use the previously saved visibility stored in visibleold.
-                    set_coursemodule_visible($moduleid, $cm->visibleold, $cm->visibleoncoursepage);
+                        set_coursemodule_visible($moduleid, $cm->visibleold, $cm->visibleoncoursepage, false);
                     } else {
                         // We hide the section, so we hide the module but we store the original state in visibleold.
-                        set_coursemodule_visible($moduleid, 0, $cm->visibleoncoursepage);
+                        set_coursemodule_visible($moduleid, 0, $cm->visibleoncoursepage, false);
                         $DB->set_field('course_modules', 'visibleold', $cm->visible, ['id' => $moduleid]);
-                        \course_modinfo::purge_course_module_cache($cm->course, $cm->id);
                     }
                     \core\event\course_module_updated::create_from_cm($cm)->trigger();
                 }
             }
+            \course_modinfo::purge_course_modules_cache($courseid, $cmids);
             rebuild_course_cache($courseid, false, true);
         }
     }
@@ -3147,6 +3153,7 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
                 'ajaxurl' => $config->resourceurl,
                 'config' => $config,
             )), null, true);
+    }
 
     // Require various strings for the command toolbox
     $PAGE->requires->strings_for_js(array(
@@ -3192,7 +3199,6 @@ function include_course_ajax($course, $usedmodules = array(), $enabledmodules = 
     // Load drag and drop upload AJAX.
     require_once($CFG->dirroot.'/course/dnduploadlib.php');
     dndupload_add_to_course($course, $enabledmodules);
-    }
 
     $PAGE->requires->js_call_amd('core_course/actions', 'initCoursePage', array($course->format));
 

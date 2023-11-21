@@ -415,6 +415,9 @@ Ubicaciones, lugares y aulas se pueden organizar jerárquicamente: unos contiene
 
 Especificando un contenedor se puede construir una jerarquía de ubicaciones indicando, por ejemplo, qué aulas pertenecen a cada sede.';
 $string['address'] = 'Dirección';
+$string['staffer'] = 'Usuario';
+$string['staffinfo'] = 'Información del Personal';
+$string['staffinfo_help'] = 'Información sobre el usuario como Personal';
 $string['staffers'] = 'Personal';
 $string['stafferitem'] = 'Examinador';
 $string['session_rooms'] = 'Aulas de la sesión';
@@ -442,6 +445,10 @@ $string['unallocatedyet'] = 'Sin asignar aún';
 $string['unallocate'] = 'Ítem sin ubicar';
 $string['unallocateall'] = 'Descolocar todos';
 
+$string['allocateconfirm'] = '¿Desea renovar la distribución? <br />
+Eso anulará cualquier asignación de examen o estudiante a aula. ';
+$string['confirm_refreshallocation'] = 'Nueva distribución';
+$string['confirm_unallocateall'] = 'Descolocar todos';
 $string['refreshallocation'] = 'Nueva distribución';
 $string['withselectedtoroom'] = 'Ubicar seleccionados en ';
 

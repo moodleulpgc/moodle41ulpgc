@@ -193,20 +193,14 @@ If there are several ones with the same ID, the module in the same course or cat
 
 
 ';
-
-
-
 $string['view'] = 'View exams ';
 $string['review'] = 'Review status ';
 $string['printexams'] = 'Print by exam ';
 $string['printrooms'] = 'Print by room ';
 $string['manage'] = 'Manage registrar ';
 $string['session'] = 'Manage session ';
-
 $string['delete_confirm'] = 'You are about to remove {$a->type} named {$a->name}.
 Would you like to proceed?';
-
-
 $string['batch_confirm'] = 'You are about to {$a->action} the following {$a->type} items:
 
 {$a->list}
@@ -227,18 +221,13 @@ $string['periods'] = 'Exam periods & sessions';
 $string['editperiods'] = 'Edit periods';
 $string['editsessions'] = 'Edit sessions';
 */
-
-
 $string['editexamsessions'] = 'Edit sessions';
 $string['updateexamsession'] = 'Update exam session';
 $string['duration'] = 'Duration';
 $string['duration_help'] = 'The allocated time span for this exam session';
 $string['examsessions'] = 'Exam sessions';
 $string['editperiods'] = 'Edit periods';
-
 $string['periods'] = 'Exam periods';
-
-
 $string['exams'] = 'Exams';
 $string['editexams'] = 'Edit exams';
 $string['addexam'] = 'Add exam';
@@ -447,6 +436,9 @@ Places and rooms may be organized hierarchically: Buildings are in cities and ha
 
 By setting a parent a hierarchy may be created, specifiying wich rooms belong to each place.';
 $string['address'] = 'Address';
+$string['staffer'] = 'User';
+$string['staffinfo'] = 'Staff Info';
+$string['staffinfo_help'] = 'Information about staff user';
 $string['staffers'] = 'Staff';
 $string['stafferitem'] = 'Staffer';
 $string['session_rooms'] = 'Session rooms';
@@ -457,38 +449,32 @@ $string['assignedroomsclearmessage'] = 'This is actually a list of ALL available
 assigned rooms for this session and will be replaced by those rooms selected above.';
 $string['sessionroomssettings'] = 'Session rooms settings';
 $string['backto'] = 'Back to {$a}';
-
-
 $string['allocatedrooms'] = 'Allocated Rooms';
 $string['unallocatedexams'] = 'Unallocated Exams';
-
 $string['room'] = 'Room';
 $string['rooms'] = 'Rooms';
 $string['additionalexams'] = 'Additional Exams';
 $string['additionalexam'] = 'Additional Exam {$a->current} of {$a->total}';
-
 $string['moveusers'] = 'Move ';
 $string['fromexam'] = 'from Exam  ';
 $string['fromroom'] = 'from room';
 $string['toroom'] = 'to room';
 $string['makeallocation'] = 'Make Allocation';
-
 $string['allocateexam'] = 'Allocate exam';
 $string['unallocated'] = 'Unallocated';
 $string['unallocatedbooking'] = '{$a} Unallocated bookings';
 $string['unallocatedyet'] = 'Unallocated yet';
 $string['unallocate'] = 'Unallocate item';
 $string['unallocateall'] = 'Unallocate All';
-
+$string['allocateconfirm'] = 'Do you want to re-new the allocation? <br />
+This proccess will unallocate any exam or students in all rooms. ';
+$string['confirm_refreshallocation'] = 'New Allocation';
+$string['confirm_unallocateall'] = 'Unallocate All';
 $string['refreshallocation'] = 'Start new allocation';
-
 $string['withselectedtoroom'] = 'Allocate selected to room ';
-
 $string['freeseats'] = ' {$a} free.';
-
 $string['additionalusersexams'] = 'Additional exams: {$a->users} students with {$a->exams} exams.';
 $string['noadditionalexams'] = 'Additional exams: none';
-
 $string['roomprintoptions'] = 'Room PDF options';
 $string['examprintoptions'] = 'Exam PDF options';
 $string['userlistprintoptions'] = 'User list PDF options';

@@ -703,6 +703,7 @@ $fa-var-funnel-dollar: \f662;
 $fa-var-camera-retro: \f083;
 $fa-var-circle-arrow-down: \f0ab;
 $fa-var-arrow-circle-down: \f0ab;
+$fa-var-arrow-circle-o-down: \f01a;
 $fa-var-file-import: \f56f;
 $fa-var-arrow-right-to-file: \f56f;
 $fa-var-square-arrow-up-right: \f14c;
@@ -3158,6 +3159,7 @@ $fa-icons: (
   "camera-retro": $fa-var-camera-retro,
   "circle-arrow-down": $fa-var-circle-arrow-down,
   "arrow-circle-down": $fa-var-arrow-circle-down,
+  "arrow-circle-o-down": $fa-var-arrow-circle-o-down,
   "file-import": $fa-var-file-import,
   "arrow-right-to-file": $fa-var-arrow-right-to-file,
   "square-arrow-up-right": $fa-var-square-arrow-up-right,
@@ -4958,6 +4960,8 @@ $fa-brand-icons: (
   "korvue": $fa-var-korvue,
   "pix": $fa-var-pix,
   "steam-symbol": $fa-var-steam-symbol,
+  // ecastro
+  "arrow-circle-o-down": $fa-var-arrow-circle-o-down,
   /*
 // ecastro ULPGC
   "address-book-o": $fa-var-address-book,

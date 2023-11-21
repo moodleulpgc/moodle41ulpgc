@@ -22,7 +22,7 @@ abstract class examregistrar_actionform_base extends moodleform {
         $edit = $this->_customdata['edit'];
         $id = $this->_customdata['id']; // course_module id
         $examreg = $this->_customdata['exreg'];
-        $exreg = examregistrar_get_primaryid($examreg);    
+        $exreg = examregistrar_get_primaryid($examreg);
     
         if($this->_customdata['venue'] && !$mform->elementExists('venue')) {
             $mform->addElement('hidden', 'venue', $this->_customdata['venue']);
@@ -224,6 +224,7 @@ class examregistrar_sessionrooms_actionform extends examregistrar_actionform_bas
         
         $session = $this->_customdata['session'];
         $examreg = $this->_customdata['exreg'];
+        $exreg = examregistrar_get_primaryid($examreg);
 
         $mform->addElement('header', 'assignsessionrooms', get_string('sessionroomssettings', 'examregistrar'));
 
@@ -280,7 +281,9 @@ class examregistrar_stafffromexam_actionform extends examregistrar_actionform_ba
         global $COURSE, $DB;
 
         $mform =& $this->_form;
+
         $examreg = $this->_customdata['exreg'];
+        $exreg = examregistrar_get_primaryid($examreg);
         $session = $this->_customdata['session'];
         $bookedsite = $this->_customdata['venue'];
 

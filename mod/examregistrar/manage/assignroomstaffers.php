@@ -144,6 +144,7 @@ $potentialmembers  = array();
 
 $userfieldsapi = \core_user\fields::for_name();
 $fields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+$fields = 'u.id, '.$fields;
 $users = get_users_by_capability($context, 'mod/examregistrar:beroomstaff', $fields, 'lastname ASC');
 $categories = null;
 $categories =  !is_array($config->staffcats) ? explode(',', $config->staffcats) : $config->staffcats;

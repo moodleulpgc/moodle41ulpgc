@@ -646,7 +646,7 @@ $table->is_downloading($download, $filename, $edit);
             $editurl->param('item', -1);
             $text[] = html_writer::link($editurl, get_string('editstaffers', 'examregistrar'));
             $editurl->remove_params('item');
-            $actionurl->param('action', 'assigntaffers');
+            $actionurl->param('action', 'stafffromexam');
             $text[] = html_writer::link($actionurl, get_string('assignstaffers', 'examregistrar'));
             $uploadurl->param('csv', 'locations');
             $uploadurl->param('edit', 'locations');

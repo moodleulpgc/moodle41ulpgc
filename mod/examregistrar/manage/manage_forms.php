@@ -407,23 +407,21 @@ class examregistrar_staffer_form extends examregistrar_manageform_base {
         $examreg = $this->_customdata['exreg'];
 
         $this->add_examregistrar_element('location');
-        $mform->addRule('locationid', null, 'nonzero', null, 'client');
+        $mform->addRule('location', null, 'nonzero', null, 'client');
 
         $menu = examregistrar_get_potential_staffers($examreg, $item);
         $mform->addElement('select', 'userid', get_string('staffer', 'examregistrar'), $menu);
-        $mform->addHelpButton('userid', 'location', 'examregistrar');
         $mform->addRule('userid', null, 'required', null, 'client');
         $mform->addRule('userid', null, 'nonzero', null, 'client');
 
-        $menu = examregistrar_elements_getvaluesmenu($examreg, 'roletype');
-        $mform->addElement('select', 'roletype', get_string('roletype', 'examregistrar'), $menu);
-        $mform->addHelpButton('roletype', 'roletype', 'examregistrar');
+        $menu = examregistrar_elements_getvaluesmenu($examreg, 'roleitem');
+        $mform->addElement('select', 'roletype', get_string('roleitem', 'examregistrar'), $menu);
+        $mform->addHelpButton('roletype', 'roleitem', 'examregistrar');
         $mform->addRule('roletype', null, 'required', null, 'client');
         $mform->addRule('roletype', null, 'nonzero', null, 'client');
 
         $mform->addElement('text', 'info', get_string('staffinfo', 'examregistrar'), array('size'=>'32'));
         $mform->setType('info', PARAM_TEXT);
-        $mform->addRule('info', null, 'required', null, 'client');
         $mform->addRule('info', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('info', 'staffinfo', 'examregistrar');
 
