@@ -201,6 +201,7 @@ class provider implements \core_privacy\local\metadata\provider,
 
         // Export the votes.
         $sql = "SELECT cm.id AS cmid,
+                       hq.id AS id,
                        hq.hotquestion AS hotquestion,
                        hv.id AS id,
                        hv.question AS question,
@@ -239,7 +240,6 @@ class provider implements \core_privacy\local\metadata\provider,
                 'voter' => $vote->voter,
             ];
         }
-
         $votes->close();
         if ($itemdata) {
             self::export_hotquestion_data_for_user($itemdata, $lastcmid, $user);
@@ -288,6 +288,32 @@ class provider implements \core_privacy\local\metadata\provider,
             self::export_hotquestion_data_for_user($itemdata, $lastcmid, $user);
         }
     }
+
+
+    /**
+     * Export the supplied personal vote data for a single hotquestion activity.
+     *
+     * @param array $items The vote data for each of the items in the hot question.
+     * @param int $cmid
+     * @param \stdClass $user The user record.
+     */
+    public static function export_hqvote_data_for_user(array $items, int $cmid, \stdClass $user) {
+
+        // Fetch the generic module data for the hotquestion.
+        $context = \context_module::instance($cmid);
+        $contextdata = helper::get_context_data($context, $user);
+
+        // Merge with hotquestion vote data and write it.
+        $contextdata = (object)array_merge((array)$contextdata, ['items' => $items]);
+        writer::with_context($context)->export_data([], $contextdata);
+
+        // Write generic module intro files.
+        helper::export_context_files($context, $user);
+    }
+
+
+
+
 
     /**
      * Export the supplied personal data for a single hotquestion activity, along with any generic data or area files.

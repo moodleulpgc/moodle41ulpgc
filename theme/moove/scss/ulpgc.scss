@@ -795,6 +795,8 @@ span.unread,
 
 .block.card .my-course-name .fa {
   color: $color-orange;
+  font-size: x-small;
+  vertical-align: super;
 }
 
 .path-backup .mform .normal_setting {
@@ -803,6 +805,10 @@ span.unread,
 
 .block_calendar_month .maincalendar .header {
   font-size: 80%;
+}
+
+.popover-region-notifications.ulpgc {
+    display: none;
 }
 
 @media (min-width: 768px) {
@@ -827,6 +833,14 @@ span.unread,
 
 div.moodle-dialogue.moodle-has-zindex.yui3-panel {
   min-width: 986px;
+}
+
+
+/*---------------------------------------
+ * Activity modules: assign.
+ --------------------------------------*/
+div.moodle-dialogue.moodle-has-zindex.yui3-panel.assignfeedback_editpdf_dropdown {
+  min-width: unset;
 }
 
 /*---------------------------------------

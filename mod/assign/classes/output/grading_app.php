@@ -71,8 +71,18 @@ class grading_app implements templatable, renderable {
         user_preference_allow_ajax_update('assign_workflowfilter', PARAM_ALPHA);
         user_preference_allow_ajax_update('assign_markerfilter', PARAM_ALPHANUMEXT);
         $this->participants = $assignment->list_participants_with_filter_status_and_group($groupid);
+
         if (!$this->userid && count($this->participants)) {
             $this->userid = reset($this->participants)->id;
+        }
+
+        // ecastro //avoid filtered out users being listed: exception thrown and scary JS error
+        if($assignment->enabledadvancedassign) {
+            $filtered = $assignment->is_userid_filtered($this->userid);
+            while (!$filtered = $assignment->is_userid_filtered($this->userid)) {
+                unset($this->participants[$this->userid]);
+                $this->userid = reset($this->participants)->id;
+            }
         }
     }
 

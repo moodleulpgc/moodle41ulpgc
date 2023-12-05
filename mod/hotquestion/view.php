@@ -59,8 +59,9 @@ $context = context_module::instance($hq->cm->id);
 $entriesmanager = has_capability('mod/hotquestion:manageentries', $context);
 $canrate = has_capability('mod/hotquestion:rate', $context);
 $canask = has_capability('mod/hotquestion:ask', $context);
+$canview = has_capability('mod/hotquestion:view', $context);
 
-if (!$entriesmanager && !$canrate && !$canask) {
+if (!$entriesmanager && !$canrate && !$canask && !$canview) {
     throw new moodle_exception(get_string('accessdenied', 'hotquestion'));
 }
 

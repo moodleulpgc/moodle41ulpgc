@@ -154,12 +154,20 @@ if ($courseid > 0) {
     if (!empty($catids)) {
         echo "Migration of MTF Questions within courseid " . $courseid . " <br/>\n";
         list($csql, $params) = $DB->get_in_or_equal($catids);
-        $sql = "
-        SELECT q.* FROM {question} q WHERE q.qtype = 'multichoice' AND q.parent = 0
-        AND q.id in (SELECT qv.questionid
-                                  FROM {question_versions} qv
-                                  JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
-                                 WHERE qbe.questioncategoryid $csql)";
+
+        $version = 'AND (qv.version = (SELECT MAX(v.version)
+                                         FROM {question_versions} v
+                                         JOIN {question_bank_entries} be
+                                           ON be.id = v.questionbankentryid
+                                        WHERE be.id = qbe.id) OR qv.version is null)';
+        $sql = "SELECT q.*, qv.status, qc.id AS category
+                                         FROM {question} q
+                                         JOIN {question_versions} qv ON qv.questionid = q.id
+                                         JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+                                         JOIN {question_categories} qc ON qc.id = qbe.questioncategoryid
+                                        WHERE qc.id $csql $version
+                                        and q.qtype = 'multichoice' and q.parent = 0
+                                     ORDER BY qc.id, q.qtype, q.name";
     } else {
         echo "<br/>[<font color='red'>ERR</font>] No question categories for course found.<br/>\n";
         die();
@@ -190,12 +198,19 @@ if ($categoryid > 0) {
 
         list($csql, $params) = $DB->get_in_or_equal($catids);
 
-        $sql = "
-        SELECT q.* FROM {question} q WHERE q.qtype = 'multichoice' AND q.parent = 0
-        AND q.id in (SELECT qv.questionid
-                                  FROM {question_versions} qv
-                                  JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
-                                 WHERE qbe.questioncategoryid $csql)";
+        $version = 'AND (qv.version = (SELECT MAX(v.version)
+                                         FROM {question_versions} v
+                                         JOIN {question_bank_entries} be
+                                           ON be.id = v.questionbankentryid
+                                        WHERE be.id = qbe.id) OR qv.version is null)';
+        $sql = "SELECT q.*, qv.status, qc.id AS category
+                                         FROM {question} q
+                                         JOIN {question_versions} qv ON qv.questionid = q.id
+                                         JOIN {question_bank_entries} qbe ON qbe.id = qv.questionbankentryid
+                                         JOIN {question_categories} qc ON qc.id = qbe.questioncategoryid
+                                        WHERE qc.id $csql $version
+                                        and q.qtype = 'multichoice' and q.parent = 0
+                                     ORDER BY qc.id, q.qtype, q.name";
     } else {
         echo "<br/>[<font color='red'>ERR</font>] Question category with ID " . $categoryid . " not found<br/>\n";
         die();

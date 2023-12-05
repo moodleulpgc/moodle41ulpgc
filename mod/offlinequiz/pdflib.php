@@ -1351,7 +1351,7 @@ function offlinequiz_str_html_pdf($input, $stripalltags=true, $questionid=null, 
             }
             sort($style);
             array_shift($styleinfo);
-            $output .= implode($style) . implode($styleinfo, '>');
+            $output .= implode($style) . implode('>', $styleinfo);
             rsort($style);
             $output .= implode($style);
             if (!empty($tags[1])) {

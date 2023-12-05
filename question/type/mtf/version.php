@@ -18,7 +18,7 @@
  * Version information for qtype_mtf.
  *
  * @package     qtype_mtf
- * @author      Amr Hourani (amr.hourani@id.ethz.ch)
+ * @author      Amr Hourani (amr.hourani@id.ethz.ch) .
  * @author      Martin Hanusch (martin.hanusch@let.ethz.ch)
  * @copyright   2016 ETHZ {@link http://ethz.ch/}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,8 +27,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_mtf';
-$plugin->version = 2023060400;
+$plugin->version = 2023111300;
 $plugin->requires = 2021050100; // Moodle >=3.11+.
 
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '4 possible from Moodle 3.11 (Transitional)';
+$plugin->release = '4.3';

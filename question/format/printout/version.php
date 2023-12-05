@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qformat_printout';
-$plugin->release  = '1.03 (Build: 20200515)';
-$plugin->version   = 2020051500;
+$plugin->release  = '1.04';
+$plugin->version   = 2023112301;
 $plugin->requires  = 2011120511;
 $plugin->maturity  = MATURITY_STABLE;

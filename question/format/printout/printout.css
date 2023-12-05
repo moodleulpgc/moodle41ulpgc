@@ -1,5 +1,4 @@
-@media print
-{
+@media print {
     div{
         page-break-inside: avoid;
     }
@@ -35,26 +34,27 @@ div {
 }
 
 .category {
-  font-size: 1.5em ; font-weight: bold;
+    font-size: 1.5em;
+    font-weight: bold;
 }
 
 .questiontext {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .questiontype {
-  font-size: 0.75em;
+    font-size: 0.75em;
 }
 
 .points {
-  font-size: 0.75em;
-  font-weight: bold;
+    font-size: 0.75em;
+    font-weight: bold;
 }
 
 .wrong {
-  color: crimson;
+    color: crimson;
 }
 
 .correct {
-  color: green;
+    color: green;
 }

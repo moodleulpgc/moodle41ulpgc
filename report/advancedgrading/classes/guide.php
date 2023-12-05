@@ -43,9 +43,14 @@ class guide {
             foreach ($data['students'] as $student) {
                 $rows .= '<tr>';
                 $rows .= get_student_cells($data, $student);
-                foreach (array_keys($data['criterion']) as $crikey) {
-                    $rows .= '<td>' . number_format($student['grades'][$crikey]['score'], 2) . '</td>';
-                    $rows .= '<td>' . $student['grades'][$crikey]['feedback'] . '</td>';
+                foreach (array_keys($data['criteriarecord']) as $crikey) {
+                    if (isset($student['grades'][$crikey]['score'])) {
+                        $rows .= '<td>' . number_format($student['grades'][$crikey]['score'], 2) . '</td>';
+                        $rows .= '<td>' . $student['grades'][$crikey]['feedback'] . '</td>';
+                    } else {
+                        $rows .= '<td></td>';
+                        $rows .= '<td></td>';
+                    }
                 }
                 $rows .= get_summary_cells($student);
                 $rows .= '</tr>';
@@ -77,7 +82,7 @@ class guide {
                     criteria.description,criteria.shortname,
                     fillings.score, fillings.remark, fillings.criterionid, rubm.username AS grader,
                     stu.id AS userid, stu.idnumber AS idnumber, stu.firstname, stu.lastname,
-                    stu.username, stu.email, gin.timemodified AS modified, ag.grade,
+                    stu.username, stu.email, ag.timemodified AS modified, ag.grade,
                     assign_comment.commenttext as overallfeedback
             FROM {assign} asg
             JOIN {course_modules} cm ON cm.instance = asg.id
@@ -89,7 +94,7 @@ class guide {
             JOIN {assign_grades} ag ON ag.id = gin.itemid
       LEFT  JOIN {assignfeedback_comments} assign_comment on assign_comment.grade = ag.id
             JOIN {user} stu ON stu.id = ag.userid
-            JOIN {user} rubm ON rubm.id = gin.raterid
+            JOIN {user} rubm ON rubm.id = ag.grader
             JOIN {gradingform_guide_fillings} fillings ON (fillings.instanceid = gin.id)
              AND (fillings.criterionid = criteria.id)
            WHERE cm.id = :assignid AND gin.status = 0

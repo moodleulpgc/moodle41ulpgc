@@ -129,8 +129,6 @@ class mod_hotquestion {
                 $votes->question = $question->id;
                 $votes->voter = $USER->id;
                 $DB->insert_record('hotquestion_votes', $votes);
-            } else {
-                $DB->delete_records('hotquestion_votes', ['question' => $question->id, 'voter' => $USER->id]);
             }
             // Update viewed completion state for current user.
             $this->update_completion_state();
@@ -161,11 +159,7 @@ class mod_hotquestion {
             $event = remove_vote::create($params);
             $event->trigger();
 
-            if (!$this->has_voted($question->id)) {
-                $votes->question = $question->id;
-                $votes->voter = $USER->id;
-                $DB->insert_record('hotquestion_votes', $votes);
-            } else {
+            if ($this->has_voted($question->id)) {
                 $DB->delete_records('hotquestion_votes', ['question' => $question->id, 'voter' => $USER->id]);
             }
             // Update viewed completion state for current user.

@@ -36,25 +36,38 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2018 Stefan Weber (webers@technikum-wien.at)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class qformat_printout extends qformat_default {
 
- class qformat_printout extends qformat_default {
-
+    /**
+     * @inheritdoc
+     */
     public function provide_export() {
         return true;
     }
 
+    /**
+     * Write title of question.
+     * @param string $questiontext
+     *
+     * @return string
+     */
     protected function writetitle($questiontext) {
         return "<p><li class=\"questiontext\">" . strip_tags($questiontext) . "</li></p>";
-      }
+    }
 
-    // Turns question into printable format.
+    /**
+     * Write title of question.
+     * @param object $question
+     *
+     * @return string
+     */
     protected function writequestion($question) {
 
         global $OUTPUT;
 
-        // Category name
-        if ($question->qtype=='category') {
-            $categoryname = str_replace('$course$/top/',"",$question->category);
+        // Category name.
+        if ($question->qtype == 'category') {
+            $categoryname = str_replace('$course$/top/', "", $question->category);
             return "</ul> <span class=\"category\"> {$categoryname} </span> <ul class='questionlist'>";
         }
 
@@ -65,15 +78,17 @@ defined('MOODLE_INTERNAL') || die();
                 $expout .= $this->writetitle($question->questiontext);
                 $expout .= "<ul class=\"multichoice\">\n";
                 foreach ($question->options->answers as $answer) {
-                    //remove <p> tags from answers since the default <p> tags mess up formatting for multiple choice answers
+
+                    // Remove <p> tags from answers since the default <p> tags mess up formatting for multiple choice answers.
                     $answertext = strip_tags($answer->answer);
                     $answerpoints = $answer->fraction * 100 . "%";
                     if ($answerpoints > 0) {
-                      $class = '"correct points"';
+                        $class = '"correct points"';
                     } else {
-                      $class = '"wrong points"';
+                        $class = '"wrong points"';
                     }
-                    $expout .= " <li><span class=$class>($answerpoints)  </span><span class=\"mcanswer\">{$answertext} </span></li>";
+                    $expout .= " <li><span class=$class>($answerpoints)  </span>
+                        <span class=\"mcanswer\">{$answertext} </span></li>";
                 }
                 $expout .= "</ul>\n";
                 break;
@@ -85,9 +100,9 @@ defined('MOODLE_INTERNAL') || die();
                 $expout .= "<ul class=\"multichoice\">\n";
                 foreach ($question->options->answers as $answer) {
                     if ($answer->fraction > 0) {
-                      $class = 'correct';
+                        $class = 'correct';
                     } else {
-                      $class = 'wrong';
+                        $class = 'wrong';
                     }
                     $answertext = strip_tags($answer->answer);
                     $expout .= " <li class=\"mcanswer $class\">{$answertext}</li>";
@@ -124,19 +139,20 @@ defined('MOODLE_INTERNAL') || die();
                 $i = 1;
                 $questiontext = strip_tags($question->questiontext);
                 foreach ($question->options->answers as $answer) {
-                  $questiontext = str_replace('[[' . $i . ']]', '<span class="correct">[[' . $answer->answer . ']]</span>', $questiontext);
-                  $i++;
+                    $questiontext = str_replace('[[' . $i . ']]',
+                        '<span class="correct">[[' . $answer->answer . ']]</span>', $questiontext);
+                    $i++;
                 }
                 $expout .= "<p><li class=\"questiontext\"> {$questiontext}</li></p>";
                 foreach ($question->options->answers as $answer) {
-                  $expout .= "{$answer->answer}, ";
+                    $expout .= "{$answer->answer}, ";
                 }
                 break;
             case 'multianswer':
                 $expout .= $this->writetitle($question->questiontext);
                 $expout .= "<ul>";
                 foreach ($question->options->questions as $subquestion) {
-                  $expout .= "<li class=\"mcanswer\">{$subquestion->questiontext}</li>";
+                    $expout .= "<li class=\"mcanswer\">{$subquestion->questiontext}</li>";
                 }
                 $expout .= "</ul>";
                 break;
@@ -148,45 +164,47 @@ defined('MOODLE_INTERNAL') || die();
             default:
                 $expout .= $this->writetitle($question->questiontext);
                 if (count($question->options->answers) > 1) {
-                  $expout .= "<ul>";
-                  foreach ($question->options->answers as $answer) {
-                      $expout .= "<li>". strip_tags($answer->answer) ."</li>";
+                    $expout .= "<ul>";
+                    foreach ($question->options->answers as $answer) {
+                        $expout .= "<li>". strip_tags($answer->answer) ."</li>";
                     }
-                  $expout .= "</ul>";
+                    $expout .= "</ul>";
                 } else {
-                  foreach ($question->options->answers as $answer) {
-                    $expout .= "<p>" . get_string('answer') . ": " . strip_tags($answer->answer) . "</p>";
-                  }
+                    foreach ($question->options->answers as $answer) {
+                        $expout .= "<p>" . get_string('answer') . ": " . strip_tags($answer->answer) . "</p>";
+                    }
                 }
             $expout .= "<br>";
         }
 
-        // Feedback
+        // Feedback.
         if ($question->generalfeedback) {
-          $expout .= get_string('feedback', 'question') . ": ";
-          $expout .= $question->generalfeedback;
+            $expout .= get_string('feedback', 'question') . ": ";
+            $expout .= $question->generalfeedback;
         }
 
-        // Question type
+        // Question type.
         $expout .= "<p class=\"questiontype\">{$question->name} ";
         $expout .= " (" . get_string('pluginname', "qtype_{$question->qtype}");
         if ($question->options->single) {
-          $expout .= " / " . get_string('answersingleyes', 'qtype_multichoice');
+            $expout .= " / " . get_string('answersingleyes', 'qtype_multichoice');
         }
         $expout .= ")</p>";
 
-        // End of question
+        // End of question.
         $expout .= "<hr></div>";
         return $expout;
     }
 
 
+    /**
+     * Override method to allow us to add printout headers and footers.
+     */
     protected function presave_process($content) {
-        // Override method to allow us to add printout headers and footers.
 
         global $CFG;
 
-        // Include CSS
+        // Include CSS.
         $csslines = file( "{$CFG->dirroot}/question/format/printout/printout.css" );
         $css = implode( ' ', $csslines );
 
@@ -207,6 +225,9 @@ defined('MOODLE_INTERNAL') || die();
         return $xp;
     }
 
+    /**
+     * Export as html.
+     */
     public function export_file_extension() {
         return '.html';
     }

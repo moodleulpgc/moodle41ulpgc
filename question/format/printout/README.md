@@ -1,5 +1,4 @@
-Printout Question Format Module
-===================
+# Printout Question Format Module
 
 This file is part of the qformat_printout plugin for Moodle - <http://moodle.org/>
 
@@ -13,7 +12,9 @@ This file is part of the qformat_printout plugin for Moodle - <http://moodle.org
 Description
 -----------
 
-This plugin provides an additional export format for questions, which presents them in an easily readable, 
-clear format, also suited for printout. 
+This plugin provides an additional export format for questions, which presents them in an easily readable, clear format, also suited for printout.
 
-All native question types except for "Drag & Drop on Image" and "Drag & Drop Marker" are supported, additinal oumultiresponse question type is specifically supported, other additional question types will just display with standard format (questiontext -> answer).
+Supported question types:
+- all native question types except for "Drag & Drop on Image" and "Drag & Drop Marker"
+- oumultiresponse question type
+- all other additional question types should just display with standard format (questiontext -> answer)
