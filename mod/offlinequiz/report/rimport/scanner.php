@@ -634,7 +634,7 @@ class offlinequiz_page_scanner {
         $point = new oq_point(($this->hotspots['idnumber']->x + $this->offset->x) * $factor - 2 * $this->zoomx,
                 ($this->hotspots['idnumber']->y + $this->offset->y) * $factor - 2 * $this->zoomy);
         $export['idnumber'] = $point;
-        
+        /*
         $point = new oq_point(($this->hotspots['deleted2']->x + $this->offset->x) * $factor - 2 * $this->zoomx,
                 ($this->hotspots['deleted2']->y + $this->offset->y) * $factor - 2 * $this->zoomy);
         $export['deleted2'] = $point;
@@ -642,6 +642,7 @@ class offlinequiz_page_scanner {
         $point = new oq_point(($this->hotspots['cross2']->x + $this->offset->x) * $factor - 2 * $this->zoomx,
                 ($this->hotspots['cross2']->y + $this->offset->y) * $factor - 2 * $this->zoomy);
         $export['cross2'] = $point;
+        */
         //ecastro ULPGC
 
         for ($x = 0; $x < $offlinequizconfig->ID_digits; $x++) {
@@ -1677,10 +1678,9 @@ class offlinequiz_page_scanner {
             $usernumber .= $value;
         }
 
-        // ecastro ULPGC 
+        // ecastro ULPGC
         $idnumbervalue = $this->hotspot_value($this->hotspots['idnumber']);
         $muidvalue = $this->hotspot_value($this->hotspots['moodleid']);
-
         if($muidvalue && !$idnumbervalue) {
             $muidvalue = 1;
         } else {
@@ -1690,7 +1690,8 @@ class offlinequiz_page_scanner {
         
         if($muidvalue) {
             global $DB; 
-            if(!$usernumber = $DB->get_field('user', $offlinequizconfig->ID_field, array('id' => str_replace('x', '', $usernumber)))) {
+            $usernumber = str_replace('X', '', ($usernumber));
+            if(!$usernumber = $DB->get_field('user', $offlinequizconfig->ID_field, array('id' => (int)$usernumber))) {
                 $this->insecure = true;
             } else {
                 $this->insecure = false;

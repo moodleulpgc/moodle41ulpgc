@@ -1128,6 +1128,7 @@ echo "</form>\n";
 if ($sheetloaded) {
     // Print hotspots for userkey.
     $userkeyhotspots = $scanner->export_hotspots_userid(OQ_IMAGE_WIDTH);
+
     foreach ($userkeyhotspots as $key => $hotspot) {
         // ecastro ULPGC
         if($key == 'moodleid') {
@@ -1152,7 +1153,7 @@ if ($sheetloaded) {
             continue;
         }
         
-        $x = substr($key, 1, 1);
+        $x = (int)substr($key, 1, 1);
         $y = substr($key, 2, 1);
         if (substr($usernumber, $x, 1) == 'X') {
             echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/blue.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .

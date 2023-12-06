@@ -31,13 +31,13 @@ require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/html2text.php');
 require_once($CFG->dirroot . '/mod/offlinequiz/documentlib.php');
 // ecastro ULPGC
-    if(get_config('offlinequiz', 'phpworduse')) {
-        include_once($CFG->libdir.'/phpword/PhpWord/Autoloader.php');
-            \PhpOffice\PhpWord\Autoloader::register();
-            include_once($CFG->libdir.'/phpword/PhpWord/Laminas/Escaper.php');
-    } else {
-require_once($CFG->dirroot . '/mod/offlinequiz/lib/phpwordinit.php');
-    }
+if($phpworduse = get_config('offlinequiz', 'phpworduse')) {
+    include_once($CFG->libdir.'/phpword/PhpWord/Laminas/Escaper.php');
+    include_once($CFG->libdir.'/phpword/PhpWord/Autoloader.php');
+        \PhpOffice\PhpWord\Autoloader::register();
+} else {
+    require_once($CFG->dirroot . '/mod/offlinequiz/lib/phpwordinit.php');
+}
 // ecastro ULPGC
 
 /**
@@ -80,11 +80,11 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
     // Now we go through the rest of the blocks (if there are any) and print them to a textrun.
     if (!empty($blocks)) {
         if (empty($numbering)) {
-            $textrun = $section->addTextRun();
+            $textrun = $section->addTextRun($paragraphstyle);
         } else {
-            //$textrun = $listItemRun;
-            $textrun = $section->createTextRun('questionTab');
-            $textrun->addText("\t", 'nStyle');
+            $textrun = $listItemRun;
+            //$textrun = $section->addTextRun('questionTab');
+            //$textrun->addText("\t", 'nStyle');
         }
         $counter = count($blocks);
         foreach ($blocks as $block) {
@@ -132,7 +132,7 @@ function offlinequiz_print_blocks_docx($section, $blocks, $numbering = null, $de
                 $section->addImage($block['value'], $style);
                 if ($counter > 0) {
                     if (empty($numbering)) {
-                        $textrun = $section->addTextRun();
+                        $textrun = $section->addTextRun($paragraphstyle);
                     } else {
                         $textrun = $section->addTextRun('questionTab');
                         $textrun->addText("\t", 'nStyle');
@@ -164,9 +164,9 @@ function offlinequiz_convert_underline_text_docx($text) {
     }
 
     foreach ($parts as $part) {
-        if ($span_u && $closetagpos = strpos($part, '</span>')) {
+        if ($span_u && $closetagpos = stripos($part, '</span>')) {
             $underlineremain = substr($part, $closetagpos + 7);
-        } else if ($closetagpos = strpos($part, '</u>')) {
+        } else if ($closetagpos = stripos($part, '</u>')) {
             $underlineremain = substr($part, $closetagpos + 4);
         } else {
             $closetagpos = strlen($part) - 1;
@@ -196,7 +196,7 @@ function offlinequiz_convert_super_text_docx($text) {
     }
 
     foreach ($parts as $part) {
-        if ($closetagpos = strpos($part, '</sup>')) {
+        if ($closetagpos = stripos($part, '</sup>')) {
             $supertextremain = substr($part, $closetagpos + 6);
         } else {
             $closetagpos = strlen($part) - 1;
@@ -227,7 +227,7 @@ function offlinequiz_convert_sub_text_docx($text) {
     }
 
     foreach ($parts as $part) {
-        if ($closetagpos = strpos($part, '</sub>')) {
+        if ($closetagpos = stripos($part, '</sub>')) {
             $subtextremain = substr($part, $closetagpos + 6);
         } else {
             $closetagpos = strlen($part) - 1;
@@ -263,7 +263,7 @@ function offlinequiz_convert_italic_text_docx($text) {
     }
 
     foreach ($parts as $part) {
-        if ($closetagpos = strpos($part, '</em>')) {
+        if ($closetagpos = stripos($part, '</em>')) {
             $italicremain = substr($part, $closetagpos + 5);
         } else if ($closetagpos = strpos($part, '</i>')) {
             $italicremain = substr($part, $closetagpos + 4);
@@ -301,9 +301,9 @@ function offlinequiz_convert_bold_text_docx($text) {
     }
 
     foreach ($parts as $part) {
-        if ($closetagpos = strpos($part, '</b>')) {
+        if ($closetagpos = stripos($part, '</b>')) {
             $boldremain = substr($part, $closetagpos + 4);
-        } else if ($closetagpos = strpos($part, '</strong>')) {
+        } else if ($closetagpos = stripos($part, '</strong>')) {
             $boldremain = substr($part, $closetagpos + 9);
         } else {
             $closetagpos = strlen($part) - 1;
@@ -419,7 +419,6 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
 
     foreach ($order as $key => $answer) {
         $answertext = $question->options->answers[$answer]->answer;
-        $correctanswer = false;
         $parstyle = 'respuesta';
         if ($correction) {
             // ecastro ULPGC reduce print load for revision. Only correct, right, options graded.
@@ -429,6 +428,7 @@ function offlinequiz_print_answers_docx($templateusage, $slot, $slotquestion, $q
                     $answertext .= " ©";
                 }
                 $parstyle = $correction;
+                $answertext = \html_writer::span($answertext, 'correcta', ['background-color' => 'yellow']);
             }
         }
 
@@ -509,7 +509,7 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
     $docx->addParagraphStyle('cStyle', array('align' => 'center', 'spaceAfter' => 100));
     $docx->addParagraphStyle('rStyle', array('align' => 'right'));
     // ecastro ULPGC
-    $docx->addParagraphStyle('pregunta', array('align' => 'left'));
+    $stemstyle = $docx->addParagraphStyle('pregunta', array('align' => 'left'));
     $answerstyle = $docx->addParagraphStyle('respuesta', array('align' => 'left'));
     $correctanswer = $correction;
     if($correction) {
@@ -777,7 +777,7 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
                                                     0.6, 300, $offlinequiz->disableimgnewlines, 'docx');
 
             $blocks = offlinequiz_convert_image_docx($questiontext);
-            offlinequiz_print_blocks_docx($section, $blocks, $questionnumbering, 0, 'pregunta'); // ecastro ULPGC
+            offlinequiz_print_blocks_docx($section, $blocks, $questionnumbering, 0, $stemstyle); // pregunta ecastro ULPGC
 
             if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
 
@@ -838,7 +838,7 @@ function offlinequiz_create_docx_question(question_usage_by_activity $templateus
             if ($question->qtype == 'description') {
                 offlinequiz_print_blocks_docx($section, $blocks);
             } else {
-                offlinequiz_print_blocks_docx($section, $blocks, $questionnumbering, 0, 'pregunta'); // ecastro ULPGC
+                offlinequiz_print_blocks_docx($section, $blocks, $questionnumbering, 0, $stemstyle); // ecastro ULPGC
             }
 
             if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
