@@ -1681,6 +1681,7 @@ class offlinequiz_page_scanner {
         // ecastro ULPGC
         $idnumbervalue = $this->hotspot_value($this->hotspots['idnumber']);
         $muidvalue = $this->hotspot_value($this->hotspots['moodleid']);
+        $usernumberwritten = $usernumber;
         if($muidvalue && !$idnumbervalue) {
             $muidvalue = 1;
         } else {
@@ -1688,13 +1689,23 @@ class offlinequiz_page_scanner {
             $usernumber = strtoupper($usernumber);
         }
         
+        if($useridnumber  = optional_param('useridnumber', '', PARAM_TEXT)) { // ecastro ULPGC
+            return $useridnumber;
+        }
+
         if($muidvalue) {
             global $DB; 
-            $usernumber = str_replace('X', '', ($usernumber));
-            if(!$usernumber = $DB->get_field('user', $offlinequizconfig->ID_field, array('id' => (int)$usernumber))) {
-                $this->insecure = true;
+            $usernumber = ltrim(trim($usernumber), "xX0");
+            if(!is_int($usernumber)) {
+                $usernumber = $usernumberwritten;
+                return $usernumberwritten;
             } else {
-                $this->insecure = false;
+                if(!$usernumber = $DB->get_field('user', $offlinequizconfig->ID_field, array('id' => $usernumber))) {
+                    $this->insecure = true;
+                    $usernumber = $usernumberwritten;
+                } else {
+                    $this->insecure = false;
+                }
             }
         }
         // ecastro ULPGC

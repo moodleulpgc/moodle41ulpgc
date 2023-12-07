@@ -39,6 +39,7 @@ $scannedpageid = optional_param('pageid', 0, PARAM_INT);
 $overwrite     = optional_param('overwrite', 0, PARAM_INT);
 $action        = optional_param('action', 'load', PARAM_TEXT);
 $userchanged   = optional_param('userchanged', 0, PARAM_INT);
+$useridnumber  = optional_param('useridnumber', '', PARAM_TEXT); // ecastro ULPGC
 
 if (!$scannedpage = $DB->get_record('offlinequiz_scanned_pages', array('id' => $scannedpageid))) {
     print_error('noscannedpage', 'offlinequiz', $CFG->wwwroot . '/course/view.php?id=' . $COURSE->id, $scannedpageid);
@@ -233,9 +234,14 @@ onClick=\"self.close(); return false;\"><br />";
     }
 
     $usernumber = required_param('usernumber', PARAM_TEXT);
-
+    // ecastro ULPGC
+    if($useridnumber) {
+        $usernumber = trim($useridnumber);
+    }
+    // ecastro ULPGC
     $xes = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
     // If we have only X's then we ignore the input.
+    $usernumber = ltrim(trim($usernumber), "xX0"); // ecastro ULPGC
     $userkey = $offlinequizconfig->ID_prefix . $usernumber . $offlinequizconfig->ID_postfix;
     if ($usernumber == substr($xes, 0, $offlinequizconfig->ID_digits)) {
         $scannedpage->userkey = null;
@@ -299,6 +305,11 @@ onClick=\"self.close(); return false;\"><br />";
     $scanner->set_group($groupnumber);
 
     $usernumber = required_param('usernumber', PARAM_TEXT);
+    // ecastro ULPGC
+    if($useridnumber) {
+        $usernumber = $useridnumber;
+    }
+    // ecastro ULPGC
     // If we have only X's then we ignore the input.
     if (!empty($usernumber)) {
         $userkey = $offlinequizconfig->ID_prefix . $usernumber . $offlinequizconfig->ID_postfix;
@@ -1019,6 +1030,11 @@ if ($scannedpage->status == 'ok' ||
     echo "<input class=\"imagebutton\" type=\"submit\" value=\"" . get_string('checkuserid', 'offlinequiz') .
     "\" name=\"submitbutton4\" onClick=\"submitCheckuser(); return false;\"><br />";
 
+    // ecastro ULPGC
+    echo "<label for=\"useridnumber\">".get_string('idnumber')."</label>";
+    echo "<input class=\"imagebutton\" type=\"text\" name=\"useridnumber\" value=\"".$useridnumber. "\"><br />";
+    // ecastro ULPGC
+
     if ($scannedpage->error == 'usernotincourse' && $offlinequizconfig->oneclickenrol) {
         echo "<input class=\"imagebutton\" type=\"submit\" value=\"" . get_string('enroluser', 'offlinequiz') .
         "\" name=\"submitbutton6\" onClick=\"submitEnrol(); return false;\"><br />";
@@ -1153,20 +1169,22 @@ if ($sheetloaded) {
             continue;
         }
         
-        $x = (int)substr($key, 1, 1);
-        $y = substr($key, 2, 1);
-        if (substr($usernumber, $x, 1) == 'X') {
-            echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/blue.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .
-            "\" style=\"position:absolute; top:".$hotspot->y."px; left:".
-            $hotspot->x."px; cursor:pointer; z-index: 100;\" onClick=\"set_userid(this, $x, $y)\">";
-        } else if (!empty($usernumber) and substr($usernumber, $x, 1) == $y) {
-            echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/green.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .
-            "\" style=\"position:absolute; top:".$hotspot->y."px; left:".
-            $hotspot->x."px; cursor:pointer; z-index: 100;\" onClick=\"set_userid(this, $x, $y)\">";
-        } else {
-            echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/spacer.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .
-            "\" style=\"position:absolute; top:".$hotspot->y."px; left:".
-            $hotspot->x."px; cursor:pointer; z-index: 100;\" onClick=\"set_userid(this, $x, $y)\">";
+        if((!$useridnumber && !$user) || ($scannedpage->error == 'nonexistinguser') || ($scannedpage->error == 'usernotincourse') ) { // ecastro ULPGC
+            $x = (int)substr($key, 1, 1);
+            $y = substr($key, 2, 1);
+            if (substr($usernumber, $x, 1) == 'X') {
+                echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/blue.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .
+                "\" style=\"position:absolute; top:".$hotspot->y."px; left:".
+                $hotspot->x."px; cursor:pointer; z-index: 100;\" onClick=\"set_userid(this, $x, $y)\">";
+            } else if (!empty($usernumber) and substr($usernumber, $x, 1) == $y) {
+                echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/green.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .
+                "\" style=\"position:absolute; top:".$hotspot->y."px; left:".
+                $hotspot->x."px; cursor:pointer; z-index: 100;\" onClick=\"set_userid(this, $x, $y)\">";
+            } else {
+                echo "<img src=\"$CFG->wwwroot/mod/offlinequiz/pix/spacer.gif\" border=\"0\" id=\"u$x$y\" title=\"" . $y .
+                "\" style=\"position:absolute; top:".$hotspot->y."px; left:".
+                $hotspot->x."px; cursor:pointer; z-index: 100;\" onClick=\"set_userid(this, $x, $y)\">";
+            }
         }
     }
 
