@@ -687,7 +687,7 @@ class renderer extends \plugin_renderer_base {
                                 if(!isset($userlist[$booking->sitename])) {
                                     $userlist[$booking->sitename] = array();
                                 }
-                                $userlist[$booking->sitename][] = fullname($booking, false, 'lastname firstname');
+                                $userlist[$booking->sitename][] = fullname($booking, false, 'lastname');
                             }
                             foreach($userlist as $site => $names) {
                                 $userlist[$site] = $site.' ('.count($userlist[$site]).') '.html_writer::alist($userlist[$site]);

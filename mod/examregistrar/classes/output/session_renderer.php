@@ -206,7 +206,7 @@ class session_renderer extends renderer {
             }
             $failusers = array();
             foreach($failures as $fail) {
-                $failusers[] = fullname($fail, false, 'lastname firstname').' : '.$fail->programme.'-'.$fail->shortname ;
+                $failusers[] = fullname($fail, false, 'lastname').' : '.$fail->programme.'-'.$fail->shortname ;
             }
             $numfail = count($failusers);
             $failusers = html_writer::alist($failusers);
@@ -297,7 +297,7 @@ class session_renderer extends renderer {
 
         $strstaffers = get_string('roomstaffers', 'examregistrar');
         $cmid = $this->page->cm->id;
-        $staffurl = new moodle_url('/mod/examregistrar/manage/assignroomstaffers.php', array('id'=>$cmid, 'action'=>'roomstaffers', 'edit'=>''));
+        $staffurl = new moodle_url('/mod/examregistrar/manage/assignroomstaffers.php', array('id'=>$cmid, 'action'=>'roomstaffers', 'edit'=>'', 'venue'=>$bookedsite));
         $iconaddstaff = new pix_icon('t/enrolusers', $strstaffers, 'moodle', array('class'=>'icon', 'title'=>$strstaffers));
             //$cellattempt = $name.'&nbsp;   &nbsp;'.$this->action_icon($url, $icon);
 

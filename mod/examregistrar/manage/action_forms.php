@@ -346,7 +346,7 @@ class examregistrar_seatstudent_actionform extends examregistrar_actionform_base
         $params = array('examsession'=>$session, 'bookedsite'=>$bookedsite);
         if($users = $DB->get_records_sql($sql, $params)) {
             foreach($users as $uid => $user) {
-                $users[$uid] = fullname($user, false, 'lastname firstname');
+                $users[$uid] = fullname($user, false, 'lastname');
             }
         }
         $mform->addElement('select', 'userid', get_string('student', 'examregistrar'), $users);
@@ -385,7 +385,7 @@ class examregistrar_addextracall_actionform extends examregistrar_actionform_bas
         $names = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         if($users = get_enrolled_users($coursecontext, 'mod/examregistrar:book', 0, 'u.id, u.idnumber, '.$names, ' u.lastname ASC ')){
             foreach($users as $uid => $user) {
-                $users[$uid] = fullname($user, false, 'lastname firstname');
+                $users[$uid] = fullname($user, false, 'lastname');
             }
         }
         //$users = array(0=>get_string('choose')) + $users;

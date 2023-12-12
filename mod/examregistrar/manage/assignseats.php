@@ -69,8 +69,11 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $usort = optional_param('usort', '', PARAM_ALPHANUMEXT);
 $rsort = optional_param('rsort', '', PARAM_ALPHANUMEXT);
 
-$baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit, 'tab'=>'session'));
+$baseurl = new moodle_url('/mod/examregistrar/view.php', array('id' => $cm->id, 'tab'=>'session'));
 examregistrar_url_update($baseurl);
+if($bookedsite) {
+    $baseurl->param('venue', $bookedsite);
+}
 
 $params =  array('id' => $cm->id, 'edit'=>$edit, 'session'=>$session, 'venue'=>$bookedsite);
 $allocurl = new moodle_url('/mod/examregistrar/manage/assignseats.php', $params);

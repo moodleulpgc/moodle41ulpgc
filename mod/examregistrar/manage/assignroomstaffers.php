@@ -63,12 +63,16 @@ $edit   = optional_param('edit', '', PARAM_ALPHANUMEXT);
 
 if($edit) {
     $baseurl = new moodle_url('/mod/examregistrar/manage.php', array('id' => $cm->id, 'edit'=>$edit));
-        $tab = 'manage';
+    $tab = 'manage';
+    $returnstr = get_string($edit, 'examregistrar');
 } else {
     $baseurl = new moodle_url('/mod/examregistrar/view.php', array('id' => $cm->id, 'tab'=>'session'));
     $tab = 'session';
+    $returnstr = get_string('session', 'examregistrar');
 }
-
+if($bookedsite = optional_param('venue', '', PARAM_INT)) {
+    $baseurl->param('venue', $bookedsite);
+}
 $examregprimaryid = examregistrar_get_primaryid($examregistrar);
 
 /// Set the page header
@@ -108,6 +112,18 @@ $session   = optional_param('session', 0, PARAM_INT);
 $roomid   = optional_param('room', 0, PARAM_INT);
 $role   = optional_param('role', $defaultrole, PARAM_INT);
 
+// return url
+$returnurl = clone $baseurl;
+if($edit == 'assignseats') {
+    $returnurl = new moodle_url('/mod/examregistrar/manage/assignseats.php',
+                                array('id' => $cm->id, 'tab'=>'session', 'session' => $session, 'venue' => $bookedsite, 'edit' => $edit));
+} else {
+    if($session) {
+        $baseurl->param('session', $session);
+    }
+    $returnurl = clone $baseurl;
+}
+
 $baseurl->params(array('session'=>$session, 'room'=>$roomid, 'role'=>$role));
 $actionurl = new moodle_url('/mod/examregistrar/manage/assignroomstaffers.php', $baseurl->params() + array('action'=>$action, 'edit'=>$edit));
 
@@ -118,7 +134,7 @@ if ($frm = data_submitted() and confirm_sesskey()) {
     //print_object("   frm    frm    frm    frm    frm    frm    frm    frm   ");
 
     if (isset($frm->cancel)) {
-        redirect($baseurl);
+        redirect($returnurl);
     } else if (isset($frm->add) and !empty($frm->addselect)) {
         if(!$role) {
             $role = examregistrar_get_default_role($examregistrar);
@@ -200,7 +216,7 @@ if ($currentmembers) {
     $roles = array();
     foreach($currentmembers as $user) {
         if(!isset($sortedmembers[$user->id])) {
-            $sortedmembers[$user->id] = fullname($user);
+            $sortedmembers[$user->id] = fullname($user, false, 'lastname');
             $roles[$user->id] = array($user->role);
         } else {
             $roles[$user->id][] = $user->role;
@@ -240,7 +256,7 @@ $collator = new \Collator('root');
 if ($potentialmembers) {
     $potentialmembersoptions = array();
     foreach($potentialmembers as $user) {
-        $potentialmembersoptions[$user->id] = fullname($user, false, 'lastname firstname').'</option>';
+        $potentialmembersoptions[$user->id] = fullname($user, false, 'lastname').'</option>';
     }
     $collator->asort($potentialmembersoptions);
     foreach($potentialmembersoptions as $key => $name) {
@@ -291,6 +307,8 @@ echo $output->heading(get_string('examsessionitem', 'examregistrar').': '.$sessi
         $select->class .= ' center ';
     echo $output->render($select);
 
+print_object(get_local_referer(false));
+
 ?>
 <div id="addmembersform">
     <form id="assignform" method="post" action="">
@@ -334,11 +352,7 @@ echo $output->heading(get_string('examsessionitem', 'examregistrar').': '.$sessi
        </td>
     </tr>
     <tr><td></td><td>
-        <?php if($edit) { ?>
-            <input type="submit" name="cancel" value="<?php print_string('backto', 'examregistrar', get_string($edit, 'examregistrar')); ?>" />
-        <?php } else { ?>
-        <input type="submit" name="cancel" value="<?php print_string('backto', 'examregistrar', get_string('session', 'examregistrar')); ?>" />
-    <?php } ?>
+        <input type="submit" name="cancel" value="<?php print_string('backto', 'examregistrar', $returnstr); ?>" />
     </td><td></td></tr>
     </table>
     </div>

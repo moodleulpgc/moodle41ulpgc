@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+////HEAD
 $string['availability_show'] = 'Show on course page';
 $string['availability_show_help'] = 'Available to students (subject to any access restrictions which may be set).';
 $string['availability_hide'] = 'Hide on course page';
@@ -45,10 +46,17 @@ $string['cmmove_title'] = 'Move activity';
 $string['cmmove_info'] = 'Move {$a} after';
 $string['cmsmove_title'] = 'Move selected activities';
 $string['cmsmove_info'] = 'Move {$a} activities after';
+////=======
+$string['cm_hide_feedback'] = '{$a->name} is now hidden.';
+$string['cm_moveleft_feedback'] = '{$a->name} has been moved to the left.';
+$string['cm_moveright_feedback'] = '{$a->name} has been moved to the right.';
+$string['cm_show_feedback'] = '{$a->name} is now shown.';
+$string['cm_stealth_feedback'] = '{$a->name} is now available but not shown on the course page.';
 $string['courseindex'] = 'Course index';
 $string['nobulkaction'] = 'No bulk actions available';
 $string['preference:coursesectionspreferences'] = 'Section user preferences for course {$a}';
 $string['privacy:metadata:preference:coursesectionspreferences'] = 'Section user preferences like collapsed and expanded.';
+//// HEAD
 $string['sectionavailability_title'] = 'Section availability';
 $string['sectiondelete_info'] = 'This will delete {$a->name} and all the activities it contains.';
 $string['sectiondelete_title'] = 'Delete section?';
@@ -64,3 +72,6 @@ $string['sectionsmove_info'] = 'Move {$a} sections after';
 $string['sectionsmove_title'] = 'Move selected sections';
 $string['selectcm'] = 'Select activity {$a}';
 $string['selectsection'] = 'Select section {$a}';
+//// =======
+$string['section_hide_feedback'] = 'The course section {$a->name} has been hidden.';
+$string['section_show_feedback'] = 'The course section {$a->name} has been shown.';

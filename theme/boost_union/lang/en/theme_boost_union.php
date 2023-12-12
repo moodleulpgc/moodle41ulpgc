@@ -225,7 +225,7 @@ $string['emailbrandingintronote'] = 'Please note: This is an advanced functional
 $string['emailbrandinginstruction'] = 'How-to';
 $string['emailbrandinginstruction0'] = 'With this Boost Union feature, you can apply branding to all E-Mails which Moodle is sending out.';
 $string['emailbrandinginstructionli1'] = 'Go to the <a href="{$a->url}" target="_blank">language customization settings page</a> to open the <em>{$a->lang}</em> language pack for editing.';
-$string['emailbrandinginstructionli2'] = 'Search for and modify these strings in the <code>theme_boost_union language</code> pack:';
+$string['emailbrandinginstructionli2'] = 'Search for and modify these strings in the <code>theme_boost_union</code> language pack:';
 $string['emailbrandinginstructionli2li1'] = '<code>templateemailhtmlprefix</code>: This snippet will be added <em>at the beginning / before the body</em> of all <em>HTML E-Mails</em> which Moodle is sending out.';
 $string['emailbrandinginstructionli2li2'] = '<code>templateemailhtmlsuffix</code>: This snippet will be added <em>at the end / after the body</em> of all <em>HTML E-Mails</em> which Moodle is sending out.';
 $string['emailbrandinginstructionli2li3'] = '<code>templateemailtextprefix</code>: This snippet will be added <em>at the beginning / before the body</em> of all <em>plaintext E-Mails</em> which Moodle is sending out.';
@@ -269,7 +269,7 @@ $string['additionalresourcessetting'] = 'Additional resources';
 $string['additionalresourcessetting_desc'] = 'With this setting you can upload additional resources to the theme. The advantage of uploading files to this file area is that those files can be delivered without a check if the user is logged in. This is also why you should only add files that are uncritical and everyone should be allowed to access and don\'t need be protected with a valid login. As soon as you have uploaded at least one file to this filearea and have stored the settings, a list will appear underneath which will give you the URL which you can use to reference a particular file.';
 // ... ... Information: Additional resources list.
 $string['additionalresourceslistsetting'] = 'Additional resources list';
-$string['additionalresourceslistsetting_desc'] = 'This is the list of files which you have uploaded to the additional resources filearea. The given URLs can be used to link to these files from within your custom CSS, from the footnote or whereever you need to use uploaded files but can\'t upload files in place.';
+$string['additionalresourceslistsetting_desc'] = 'This is the list of files which you have uploaded to the additional resources filearea. The given URLs can be used to link to these files from within your custom CSS, from the footnote or wherever you need to use uploaded files but can\'t upload files in place.';
 $string['additionalresourcesfileurlpersistent'] = 'URL (persistent)';
 $string['additionalresourcesfileurlrevisioned'] = 'URL (revisioned)';
 // ... Section: Custom fonts.
@@ -482,6 +482,15 @@ $string['footnoteheading'] = 'Footnote';
 // ... ... Setting: Footnote.
 $string['footnotesetting'] = 'Footnote';
 $string['footnotesetting_desc'] = 'Whatever you add to this textarea will be displayed at the end of a page, in the footer (not the floating footer) on every page which uses the layouts "drawers", "columns2" or "login". Content in this area could be for example the copyright, the terms of use or the name of your organisation. <br/> If you want to remove the footnote again, just empty the text area.';
+// ... Section: Footer.
+$string['footerheading'] = 'Footer';
+// ... ... Setting: Enable footer.
+$string['enablefooterbutton'] = 'Enable footer';
+$string['enablefooterbutton_desc'] = 'With "footer", the circle containing the question mark at the bottom of the page is meant.<br />Upon click, the user is presented with an overlay. Depending on the site configuration Moodle shows several links (like "Help and documentation" or "Data retention summary") are shown in this overlay.<br />With this setting, you can control whether to show or to suppress the footer button at the bottom of the page.';
+$string['enablefooterbuttonboth'] = 'Enable on desktop, tablet and mobile';
+$string['enablefooterbuttondesktop'] = 'Enable on desktop and tablet only, hide on mobile (unchanged as presented by Moodle core)';
+$string['enablefooterbuttonmobile'] = 'Enable on mobile only, hide on desktop and tablet';
+$string['enablefooterbuttonhidden'] = 'Hide on all devices';
 
 // Settings: Static pages tab.
 $string['staticpagestab'] = 'Static pages';
@@ -1023,7 +1032,7 @@ $string['boost_union:editregionoffcanvascenter'] = 'To be able to edit the Off-c
 
 // Caches.
 $string['cachedef_fontawesome'] = 'FontAwesome files (which are uploaded in the Boost Union settings)';
-$string['cachedef_flavours'] = 'Flavours which apply to a given page category ID for the current user';
+$string['cachedef_flavours'] = 'Flavours which apply to a given page\'s category ID for the current user';
 $string['cachedef_smartmenus'] = 'Smart menus';
 $string['cachedef_smartmenu_items'] = 'Smart menu items';
 

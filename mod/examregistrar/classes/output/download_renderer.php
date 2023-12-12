@@ -125,7 +125,7 @@ class download_renderer extends renderer {
             $cell1->style = 'text-align:right;'; //width:6%;
             $cell2 = new html_table_cell(substr_replace($user->idnumber, '****', 1, 4)); // mask DNI numbers GDPR
             $cell2->style = 'text-align:left;'; //width:12%;
-            $cell3 = new html_table_cell(fullname($user, false, 'lastname firstname'));
+            $cell3 = new html_table_cell(fullname($user, false, 'lastname'));
             $cell3->style = 'text-align:left;'; //width:42%;
             $additionals = '';
             if($starfield) {
@@ -244,7 +244,7 @@ class download_renderer extends renderer {
                 $usercount += 1;
                 $count = $usercount;
                 $idnumber = $user->idnumber;
-                $name = fullname($user, false, 'lastname firstname');
+                $name = fullname($user, false, 'lastname');
                 $numexams = $user->numexams;
                 $cell1 = new html_table_cell($usercount);
             }

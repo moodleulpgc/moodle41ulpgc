@@ -136,7 +136,7 @@ class printrooms_renderer extends renderer {
 
         $list = array();
         foreach($users as $user) {
-            $name = fullname($user, false, 'lastname firstname');
+            $name = fullname($user, false, 'lastname');
             $idnumber = $user->idnumber;
             if(!$user->idnumber) {
                 $idnumber = implode('', array_fill(1, 8, '0'));

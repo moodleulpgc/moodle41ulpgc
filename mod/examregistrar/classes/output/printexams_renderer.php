@@ -210,7 +210,7 @@ class printexams_renderer extends renderer {
                     $row->attributes = array('class'=>' error  ');
                     $user->roomname = get_string('unallocated', 'examregistrar');
                 }
-                $cell1 = new html_table_cell("{$user->idnumber} - ".fullname($user, false, 'lastname firstname'));
+                $cell1 = new html_table_cell("{$user->idnumber} - ".fullname($user, false, 'lastname'));
                 //$cell1->style = 'text-align:right;width:6%;';
                 $cell2 = new html_table_cell($user->venuename);
                 //$cell2->style = 'text-align:left;width:12%;';

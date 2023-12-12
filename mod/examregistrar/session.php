@@ -590,7 +590,7 @@ if($session) {
         $sessionexams = examregistrar_get_session_exams($session, $bookedsite, $esort,  true, true);
         
         $headerlinks = ['assignseats' => new moodle_url('/mod/examregistrar/manage/assignseats.php',
-                                                        $baseurl->params() + array('edit'=>'session_rooms'))];
+                                                        $baseurl->params() + array('edit'=>'assignseats'))];
         
         echo $output->print_session_control_box(get_string('managesessionexams', 'examregistrar'), 
                                                 $headerlinks, [], 

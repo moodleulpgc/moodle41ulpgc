@@ -4,6 +4,12 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r16
+
+* 2023-12-05 - Improvement: Option to suppress footer (circle containing the question mark) button, solves #444.
+* 2023-12-01 - Bugfix: Static pages unnecessarily cleaned configured content, solves #486.
+* 2023-11-23 - Bugfix: Add background color to OAuth2 login button, solves #473.
+
 ### v4.1-r15
 
 * 2023-11-11 - Bugfix: Bulk actions widget overlaid course header image, solves #469.
