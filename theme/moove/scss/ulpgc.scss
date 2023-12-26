@@ -273,6 +273,7 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
   width: 270px;
   background: url("https://i.imgur.com/JnZBeIx.png") no-repeat !important;
 }
+
 #pie_info .logo_pie {
   background: url("https://www.ulpgc.es/sites/all/themes/ulpgc/images/ulpgc_graficos_v14.svg") -157px -1568px no-repeat;
   -webkit-background-size: auto auto;
@@ -282,6 +283,10 @@ body:not(.format-site) .secondary-navigation .dropdown.dropdownmoremenu  {
   display: block;
   height: 80px;
   float: left;
+}
+
+#pie_info .logo_pie_text {
+  margin-top: 106px
 }
 
 

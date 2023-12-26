@@ -449,7 +449,7 @@ function theme_moove_navbar_settings(array $data): array {
  * @return array
  */
 function theme_moove_union_settings(): array {
-    global $PAGE;
+    global $CFG, $PAGE;
 
     $courserelatedhintshtml = theme_moove_get_course_related_hints();
     if ($courserelatedhintshtml) {
@@ -485,6 +485,7 @@ function theme_moove_union_settings(): array {
 
     // footer
     $templatecontext['ulpgcfooter'] = $config->ulpgcfooter;
+    $templatecontext['ulpgcfooterversion'] = $CFG->release;
     foreach(array(1,2,3) as $i) {
         $templatecontext['footerblock'.$i] = $config->{"footerblock$i"};
     }

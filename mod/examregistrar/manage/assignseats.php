@@ -554,7 +554,7 @@ if($allocatedrooms) {
                 $stafficon = 'assignroles';
             }
             $url = new moodle_url('/mod/examregistrar/manage/assignroomstaffers.php',
-                            array('id'=>$cm->id, 'action'=>'roomstaffers', 'edit'=>$edit, 'session'=>$session, 'room'=>$room->id));
+                            array('id'=>$cm->id, 'action'=>'roomstaffers', 'edit'=>$edit, 'session'=>$session, 'room'=>$room->id, 'venue'=>$bookedsite));
             $staff = '&nbsp;&nbsp;'.html_writer::link($url, $output->pix_icon('i/'.$stafficon, $strunallocate, 'moodle', array('class'=>'iconmedium', 'title'=>$stafferstr)));
             $roomname .= $staff;
         }

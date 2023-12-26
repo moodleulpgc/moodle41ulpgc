@@ -307,8 +307,6 @@ echo $output->heading(get_string('examsessionitem', 'examregistrar').': '.$sessi
         $select->class .= ' center ';
     echo $output->render($select);
 
-print_object(get_local_referer(false));
-
 ?>
 <div id="addmembersform">
     <form id="assignform" method="post" action="">

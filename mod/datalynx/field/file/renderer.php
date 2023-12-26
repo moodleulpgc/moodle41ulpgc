@@ -38,7 +38,7 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
         $entryid = $entry->id;
 
         // If we see a 0 in content there are no files stored. Create new draft area.
-        $content = isset($entry->{"c{$fieldid}_content"}) ? $entry->{"c{$fieldid}_content"} : null;
+        $content = $entry->{"c{$fieldid}_content"} ?? null;
         if ($content == 0 || !isset($entry->{"c{$fieldid}_id"})) {
             $contentid = null;
         } else {
@@ -69,15 +69,15 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
 
     /**
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $params): ?string {
         $field = $this->_field;
         $fieldid = $field->id();
         $entryid = $entry->id;
 
-        $content = isset($entry->{"c{$fieldid}_content"}) ? $entry->{"c{$fieldid}_content"} : null;
-        $content1 = isset($entry->{"c{$fieldid}_content1"}) ? $entry->{"c{$fieldid}_content1"} : null;
-        $content2 = isset($entry->{"c{$fieldid}_content2"}) ? $entry->{"c{$fieldid}_content2"} : null;
-        $contentid = isset($entry->{"c{$fieldid}_id"}) ? $entry->{"c{$fieldid}_id"} : null;
+        $content = $entry->{"c{$fieldid}_content"} ?? null;
+        $content1 = $entry->{"c{$fieldid}_content1"} ?? null;
+        $content2 = $entry->{"c{$fieldid}_content2"} ?? null;
+        $contentid = $entry->{"c{$fieldid}_id"} ?? null;
 
         if (empty($content)) {
             return '';
@@ -96,21 +96,15 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
             return '';
         }
 
-        $altname = empty($content1) ? '' : s($content1);
-
-        if (!empty($params['alt'])) {
-            return $altname;
-        }
-
         $strfiles = array();
         foreach ($files as $file) {
             if (!$file->is_directory()) {
 
                 $filename = $file->get_filename();
-                $filenameinfo = pathinfo($filename);
                 $path = "/{$field->df()->context->id}/mod_datalynx/content/$contentid";
-
-                $strfiles[] = $this->display_file($file, $path, $altname, $params);
+                // ToDo: Remove or implement altname.
+                $altname = "";
+                $strfiles[] = $this->display_file($file, $entryid, $path, $altname, $params);
             }
         }
 
@@ -122,7 +116,13 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
         return implode("<br />\n", $strfiles);
     }
 
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    /**
+     * @param MoodleQuickForm $mform
+     * @param int $i
+     * @param string $value
+     * @return array
+     */
+    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = ''): array {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -147,12 +147,28 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
     }
 
     /**
+     * Render file html.
+     *
+     * @param stored_file $file
+     * @param int $entryid
+     * @param string $path
+     * @param string $altname
+     * @param array|null $params
+     * @return moodle_url|string
      */
-    protected function display_file($file, $path, $altname, $params = null) {
-        global $CFG;
-
+    protected function display_file(stored_file $file, int $entryid, string $path, string $altname = '', ?array $params = null) {
+        $field = $this->_field;
+        $fieldid = $field->id();
+        $fieldname = "field_{$fieldid}_{$entryid}";
         $filename = $file->get_filename();
+        $mimetype = $file->get_mimetype();
         $pluginfileurl = '/pluginfile.php';
+
+        if ($mimetype === 'application/pdf') {
+            // PDF document.
+            $moodleurl = moodle_url::make_file_url($pluginfileurl, "$path/$filename");
+            return $this->embed_pdf($moodleurl->out(), $fieldname);
+        }
 
         if (!empty($params['url'])) {
             return moodle_url::make_file_url($pluginfileurl, "$path/$filename");
@@ -176,21 +192,48 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
     }
 
     /**
+     * Returns general link or pdf embedding html.
+     * @param string $fullurl
+     * @param string $fieldname
+     * @return string html
      */
-    protected function display_link($file, $path, $altname, $params = null) {
-        global $OUTPUT, $CFG;
+    protected function embed_pdf(string $fullurl, string $fieldname): string {
+        global $PAGE;
+        $customscale = $this->_field->get('param4');
+        if(empty($customscale)) {
+            $customscale = 1;
+        }
+        $PAGE->requires->js_call_amd('mod_datalynx/pdfembed', 'renderPDF',
+                [$fullurl, $fieldname, $customscale]);
+
+        $a = html_writer::tag('script', '', [
+            'src' => 'pdfjs/pdf.js']);
+        $b = html_writer::tag('script', '', [
+                'src' => 'pdfjs/pdf.worker.js']);
+
+        return '<div><a href="' . $fullurl . '" target="_blank" class="btn btn-primary">' .
+                get_string('download', 'core_repository') . ' ' .
+                get_string('application/pdf', 'core_mimetypes') .  '</a></div><br>
+        <div style="width: 1800px; min-height: 1400px;" id="' . $fieldname . '"></div>
+        ' . $a . $b;
+    }
+
+    /**
+     * Render a link.
+     * @param $file
+     * @param $path
+     * @param $altname
+     * @param $params
+     * @return string
+     */
+    protected function display_link($file, $path, $altname, $params = null): string {
+        global $OUTPUT;
 
         $filename = $file->get_filename();
-        $displayname = $altname ? $altname : $filename;
-        if ($CFG->branch >= 33) {
-            $fileicon = html_writer::empty_tag('img',
-                    array('src' => $OUTPUT->image_url(file_mimetype_icon($file->get_mimetype())),
+        $displayname = $altname ?: $filename;
+        $fileicon = html_writer::empty_tag('img',
+                array('src' => $OUTPUT->image_url(file_mimetype_icon($file->get_mimetype())),
                         'alt' => $file->get_mimetype(), 'height' => 16, 'width' => 16));
-        } else {
-            $fileicon = html_writer::empty_tag('img',
-                    array('src' => $OUTPUT->pix_url(file_mimetype_icon($file->get_mimetype())),
-                        'alt' => $file->get_mimetype(), 'height' => 16, 'width' => 16));
-        }
 
         if (!empty($params['download'])) {
             list(, $context, , , $contentid) = explode('/', $path);
@@ -205,14 +248,14 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
 
     /**
      */
-    public function pluginfile_patterns() {
+    public function pluginfile_patterns(): array {
         return array("[[{$this->_field->name()}]]");
     }
 
     /**
      * Array of patterns this field supports
      */
-    protected function patterns() {
+    protected function patterns(): array {
         $fieldname = $this->_field->name();
 
         $patterns = parent::patterns();
@@ -230,7 +273,7 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
     /**
      * Returns comma seperated list of urls in this entry.
      */
-    public function render_csv($strfiles) {
+    public function render_csv($strfiles): string {
         $regex = '/https?\:\/\/[^\" ]+/i';
         $matches = array();
         foreach ($strfiles as $strfile) {
@@ -239,6 +282,5 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
         }
 
         return implode(",", $matches);
-
     }
 }

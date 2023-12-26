@@ -1468,6 +1468,7 @@ function course_update_section($course, $section, $data) {
     if(!$ulpgc = get_config('local_ulpgccore', 'enabledadminmods')) { // prevent hide all modules, conflict with TF registry
         // If section visibility was changed, hide the modules in this section too.
         if ($changevisibility && !empty($section->sequence)) {
+            $cmids = [];
             $modules = explode(',', $section->sequence);
             foreach ($modules as $moduleid) {
                 if ($cm = get_coursemodule_from_id(null, $moduleid, $courseid)) {
@@ -1479,6 +1480,7 @@ function course_update_section($course, $section, $data) {
                         set_coursemodule_visible($moduleid, 0, $cm->visibleoncoursepage, false);
                         $DB->set_field('course_modules', 'visibleold', $cm->visible, ['id' => $moduleid]);
                     }
+                    $cmids[] = $moduleid;
                     \core\event\course_module_updated::create_from_cm($cm)->trigger();
                 }
             }

@@ -409,6 +409,7 @@ $string['requireapproval'] = 'Freischaltung erforderlich?';
 $string['requiredall'] = 'alle notwendig';
 $string['requirednotall'] = 'nicht alle notwendig';
 $string['resetsettings'] = 'Filter zurücksetzen';
+$string['resizefactor'] = 'Faktor mit dem die Anzeige des PDFs skaliert (multipliziert) wird: 595x841';
 $string['returntoimport'] = 'Zurück zum Import';
 $string['rssglobaldisabled'] = 'Für die Website nicht aktiviert. Ändern Sie die globale Website-Konfiguration, um RSS zu aktivieren.';
 $string['rsshowmany'] = '(Anzahl an letzten Eintrgen, die angezeigt werden, 0 um RSS zu deaktivieren';
@@ -895,3 +896,7 @@ $string['search:activity'] = "Datalynx - Instanzen";
 $string['search:entry'] = "Datalynx - Einträge";
 
 $string['noselection'] = "Keine Auswahl";
+
+// Task.
+$string['event_cron_trigger'] = "Datalynx Scheduled Task";
+$string['cron_trigger'] = "Datalynx Scheduled Task";
