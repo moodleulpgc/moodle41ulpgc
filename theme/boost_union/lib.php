@@ -50,6 +50,21 @@ define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_COLUMN_COUNT', 4);
 define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_FRONTPAGEPOSITION_BEFORE', 1);
 define('THEME_BOOST_UNION_SETTING_ADVERTISEMENTTILES_FRONTPAGEPOSITION_AFTER', 2);
 
+define('THEME_BOOST_UNION_SETTING_SLIDES_COUNT', 6);
+define('THEME_BOOST_UNION_SETTING_SLIDER_ANIMATIONTYPE_NONE', 0);
+define('THEME_BOOST_UNION_SETTING_SLIDER_ANIMATIONTYPE_SLIDE', 1);
+define('THEME_BOOST_UNION_SETTING_SLIDER_ANIMATIONTYPE_FADE', 2);
+define('THEME_BOOST_UNION_SETTING_SLIDER_FRONTPAGEPOSITION_BEFOREBEFORE', 1);
+define('THEME_BOOST_UNION_SETTING_SLIDER_FRONTPAGEPOSITION_BEFOREAFTER', 2);
+define('THEME_BOOST_UNION_SETTING_SLIDER_FRONTPAGEPOSITION_AFTERBEFORE', 3);
+define('THEME_BOOST_UNION_SETTING_SLIDER_FRONTPAGEPOSITION_AFTERAFTER', 4);
+define('THEME_BOOST_UNION_SETTING_SLIDER_RIDE_ONPAGELOAD', 0);
+define('THEME_BOOST_UNION_SETTING_SLIDER_RIDE_AFTERINTERACTION', 1);
+define('THEME_BOOST_UNION_SETTING_SLIDER_RIDE_NEVER', 2);
+define('THEME_BOOST_UNION_SETTING_SLIDER_LINKSOURCE_BOTH', 0);
+define('THEME_BOOST_UNION_SETTING_SLIDER_LINKSOURCE_IMAGE', 1);
+define('THEME_BOOST_UNION_SETTING_SLIDER_LINKSOURCE_TEXT', 2);
+
 define('THEME_BOOST_UNION_SETTING_FAVERSION_NONE', 'none');
 define('THEME_BOOST_UNION_SETTING_FAVERSION_FA6FREE', 'fa6free');
 define('THEME_BOOST_UNION_SETTING_FAFILES_MANDATORY', 'm');
@@ -74,6 +89,12 @@ define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDDARK', 'stackeddark')
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDLIGHT', 'stackedlight');
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_HEADINGABOVE', 'headingabove');
 
+define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_NOCHANGE', 'nochange');
+define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_LIGHT', 'light');
+define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_LIGHTSHADOW', 'lightshadow');
+define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_DARK', 'dark');
+define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_DARKSHADOW', 'darkshadow');
+
 define('THEME_BOOST_UNION_SETTING_LINKTARGET_SAMEWINDOW', 'same');
 define('THEME_BOOST_UNION_SETTING_LINKTARGET_NEWTAB', 'new');
 
@@ -96,6 +117,13 @@ define('THEME_BOOST_UNION_SETTING_ENABLEFOOTER_ALL', 'enablefooterbuttonall');
 define('THEME_BOOST_UNION_SETTING_ENABLEFOOTER_DESKTOP', 'enablefooterbuttondesktop');
 define('THEME_BOOST_UNION_SETTING_ENABLEFOOTER_MOBILE', 'enablefooterbuttonmobile');
 define('THEME_BOOST_UNION_SETTING_ENABLEFOOTER_NONE', 'enablefooterbuttonnone');
+
+define('THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_CARD', 'card');
+define('THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_LIST', 'list');
+define('THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_SUMMARY', 'summary');
+
+define('THEME_BOOST_UNION_SETTING_MARKLINKS_WHOLEPAGE', 'wholepage');
+define('THEME_BOOST_UNION_SETTING_MARKLINKS_COURSEMAIN', 'coursemain');
 
 /**
  * Returns the main SCSS content.
@@ -174,6 +202,15 @@ function theme_boost_union_get_pre_scss($theme) {
     if (get_config('theme_boost_union', 'h5pcontentmaxwidth')) {
         $scss .= '$h5p-content-maxwidth: '.get_config('theme_boost_union', 'h5pcontentmaxwidth').";\n";
     }
+    // Set variables which are influenced by the courseindexdrawerwidth setting.
+    if (get_config('theme_boost_union', 'courseindexdrawerwidth')) {
+        $scss .= '$drawer-width: '.get_config('theme_boost_union', 'courseindexdrawerwidth').";\n";
+        $scss .= '$drawer-left-width: '.get_config('theme_boost_union', 'courseindexdrawerwidth').";\n";
+    }
+    // Set variables which are influenced by the blockdrawerwidth setting.
+    if (get_config('theme_boost_union', 'blockdrawerwidth')) {
+        $scss .= '$drawer-right-width: '.get_config('theme_boost_union', 'blockdrawerwidth').";\n";
+    }
 
     // Overwrite Boost core SCSS variables which are stored in a SCSS map and thus couldn't be added to $configurable above.
     // Set variables for the activity icon colors.
@@ -220,6 +257,9 @@ function theme_boost_union_get_pre_scss($theme) {
         $blockregionoutsiderightwidth = '300px';
     }
     $scss .= '$blockregionoutsiderightwidth: '.$blockregionoutsiderightwidth.";\n";
+
+    // Add custom Boost Union SCSS variable as goody for designers: $themerev.
+    $scss .= '$themerev: '.$CFG->themerev.";\n";
 
     // Prepend pre-scss.
     if (get_config('theme_boost_union', 'scsspre')) {
@@ -315,6 +355,15 @@ function theme_boost_union_get_extra_scss($theme) {
 
     // Setting: Mark external links.
     $content .= theme_boost_union_get_scss_to_mark_external_links($theme);
+
+    // Setting: Mark mailto links.
+    $content .= theme_boost_union_get_scss_to_mark_mailto_links($theme);
+
+    // Setting: Mark broken links.
+    $content .= theme_boost_union_get_scss_to_mark_broken_links($theme);
+
+    // Setting: Course overview block.
+    $content .= theme_boost_union_get_scss_courseoverview_block($theme);
 
     return $content;
 }
@@ -412,7 +461,9 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
     } else if ($context->contextlevel == CONTEXT_SYSTEM && ($filearea === 'backgroundimage' ||
         $filearea === 'loginbackgroundimage' || $filearea === 'additionalresources' ||
                 $filearea === 'customfonts' || $filearea === 'fontawesome' || $filearea === 'courseheaderimagefallback' ||
-                preg_match("/tilebackgroundimage[2-9]|1[0-2]?/", $filearea))) {
+                $filearea === 'touchiconsios' ||
+                preg_match("/tilebackgroundimage[2-9]|1[0-2]?/", $filearea) ||
+                preg_match("/slidebackgroundimage[2-9]|1[0-2]?/", $filearea))) {
         $theme = theme_config::load('boost_union');
         // By default, theme files must be cache-able by both browsers and proxies.
         if (!array_key_exists('cacheability', $options)) {
@@ -479,7 +530,7 @@ function theme_boost_union_pluginfile($course, $cm, $context, $filearea, $args, 
 function theme_boost_union_before_standard_html_head() {
     global $CFG, $PAGE;
 
-    // Initialize HTML (even though we do not add any HTML at this stage of the implementation).
+    // Initialize HTML.
     $html = '';
 
     // If a theme other than Boost Union or a child theme of it is active, return directly.
@@ -497,7 +548,10 @@ function theme_boost_union_before_standard_html_head() {
     // Add the flavour CSS to the page.
     theme_boost_union_add_flavourcss_to_page();
 
-    // Return an empty string to keep the caller happy.
+    // Add the touch icons to the page.
+    $html .= theme_boost_union_get_touchicons_html_for_page();
+
+    // Return the HTML code.
     return $html;
 }
 

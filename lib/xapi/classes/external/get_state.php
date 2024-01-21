@@ -20,10 +20,14 @@ use core_xapi\local\state;
 use core_xapi\local\statement\item_activity;
 use core_xapi\handler;
 use core_xapi\xapi_exception;
-use core_external\external_api;
-use core_external\external_function_parameters;
-use core_external\external_value;
+use external_api;
+use external_function_parameters;
+use external_value;
 use core_xapi\iri;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir .'/externallib.php');
 
 /**
  * This is the external API for generic xAPI state get.

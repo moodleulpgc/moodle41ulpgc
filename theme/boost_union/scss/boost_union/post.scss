@@ -316,6 +316,19 @@
  ======================================*/
 
 /*---------------------------------------
+ * Setting: Add preferred language link to language menu.
+ --------------------------------------*/
+
+/* Add a bottom-top to the 'Set preferred language' link.
+   This could be rebuilt as soon as https://github.com/moodle-an-hochschulen/moodle-theme_boost_union/issues/537
+   is solved. */
+#user-action-menu .carousel-item.submenu a[href$="user/language.php"] {
+    border-top: 1px solid $dropdown-divider-bg;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+/*---------------------------------------
  * Setting: Back to top button.
  --------------------------------------*/
 
@@ -919,6 +932,19 @@ body.theme_boost-union-footerbuttonmobile.jsenabled {
     }
 }
 
+/* Make the reset-user-tours link a real footer section - as soon as the placeholder div is filled by JS.
+   This is necessary due to restructurings of the footer popover content. */
+.tool_usertours-resettourcontainer .usertour {
+    @extend .footer-section;
+    @extend .p-3;
+    @extend .border-bottom;
+}
+
+/* Remove the bottom line from the last footer section. */
+#page-footer .popover-body .footer-section:last-child {
+    border-bottom: none !important; /* stylelint-disable-line declaration-no-important */
+}
+
 
 /*=======================================
  * Settings: Content -> Info banner.
@@ -942,20 +968,30 @@ body.theme_boost-union-footerbuttonmobile.jsenabled {
  * Settings: Content -> Advertisement tiles.
  ======================================*/
 
-/* Remove horizontal paddings on the tile container on smaller screens to align it with the main frontpage content. */
-@include media-breakpoint-down(sm) {
-    #themeboostunionadvtiles {
-        padding-left: 0;
-        padding-right: 0;
-    }
-}
-
 /* Style the advertisement tile cards. */
 #themeboostunionadvtiles [class*="col-"] .card {
     background-size: cover;
     /* d-flex align-items-stretch align-self-stretch classes in mustache template require to set width to inherit
        (Otherwise width is flexible dependent on content). */
     width: inherit;
+}
+
+/* Classes for the content style of advertisement tiles. */
+#themeboostunionadvtiles {
+    .tile-dark {
+        color: black;
+    }
+    .tile-light {
+        color: white;
+    }
+    .tile-darkshadow {
+        color: black;
+        text-shadow: 0 0 5px white;
+    }
+    .tile-lightshadow {
+        color: white;
+        text-shadow: 0 0 5px black;
+    }
 }
 
 /* Improve the advertisement tile card if a background image is used. */
@@ -971,6 +1007,75 @@ body.theme_boost-union-footerbuttonmobile.jsenabled {
     /* Remove the border-top from the footer. */
     .card-footer {
         border-top: none;
+    }
+}
+
+
+/*=======================================
+ * Settings: Content -> Slider.
+ ======================================*/
+
+/* Style the slider. */
+#themeboostunionslider {
+    /* Remove the link color and styling for links in the slider as, otherwise, the linked caption and content
+       would be colored and styled which does not make much sense here. */
+    a {
+        color: inherit;
+    }
+    a:hover {
+        text-decoration: inherit;
+    }
+
+    /* Remove the focus border which would appear around slider controls which have been clicked.
+       These do not look nice within the slider. */
+    a:focus {
+        box-shadow: none;
+    }
+
+    /* Remove the font color from the caption to allow styling based on the slider settings. */
+    .carousel-caption {
+        color: inherit;
+    }
+
+    /* Add an unobtrusive shadow to the carousel controls to make them visible on all kinds of backgrounds. */
+    .carousel-control-prev,
+    .carousel-control-next {
+        filter: drop-shadow(0 0 2px rgb(0, 0, 0));
+    }
+    .carousel-indicators {
+        filter: drop-shadow(0 0 1px rgb(0, 0, 0));
+    }
+}
+
+/* Classes for the content style of slides. */
+#themeboostunionslider {
+    .slide-dark {
+        color: black;
+    }
+    .slide-light {
+        color: white;
+    }
+    .slide-darkshadow {
+        color: black;
+        text-shadow: 0 0 5px white;
+    }
+    .slide-lightshadow {
+        color: white;
+        text-shadow: 0 0 5px black;
+    }
+}
+
+
+/*=======================================
+ * Settings: Content -> Advertisement tiles & Slider (Common settings for both features).
+ ======================================*/
+
+/* Remove horizontal paddings on the tile / slider container on smaller screens to align it with the main frontpage content. */
+@include media-breakpoint-down(sm) {
+    #themeboostunionadvtiles,
+    #themeboostunionslider-wrapper {
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 
@@ -2131,6 +2236,59 @@ body.theme_boost-union-footerbuttonmobile.jsenabled {
 /* Display the color picker box and the text field as column. */
 .theme_boost_union-form-colour-picker .felement {
     flex-direction: column;
+}
+
+
+/*=======================================
+ * Goodies for designers
+ ======================================*/
+
+/*---------------------------------------
+ * Mark external and mailto links (manually)
+ --------------------------------------*/
+
+/* Prepare mixin for external links to allow these styles to be use here as goody and in the
+   theme_boost_union_get_scss_to_mark_external_links() function as well. */
+@mixin externallink($dir) {
+    font-family: "FontAwesome";
+    content: "#{$fa-var-external-link}" !important; /* stylelint-disable-line declaration-no-important */
+    @if $dir == 'rtl' {
+        padding-right: 0.25rem;
+    }
+    @else {
+        padding-left: 0.25rem;
+    }
+}
+
+/* Prepare mixin for mailto links to allow these styles to be use here as goody and in the
+   theme_boost_union_get_scss_to_mark_mailto_links() function as well. */
+@mixin mailtolink($dir) {
+    font-family: "FontAwesome";
+    content: "\f003" !important; /* stylelint-disable-line declaration-no-important */
+    @if $dir == 'rtl' {
+        padding-left: 0.25rem;
+    }
+    @else {
+        padding-right: 0.25rem;
+    }
+}
+
+/* Provide the styles within a class which can be added to links. */
+body.dir-ltr {
+    a.externallink::after {
+        @include externallink(ltr);
+    }
+    a.mailtolink::before {
+        @include mailtolink(ltr);
+    }
+}
+body.dir-rtl {
+    a.externallink::before {
+        @include externallink(rtl);
+    }
+    a.mailtolink::after {
+        @include mailtolink(rtl);
+    }
 }
 
 

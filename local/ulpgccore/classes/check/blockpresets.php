@@ -76,7 +76,7 @@ class blockpresets extends check {
             return new result($status, $summary, $details);
         }
 
-        $expectedblocks = array_map(trim, explode(',', $expectedblocks));
+        $expectedblocks = array_map('trim', explode(',', $expectedblocks));
         $blocks = $DB->get_records_menu('block_instances', ['parentcontextid'    => 1, // only in system
                                                                                     'showinsubcontexts'  => 1, // only those in multiple pages
                                                                                     'requiredbytheme' => 0], 

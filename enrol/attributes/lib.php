@@ -188,7 +188,7 @@ class enrol_attributes_plugin extends enrol_plugin {
                 mtrace('+', '');
             }
 
-            $enroldetails = json_decode($enrol_attributes_record->customtext1);
+            $enroldetails = json_decode($enrol_attributes_record->customtext1 ?? '');
             if (isset($enroldetails->rules)) {
                 $rules = $enroldetails->rules;
             } else {
@@ -237,7 +237,7 @@ class enrol_attributes_plugin extends enrol_plugin {
                     $recovergrades = false; // do not try to recover grades if user is already enrolled
                 }
                 $enrol_attributes_instance->enrol_user($enrol_attributes_record, $user->id,
-                        $enrol_attributes_record->roleid, 0, 0, ENROL_USER_ACTIVE, $recovergrades);
+                        $enrol_attributes_record->roleid, 0, 0, null, $recovergrades);
                 $nbenrolled++;
                 // Start modification
 
@@ -324,11 +324,35 @@ class enrol_attributes_plugin extends enrol_plugin {
                 $join_id++;
                 $data = 'd' . $join_id . '.data';
                 $select .= ' RIGHT JOIN {user_info_data} d' . $join_id . ' ON d' . $join_id . '.userid = u.id AND d' . $join_id . '.fieldid = ' . $customkey;
-                $where .= ' (' . $DB->sql_compare_text($data) . ' = ' . $DB->sql_compare_text('?') . ' OR ' . $DB->sql_like($DB->sql_compare_text($data),
-                                '?') . ' OR ' . $DB->sql_like($DB->sql_compare_text($data),
-                                '?') . ' OR ' . $DB->sql_like($DB->sql_compare_text($data), '?') . ')';
-                array_push($params, $rule->value, '%;' . $rule->value, $rule->value . ';%',
-                        '%;' . $rule->value . ';%');
+
+                if (isset($rule->comp_op) && $rule->comp_op === 'contains') {
+                    $where .= ' (' . $DB->sql_like($DB->sql_compare_text($data), '?') . ')';
+                    $params[] = '%' . $rule->value . '%';
+                } else if (isset($rule->comp_op) && $rule->comp_op !== 'listitem') {
+                        $where .= ' (' . $DB->sql_compare_text($data) . ' ' . strtoupper($rule->comp_op) . ' ' . $DB->sql_compare_text('?') . ')';
+                        $params[] = $rule->value;
+                } else {
+                    $where .= ' (' . $DB->sql_compare_text($data) . ' = ' . $DB->sql_compare_text(
+                            '?'
+                        ) . ' OR ' . $DB->sql_like(
+                            $DB->sql_compare_text($data),
+                            '?'
+                        ) . ' OR ' . $DB->sql_like(
+                            $DB->sql_compare_text($data),
+                            '?'
+                        ) . ' OR ' . $DB->sql_like(
+                            $DB->sql_compare_text($data),
+                            '?')
+                        . ')';
+
+                    array_push(
+                        $params,
+                        $rule->value,
+                        '%;' . $rule->value,
+                        $rule->value . ';%',
+                        '%;' . $rule->value . ';%'
+                    );
+                }
             }
         }
         $where = preg_replace('/^1=1 AND ?/', '', $where);
@@ -474,6 +498,18 @@ class enrol_attributes_plugin extends enrol_plugin {
         }
 
         return $icons;
+    }
+
+   /**
+    * Does this plugin allow manual changes in user_enrolments table?
+    *
+    * All plugins allowing this must implement 'enrol/xxx:manage' capability
+    *
+    * @param stdClass $instance course enrol instance
+    * @return bool - true means it is possible to change enrol period and status in user_enrolments table
+    */
+    public function allow_manage(stdClass $instance) {
+        return true;
     }
 
     /**

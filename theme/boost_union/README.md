@@ -87,6 +87,16 @@ With this setting, you can override Moodle's course content width without manual
 
 With this setting, you can override Moodle's default medium width without manual SCSS modifications.
 
+##### Drawer width
+
+###### Course index drawer width
+
+With this setting, you can override Moodle's course index drawer width without manual SCSS modifications.
+
+###### Block drawer width
+
+With this setting, you can override Moodle's block drawer width without manual SCSS modifications.
+
 #### Tab "Site Branding"
 
 In this tab there are the following settings:
@@ -185,6 +195,28 @@ With this setting, you can optimize the login form to fit to a greater variety o
 
 With this setting, you can make the login form slightly transparent to let the background image shine through even more.
 
+#### Login providers
+
+##### Local login
+
+With this setting, you control if the local login form is shown on the login page or not. By default, the local login form is shown and users an login into the site as normal. If you disable this setting, the local login form is hidden. This allows you to just provide login buttons for external identity providers like OAuth2 or OIDC.
+
+##### IDP login intro
+
+With this setting, you control if the 'Log in using your account on' intro is shown above the IDP login buttons or not. By default, the intro is shown and users will be quickly informed what the IDP buttons are about. If you disable this setting, the IDP intro is hidden. This allows you to provide a clean user login interface if you just use external identity providers like OAuth2 or OIDC.
+
+#### Tab "Dashboard / My courses"
+
+##### Course overview block
+
+###### Show course images
+
+With this setting, you can control whether the course image is visible inside the course overview block or not. It is possible to choose a different setting for Card view, Summary view, and List view. 
+
+###### Show course completion progress
+
+With this setting, you can control whether the course completion progress is visible inside the course overview block or not.
+
 #### Tab "Course"
 
 ##### Course Header
@@ -243,13 +275,19 @@ Use this field to provide CSS code which will be applied to the presentation of 
 
 With this setting, you can override Moodle's H5P content bank width without manual SCSS modifications.
 
-#### Tab "Mobile app"
+#### Tab "Mobile"
 
-##### Mobile appearance
+##### Mobile app
 
 ###### Additional CSS for Mobile app
 
 With this setting, you can write custom CSS code to customise your mobile app interface. The CSS code will be only added to the Mobile app depiction of this Moodle instance and will not be shown in the webbrowser version.
+
+##### Mobile appearance
+
+###### Touch Icon Files for iOS
+
+Within this setting, you can upload files which are used as homescreen icon as soon as the Moodle site is added to the iOS homescreen as bookmark.
 
 ### Settings page "Feel"
 
@@ -262,6 +300,12 @@ In this tab there are the following settings:
 ###### Hide nodes in primary navigation
 
 With this setting, you can hide one or multiple nodes from the primary navigation.
+
+##### User menu
+
+###### Add preferred language link to language menu
+
+With this setting, you can add a 'Set preferred language' setting to the language menu within the user menu. Understandably, this setting is only processed if the language menu is enabled at all.
 
 ##### Breadcrumbs
 
@@ -361,6 +405,22 @@ In this tab there are the following settings:
 
 Adds an "external link" icon after external links (which lead the user to a target outside Moodle).
 
+###### Mark external links scope
+
+With this setting, you control the scope where Boost Union should mark external links. By default, Boost Union marks external links on the whole Moodle page and does its best to cover some edge-cases where adding the external link icon does not make much sense. However, you can also limit the scope to better avoid edge-cases.
+
+###### Mark mailto links
+
+Adds an "envelope" icon in front of mailto links.
+
+###### Mark mailto links scope
+
+With this setting, you control the scope where Boost Union should mark mailto links. By default, Boost Union marks mailto links on the whole Moodle page. However, you can also limit the scope to avoid edge-cases.
+
+###### Mark broken links
+
+Adds a "broken chain" icon in front of broken links (which lead to uploaded draft files which have not been properly processed) and marks the link in the bootstrap color for "danger".
+
 #### Tab "Miscellaneous"
 
 In this tab there are the following settings:
@@ -383,9 +443,19 @@ In this tab there are the following settings:
 
 Whatever you add to this textarea will be displayed at the end of a page, in the footer. Refer to the setting description on the settings page for further instructions.
 
-###### Footer
+##### Footer
 
-With these settings, you can control whether to show or to suppress the footer (circle containing the question mark) button at the bottom of the page.
+###### Enable footer
+
+With this setting, you can control whether to show or to suppress the footer button at the bottom of the page.
+
+###### Suppress ... link
+
+With these settings, you can entirely suppress particular links in the footer.
+
+###### Suppress footer output by plugin ...
+
+With this setting, you can entirely suppress the footer output by particular plugins.
 
 #### Tab "Static pages"
 
@@ -434,6 +504,10 @@ In this tab, you can enable and configure multiple information banners to be sho
 #### Tab "Advertisement tiles"
 
 In this tab, you can enable and configure multiple advertisement tiles to be shown on site home.
+
+#### Tab "Slider"
+
+In this tab, you can enable and configure multiple slides to be shown on site home.
 
 ### Settings page "Functionality"
 
@@ -510,8 +584,34 @@ How this theme works
 This Boost child theme is implemented with minimal code duplication in mind. It inherits / requires as much code as possible from theme_boost and only implements the extended or modified functionalities.
 
 
-Support for companion plugins
------------------------------
+Goodies for designers
+---------------------
+
+In addition to our mission to provide admin settings for each and every feature of this theme, designers may want to use features of this theme within (S)CSS code directly. As designer, you should know these possibilities:
+
+* Mark external and mailto links (manually):
+  As an alternative to the markexternallinks and markmailtolinks settings which automatically mark these kind of links, you can also add the .externallink and .mailtolink class to a ```<a>``` HTML tag to manually mark any link as an external / as a mailto link.
+* Themerev as SCSS variable:
+  During a custom SCSS design project, you might come into the situation that you have to link to an uploaded image or other asset which is served by Moodle's pluginfile.php script. Unfortunately, these URLs contain a theme revision parameter. To be able to use these URLs properly in custom SCSS and to avoid breaking Moodle's caching features, Boost Union provides the $themerev SCSS variable to be used in your custom SCSS.
+
+
+Exceptions to our main design principle
+---------------------------------------
+
+As you have read in the introduction, the main design principle of Boost Union is not to change anything in the GUI until a particular feature is enabled in the theme settings. However, due to the way how Moodle core and Boost in Moodle core is built, this main design principle sometimes could not be fully satisfied:
+
+* Footer popover:
+  As soon as you click the footer button (questionmark icon) in the bottom right corner of the screen, a popover with several links appears. However, the content of this link list is far from being well-structured and looks more like a garage sale. When implementing the settings to individually suppress each of these popover links, we had to make some code re-arrangements which result in the fact that the popover links are slightly more well-structured even if you do not enable any setting in Boost Union.
+
+
+Companion plugin local_navbarplus
+---------------------------------
+
+With the footersuppressusertour setting, you can disable the possibility to reset a user tour in the footer popover. If you have enabled this setting, you might want to have a look at our plugin local_navbarplus as a companion plugin which allows you, among other things, to add a "Reset user tour" link to the navigation bar instead. local_navbarplus is published on https://moodle.org/plugins/local_navbarplus and on https://github.com/moodle-an-hochschulen/moodle-local_navbarplus.
+
+
+Support for other companion plugins
+-----------------------------------
 
 This theme ships with some additions for companion plugins:
 
@@ -623,6 +723,7 @@ This theme is a collaboration result of multiple organisations.
 
 Moodle an Hochschulen e.V. would like to thank these main contributors (in alphabetical order of the institutions) for their work:
 
+* Academic Moodle Cooperation (AMC): Ideating, Code
 * Baden-Württemberg Cooperative State University (DHBW), Katja Neubehler: Code
 * bdecent GmbH, Stefan Scholz: Code, Ideating, Funding
 * Bern University of Applied Sciences (BFH), Luca Bösch: Code, Peer Review, Ideating
@@ -633,8 +734,9 @@ Moodle an Hochschulen e.V. would like to thank these main contributors (in alpha
 * Käferfreie Software, Nina Herrmann: Code
 * lern.link GmbH, Alexander Bias: Code, Peer Review, Ideating, Funding
 * lern.link GmbH, Beata Waloszczyk: Code
-* Moodle.NRW / Ruhr University Bochum, Tim Trappen: Code, Ideating
+* Moodle.NRW / Ruhr University Bochum, Annika Lambert: Code
 * Moodle.NRW / Ruhr University Bochum, Matthias Buttgereit: Code, Ideating
+* Moodle.NRW / Ruhr University Bochum, Tim Trappen: Code, Ideating
 * moodleSCHULE e.V., Ralf Krause: German translation and curation, Ideating
 * Ruhr University Bochum, Melanie Treitinger: Code, Ideating
 * RWTH Aachen, Amrita Deb Dutta: Code

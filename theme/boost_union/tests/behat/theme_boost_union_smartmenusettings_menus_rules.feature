@@ -6,28 +6,22 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
 
   Background:
     Given I log in as "admin"
-    And I navigate to "Language > Language packs" in site administration
-    And I set the field "Available language packs" to "fr"
-    And I press "Install selected language pack(s)"
-    And I should see "Language pack 'fr' was successfully installed"
-    And the "Installed language packs" select box should contain "fr"
-    And I set the field "Available language packs" to "de"
-    And I press "Install selected language pack(s)"
-    And I should see "Language pack 'de' was successfully installed"
-    And the "Installed language packs" select box should contain "de"
     And I am on homepage
     And the following "courses" exist:
       | fullname | shortname | category |
       | Test     | C1        | 0        |
     And the following "users" exist:
-      | username |
-      | student1 |
-      | student2 |
-      | teacher  |
+      | username      |
+      | student1      |
+      | student2      |
+      | teacher       |
+      | coursemanager |
+      | systemmanager |
     And the following "course enrolments" exist:
-      | user     | course | role           |
-      | teacher  | C1     | editingteacher |
-      | student1 | C1     | student        |
+      | user          | course | role           |
+      | teacher       | C1     | editingteacher |
+      | student1      | C1     | student        |
+      | coursemanager | C1     | manager        |
     And the following "cohorts" exist:
       | name     | idnumber |
       | Cohort 1 | CH1      |
@@ -45,29 +39,44 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       | Title          | Resources          |
       | Menu item type | Static             |
       | URL            | https://moodle.org |
+    And the following "language packs" exist:
+      | language |
+      | de       |
+      | fr       |
 
   @javascript
   Scenario Outline: Smartmenu: Menus: Rules - Show smart menu based on the user roles
-    When I navigate to smart menus
+    Given the following "system role assigns" exist:
+      | user          | course               | role    |
+      | systemmanager | Acceptance test site | manager |
+    And I navigate to smart menus
     And I should see "Quick links" in the "smartmenus" "table"
     And I should see smart menu "Quick links" in location "Main, Menu, User, Bottom"
     And I click on ".action-edit" "css_element" in the "Quick links" "table_row"
     And I expand all fieldsets
     And I set the field "By role" to "<byrole>"
+    And I set the field "Context" to "<context>"
     And I click on "Save and return" "button"
     And I should not see smart menu "Quick links" in location "Main, Menu, User, Bottom"
+    And I log out
+    And I log in as "coursemanager"
+    Then I <managershouldorshouldnot> see smart menu "Quick links" in location "Main, Menu, User, Bottom"
     And I log out
     And I log in as "student1"
     Then I <student1shouldorshouldnot> see smart menu "Quick links" in location "Main, Menu, User, Bottom"
     And I log out
     And I log in as "teacher"
     Then I <teachershouldorshouldnot> see smart menu "Quick links" in location "Main, Menu, User, Bottom"
+    And I log out
+    And I log in as "systemmanager"
+    Then I should see smart menu "Quick links" in location "Main, Menu, User, Bottom"
 
     Examples:
-      | byrole                    | student1shouldorshouldnot | teachershouldorshouldnot |
-      | Manager                   | should not                | should not               |
-      | Manager, Student          | should                    | should not               |
-      | Manager, Student, Teacher | should                    | should                   |
+      | byrole                    | context | student1shouldorshouldnot | teachershouldorshouldnot | managershouldorshouldnot |
+      | Manager                   | Any     | should not                | should not               | should                   |
+      | Manager, Student          | Any     | should                    | should not               | should                   |
+      | Manager, Student, Teacher | Any     | should                    | should                   | should                   |
+      | Manager, Student, Teacher | System  | should not                | should not               | should not               |
 
   @javascript
   Scenario Outline: Smartmenu: Menus: Rules - Show smart menu based on the user assignment in single cohorts
@@ -162,6 +171,41 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       | bylanguage       | student1shouldorshouldnot | student2shouldorshouldnot | teachershouldorshouldnot |
       | English          | should                    | should not                | should not               |
       | English, Deutsch | should                    | should not                | should                   |
+
+  @javascript
+  Scenario Outline: Smartmenu: Menus: Rules - Show the menus based on the custom date range
+    When I navigate to smart menus
+    And I should see "Quick links" in the "smartmenus" "table"
+    And I should see smart menu "Quick links" in location "Main, Menu, User, Bottom"
+    And I click on ".action-edit" "css_element" in the "Quick links" "table_row"
+    And I expand all fieldsets
+    And I set the following fields to these values:
+      | id_start_date_enabled    | <startenabled> |
+      | id_end_date_enabled      | <endenabled>   |
+      | id_start_date_day        | <start_day>    |
+      | id_start_date_month      | <start_month>  |
+      | id_start_date_year       | <start_year>   |
+      | id_end_date_day          | <end_day>      |
+      | id_end_date_month        | <end_month>    |
+      | id_end_date_year         | <end_year>     |
+    And I click on "Save and return" "button"
+    And I <menushouldorshouldnot> see smart menu "Quick links" in location "Main"
+    Then I log out
+    And I log in as "student1"
+    And I <menushouldorshouldnot> see smart menu "Quick links" in location "Main, Menu, User, Bottom"
+    And I log out
+    When I log in as "teacher"
+    And I <menushouldorshouldnot> see smart menu "Quick links" in location "Main, Menu, User, Bottom"
+
+    Examples:
+      | startenabled |endenabled | start_day | start_month | start_year | end_day | end_month | end_year | menushouldorshouldnot |
+      | 1            | 1         | 1         | January     | 2023       | 1       | January   | 2050     | should                |
+      | 1            | 1         | 1         | January     | 2049       | 1       | January   | 2050     | should not            |
+      | 1            | 1         | 1         | January     | 2023       | 1       | December  | 2023     | should not            |
+      | 1            | 0         | 1         | January     | 2023       | 1       | 1         | 2023     | should                |
+      | 1            | 0         | 1         | January     | 2049       | 1       | 1         | 2023     | should not            |
+      | 0            | 1         | 1         | January     | 2023       | 1       | December  | 2050     | should                |
+      | 0            | 1         | 1         | January     | 2023       | 1       | December  | 2023     | should not            |
 
   @javascript
   Scenario Outline: Smartmenu: Menus: Rules - Show smart menu based on multiple conditions

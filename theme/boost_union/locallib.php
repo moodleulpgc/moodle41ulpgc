@@ -403,7 +403,7 @@ function theme_boost_union_infobanner_is_shown_on_page($bannerno) {
 }
 
 /**
- * Helper function to compare either infobanner or tiles orders.
+ * Helper function to compare either infobanner or tiles or slides orders.
  *
  * @param int $a The first value
  * @param int $b The second value
@@ -573,6 +573,52 @@ function theme_boost_union_get_urloftilebackgroundimage($tileno) {
 
         // Get all files from filearea.
         $files = $fs->get_area_files($systemcontext->id, 'theme_boost_union', 'tilebackgroundimage'.$tileno,
+                false, 'itemid', false);
+
+        // Just pick the first file - we are sure that there is just one file.
+        $file = reset($files);
+
+        // Build and return the image URL.
+        return moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
+                $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+    }
+
+    // As no image was found, return null.
+    return null;
+}
+
+/**
+ * Get the slider's background image URL from the filearea 'slidebackgroundimage'.tileno.
+ *
+ * Note:
+ * Calling this function for each slide separately is maybe not performant. Originally it was planed to put
+ * all files in one filearea. However, at the time of development
+ * https://github.com/moodle/moodle/blob/master/lib/outputlib.php#L2062
+ * did not support itemids in setting-files of themes.
+ *
+ * @param int $slideno The slide number.
+ * @return string|null
+ */
+function theme_boost_union_get_urlofslidebackgroundimage($slideno) {
+    // If the slide number is apparently not valid, return.
+    // Note: We just check the slide's number, we do not check if the slide is enabled or not.
+    if ($slideno < 0 || $slideno > THEME_BOOST_UNION_SETTING_SLIDES_COUNT) {
+        return null;
+    }
+
+    // Get the background image config for this slide.
+    $bgconfig = get_config('theme_boost_union', 'slide'.$slideno.'backgroundimage');
+
+    // If a background image is configured.
+    if (!empty($bgconfig)) {
+        // Get the system context.
+        $systemcontext = context_system::instance();
+
+        // Get filearea.
+        $fs = get_file_storage();
+
+        // Get all files from filearea.
+        $files = $fs->get_area_files($systemcontext->id, 'theme_boost_union', 'slidebackgroundimage'.$slideno,
                 false, 'itemid', false);
 
         // Just pick the first file - we are sure that there is just one file.
@@ -1630,34 +1676,387 @@ function theme_boost_union_get_scss_to_mark_external_links($theme) {
     $scss = '';
 
     // If the corresponding setting is set to 'yes'.
-    if ($theme->settings->markexternallinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+    if (isset($theme->settings->markexternallinks) &&
+            $theme->settings->markexternallinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+
+        // Get the scope setting.
+        $scope = get_config('theme_boost_union', 'markexternallinksscope');
+
+        // Prepare the CSS selectors depending on the configured scope.
+        switch ($scope) {
+            case THEME_BOOST_UNION_SETTING_MARKLINKS_COURSEMAIN:
+                $topltrselector = 'body.dir-ltr.path-course-view #region-main';
+                $toprtlselector = 'body.dir-rtl.path-course-view #region-main';
+                break;
+            case THEME_BOOST_UNION_SETTING_MARKLINKS_WHOLEPAGE:
+            default:
+                $topltrselector = 'body.dir-ltr';
+                $toprtlselector = 'body.dir-rtl';
+                break;
+        }
 
         // SCSS to add external link icon after the link and respect LTR and RTL while doing this.
-        $scss = 'body.dir-ltr a:not([href^="' . $CFG->wwwroot . '"])[href^="http://"]::after,
-            body.dir-ltr a:not([href^="' . $CFG->wwwroot . '"])[href^="https://"]::after {
-            font-family: "FontAwesome";
-            content: "#{$fa-var-external-link}" !important;
-            padding-left: 0.25rem;
+        $scss = $topltrselector.' a:not([href^="' . $CFG->wwwroot . '"])[href^="http://"]::after,'.
+                $topltrselector.' a:not([href^="' . $CFG->wwwroot . '"])[href^="https://"]::after {
+            @include externallink(ltr);
         }';
-        $scss .= 'body.dir-rtl a:not([href^="' . $CFG->wwwroot . '"])[href^="http://"]::before,
-            body.dir-rtl a:not([href^="' . $CFG->wwwroot . '"])[href^="https://"]::before {
-            font-family: "FontAwesome";
-            content: "#{$fa-var-external-link}" !important;
-            padding-right: 0.25rem;
+        $scss .= $toprtlselector.' a:not([href^="' . $CFG->wwwroot . '"])[href^="http://"]::before,'.
+                $toprtlselector.' a:not([href^="' . $CFG->wwwroot . '"])[href^="https://"]::before {
+            @include externallink(rtl);
         }';
 
-        // Moodle adds a hardcoded external-link icon to several links:
-        // * The "services and support" link in the questionmark menu (which will point to moodle.com/help.
-        // * The "contact site support" link in the questionmark menu (as soon as the URL in the $CFG->supportpage setting is set).
-        // * The links to the Moodle docs (which are created with the get_docs_url() helper function).
-        // These icons become obsolete now. We remove them with the sledgehammer.
-        $scss .= '.footer-support-link a[href^="https://moodle.com/help/"] .fa-external-link';
-        if (!empty($CFG->supportpage)) {
-            $scss .= ', a[href="'.$CFG->supportpage.'"] .fa-external-link';
+        // Revert some things depending on the configured scope.
+        if ($scope == THEME_BOOST_UNION_SETTING_MARKLINKS_WHOLEPAGE) {
+            // While adding the external link icon to text links is perfectly fine and intended, the SCSS code also
+            // matches on image links. And this should be avoided for optical reasons.
+            // Unfortunately, we can't select _all_ images which are surrounded by links with pure CSS.
+            // But we can at least revert the external link icon in images and other assets which we know that should not
+            // get it:
+            // * Everything inside the frontpage slider.
+            $scss .= '#themeboostunionslider a::before, #themeboostunionslider a::after {
+                display: none;
+            }';
+
+            // Moodle adds a hardcoded external-link icon to several links:
+            // * The "services and support" link in the questionmark menu (which should point to moodle.com/help).
+            // * The "contact site support" link in the questionmark menu (as soon as the URL in the $CFG->supportpage setting is
+            // set).
+            // * The links to the Moodle docs (which are created with the get_docs_url() helper function).
+            // * The "Give feedback about this software" link in the questionmark menu (if the $CFG->enableuserfeedback setting
+            // is enabled).
+            // * Anything else which is shown in the call-to-action notification banners on the Dashboard
+            // (Currently just the "Give feedback about this software" link as well).
+            // These icons become obsolete now. We remove them with the sledgehammer.
+            $scss .= '.footer-support-link a[href^="https://moodle.com/help/"] .fa-external-link,
+                    .footer-support-link a[target="_blank"] .fa-external-link';
+            if (!empty($CFG->supportpage)) {
+                $scss .= ', a[href="'.$CFG->supportpage.'"] .fa-external-link';
+            }
+            if (!empty($CFG->enableuserfeedback)) {
+                $scss .= ', a[href^="https://feedback.moodle.org"] .fa-external-link,
+                a[href^="https://feedback.moodle.org"] .ml-1';
+            }
+            $scss .= ', a[href^="'.get_docs_url().'"] .fa-external-link,
+                    div.cta a .fa-external-link {
+                display: none;
+            }';
         }
-        $scss .= ', a[href^="'.get_docs_url().'"] .fa-external-link {
-            display: none;
-        }';
     }
     return $scss;
+}
+
+/**
+ * Returns the SCSS to add a broken-chain symbol in front of broken links and make the font red to mark them visually.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string
+ */
+function theme_boost_union_get_scss_to_mark_broken_links($theme) {
+    // Initialize SCSS snippet.
+    $scss = '';
+
+    // If the corresponding setting is set to 'yes'.
+    if (isset($theme->settings->markbrokenlinks) &&
+            $theme->settings->markbrokenlinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        // Set font color to the 'danger' color.
+        $scss .= 'a[href*="/brokenfile.php"] {
+            color: $danger;
+        }';
+
+        // SCSS to add broken-chain icon in front of the link and respect LTR and RTL while doing this.
+        $scss .= 'body.dir-ltr a[href*="/brokenfile.php"]::before {
+            font-family: "FontAwesome";
+            content: "\f127" !important;
+            padding-right: 0.25rem;
+        }';
+        $scss .= 'body.dir-rtl a[href*="/brokenfile.php"]::after {
+            font-family: "FontAwesome";
+            content: "\f127" !important;
+            padding-left: 0.25rem;
+        }';
+    }
+
+    return $scss;
+}
+
+/**
+ * Returns the SCSS to add an envelope symbol in front of mailto links to mark them visually.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string
+ */
+function theme_boost_union_get_scss_to_mark_mailto_links($theme) {
+    // Initialize SCSS snippet.
+    $scss = '';
+
+    // If the corresponding setting is set to 'yes'.
+    if (isset($theme->settings->markmailtolinks) &&
+            $theme->settings->markmailtolinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        // Get the scope setting.
+        $scope = get_config('theme_boost_union', 'markmailtolinksscope');
+
+        // Prepare the CSS selectors depending on the configured scope.
+        switch ($scope) {
+            case THEME_BOOST_UNION_SETTING_MARKLINKS_COURSEMAIN:
+                $topltrselector = 'body.dir-ltr.path-course-view #region-main';
+                $toprtlselector = 'body.dir-rtl.path-course-view #region-main';
+                break;
+            case THEME_BOOST_UNION_SETTING_MARKLINKS_WHOLEPAGE:
+            default:
+                $topltrselector = 'body.dir-ltr';
+                $toprtlselector = 'body.dir-rtl';
+                break;
+        }
+
+        // SCSS to add envelope icon in front of the link and respect LTR and RTL while doing this.
+        $scss .= $topltrselector.' a[href^="mailto"]::before {
+            @include mailtolink(ltr);
+        }';
+        $scss .= $toprtlselector.' a[href^="mailto"]::after {
+            @include mailtolink(rtl);
+        }';
+    }
+
+    return $scss;
+}
+
+/**
+ * Returns the SCSS code to hide the course image and/or the course progress in the course overview block, depending
+ * on the theme settings courseoverviewshowcourseimages and courseoverviewshowcourseprogress respectively.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string
+ */
+function theme_boost_union_get_scss_courseoverview_block($theme) {
+    // Initialize SCSS snippet.
+    $scss = '';
+
+    // Selector for the course overview block.
+    $blockselector = '.block_myoverview.block div[data-region="courses-view"]';
+
+    // Get the course image setting, defaults to true if the setting does not exist.
+    if (!isset($theme->settings->courseoverviewshowcourseimages)) {
+        $showcourseimagescard = true;
+        $showcourseimageslist = true;
+        $showimagessummary = true;
+    } else {
+        $showcourseimages = explode(',', $theme->settings->courseoverviewshowcourseimages);
+        $showcourseimagescard = in_array(THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_CARD, $showcourseimages);
+        $showcourseimageslist = in_array(THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_LIST, $showcourseimages);
+        $showimagessummary = in_array(THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_SUMMARY, $showcourseimages);
+    }
+
+    // If the corresponding settings are set to false.
+    if (!$showimagessummary) {
+        $listitemselector = $blockselector.' .course-summaryitem > .row ';
+        $scss .= $listitemselector.'> .col-md-2 { display: none !important; }'.PHP_EOL;
+        $scss .= $listitemselector.'> .col-md-9 { @extend .col-md-11; }'.PHP_EOL;
+    }
+    if (!$showcourseimageslist) {
+        $listitemselector = $blockselector.' .course-listitem:not(.course-summaryitem) > .row ';
+        $scss .= $listitemselector.'> .col-md-2 { display: none !important; }'.PHP_EOL;
+        $scss .= $listitemselector.'> .col-md-9 { @extend .col-md-11; }'.PHP_EOL;
+    }
+    if (!$showcourseimagescard) {
+        $scss .= $blockselector.' .dashboard-card-img { display: none !important; }'.PHP_EOL;
+    }
+
+    // Get the course progress setting, defaults to true if the setting does not exist.
+    if (!isset($theme->settings->courseoverviewshowcourseprogress) ||
+            $theme->settings->courseoverviewshowcourseprogress == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        $showcourseprogress = true;
+    } else {
+        $showcourseprogress = false;
+    }
+
+    // If the corresponding setting is set to false.
+    if (!$showcourseprogress) {
+        $scss .= $blockselector.' .progress-text { display: none !important; }'.PHP_EOL;
+    }
+
+    return $scss;
+}
+
+/**
+ * Helper function which returns the list of possible touch icons for iOS.
+ *
+ * @return array A multidimensional array
+ */
+function theme_boost_union_get_touchicons_for_ios() {
+    $filenameprefix = 'apple-icon-';
+    $filenamesuffixes = ['jpg', 'png'];
+
+    $recommendedsizes = ['120x120', '152x152', '167x167', '180x180'];
+    $optionalsizes = ['57x57', '60x60', '72x72', '76x76', '114x114', '144x144'];
+
+    return [
+        'filenameprefix' => $filenameprefix,
+        'filenamesuffixes' => $filenamesuffixes,
+        'sizes' => [
+            'recommended' => $recommendedsizes,
+            'optional' => $optionalsizes,
+        ],
+        'filenames' => [
+            'recommended' => preg_filter('/^/', $filenameprefix, $recommendedsizes),
+            'optional' => preg_filter('/^/', $filenameprefix, $optionalsizes),
+        ],
+    ];
+}
+
+/**
+ * Callback function which is called from settings.php if the touch icon files for iOS setting has changed.
+ *
+ * It gets all files from the files setting, picks all the expected files (and ignores all others)
+ * and stores them into an application cache for quicker access.
+ *
+ * @return void
+ */
+function theme_boost_union_touchicons_for_ios_checkin() {
+    // Create cache for touch icon files.
+    $cache = cache::make('theme_boost_union', 'touchiconsios');
+
+    // Purge the existing cache values as we will refill the cache now.
+    $cache->purge();
+
+    // Get list of possible touch icons for iOS.
+    $touchiconsios = theme_boost_union_get_touchicons_for_ios();
+
+    // Initialize the file list with all possible files.
+    $filelist = [];
+    foreach ($touchiconsios['filenames']['recommended'] as $ti) {
+        $candidatefile = new stdClass();
+        $candidatefile->exists = false;
+        $candidatefile->recommended = true;
+        $candidatefile->filename = $ti;
+        $candidatefile->size = str_replace($touchiconsios['filenameprefix'], '', $ti);
+        $filelist[$ti] = $candidatefile;
+    }
+    foreach ($touchiconsios['filenames']['optional'] as $ti) {
+        $candidatefile = new stdClass();
+        $candidatefile->exists = false;
+        $candidatefile->recommended = false;
+        $candidatefile->filename = $ti;
+        $candidatefile->size = str_replace($touchiconsios['filenameprefix'], '', $ti);
+        $filelist[$ti] = $candidatefile;
+    }
+
+    // Get the system context.
+    $systemcontext = \context_system::instance();
+
+    // Get filearea.
+    $fs = get_file_storage();
+
+    // Get touch icon files.
+    $files = $fs->get_area_files($systemcontext->id, 'theme_boost_union', 'touchiconsios', false, 'itemid', false);
+
+    // Iterate over the uploaded files and fill the file list.
+    foreach ($files as $file) {
+        // Get the filename including extension.
+        $filename = $file->get_filename();
+
+        // Get the filename without extension.
+        $filenamewithoutext = pathinfo($filename,  PATHINFO_FILENAME);
+
+        // If the filename is a recommended filename or if it is an optional filename.
+        if (in_array($filenamewithoutext, $touchiconsios['filenames']['recommended']) ||
+            in_array($filenamewithoutext, $touchiconsios['filenames']['optional'])) {
+            // Get the file extension.
+            $filenameextension = pathinfo($filename, PATHINFO_EXTENSION);
+
+            // If the file extension is a valid extension.
+            if (in_array($filenameextension, $touchiconsios['filenamesuffixes'])) {
+                // Set the exists flag in the return array.
+                $filelist[$filenamewithoutext]->exists = true;
+
+                // And set the full filename including suffix.
+                $filelist[$filenamewithoutext]->filename = $filename;
+            }
+        }
+    }
+
+    // Add the file list to the cache.
+    $cache->set('filelist', $filelist);
+
+    // Add a marker value to the cache which indicates that the files have been checked into the cache completely.
+    // This will help to decide later if the cache is really empty (and should be refilled) or if there aren't just any
+    // files uploaded.
+    $cache->set('checkedin', true);
+}
+
+/**
+ * Helper function which returns the templatecontext with the file list for the uploaded touch icons for iOS.
+ *
+ * @return array The array of files.
+ */
+function theme_boost_union_get_touchicons_for_ios_templatecontext() {
+    // Create cache for touch icon files.
+    $cache = cache::make('theme_boost_union', 'touchiconsios');
+
+    // If the cache is completely empty, check the files in on-the-fly.
+    if ($cache->get('checkedin') != true) {
+        theme_boost_union_touchicons_for_ios_checkin();
+    }
+
+    // Get the cached file list.
+    $filelist = $cache->get('filelist');
+
+    // The filelist in the cache is already structured in a way that it can be directly used as templatecontext :).
+    // Thus, return the templatecontext (and remove the array indices for proper rendering in Mustache).
+    return array_values($filelist);
+}
+
+/**
+ * Returns the HTML code to add the touch icons to the page.
+ *
+ * @return string
+ */
+function theme_boost_union_get_touchicons_html_for_page() {
+    // Create cache for touch icon files for iOS.
+    $cache = cache::make('theme_boost_union', 'touchiconsios');
+
+    // If the cache is completely empty, check the files in on-the-fly.
+    if ($cache->get('checkedin') != true) {
+        theme_boost_union_touchicons_for_ios_checkin();
+    }
+
+    // Get the cached file list.
+    $filelist = $cache->get('filelist');
+
+    // Initialize string.
+    $touchiconstring = '';
+
+    // If there are files uploaded.
+    if (is_array($filelist) && count($filelist) > 0) {
+        // Iterate over the files and fill the string with the file list.
+        foreach ($filelist as $file) {
+            // If the file exists (i.e. it has been uploaded).
+            if ($file->exists == true) {
+                // Build the file URL.
+                $fileurl = new moodle_url('/pluginfile.php/1/theme_boost_union/touchiconsios/' .
+                    theme_get_revision().'/'.$file->filename);
+
+                // Compose and append the HTML tag.
+                $touchiconstring .= '<link rel="apple-touch-icon" sizes="';
+                $touchiconstring .= $file->size;
+                $touchiconstring .= '" href="'.$fileurl->out().'">';
+            }
+        }
+    }
+
+    // Return the string.
+    return $touchiconstring;
+}
+
+/**
+ * Helper function to map Boost Union settings ('yes'/'no') to corresponding string values ('true'/'false')
+ * This is needed for Bootstrap which expects string boolean values.
+ *
+ * @param string $var Either 'yes' or 'no'
+ */
+function theme_boost_union_yesno_to_boolstring($var) {
+    if ($var == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        return 'true';
+    } else {
+        return 'false';
+    }
 }

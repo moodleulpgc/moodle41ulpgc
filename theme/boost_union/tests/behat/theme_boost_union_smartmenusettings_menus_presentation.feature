@@ -47,19 +47,34 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And I click on "Create menu" "button"
     And I expand all fieldsets
     And I set the following fields to these values:
-      | Title            | Quick links      |
-      | Menu location(s) | Main navigation  |
-      | CSS class        | quick-links-menu |
+      | Title            | Quick links              |
+      | Menu location(s) | Main, Menu, User, Bottom |
+      | CSS class        | quick-links-menu         |
     And I click on "Save and return" "button"
-    Then ".nav-item.quick-links-menu" "css_element" should exist in the ".primary-navigation" "css_element"
-    And I should see "Quick links" in the ".nav-item.quick-links-menu" "css_element"
+    And I set "Quick links" smart menu items with the following fields to these values:
+      | Title          | Resources         |
+      | Menu item type | Static            |
+      | Menu item URL  | http://moodle.org |
+    And the "class" attribute of "//div[@class='primary-navigation']//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should contain "quick-links-menu"
+    And the "class" attribute of "//div[contains(@class, 'carousel-item')]//a[contains(normalize-space(.), 'Quick links')]" "xpath_element" should contain "quick-links-menu"
+    And the "class" attribute of "//nav[contains(@class, 'menubar')]//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should contain "quick-links-menu"
+    And I change the viewport size to "740x900"
+    And the "class" attribute of "//div[@class='bottom-navigation']//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should contain "quick-links-menu"
+    And I change the viewport size to "large"
+    And I navigate to smart menus
     And I click on ".action-edit" "css_element" in the "Quick links" "table_row"
     And I expand all fieldsets
     And I set the field "CSS class" to "quick-links"
     And I click on "Save and return" "button"
-    Then ".nav-item.quick-links-menu" "css_element" should not exist in the ".primary-navigation" "css_element"
-    And ".nav-item.quick-links" "css_element" should exist in the ".primary-navigation" "css_element"
-    And I should see "Quick links" in the ".nav-item.quick-links" "css_element"
+    And the "class" attribute of "//div[@class='primary-navigation']//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should not contain "quick-links-menu"
+    And the "class" attribute of "//div[@class='primary-navigation']//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should contain "quick-links"
+    And the "class" attribute of "//div[contains(@class, 'carousel-item')]//a[contains(normalize-space(.), 'Quick links')]" "xpath_element" should not contain "quick-links-menu"
+    And the "class" attribute of "//div[contains(@class, 'carousel-item')]//a[contains(normalize-space(.), 'Quick links')]" "xpath_element" should contain "quick-links"
+    And the "class" attribute of "//nav[contains(@class, 'menubar')]//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should not contain "quick-links-menu"
+    And the "class" attribute of "//nav[contains(@class, 'menubar')]//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should contain "quick-links"
+    And I change the viewport size to "740x900"
+    And the "class" attribute of "//div[@class='bottom-navigation']//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should not contain "quick-links-menu"
+    And the "class" attribute of "//div[@class='bottom-navigation']//a[contains(normalize-space(.), 'Quick links')]//.." "xpath_element" should contain "quick-links"
 
   @javascript
   Scenario: Smartmenu: Menus: Presentation - Use different styles for a smart menu
@@ -104,14 +119,41 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And I click on "Smart menus" "link" in the "#page-navbar .breadcrumb" "css_element"
     And ".dropdown.nav-item.card-dropdown" "css_element" should exist in the ".primary-navigation" "css_element"
     And I click on "Quick links" "link" in the ".primary-navigation" "css_element"
-    Then I should see ".card-dropdown .dropdown-menu.show img" style "height" value "<height>"
+    Then DOM element ".card-dropdown .dropdown-menu.show img" should have computed style "height" "<height>"
 
     Examples:
-      | cardsize       | height |
-      | Tiny (50px)    | 50     |
-      | Small (100px)  | 100    |
-      | Medium (150px) | 150    |
-      | Large (200px)  | 200    |
+      | cardsize       | height   |
+      | Tiny (50px)    | 50px     |
+      | Small (100px)  | 100px    |
+      | Medium (150px) | 150px    |
+      | Large (200px)  | 200px    |
+
+  @javascript
+  Scenario: Smartmenu: Menus: Presentation - Displays the card menu container in various overflow behaviors
+    Given I log in as "admin"
+    And I create smart menu with the following fields to these values:
+    | Title                   | Quick Links     |
+    | Menu location(s)        | Main navigation |
+    | Presentation type       | Card            |
+    | Card overflow behavior  | No wrap         |
+    And I set "Quick Links" smart menu items with the following fields to these values:
+    | Title          | Smartmenu Resource |
+    | Menu item type | Static             |
+    | Menu item URL  | https://moodle.org |
+    And I click on "Smart menus" "link" in the "#page-navbar .breadcrumb" "css_element"
+    And ".dropdown.nav-item.card-dropdown" "css_element" should exist in the ".primary-navigation" "css_element"
+    And I click on "Quick Links" "link" in the ".primary-navigation" "css_element"
+    Then ".card-dropdown.card-overflow-no-wrap .dropdown-menu.show" "css_element" should exist in the ".primary-navigation" "css_element"
+    And ".card-dropdown.card-overflow-wrap .dropdown-menu.show" "css_element" should not exist in the ".primary-navigation" "css_element"
+    Then DOM element ".primary-navigation .card-dropdown .dropdown-menu.show" should have computed style "flex-wrap" "nowrap"
+
+    And I click on ".action-edit" "css_element" in the "Quick Links" "table_row"
+    And I expand all fieldsets
+    And I set the field "Card overflow behavior" to "Wrap"
+    And I click on "Save and return" "button"
+    And I click on "Quick Links" "link" in the ".primary-navigation" "css_element"
+    And ".card-dropdown.card-overflow-wrap .dropdown-menu.show" "css_element" should exist in the ".primary-navigation" "css_element"
+    And ".card-dropdown.card-overflow-no-wrap .dropdown-menu.show" "css_element" should not exist in the ".primary-navigation" "css_element"
 
   @javascript
   Scenario Outline: Smartmenu: Menus: Presentation - Display the smart menu and its menu items as card withs different aspect ratios
@@ -139,12 +181,12 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
 
   @javascript
   Scenario: Smartmenu: Menus: Presentation - Add a smart menu with multilang tags
-    When I log in as "admin"
+    Given the following "language packs" exist:
+      | language |
+      | de       |
     And the "multilang" filter is "on"
     And the "multilang" filter applies to "content and headings"
-    And I navigate to "Language > Language packs" in site administration
-    And I set the field "Available language packs" to "de"
-    And I press "Install selected language pack(s)"
+    When I log in as "admin"
     And I navigate to smart menus
     And I click on "Create menu" "button"
     And I set the following fields to these values:
@@ -165,3 +207,60 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And I am on site homepage
     Then I should see "Dolor sit amet" in the "nav.moremenu" "css_element"
     And I should not see "Lorem ipsum" in the "nav.moremenu" "css_element"
+
+  @javascript
+  Scenario: Smartmenu: Menus: Presentation - Display the menus inside and outside more menu
+    Given I log in as "admin"
+    And I create smart menu with the following fields to these values:
+      | Title              | Quick links          |
+      | Menu location(s)   | Main, Menu           |
+      | Menu mode          | Submenu              |
+      | More menu behavior | Force into more menu |
+    And I set "Quick links" smart menu items with the following fields to these values:
+      | Title           | Smartmenu Resource |
+      | Menu item type  | Heading            |
+    And I click on "Smart menus" "link" in the "#page-navbar .breadcrumb" "css_element"
+    And I should not see smart menu "Quick links" in location "Main, Menu"
+    And I click on "More" "link" in the ".primary-navigation" "css_element"
+    Then I should see smart menu "Quick links" in location "Main"
+    And I click on "More" "link" in the ".boost-union-menubar" "css_element"
+    Then I should see smart menu "Quick links" in location "Menu"
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links 01 |
+      | Menu location(s) | Main, Menu               |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links 02 |
+      | Menu location(s) | Main, Menu               |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links 03 |
+      | Menu location(s) | Main, Menu               |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links 04 |
+      | Menu location(s) | Main, Menu               |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links 05 |
+      | Menu location(s) | Main, Menu               |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links long title 01  |
+      | Menu location(s) | Menu                                 |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links long title 02  |
+      | Menu location(s) | Menu                                 |
+    And I create smart menu with the following fields to these values:
+      | Title            | Test quick demo links 06 |
+      | Menu location(s) | Main, Menu               |
+    Then I change the viewport size to "1600x495"
+    And I should not see smart menu "Test quick demo links 06" in location "Main, Menu"
+    And I click on "More" "link" in the ".primary-navigation" "css_element"
+    Then I should see smart menu "Test quick demo links 06" in location "Main"
+    And I click on "More" "link" in the ".boost-union-menubar" "css_element"
+    Then I should see smart menu "Test quick demo links 06" in location "Menu"
+    And I click on ".action-edit" "css_element" in the "Test quick demo links 06" "table_row"
+    Then I click on "Expand all" "link"
+    And I set the field "More menu behavior" to "Keep outside of more menu"
+    And I click on "Save and return" "button"
+    And I should see smart menu "Test quick demo links 06" in location "Main, Menu"
+    And I click on "More" "link" in the ".primary-navigation" "css_element"
+    Then I should not see "Test quick demo links 06" in the ".primary-navigation .dropdownmoremenu" "css_element"
+    And I click on "More" "link" in the ".boost-union-menubar" "css_element"
+    Then I should not see "Test quick demo links 06" in the ".boost-union-menubar .dropdownmoremenu" "css_element"

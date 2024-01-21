@@ -55,6 +55,14 @@ $string['coursecontentmaxwidthsetting_desc'] = 'With this setting, you can overr
 // ... ... Setting: Medium content max width.
 $string['mediumcontentmaxwidthsetting'] = 'Medium content max width';
 $string['mediumcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s medium content width without manual SCSS modifications. This page width is used in certain activities like the database activity. By default, Moodle uses a medium content max width of 1120px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
+// ... Section: Drawer width.
+$string['drawerwidthheading'] = 'Drawer width';
+// ... ... Setting: Course content max width.
+$string['courseindexdrawerwidthsetting'] = 'Course index drawer width';
+$string['courseindexdrawerwidthsetting_desc'] = 'With this setting, you can override Moodle\'s course index drawer width without manual SCSS modifications. By default, Moodle uses a course index drawer width of 285px. You can enter other pixel-based values like 320px, but values with other units like percentage-based values or a viewport-width value won\'t work.';
+// ... ... Setting: Medium content max width.
+$string['blockdrawerwidthsetting'] = 'Block drawer width';
+$string['blockdrawerwidthsetting_desc'] = 'With this setting, you can override Moodle\'s block drawer width without manual SCSS modifications. By default, Moodle uses a medium content max width of 315px. You can enter other pixel-based values like 400px, but values with other units like percentage-based values or a viewport-width value won\'t work.';
 
 // Settings: Site branding tab.
 $string['sitebrandingtab'] = 'Site branding';
@@ -193,6 +201,25 @@ $string['loginformpositionsetting_right'] = 'Right-aligned';
 // ... ... Setting: login form transparency.
 $string['loginformtransparencysetting'] = 'Login form transparency';
 $string['loginformtransparencysetting_desc'] = 'With this setting, you can make the login form slightly transparent to let the background image shine through even more.';
+// ... Section: Login providers.
+$string['loginprovidersheading'] = 'Login providers';
+// ... ... Setting: Local login form.
+$string['loginlocalloginenablesetting'] = 'Local login';
+$string['loginlocalloginenablesetting_desc'] = 'With this setting, you control if the local login form is shown on the login page or not. By default, the local login form is shown and users an login into the site as normal. If you disable this setting, the local login form is hidden. This allows you to just provide login buttons for external identity providers like OAuth2 or OIDC.';
+// ... ... Setting: IDP login intro.
+$string['loginidpshowintrosetting'] = 'IDP login intro';
+$string['loginidpshowintrosetting_desc'] = 'With this setting, you control if the <em>\'{$a}\'</em> intro is shown above the IDP login buttons or not. By default, the intro is shown and users will be quickly informed what the IDP buttons are about. If you disable this setting, the IDP intro is hidden. This allows you to provide a clean user login interface if you just use external identity providers like OAuth2 or OIDC.';
+
+// Settings: Dashboard / My courses tab.
+$string['dashboardtab'] = 'Dashboard / My courses';
+// ... Section: Course overview block.
+$string['courseoverviewheading'] = 'Course overview block';
+// ... ... Setting: Show course images.
+$string['courseoverviewshowcourseimagessetting'] = 'Show course images';
+$string['courseoverviewshowcourseimagessetting_desc'] = 'With this setting, you can control whether the course image is visible inside the course overview block or not. It is possible to choose a different setting for Card view, Summary view, and List view.';
+// ... ... Setting: Show course completion progress.
+$string['courseoverviewshowprogresssetting'] = 'Show course completion progress';
+$string['courseoverviewshowprogresssetting_desc'] = 'With this setting, you can control whether the course completion progress is visible inside the course overview block or not.';
 
 // Settings: Course tab.
 $string['coursetab'] = 'Course';
@@ -339,16 +366,31 @@ $string['contentwidthheading'] = 'Content width';
 $string['h5pcontentmaxwidthsetting'] = 'H5P content bank max width';
 $string['h5pcontentmaxwidthsetting_desc'] = 'With this setting, you can override Moodle\'s H5P content bank width without manual SCSS modifications. This width is used for the H5P editor within the content bank. It is <em>not</em> used for the width of the H5P activity. By default, Moodle uses a H5P content bank max width of 960px. You can enter other pixel-based values like 1200px, but you can also enter a percentage-based value like 100% or a viewport-width value like 90vw.';
 
-// Settings: Mobile app tab.
-$string['mobiletab'] = 'Mobile app';
-// ... Section: Mobile appearance.
-$string['mobileappearanceheading'] = 'Mobile appearance';
+// Settings: Mobile tab.
+$string['mobiletab'] = 'Mobile';
+// ... Section: Mobile app.
+$string['mobileappheading'] = 'Mobile app';
 // ... ... Setting: Additional CSS for Mobile app.
 $string['mobilecss'] = 'Additional CSS for Mobile app';
 $string['mobilecss_desc'] = 'With this setting, you can write custom CSS code to customise your mobile app interface. The CSS code will be only added to the Mobile app depiction of this Moodle instance and will not be shown in the webbrowser version. Read more about this feature in the <a href="https://moodledev.io/general/app/customisation/remote-themes#how-do-remote-themes-work">Moodle dev docs</a>.';
 $string['mobilecss_set'] = 'As soon as you add any CSS code to this setting and save the setting, the <a href="{$a->url}">Moodle core setting <em>mobilecssurl</em></a> will be automatically set to a URL of the Boost Union theme.';
 $string['mobilecss_overwrite'] = 'As soon as you add any CSS code to this setting and save the setting, the <a href="{$a->url}">Moodle core setting <em>mobilecssurl</em></a> will be automatically overwritten with a URL of the Boost Union theme. Currently this setting is set to <a href="{$a->value}">{$a->value}</a>.';
 $string['mobilecss_donotchange'] = 'This step is necessary to ship the CSS code to the Mobile app. Do not change the URL there unless you really want to remove the CSS code from the Mobile app again.';
+// ... Section: Mobile appearance.
+$string['mobileappearanceheading'] = 'Mobile appearance';
+// ... ... Setting: Touch icon files for iOS.
+$string['touchiconfilesios'] = 'Touch icon files for iOS';
+$string['touchiconfilesios_desc'] = 'Within this setting, you can upload files which are used as homescreen icon as soon as the Moodle site is added to the iOS homescreen as bookmark.';
+$string['touchiconfilesios_recommended'] = 'Recommended files for iOS:';
+$string['touchiconfilesios_optional'] = 'Optional files for iOS:';
+$string['touchiconfilesios_example'] = 'Example filename: apple-icon-152x152.png';
+$string['touchiconfilesios_note'] = 'Recommended files have a good size to be shown properly on current iOS devices and should be provided. Optional files are (or have been previously) supported by iOS devices as well but should be really considered as optional unless you have a particular legacy device to support.';
+$string['touchiconfilesioslist'] = 'Touch icon files for iOS list';
+$string['touchiconfilesioslist_desc'] = 'This is the list of files which you have uploaded to the touch icon files for iOS filearea.';
+$string['touchiconlistiosrecommendeduploaded'] = 'This is a recommended file to be used as touch icon on iOS devices and it was uploaded.';
+$string['touchiconlistiosrecommendedmissing'] = 'This is a recommended file to be used as touch icon on iOS devices, but it was not uploaded properly.';
+$string['touchiconlistiosoptionaluploaded'] = 'This is an optional file to be used as touch icon on iOS devices and it was uploaded.';
+$string['touchiconlistiosoptionalmissing'] = 'This is an optional file to be used as touch icon on iOS devices and it was not uploaded.';
 
 // Settings: Feel page.
 $string['configtitlefeel'] = 'Feel';
@@ -361,6 +403,12 @@ $string['primarynavigationheading'] = 'Primary navigation';
 $string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
 $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.<br /><br />
 Please note: Here, you can just remove navigation nodes. But if you want to add custom navigation nodes, please consider using <a href="{$a->url}">Boost Union\'s smart menu functionality</a>.';
+// ... Section: User menu.
+$string['usermenuheading'] = 'User menu';
+// ... ... Settings: Add preferred language link to language menu.
+$string['addpreferredlangsetting'] = 'Add preferred language link to language menu';
+$string['addpreferredlangsetting_desc'] = 'With this setting, you can add a \'Set preferred language\' setting to the language menu within the user menu. Understandably, this setting is only processed if the setting <a href="{$a->url1}">Display language menu</a> is enabled, and if at least <a href="{$a->url2}">a second language pack is installed</a> and <a href="{$a->url3}">offered for selection</a>.';
+$string['setpreferredlanglink'] = 'Set preferred language';
 // ... Section: Breadcrumbs.
 $string['breadcrumbsheading'] = 'Breadcrumbs';
 // ... ... Setting: Course category breadcrumb.
@@ -462,6 +510,20 @@ $string['speciallinksmarkupheading'] = 'Special links markup';
 // ... ... Setting: Mark external links.
 $string['markexternallinkssetting'] = 'Mark external links';
 $string['markexternallinkssetting_desc'] = 'Adds an "external link" icon after external links (which lead the user to a target outside Moodle).';
+// ... ... Setting: Mark external links scope.
+$string['markexternallinksscopesetting'] = 'Mark external links scope';
+$string['markexternallinksscopesetting_desc'] = 'With this setting, you control the scope where Boost Union should mark external links. By default, Boost Union marks external links on the whole Moodle page and does its best to cover some edge-cases where adding the external link icon does not make much sense. However, you can also limit the scope to better avoid edge-cases.';
+$string['marklinksscopesetting_wholepage'] = 'On the whole page';
+$string['marklinksscopesetting_coursemain'] = 'Within the main content area of course main pages only';
+// ... ... Setting: Mark mailto links.
+$string['markmailtolinkssetting'] = 'Mark mailto links';
+$string['markmailtolinkssetting_desc'] = 'Adds an "envelope" icon in front of mailto links.';
+// ... ... Setting: Mark mailto links scope.
+$string['markmailtolinksscopesetting'] = 'Mark mailto links scope';
+$string['markmailtolinksscopesetting_desc'] = 'With this setting, you control the scope where Boost Union should mark mailto links. By default, Boost Union marks mailto links on the whole Moodle page. However, you can also limit the scope to avoid edge-cases.';
+// ... ... Setting: Mark broken links.
+$string['markbrokenlinkssetting'] = 'Mark broken links';
+$string['markbrokenlinkssetting_desc'] = 'Adds a "broken chain" icon in front of broken links (which lead to uploaded draft files which have not been properly processed) and marks the link in the bootstrap color for "danger". In contrast to the "Mark external links" and "Mark mailto links" settings, there is no possibility to limit the scope of this setting as marking broken links is an indicator that something is broken and has to be fixed manually.';
 
 // Settings: Misc tab.
 $string['misctab'] = 'Miscellaneous';
@@ -491,6 +553,33 @@ $string['enablefooterbuttonboth'] = 'Enable on desktop, tablet and mobile';
 $string['enablefooterbuttondesktop'] = 'Enable on desktop and tablet only, hide on mobile (unchanged as presented by Moodle core)';
 $string['enablefooterbuttonmobile'] = 'Enable on mobile only, hide on desktop and tablet';
 $string['enablefooterbuttonhidden'] = 'Hide on all devices';
+// ... ... Setting: Suppress 'Help and documentation' link.
+$string['footersuppresshelpsetting'] = 'Suppress \'Help and documentation\' link';
+$string['footersuppresshelpsetting_desc'] = 'With this setting, you can entirely suppress the \'Help and documentation\' link in the footer. This link would otherwise appear if a <a href="{$a->url}">Moodle Docs document root</a> is set.';
+// ... ... Setting: Suppress 'Services and support' link.
+$string['footersuppressservicessetting'] = 'Suppress \'Services and support\' link';
+$string['footersuppressservicessetting_desc'] = 'With this setting, you can entirely suppress the \'Services and support\' link in the footer. This link would otherwise show the <a href="{$a->url}">Services and support link</a> to administrators.';
+// ... ... Setting: Suppress 'Contact site support' link.
+$string['footersuppresscontactsetting'] = 'Suppress \'Contact site support\' link';
+$string['footersuppresscontactsetting_desc'] = 'With this setting, you can entirely suppress the \'Contact site support\' link in the footer. This link would otherwise appear if the <a href="{$a->url}">Contact site support link</a> is set.';
+// ... ... Setting: Suppress Login info.
+$string['footersuppresslogininfosetting'] = 'Suppress Login info';
+$string['footersuppresslogininfosetting_desc'] = 'With this setting, you can entirely suppress the login info in the footer. This info would otherwise show links to a user\'s profile and to the logout page.';
+// ... ... Setting: Suppress 'Reset user tour on this page' link.
+$string['footersuppressusertoursetting'] = 'Suppress \'Reset user tour on this page\' link';
+$string['footersuppressusertoursetting_desc'] = 'With this setting, you can entirely suppress the \'Reset user tour on this page\' link in the footer. This link would otherwise provide the possibility to reset a user tour on a particular page.';
+// ... ... Setting: Suppress 'Give feedback about this software' link.
+$string['footersuppressfeedbacksetting'] = 'Suppress \'Give feedback about this software\' link';
+$string['footersuppressfeedbacksetting_desc'] = 'With this setting, you can entirely suppress the \'Give feedback about this software\' link in the footer. This link would otherwise appear if the <a href="{$a->url}">feedback about this software</a> setting is enabled.';
+// ... ... Setting: Suppress theme switcher links.
+$string['footersuppressthemeswitchsetting'] = 'Suppress theme switcher links';
+$string['footersuppressthemeswitchsetting_desc'] = 'With this setting, you can entirely suppress the theme switcher links in the footer. This link might otherwise appear if there are <a href="{$a->url}">themes set for different device types</a> and you are on a non-desktop device.';
+// ... ... Setting: Suppress 'Powered by Moodle' link.
+$string['footersuppresspoweredsetting'] = 'Suppress \'Powered by Moodle\' link';
+$string['footersuppresspoweredsetting_desc'] = 'With this setting, you can entirely suppress the \'Powered by Moodle\' link in the footer. This link would otherwise show an information that this site is running Moodle and provide a link to Moodle HQ.';
+// ... ... Setting: Suppress footer output by plugins.
+$string['footersuppressstandardfooter'] = 'Suppress footer output by plugin \'{$a}\'';
+$string['footersuppressstandardfooter_desc'] = 'With this setting, you can entirely suppress the footer output by plugin \'{$a}\'. Plugins (even if they are shipped with Moodle core, but are still technically plugins) can add additional content to the footer by implementing a particular function. This plugin has implemented this function and might add content to the footer in certain circumstances.';
 
 // Settings: Static pages tab.
 $string['staticpagestab'] = 'Static pages';
@@ -704,7 +793,8 @@ $string['infobannermodesetting_desc'] = 'With this setting, you can define if in
 $string['infobannerdismissiblesetting'] = 'Info banner {$a->no} dismissible';
 $string['infobannerdismissiblesetting_desc'] = 'With this setting, you can make info banner {$a->no} dismissible. If the user clicks on the x-button in the info banner, the banner will be hidden for this user permanently. The visibility is not reset anyhow automatically, even if you change the content of the info banner. If you want to reset the visibility of the info banner, click the \'Reset visibility\' button below.';
 $string['infobannerstartsetting'] = 'Info banner {$a->no} start time';
-$string['infobannerstartsetting_desc'] = 'With this setting, you can define from when on info banner {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';$string['infobannerendsetting'] = 'Info banner {$a->no} end time';
+$string['infobannerstartsetting_desc'] = 'With this setting, you can define from when on info banner {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';
+$string['infobannerendsetting'] = 'Info banner {$a->no} end time';
 $string['infobannerendsetting_desc'] = 'With this setting, you can define until when info banner {$a->no} should be displayed. The configured time is interpreted as server time, not as user time.';
 // Settings: Advertisement tiles tab.
 $string['tilestab'] = 'Advertisement tiles';
@@ -726,6 +816,13 @@ $string['tilebackgroundimagesetting'] = 'Advertisement tile {$a->no} background 
 $string['tilebackgroundimagesetting_desc'] = 'Here, you can upload an image file which will be shown as background image behind the content of the advertisement tile {$a->no}. Please make sure or check that the content is still readable on the background image. This is an optional setting, the advertisement tile will work even if you do not upload any background image.';
 $string['tilecontentsetting'] = 'Advertisement tile {$a->no} content';
 $string['tilecontentsetting_desc'] = 'Here, you enter the content which should be displayed in the advertisement tile {$a->no}. The content is displayed in the middle of the tile. This is an optional setting, the advertisement tile will be shown even if you do not set any content.';
+$string['tilecontentstylesetting'] = 'Advertisement tile {$a->no} content style';
+$string['tilecontentstylesetting_dark'] = 'Dark (black font color for light background images)';
+$string['tilecontentstylesetting_darkshadow'] = 'Dark & Shadow (black font color with a light shadow for light background images)';
+$string['tilecontentstylesetting_desc'] = 'Here, you can modify the style of the content of advertisement tile {$a->no}. By default, the content style is controlled by the style which you set in the rich-text editor above. However, to allow consistent and easy styling especially when using text on background images, you can override the style here.';
+$string['tilecontentstylesetting_nochange'] = 'No change (control all styling in the rich-text editor)';
+$string['tilecontentstylesetting_light'] = 'Light (white font color for dark background images)';
+$string['tilecontentstylesetting_lightshadow'] = 'Light & Shadow (white font color with a dark shadow for dark background images)';
 $string['tileenabledsetting'] = 'Enable advertisement tile {$a->no}';
 $string['tileenabledsetting_desc'] = 'With this setting, you can enable advertisement tile {$a->no}.';
 $string['tilelinksetting'] = 'Advertisement tile {$a->no} link URL';
@@ -741,6 +838,71 @@ $string['tileordersetting'] = 'Advertisement tile {$a->no} order position';
 $string['tileordersetting_desc'] = 'With this setting, you define the order position of the advertisement tile {$a->no}. By default, the advertisement tiles are ordered from top to bottom and left to right like you see them on this settings page here. However, you can decide to assign another order position with this setting. If you assign the same order position to two or more advertisement tiles, they will be ordered again according to the order on this settings page.';
 $string['tiletitlesetting'] = 'Advertisement tile {$a->no} title';
 $string['tiletitlesetting_desc'] = 'Here, you enter the title which should be displayed in the advertisement tile {$a->no}. This is an optional setting, the advertisement tile will be shown even if you do not set a title.';
+// Settings: Slider tab.
+$string['slidertab'] = 'Slider';
+// ... Section: Slider general.
+$string['slidergeneralheading'] = 'Slider general';
+$string['slideranimationsetting'] = 'Slider animation type';
+$string['slideranimationsetting_desc'] = 'With this setting, you control the slider animation. \'Slide\' applies a sliding animation, \'Fade\' applies a fading animation and \'None\' removes all animations.';
+$string['slideranimationsetting_fade'] = 'Fade';
+$string['slideranimationsetting_none'] = 'None';
+$string['slideranimationsetting_slide'] = 'Slide';
+$string['sliderarrownavsetting'] = 'Enable arrow navigation';
+$string['sliderarrownavsetting_desc'] = 'With this setting, you can add navigation arrows on both sides of the slider.';
+$string['sliderfrontpagepositionsetting'] = 'Position of the slider on site home';
+$string['sliderfrontpagepositionsetting_desc'] = 'The slider is shown on site home only. With this setting, you control if the slider is displayed before the site home content or after the site home content. If you want to show only the slider on site home and nothing else, all other site home content can be removed by changing the <a href="{$a->url}">site home settings</a>.';
+$string['sliderfrontpagepositionsetting_afterafter'] = 'After the site home content (and after the advertisement tiles)';
+$string['sliderfrontpagepositionsetting_afterbefore'] = 'After the site home content (but before the advertisement tiles)';
+$string['sliderfrontpagepositionsetting_beforeafter'] = 'Before the site home content (and after the advertisement tiles)';
+$string['sliderfrontpagepositionsetting_beforebefore'] = 'Before the site home content (but before the advertisement tiles)';
+$string['sliderindicatornavsetting'] = 'Enable slider indicator navigation';
+$string['sliderindicatornavsetting_desc'] = 'With this setting, you can add navigation indicators on the bottom of the slider.';
+$string['sliderintervalsetting'] = 'Slider interval speed';
+$string['sliderintervalsetting_desc'] = 'With this setting, you control how long a slide is displayed in milliseconds. The minimum value is 1000 (one second) and the maximum value is 10000 (10 seconds).';
+$string['sliderkeyboardsetting'] = 'Allow slider keyboard interaction';
+$string['sliderkeyboardsetting_desc'] = 'With this setting, you enable keyboard inputs (arrow keys) to control the slider. Please note that disabling this lowers accessibility.';
+$string['sliderpausesetting'] = 'Pause slider on mouseover';
+$string['sliderpausesetting_desc'] = 'With this setting, you prevent the slider from cycling through the slides when a user hovers over a slide. Please note that disabling this lowers accessibility.';
+$string['sliderridesetting'] = 'Cycle through slides';
+$string['sliderridesetting_desc'] = 'With this setting, you control the cycling behaviour of the slider. \'On page load\' begins cycling through slides after the page has finished loading, \'After interaction\' will start cycling after a user has interacted with the slider. \'Never\' disables the automatic cycling of slides altogether, requiring user input to cycle through slides.';
+$string['sliderridesetting_afterinteraction'] = 'After interaction';
+$string['sliderridesetting_never'] = 'Never';
+$string['sliderridesetting_onpageload'] = 'On page load';
+$string['sliderwrapsetting'] = 'Continuously cycle through slides';
+$string['sliderwrapsetting_desc'] = 'With this setting, you make the slider cycling through all slides. If you disable this, the slider will stop cycling at the last slide.';
+// ... Section: Slides.
+$string['slideheading'] = 'Slide {$a->no}';
+$string['slidebackgroundimagealtsetting'] = 'Slide {$a->no} background image alt attribute';
+$string['slidebackgroundimagealtsetting_desc'] = 'Here, you can set an alt attribute for the image of slide {$a->no}. This is an optional setting, the slide will be shown even if you do not set an alt attribute. Please note that not providing an alt attribute lowers accessibility.';
+$string['slidebackgroundimagesetting'] = 'Slide {$a->no} background image';
+$string['slidebackgroundimagesetting_desc'] = 'Here, you can upload an image file which will be shown as background image behind the content of slide {$a->no}. Please make sure or check that the content is still readable on the background image. Please also try to make sure that the aspect ratio of all slides\' background images is equal (as the background image aspect ratio controls the height of the slide and you might want to avoid flickering when the slides are changed). This is a mandatory setting, the slide will not be shown if you do not upload any background image.';
+$string['slidecaptionsetting'] = 'Slide {$a->no} caption';
+$string['slidecaptionsetting_desc'] = 'Here, you enter the caption which should be displayed in slide {$a->no}. The caption is displayed at the bottom center of the slide. This is an optional setting, the slide will be shown even if you do not set a caption.';
+$string['slidecontentsetting'] = 'Slide {$a->no} content';
+$string['slidecontentsetting_desc'] = 'Here, you enter the content which should be displayed in slide {$a->no}. The content is displayed at the bottom center of the slide. If a caption is set, the content is displayed below the caption. Please note that the rich-text editor produces left-aligned text by default, but you might want to change that to centered text for a nicer look. Please also refrain from adding too much content to the slide and please test your content on small devices as content which overflows the slide will simply be hidden. This is an optional setting, the slide will be shown even if you do not set any content.';
+$string['slidecontentstylesetting'] = 'Slide {$a->no} content style';
+$string['slidecontentstylesetting_dark'] = 'Dark (black font color for light background images)';
+$string['slidecontentstylesetting_darkshadow'] = 'Dark & Shadow (black font color with a light shadow for light background images)';
+$string['slidecontentstylesetting_desc'] = 'Here, you can modify the style of the content of slide {$a->no}. By default, the content style is a white font color for dark background images. However, to allow consistent and easy styling on all kinds of background images, you can override the style here. Please note that this setting will overrrule the font color which you set in the rich-text editor above in any case.';
+$string['slidecontentstylesetting_light'] = 'Light (white font color for dark background images)';
+$string['slidecontentstylesetting_lightshadow'] = 'Light & Shadow (white font color with a dark shadow for dark background images)';
+$string['slideenabledsetting'] = 'Enable slide {$a->no}';
+$string['slideenabledsetting_desc'] = 'With this setting, you can enable slide {$a->no}.';
+$string['slidelinksetting'] = 'Slide {$a->no} link URL';
+$string['slidelinksetting_desc'] = 'Here, you can set a (Moodle-internal or external) URL which the slide content of slide {$a->no} will link to. This is an optional setting, the slide will be shown even if you do not set a link URL.';
+$string['slidelinktitlesetting'] = 'Slide {$a->no} link title';
+$string['slidelinktitlesetting_desc'] = 'Here, you can set a link title which is presented as tooltip as soon as the user hovers over slide {$a->no}. This is an optional setting, the slide will be linked even if you do not set a link title. Please note that not providing a link title lowers accessibility.';
+$string['slidelinksourcesetting'] = 'Slide {$a->no} link source';
+$string['slidelinksourcesetting_desc'] = 'Here, you can control which elements of the slider link to the given link URL. You can choose between linking the background image only, linking the slide\'s text elements (caption and content) only or linking both of these.';
+$string['slidelinksourcesetting_both'] = 'Background image and text elements';
+$string['slidelinksourcesetting_image'] = 'Background image only';
+$string['slidelinksourcesetting_text'] = 'Text elements only';
+$string['slidelinktargetsetting'] = 'Slide {$a->no} link target';
+$string['slidelinktargetsetting_desc'] = 'Here, you can set the link target which is set for the slide link as soon as you set a link URL in the slide {$a->no}.';
+$string['slidelinktargetsetting_samewindow'] = 'Same window';
+$string['slidelinktargetsetting_newtab'] = 'New tab';
+$string['slideordersetting'] = 'Slide {$a->no} order position';
+$string['slideordersetting_desc'] = 'With this setting, you define the order position of the slide {$a->no}. By default, the slides are ordered as you see them on this settings page here. However, you can decide to assign another order position with this setting. If you assign the same order position to two or more slides, they will be ordered again according to the order on this settings page.';
 
 // Settings: Functionality page.
 $string['configtitlefunctionality'] = 'Functionality';
@@ -904,6 +1066,16 @@ $string['smartmenusmenuitemcssclass'] = 'CSS class';
 $string['smartmenusmenuitemcssclass_help'] = 'Enter a CSS class for the menu item. This can be used to apply custom styling to the menu item.';
 $string['smartmenusmenuitemdeleteconfirm'] = 'Are you sure you want to delete this menu item from the smart menu?';
 $string['smartmenusmenuitemdeletesuccess'] = 'Smart menu item deleted successfully';
+$string['smartmenusmenuitemlistsort'] = 'Course list sorting';
+$string['smartmenusmenuitemlistsort_help'] = 'The course list will be sorted by the selected criteria and sort order. Choose between fullname, shortname, course ID and course ID number as criteria in combination with ascending and descending sort order.';
+$string['smartmenusmenuitemlistsortfullnameasc'] = 'Course fullname ascending';
+$string['smartmenusmenuitemlistsortfullnamedesc'] = 'Course fullname descending';
+$string['smartmenusmenuitemlistsortshortnameasc'] = 'Course shortname ascending';
+$string['smartmenusmenuitemlistsortshortnamedesc'] = 'Course shortname descending';
+$string['smartmenusmenuitemlistsortcourseidasc'] = 'Course ID ascending';
+$string['smartmenusmenuitemlistsortcourseiddesc'] = 'Course ID descending';
+$string['smartmenusmenuitemlistsortcourseidnumberasc'] = 'Course ID number ascending';
+$string['smartmenusmenuitemlistsortcourseidnumberdesc'] = 'Course ID number descending';
 $string['smartmenusmenuitemdisplayfield'] = 'Course name presentation';
 $string['smartmenusmenuitemdisplayfield_help'] = 'The course name which will be used as the title of the dynamic courses menu items. Choose between course full name and course short name';
 $string['smartmenusmenuitemdisplayfieldcoursefullname'] = 'Course full name';
@@ -1035,6 +1207,7 @@ $string['cachedef_fontawesome'] = 'FontAwesome files (which are uploaded in the 
 $string['cachedef_flavours'] = 'Flavours which apply to a given page\'s category ID for the current user';
 $string['cachedef_smartmenus'] = 'Smart menus';
 $string['cachedef_smartmenu_items'] = 'Smart menu items';
+$string['cachedef_touchiconsios'] = 'Touch icon files for iOS';
 
 // Upgrade notices.
 $string['upgradenotice_2022080922'] = 'From this release on, Boost Union has its own logo and compact logo settings and does not use these files from the Moodle core settings anymore.';

@@ -76,7 +76,7 @@ class presetprofilefields extends check {
             return new result($status, $summary, $details);
         }
 
-        $expectedfields = array_map(trim, explode(',', $expectedfields));
+        $expectedfields = array_map('trim', explode(',', $expectedfields));
 
         
         $fields = $DB->get_records_menu('user_info_field', [], 'sortorder ASC', 'id, shortname');

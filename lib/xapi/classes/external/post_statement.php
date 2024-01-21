@@ -30,10 +30,8 @@ use core_xapi\handler;
 use core_xapi\xapi_exception;
 use external_api;
 use external_function_parameters;
-use external_value;
-use external_single_structure;
 use external_multiple_structure;
-use external_warnings;
+use external_value;
 use core_component;
 
 defined('MOODLE_INTERNAL') || die();

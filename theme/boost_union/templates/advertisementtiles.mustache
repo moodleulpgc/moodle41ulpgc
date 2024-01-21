@@ -20,16 +20,19 @@
     Boost Union advertisement tiles layout template.
 
     Context variables required for this template:
+    * showadvtiles - The flag to show the advertisement tiles or not
     * advtileslayoutclass - The CSS class for the grid
-    * advtiles - The configured info banners list with:
-      * content - The info banner content
+    * advtiles - The configured advertisement tiles list with:
+      * content - The tile's content
       * backgroundimage = Image to be displayed behind the content;
       * linktitle = The link title which is displayed (might be empty);
       * link = The actual URL (might be empty);
       * no = Order which is displayed in the settings.;
+      * contentstyleclass - The CSS class for the tile
 
     Example context (json):
     {
+        "showadvtiles" : true,
         "advtileslayoutclass" : "col-6",
         "advtiles": [
             {
@@ -48,20 +51,23 @@
                 "linktitle": "Canteen",
                 "link": "https://canteen.awesome-organisation.org/",
                 "no": 2,
-                "order": 2
+                "order": 2,
+                "contentstyleclass": "tile-dark"
             },
             {
                 "title": "",
-                "content": "",
+                "content": "This text is shown in light font color",
                 "backgroundimageurl": "https://raw.githubusercontent.com/moodle-an-hochschulen/moodle-theme_boost_union/master/tests/fixtures/login_bg1.jpg",
                 "linktitle": "",
                 "link": "",
                 "no": 3,
-                "order": 3
+                "order": 3,
+                "contentstyleclass": "tile-light"
             }
         ]
     }
 }}
+{{#showadvtiles}}
 <div id="themeboostunionadvtiles" class="container-fluid">
     <div class="row">
         {{#advtiles}}
@@ -72,7 +78,7 @@
                         {{#tileheight}}min-height: {{{.}}};{{/tileheight}}">
                 {{#title}}<h5 class="card-header">{{{title}}}</h5>{{/title}}
                 <div class="card-body">
-                    {{#content}}<div class="card-text">{{{content}}}</div>{{/content}}
+                    {{#content}}<div class="card-text {{contentstyleclass}}">{{{content}}}</div>{{/content}}
                 </div>
                 {{#link}}
                     <div class="card-footer">
@@ -91,3 +97,4 @@
         {{/advtiles}}
     </div>
 </div>
+{{/showadvtiles}}

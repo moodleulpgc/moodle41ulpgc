@@ -46,6 +46,26 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
       | home,myhome           | Home           | Dashboard           |
       | courses,siteadminnode | My courses     | Site administration |
 
+  @javascript
+  Scenario Outline: Setting: Add preferred language link to language menu.
+    Given the following "language packs" exist:
+      | language |
+      | de       |
+    And the following config values are set as admin:
+      | langmenu | 1 |
+    And the following config values are set as admin:
+      | config           | value     | plugin            |
+      | addpreferredlang | <setting> | theme_boost_union |
+    When I log in as "admin"
+    And I click on "User menu" "button" in the ".usermenu" "css_element"
+    And I click on "Language" "link" in the ".usermenu" "css_element"
+    Then I <shouldornot> see "Set preferred language" in the ".usermenu .carousel-item.submenu" "css_element"
+
+    Examples:
+      | setting | shouldornot |
+      | yes     | should      |
+      | no      | should not  |
+
   Scenario Outline: Setting: Course category breadcrumbs
     Given the following "categories" exist:
       | name           | category | idnumber | category |
@@ -102,9 +122,8 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     Given the following config values are set as admin:
       | config          | value | plugin            |
       | backtotopbutton | yes   | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
     When I log in as "admin"
-    And I navigate to "Development > Purge caches" in site administration
-    And I press "Purge all caches"
     And I am on "Course 1" course homepage
     Then "#back-to-top" "css_element" should exist
     And "#page-footer" "css_element" should appear before "#back-to-top" "css_element"
@@ -121,9 +140,8 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     Given the following config values are set as admin:
       | config          | value | plugin            |
       | backtotopbutton | no    | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
     When I log in as "admin"
-    And I navigate to "Development > Purge caches" in site administration
-    And I press "Purge all caches"
     And I am on "Course 1" course homepage
     Then "#back-to-top" "css_element" should not exist
 
@@ -132,9 +150,8 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     Given the following config values are set as admin:
       | config          | value | plugin             |
       | scrollspy       | yes   | theme_boost_union  |
+    And the theme cache is purged and the theme is reloaded
     When I log in as "admin"
-    And I navigate to "Development > Purge caches" in site administration
-    And I press "Purge all caches"
     And I am on "Course 1" course homepage
     And I scroll page to DOM element with ID "section-4"
     And I turn editing mode on
@@ -151,9 +168,8 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     Given the following config values are set as admin:
       | config          | value | plugin             |
       | scrollspy       | no    | theme_boost_union  |
+    And the theme cache is purged and the theme is reloaded
     When I log in as "admin"
-    And I navigate to "Development > Purge caches" in site administration
-    And I press "Purge all caches"
     And I am on "Course 1" course homepage
     And I scroll page to x "0" y "250"
     And I turn editing mode on
@@ -161,6 +177,24 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     And I scroll page to x "0" y "250"
     And I turn editing mode off
     Then page top is at the top of the viewport
+
+  @javascript
+  Scenario: Settings: back to top button in combination with the scrollspy - Make sure that the back to top button is always shown
+    Given the following config values are set as admin:
+      | config          | value | plugin            |
+      | backtotopbutton | yes   | theme_boost_union |
+      | scrollspy       | yes   | theme_boost_union  |
+    When I log in as "admin"
+    And I navigate to "Development > Purge caches" in site administration
+    And I press "Purge all caches"
+    And I am on "Course 1" course homepage
+    And "#back-to-top" "css_element" should exist
+    And "#back-to-top" "css_element" should not be visible
+    And I scroll page to DOM element with ID "section-4"
+    And I turn editing mode on
+    And I wait "2" seconds
+    And page top is not at the top of the viewport
+    Then "#back-to-top" "css_element" should be visible
 
   @javascript
   Scenario: Setting: Activity navigation - Enable "Activity navigation"

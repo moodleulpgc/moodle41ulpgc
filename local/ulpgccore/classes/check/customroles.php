@@ -81,7 +81,7 @@ class customroles extends check {
             return new result($status, $summary, $details);
         }
         
-        $expectedroles = array_map(trim, explode(',', $expectedroles));
+        $expectedroles = array_map('trim', explode(',', $expectedroles));
         $roles = $DB->get_records_menu('role', [], 'sortorder ASC', 'id, shortname');
         
         $missing = [];

@@ -4,6 +4,38 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r17
+
+* 2024-01-14 - Bugfix: Add missing theme_reset_all_caches updatecallback to markmailtolinks and markbrokenlinks settings.
+* 2024-01-10 - Bugfix: Avoid debug messages during initial installation of Boost Union due to uninitialized settings.
+* 2024-01-07 - Test: Install language packs programmatically in Behat tests, solves #540.
+* 2024-01-07 - Test: Add behat tests for the customisation of the appearance of H5P activities, solves #228.
+* 2024-01-07 - Bugfix: The scrollspy Javascript shortly showed an error when using the edit toggle button not on course page, solves #286.
+* 2024-01-06 - Feature: Add admin setting to add a direct link for selecting default language to the user's language menu, solves #128.
+* 2024-01-06 - Test: Enhance the test coverage of the Look -> Page settings.
+* 2024-01-06 - Feature: Allow the admin to set the course index and block drawer width, solves #74.
+* 2024-01-05 - Test: Enhance the test coverage of the Look -> Site branding settings.
+* 2024-01-05 - Test: Enhance the test coverage of the Look -> Activity branding settings.
+* 2024-01-04 - Feature: Add admin setting to suppress all links in the footer popup individually, solves #6.
+* 2024-01-04 - Improvement: Improve the logic in the overridden footer.mustache, solves #530.
+* 2024-01-04 - Feature: Provide $CFG->themerev as SCSS variable, solves #58.
+* 2023-12-31 - Improvement: Allow designers to mark external and mailto links manually, solves #525 & #526 & #528.
+* 2023-12-31 - Improvement: Add an admin setting to limit the scope of the "Mark external links" and "Mark mailto links" features, solves #525 & #526 & #528.
+* 2023-12-31 - Improvement: Fix several edge-cases where the "Mark external links" should not add its icons, solves #525 & #526 & #528.
+* 2023-12-28 - Feature: Add slider which can be displayed on site home, solves #162.
+* 2023-12-27 - Improvement: Add content style setting to the advertisement tiles, solves #519.
+* 2023-12-27 - Test: Always reactivate debugging during Behat tests, solves #521.
+* 2023-12-26 - Improvement: Do not add the advertisement tiles div to the frontpage if no tile is activated, solves #516.
+* 2023-12-24 - Bugfix: Back to top button was missing directly after the scroll-spy scrolled the page, solves #386.
+* 2023-12-24 - Tests: Use a dedicated and simple step to purge the theme cache, solves #513.
+* 2023-12-23 - Feature: Add admin option to mark broken links and mailto links, solves #163 #164.
+* 2023-12-21 - Feature: Add setting to upload touch-images for iOS devices, solves #151.
+* 2023-12-18 - Improvement: Shrink description_format column size in theme_boost_union_flavours table, solves #321.
+* 2023-12-11 - Improvement: Configurable sort order in menu items of smart menu, solves #403.
+* 2023-12-20 - Test: Enhance the test overage of the smart menus, solves #363 #364 #367 #374 #375.
+* 2023-12-10 - Feature: Allow the admin to hide the manual login form and the IDP login intro, solves #490.
+* 2023-12-10 - Improvement: Allow the admin to change the look of the course overview block, solves #204
+
 ### v4.1-r16
 
 * 2023-12-05 - Improvement: Option to suppress footer (circle containing the question mark) button, solves #444.
