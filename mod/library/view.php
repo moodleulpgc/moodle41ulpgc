@@ -34,7 +34,7 @@ $l  = optional_param('l', 0, PARAM_INT);
 
 $redirect = optional_param('redirect', 0, PARAM_BOOL);
 $forceview = optional_param('forceview', 0, PARAM_BOOL);
-
+$mediaid  = optional_param('mediaid', 0, PARAM_INT);
 
 if ($id) {
     list($course, $cm) = get_course_and_cm_from_cmid($id, 'library');
@@ -64,25 +64,16 @@ $target = null;
 $parameters = library_parameter_value_mapping($library, $cm, $course);
 $source = library_get_source_plugin($library, $parameters);
 $source->get_processed_searchpattern($parameters);
-$target = $source->get_source_content($context->id, $library->id);
+$target = $source->get_source_content($context->id, $library->id, $mediaid);
 
-//print_object($target);
-
-/*
-if($repository = library_get_repository($library)) {
-    $parameters = library_parameter_value_mapping($library, $cm, $course);
-    $target = library_get_source_content($library, $repository, $parameters, $context->id);
-}
-*/
 $output = $PAGE->get_renderer('mod_library');
 
+$output->set_remote_info($source->get_remote());
+
 if (!$target) {
-    //$filename = ($library->pathname) ? $library->pathname.'/' : '';
-    //$filename = ($library->pathname) ? $library->pathname.'/' : '';
-    //$filename .= str_replace(array_keys($parameters),array_values($parameters), $library->searchpattern);
     $filename = ($source->pathname) ? $source->pathname.'/' : '';
     $filename .= $source->searchpattern;
-    
+
     $output->print_filenotfound($filename);
     die;
 }

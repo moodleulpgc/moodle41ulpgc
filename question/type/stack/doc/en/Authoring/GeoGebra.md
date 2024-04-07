@@ -44,7 +44,7 @@ The "set", "watch" and "remember" tags to the `[[geogebra]]` question block link
 
 To be able to make things consistent and easy for question authors, the following name conventions _must_ be followed:
 
-1. Names of variables must be equal in both STACK and GeoGebra.  However, no explicit checking is sone.
+1. Names of variables must be equal in both STACK and GeoGebra.  However, no explicit checking is done.
 2. Value-names must start with lower case letters.
 3. Values must be `int` or `float` STACK variables.
 4. Angles are used like values, and so must be named lowercase letters in Latin-Alphabet, (not Greek unicode letters!) and values must be in radians.  (If you want to show a Greek letter to the student, then have a parallel internal variable which is used by STACK.  E.g. call the angle \(\alpha\) visibly in GGB, but have a hidden GGB variable \(a\) which you can watch.)
@@ -66,7 +66,7 @@ By default points are free to manipulate in the applet, unless you add `__fixed`
 Notes
 
 1. No checking is done that the object in STACK matches one in GeoGebra.  If it does not exist it will be created by GeoGebra.
-2. Currently setting points and values are the only supported objects.  Users can set objects, e.g. you could define `g:x^3` and set this in an appletm 
+2. Currently setting points and values are the only supported objects.  Users can set objects, e.g. you could define `g:x^3` and set this in an applet. 
 
 
 3. Angles cannot be set directly, set points instead!
@@ -126,7 +126,7 @@ Recall that since the object in `watch="A"` is written in upper case it must be 
 
 Then complete the question as follows.
 
-1. The question expects an in input `A`.  In this input, make the model answer `ta1`.  This is a list, and has a different name from the watched point..
+1. The question expects an input `A`.  In this input, make the model answer `ta1`.  This is a list, and has a different name from the watched point..
 2. Make sure you set "forbid floats" option in the input to be false, if you want to!
 3. Complete the default potential response tree `prt1` as `ATAlgEquiv(ntupleify(A), ntupleify(ta1))`
 
@@ -294,7 +294,7 @@ It is possible to update existing objects, or indeed to create new objects insid
      [[/geogebra]]
      [[input:ans1]] [[validation:ans1]]
 
-Please note that the STACK and GeoGebra syntax do not match perfectly.  For example, `g:%pi*x^3` will throw an error in GeoGebra because `%pi` in Maxima does not match `pi` in GeoGebra.  (Functionality to match sytax may be supported in the future but matching maxima syntax to GeoGebra syntax is a lot of work.)
+Please note that the STACK and GeoGebra syntax do not match perfectly.  For example, `g:%pi*x^3` will throw an error in GeoGebra because `%pi` in Maxima does not match `pi` in GeoGebra.  (Functionality to match syntax may be supported in the future but matching maxima syntax to GeoGebra syntax is a lot of work.)
 ### Future plans
 
 1. GeoGebra boolean types should come through to STACK as just return true/false (not 0,1).

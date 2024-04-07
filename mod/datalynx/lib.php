@@ -23,7 +23,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * MOD FUNCTIONS WHICH ARE CALLED FROM OUTSIDE THE MODULE
@@ -88,7 +88,7 @@ function datalynx_add_instance($data) {
         $data->rating = 0;
     }
 
-    if (empty($data->ratingtime) or empty($data->assessed)) {
+    if (empty($data->ratingtime) || empty($data->assessed)) {
         $data->assesstimestart  = 0;
         $data->assesstimefinish = 0;
     }
@@ -102,8 +102,8 @@ function datalynx_add_instance($data) {
     if ($CFG->datalynx_maxentries) {
         $data->maxentries = $CFG->datalynx_maxentries;
     }
-
-    if (!$data->id = $DB->insert_record('datalynx', $data)) {
+    $data->id = $DB->insert_record('datalynx', $data);
+    if (!$data->id) {
         return false;
     }
 
@@ -136,7 +136,7 @@ function datalynx_update_instance($data) {
         $data->rating = 0;
     }
 
-    if (empty($data->ratingtime) or empty($data->assessed)) {
+    if (empty($data->ratingtime) || empty($data->assessed)) {
         $data->assesstimestart  = 0;
         $data->assesstimefinish = 0;
     }
@@ -165,8 +165,8 @@ function datalynx_update_instance($data) {
  */
 function datalynx_delete_instance($id) {
     global $DB;
-
-    if (!$data = $DB->get_record('datalynx', array('id' => $id))) {
+    $data = $DB->get_record('datalynx', array('id' => $id));
+    if (!$data) {
         return false;
     }
 
@@ -311,8 +311,8 @@ function datalynx_reset_userdata($data) {
         if ($datas = $DB->get_records_sql($alldatassql, array($data->courseid))) {
             foreach ($datas as $dataid => $unused) {
                 fulldelete("$CFG->dataroot/$data->courseid/moddata/datalynx/$dataid");
-
-                if (!$cm = get_coursemodule_from_instance('datalynx', $dataid)) {
+                $cm = get_coursemodule_from_instance('datalynx', $dataid);
+                if (!$cm) {
                     continue;
                 }
                 $datacontext = context_module::instance($cm->id);
@@ -343,11 +343,12 @@ function datalynx_reset_userdata($data) {
         $fields = array();
         $rs = $DB->get_recordset_sql($recordssql, array($data->courseid));
         foreach ($rs as $record) {
-            if (array_key_exists($record->userid, $notenrolled) or !$record->userexists or
-                    $record->userdeleted or !is_enrolled($coursecontext, $record->userid)
+            if (array_key_exists($record->userid, $notenrolled) || !$record->userexists ||
+                    $record->userdeleted || !is_enrolled($coursecontext, $record->userid)
             ) {
                 // Delete ratings.
-                if (!$cm = get_coursemodule_from_instance('datalynx', $record->dataid)) {
+                $cm = get_coursemodule_from_instance('datalynx', $record->dataid);
+                if (!$cm) {
                     continue;
                 }
                 $datacontext = context_module::instance($cm->id);
@@ -382,7 +383,8 @@ function datalynx_reset_userdata($data) {
     if (!empty($data->reset_datalynx_ratings)) {
         if ($datas = $DB->get_records_sql($alldatassql, array($data->courseid))) {
             foreach ($datas as $dataid => $unused) {
-                if (!$cm = get_coursemodule_from_instance('datalynx', $dataid)) {
+                $cm = get_coursemodule_from_instance('datalynx', $dataid);
+                if (!$cm) {
                     continue;
                 }
                 $datacontext = context_module::instance($cm->id);
@@ -477,17 +479,16 @@ function datalynx_get_file_info($browser, $areas, $course, $cm, $context, $filea
         require_once($CFG->dirroot . '/mod/datalynx/locallib.php');
         return new datalynx_file_info_container($browser, $course, $cm, $context, $areas, $filearea);
     }
-
-    if (!$view = $DB->get_record('datalynx_views', array('id' => $itemid))) {
+    $view = $DB->get_record('datalynx_views', array('id' => $itemid));
+    if (!$view) {
         return null;
     }
 
     $fs = get_file_storage();
     $filepath = is_null($filepath) ? '/' : $filepath;
     $filename = is_null($filename) ? '.' : $filename;
-    if (!($storedfile = $fs->get_file($context->id, 'mod_datalynx', $filearea, $itemid, $filepath,
-            $filename))
-    ) {
+    $storedfile = $fs->get_file($context->id, 'mod_datalynx', $filearea, $itemid, $filepath, $filename);
+    if (!$storedfile) {
         return null;
     }
 
@@ -516,25 +517,25 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
     require_course_login($course, true, $cm);
 
     // FIELD CONTENT files.
-    if (($filearea === 'content' or $filearea === 'thumb') and
+    if (($filearea === 'content' || $filearea === 'thumb') &&
             $context->contextlevel == CONTEXT_MODULE
     ) {
 
         $contentid = (int) array_shift($args);
-
-        if (!$content = $DB->get_record('datalynx_contents', array('id' => $contentid))) {
+        $content = $DB->get_record('datalynx_contents', array('id' => $contentid));
+        if (!$content) {
             return false;
         }
-
-        if (!$field = $DB->get_record('datalynx_fields', array('id' => $content->fieldid))) {
+        $field = $DB->get_record('datalynx_fields', array('id' => $content->fieldid));
+        if (!$field) {
             return false;
         }
-
-        if (!$entry = $DB->get_record('datalynx_entries', array('id' => $content->entryid))) {
+        $entry = $DB->get_record('datalynx_entries', array('id' => $content->entryid));
+        if (!$entry) {
             return false;
         }
-
-        if (!$datalynx = $DB->get_record('datalynx', array('id' => $field->dataid))) {
+        $datalynx = $DB->get_record('datalynx', array('id' => $field->dataid));
+        if (!$datalynx) {
             return false;
         }
 
@@ -544,8 +545,8 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         }
 
         // Check if approved.
-        if ($datalynx->approval and !has_capability('mod/datalynx:approve', $context) and
-                !$entry->approved and $USER->id != $entry->userid
+        if ($datalynx->approval && !has_capability('mod/datalynx:approve', $context) &&
+                !$entry->approved && $USER->id != $entry->userid
         ) {
             return false;
         }
@@ -553,7 +554,7 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         // Group access.
         if ($entry->groupid) {
             $groupmode = groups_get_activity_groupmode($cm, $course);
-            if ($groupmode == SEPARATEGROUPS and
+            if ($groupmode == SEPARATEGROUPS &&
                     !has_capability('moodle/site:accessallgroups', $context)
             ) {
                 if (!groups_is_member($entry->groupid)) {
@@ -568,7 +569,7 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
             if (empty($USER->id)) {
                 return false;
             }
-            if ($USER->id != $entry->userid and
+            if ($USER->id != $entry->userid &&
                     !has_capability('mod/datalynx:manageentries', $context)
             ) {
                 return false;
@@ -580,18 +581,19 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $oldpath = "/$context->id/mod_dataform/$filearea/$contentid/$relativepath";
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            if (!$file = $fs->get_file_by_hash(sha1($oldpath)) or $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
+            $file = $fs->get_file_by_hash(sha1($oldpath));
+            if (!$file || $file->is_directory()) {
                 return false;
             }
         }
-
         // Finally send the file.
         send_stored_file($file, 0, 0, false); // Download MUST be forced - security!
     }
 
     // VIEW TEMPLATE files.
-    if (strpos($filearea, 'view') !== false and $context->contextlevel == CONTEXT_MODULE) {
+    if (strpos($filearea, 'view') !== false && $context->contextlevel == CONTEXT_MODULE) {
         require_course_login($course, true, $cm);
 
         $relativepath = implode('/', $args);
@@ -599,8 +601,10 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $oldpath = "/$context->id/mod_dataform/$filearea/$relativepath";
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            if (!$file = $fs->get_file_by_hash(sha1($oldpath)) or $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
+            $file = $fs->get_file_by_hash(sha1($oldpath));
+            if (!$file || $file->is_directory()) {
                 return false;
             }
         }
@@ -611,7 +615,7 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
 
     // PDF VIEW files.
     $viewpdfareas = array('view_pdfframe', 'view_pdfwmark', 'view_pdfcert');
-    if (in_array($filearea, $viewpdfareas) and $context->contextlevel == CONTEXT_MODULE) {
+    if (in_array($filearea, $viewpdfareas) && $context->contextlevel == CONTEXT_MODULE) {
         require_course_login($course, true, $cm);
 
         $relativepath = implode('/', $args);
@@ -619,8 +623,10 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $oldpath = "/$context->id/mod_dataform/$filearea/$relativepath";
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            if (!$file = $fs->get_file_by_hash(sha1($oldpath)) or $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
+            $file = $fs->get_file_by_hash(sha1($oldpath));
+            if (!$file || $file->is_directory()) {
                 return false;
             }
         }
@@ -630,7 +636,7 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
     }
 
     // PRESET files.
-    if (($filearea === 'course_presets' or $filearea === 'site_presets')) {
+    if (($filearea === 'course_presets' || $filearea === 'site_presets')) {
         require_course_login($course, true, $cm);
 
         $relativepath = implode('/', $args);
@@ -638,8 +644,10 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $oldpath = "/$context->id/mod_dataform/$filearea/$relativepath";
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            if (!$file = $fs->get_file_by_hash(sha1($oldpath)) or $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
+            $file = $fs->get_file_by_hash(sha1($oldpath));
+            if (!$file || $file->is_directory()) {
                 return false;
             }
         }
@@ -648,7 +656,7 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         send_stored_file($file, 0, 0, true); // Download MUST be forced - security!
     }
 
-    if (($filearea === 'js' or $filearea === 'css')) {
+    if (($filearea === 'js' || $filearea === 'css')) {
         require_course_login($course, true, $cm);
 
         $relativepath = implode('/', $args);
@@ -656,8 +664,10 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $oldpath = "/$context->id/mod_dataform/$filearea/$relativepath";
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            if (!$file = $fs->get_file_by_hash(sha1($oldpath)) or $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
+            $file = $fs->get_file_by_hash(sha1($oldpath));
+            if (!$file || $file->is_directory()) {
                 return false;
             }
         }
@@ -666,7 +676,7 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         send_stored_file($file, 0, 0, true); // Download MUST be forced - security!
     }
 
-    if (strpos($filearea, 'actor-') === 0 and $context->contextlevel == CONTEXT_MODULE) {
+    if (strpos($filearea, 'actor-') === 0 && $context->contextlevel == CONTEXT_MODULE) {
         require_course_login($course, true, $cm);
 
         $itemid = (int) array_shift($args);
@@ -676,8 +686,10 @@ function mod_datalynx_pluginfile($course, $cm, $context, $filearea, $args, $forc
         $oldpath = "/$context->id/mod_dataform/$filearea/$itemid/$relativepath";
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            if (!$file = $fs->get_file_by_hash(sha1($oldpath)) or $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
+            $file = $fs->get_file_by_hash(sha1($oldpath));
+            if (!$file || $file->is_directory()) {
                 return false;
             }
         }
@@ -722,7 +734,7 @@ function datalynx_extend_settings_navigation(settings_navigation $settings, navi
     }
 
     // Notifications.
-    if (isloggedin() and !isguestuser()) {
+    if (isloggedin() && !isguestuser()) {
         $dfnode->add(get_string('messages', 'message'),
                 new moodle_url('/message/edit.php',
                         array('id' => $USER->id, 'course' => $page->course->id,
@@ -730,7 +742,7 @@ function datalynx_extend_settings_navigation(settings_navigation $settings, navi
     }
 
     // Manage.
-    if ($templatesmanager or $entriesmanager) {
+    if ($templatesmanager || $entriesmanager) {
         $manage = $dfnode->add(get_string('manage', 'datalynx'));
         if ($templatesmanager) {
             $manage->add(get_string('views', 'datalynx'),
@@ -966,7 +978,7 @@ function datalynx_comment_add($newcomment, $commentparam) {
  */
 function datalynx_rating_permissions($contextid, $component, $ratingarea) {
     $context = context::instance_by_id($contextid, MUST_EXIST);
-    if ($component == 'mod_datalynx' and ($ratingarea == 'entry' or $ratingarea == 'activity')) {
+    if ($component == 'mod_datalynx' && ($ratingarea == 'entry' || $ratingarea == 'activity')) {
         return array('view' => has_capability('mod/datalynx:ratingsview', $context),
                 'viewany' => has_capability('mod/datalynx:ratingsviewany', $context),
                 'viewall' => has_capability('mod/datalynx:ratingsviewall', $context),
@@ -995,7 +1007,7 @@ function datalynx_rating_validate($params) {
     }
 
     // You can't rate your own entries unless you can manage ratings.
-    if (!has_capability('mod/datalynx:manageratings', $params['context']) and
+    if (!has_capability('mod/datalynx:manageratings', $params['context']) &&
             $params['rateduserid'] == $USER->id
     ) {
         throw new rating_exception('nopermissiontorate');
@@ -1007,7 +1019,7 @@ function datalynx_rating_validate($params) {
     }
 
     // Check the ratingarea is entry or activity.
-    if ($params['ratingarea'] != 'entry' and $params['ratingarea'] != 'activity') {
+    if ($params['ratingarea'] != 'entry' && $params['ratingarea'] != 'activity') {
         throw new rating_exception('invalidratingarea');
     }
 
@@ -1067,7 +1079,7 @@ function datalynx_rating_validate($params) {
     }
 
     // Lower limit.
-    if ($params['rating'] < 0 and $params['rating'] != RATING_UNSET_RATING) {
+    if ($params['rating'] < 0 && $params['rating'] != RATING_UNSET_RATING) {
         throw new rating_exception('invalidnum');
     }
 
@@ -1083,14 +1095,14 @@ function datalynx_rating_validate($params) {
 
     // Make sure groups allow this user to see the item they're rating.
     $groupid = $df->currentgroup;
-    if ($groupid > 0 and $groupmode = groups_get_activity_groupmode($df->cm, $df->course)) {
+    if ($groupid > 0 && $groupmode = groups_get_activity_groupmode($df->cm, $df->course)) {
         // Groups are being used.
         if (!groups_group_exists($groupid)) {
             // Can't find group.
             throw new rating_exception('cannotfindgroup'); // Something is wrong.
         }
 
-        if (!groups_is_member($groupid) and
+        if (!groups_is_member($groupid) &&
                 !has_capability('moodle/site:accessallgroups', $df->context)
         ) {
             // Do not allow rating of posts from other groups when in SEPARATEGROUPS or.
@@ -1149,7 +1161,7 @@ function datalynx_update_grades($data = null, $userid = 0, $nullifnone = true) {
         if ($grades = datalynx_get_user_grades($data, $userid)) {
             datalynx_grade_item_update($data, $grades);
         } else {
-            if ($userid and $nullifnone) {
+            if ($userid && $nullifnone) {
                 $grade = new stdClass();
                 $grade->userid = $userid;
                 $grade->rawgrade = null;
@@ -1317,7 +1329,7 @@ function datalynx_scale_used($dataid, $scaleid) {
  */
 function datalynx_scale_used_anywhere($scaleid) {
     global $DB;
-    return ($scaleid and $DB->record_exists('datalynx', array('rating' => "-$scaleid")));
+    return ($scaleid && $DB->record_exists('datalynx', array('rating' => "-$scaleid")));
 }
 
 /**
@@ -1337,9 +1349,8 @@ function datalynx_scale_used_anywhere($scaleid) {
  * @return \core_tag\output\tagindex
  */
 function mod_datalynx_get_tagged_entries($tag, $exclusivemode = false, $fromctx = 0, $ctx = 0, $rec = 1, $page = 0) {
-    global $OUTPUT, $DB, $USER;
+    global $OUTPUT, $USER;
     $perpage = $exclusivemode ? 20 : 5;
-
     // Build the SQL query.
     $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
     $query = "SELECT dc.entryid  AS eid, de.dataid, de.userid, de.groupid, de.approved,
@@ -1400,15 +1411,14 @@ function mod_datalynx_get_tagged_entries($tag, $exclusivemode = false, $fromctx 
                                     'course' => $cm->course
                             );
                             $datalynx = new mod_datalynx\datalynx($taggeditem->datalynxid);
-
                             if (!$datalynx->user_can_view_all_entries()) {
-                                if ($taggeditem->userid == $USER->id) {
+                                if ($taggeditem->userid === $USER->id) {
                                     $accessible = true;
                                 }
-                                if ($datalynx->data->approval and
+                                if ($datalynx->data->approval &&
                                         !has_capability('mod/datalynx:manageentries', $datalynx->context)
                                 ) {
-                                    if (isloggedin() AND $taggeditem->approved == 1) {
+                                    if (isloggedin() && $taggeditem->approved == 1) {
                                         $accessible = true;
                                     }
                                 }

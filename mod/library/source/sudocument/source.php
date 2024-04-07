@@ -206,7 +206,12 @@ class librarysource_sudocument extends library_source_base {
             }
 
             if(property_exists($res, 'dcterms:identifier')) {
-                $data->identifier = $res->{'dcterms:identifier'}[0]->{'@value'};
+                foreach($res->{'dcterms:identifier'} as $index => $identifier) {
+                    if($identifier->{'type'} == 'uri') {
+                        $data->identifier = $res->{'dcterms:identifier'}[$index]->{'@id'};
+                        break;
+                    }
+                }
             }
 
             $result[] = $data;
@@ -247,35 +252,30 @@ class librarysource_sudocument extends library_source_base {
         }
         return implode('&', $terms);  
     
-    
     /*    
     https://apinodo.ulpgc.es/api/items?
     property[0][property]=438&property[0][type]=eq&property[0][text]=43683&
     property[1][property]=438&property[1][type]=in&property[1][text]=4036
-      */        
-    
-    
+      */
     }
 
 
+
     /**
-     * Get a file by searching repository for matching pattern .
+     * Searches remote repository for matching pattern and locates the remote entry.
      * @param $search record from the database.
      */
-    public function search_files($search) {
-     
-        $files = array();
+    public function get_remote_resource($search) {
         $apifun = 'items';
         $request = array();
-        
+
         $sep = $this->config->separator;
-        
-        
+
         //print_object("$search");
         //print_object($this->reponame);
         //print_object($this->pathname);
         //print_object(" ----- search ...");
-        
+
         if(strpos($search, $this->config->handleurl) !== false) {
             $request[] = array('property' => 10,
                                 'type' => 'eq',
@@ -288,13 +288,13 @@ class librarysource_sudocument extends library_source_base {
                                         'type' => 'in',
                                         'text' => $parts[0]);
                 }
-                
+
                 if(isset($parts[1]) && $parts[1])  {
                     $request[] = array('property' => 438,
                                         'type' => 'eq',
                                         'text' => $parts[1]);
                 }
-                                    
+
                 if(isset($parts[2]) && $parts[2])  {
                     $request[] = array('property' => 7,
                                         'type' => 'eq',
@@ -308,38 +308,85 @@ class librarysource_sudocument extends library_source_base {
                 }
             }
         }
-        
-      
+
         //print_object(($request));
-      
+
         $request = $this->get_api_encoded_query($request);
         if($this->pathname) {
             $request = 'item_set_id='.$this->pathname.'&'.$request;
         }
-        
-      
         //print_object($request);
-    
+
         $data = $this->curl_connection_call($apifun, $request);
-    
+
         //print_object($data);
-        
+
         $data = $this->extract_response_data($data);
-        //print_object($data);                
+        //print_object($data);
         // if there are several matches just get the latest
         $resource = reset($data);
         if(count($data) > 1) {
             foreach($data as $res) {
                 if($res->timemodified > $resource->timemodified) {
-                    $resource = $res;    
+                    $resource = $res;
                 }
-            } 
+            }
         }
-        //print_object($resource);                
+        $this->remote = $resource;
+
+        return $this->remote;
+/*
+SUdocument@ resource
+stdClass Object
+(
+    [id] => 226759
+    [media] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/media/226760
+                    [o:id] => 226760
+                )
+
+            [1] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/media/226761
+                    [o:id] => 226761
+                )
+
+            [2] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/media/226762
+                    [o:id] => 226762
+                )
+
+        )
+
+    [timemodified] => 1707308834
+    [title] => Apuntes de turismo y desarrollo sostenible (prueba)
+    [date] => 2012
+    [identifier] => https://hdl.handle.net/11730/sudoc/1541
+)
+SUdocument@ resource
+*/
+    }
+
+
+
+
+    /**
+     * Get a file by searching repository for matching pattern .
+     * @param $search record from the database.
+     */
+    public function search_files($search) {
+
+        if(empty($this->remote->id)) {
+            $resource = $this->get_remote_resource($search);
+        }
 
         $files = array();
         if($resource->media) {
-            foreach($resource->media as $mediaobj) {
+            foreach($resource->media as $idx => $mediaobj) {
                 $mediaid = $mediaobj->{'o:id'};
                 if($media = $this->curl_connection_call('media/'.$mediaid, '')) {
                     //print_object($media);
@@ -352,30 +399,13 @@ class librarysource_sudocument extends library_source_base {
                     $file->handle = $resource->identifier;
                     $file->title = $resource->title;
                     $files[] = $file;
-                    
+                    $this->remote->media[$idx] = $file;
                 }
             }
-        }        
-                
-/*
-https://sudocument.ulpgc.es/page/objetodigital?id=[o:filename]
-">[o:source]</a>
-*/
-               
-/*        
-        
-        print_object($media);
-        
-        $file = new stdClass();
-        $file->filename = $media->{'o:filename'};
-        $file->source = $media->{'o:source'};
-        $url = new moodle_url('https://sudocument.ulpgc.es/page/objetodigital', array('id'=>$file->filename));
-        
-           die;
-        redirect($url);
-    
-  */   
-
+        }
+        //print_object("SUdocument@ resource");
+        //print_object($this->remote);
+        //print_object("SUdocument@ resource");
         return $files;
     }
     
@@ -392,24 +422,16 @@ https://sudocument.ulpgc.es/page/objetodigital?id=[o:filename]
      * Override this function to get the source.
      */
     public function moodle_file_from_source($externalfile, $file_record, $fs) {
-    
-        
+
         if(!isset($externalfile->source) || !isset($externalfile->source)) {
             //this is a directory or something else, skip
             return false;
         }
-    
+
         $file_record['filename'] = $externalfile->filename;
         
         $externalfile->fullurl = $this->config->linkurl.'?id='.$externalfile->source;
         $headers[] = "Content-Type: application/pdf";    
-        //print_object($externalfile->url);
-        
-        //$externalfile->url = 'https://sudocument.ulpgc.es/files/original/df4f22f23b3b6544565a715d8352d70cd33a21ea.pdf';
-
-        //print_object($externalfile);
-        
-        
         //redirect($externalfile->url);
         //$fs->get_file_instance(stdClass $filerecord)  
         //$reference = $this->repository->get_file_reference($source);
@@ -428,11 +450,7 @@ https://sudocument.ulpgc.es/page/objetodigital?id=[o:filename]
             }
         }
         */
-        
+
         return $externalfile;
     }
-    
-    
-    
-    
 }

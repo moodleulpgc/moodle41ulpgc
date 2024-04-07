@@ -24,7 +24,7 @@
 
 use core_user\fields;
 
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  */
@@ -185,7 +185,7 @@ class datalynx_entries {
 
         // APPROVE filtering.
         $whereapprove = '';
-        if ($datalynx->data->approval and
+        if ($datalynx->data->approval &&
                 !has_capability('mod/datalynx:manageentries', $datalynx->context)
         ) {
             if (isloggedin()) {
@@ -282,7 +282,7 @@ class datalynx_entries {
 
                 if ($entries->entries = $DB->get_records_sql($sqlselect, $allparams + $eidparams)) {
                     // If one entry was requested get its position.
-                    if (!is_array($filter->eids) or count($filter->eids) == 1) {
+                    if (!is_array($filter->eids) || count($filter->eids) == 1) {
                         $sqlselect = "$sqlcount AND e.id $ineids";
                         $eidposition = $DB->get_records_sql($sqlselect, $allparams + $eidparams);
 
@@ -292,7 +292,8 @@ class datalynx_entries {
 
                 // Get perpage subset.
             } else {
-                if (!$filter->groupby and $perpage = $filter->perpage) {
+                $perpage = $filter->perpage;
+                if (!$filter->groupby && $perpage) {
 
                     // A random set (filter->selection == 1).
                     if (!empty($filter->selection)) {
@@ -451,7 +452,7 @@ class datalynx_entries {
     public function get_embedded_files(array $fids) {
         $files = array();
 
-        if (!empty($fids) and !empty($this->_entries)) {
+        if (!empty($fids) && !empty($this->_entries)) {
             $fs = get_file_storage();
             foreach ($this->_entries as $entry) {
                 foreach ($fids as $fieldid) {
@@ -485,7 +486,7 @@ class datalynx_entries {
     public function get_contentinfo(array $fids) {
         $contentinfo = array();
 
-        if (!empty($fids) and !empty($this->_entries)) {
+        if (!empty($fids) && !empty($this->_entries)) {
             foreach ($this->_entries as $entry) {
                 foreach ($fids as $fieldid) {
                     $contentid = isset($entry->{"c{$fieldid}_id"}) ? $entry->{"c{$fieldid}_id"} : null;
@@ -591,7 +592,7 @@ class datalynx_entries {
             if ($entries) {
                 foreach ($entries as $eid => $entry) {
                     // Filter approvable entries.
-                    if (($action == 'approve' or $action == 'disapprove') and
+                    if (($action == 'approve' || $action == 'disapprove') &&
                             !has_capability('mod/datalynx:approve', $dl->context)
                     ) {
                         unset($entries[$eid]);
@@ -681,7 +682,7 @@ class datalynx_entries {
                                     // Entry info.
                                     if (in_array($fieldid, $entryinfo)) {
                                         // TODO.
-                                        if ($fieldid == datalynxfield_entryauthor::_USERID or
+                                        if ($fieldid == datalynxfield_entryauthor::_USERID ||
                                                 $fieldid == datalynxfield_entryauthor::_USERNAME
                                         ) {
                                             $entryvar = 'userid';
@@ -906,7 +907,7 @@ class datalynx_entries {
                             $newentry->groupid = $dl->currentgroup;
                             $newentry->timecreated = $newentry->timemodified = time();
 
-                            if ($dl->data->approval and
+                            if ($dl->data->approval &&
                                     !has_capability('mod/datalynx:approve', $dl->context)
                             ) {
                                 $newentry->approved = 0;
@@ -1150,7 +1151,7 @@ class datalynx_entries {
 
         $df = $this->datalynx;
 
-        if ($data and has_capability('mod/datalynx:manageentries', $df->context)) {
+        if ($data && has_capability('mod/datalynx:manageentries', $df->context)) {
             foreach ($data as $key => $value) {
                 if ($key == 'name') {
                     $entry->userid = $value;

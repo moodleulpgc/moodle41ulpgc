@@ -22,12 +22,14 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 
+/**
+ *
+ */
 class datalynxfield_coursegroup extends datalynxfield_base {
-
     public $type = 'coursegroup';
 
     public $course;
@@ -85,7 +87,7 @@ class datalynxfield_coursegroup extends datalynxfield_base {
         // Old contents.
 
         if (!$this->course) {
-            if (!empty($course) or !empty($entry->{"c$fieldid" . '_content'})) {
+            if (!empty($course) || !empty($entry->{"c$fieldid" . '_content'})) {
                 $contents[] = $course;
                 $contents[] = $group;
                 $oldcontents[] = isset($entry->{"c$fieldid" . '_content'}) ? $entry->{"c$fieldid" .
@@ -94,7 +96,7 @@ class datalynxfield_coursegroup extends datalynxfield_base {
                 '_content1'} : null;
             }
         } else {
-            if (!$this->group and (!empty($group) or !empty($entry->{"c$fieldid" . '_content1'}))) {
+            if (!$this->group && (!empty($group) || !empty($entry->{"c$fieldid" . '_content1'}))) {
                 $contents[] = null;
                 $contents[] = $group;
                 $oldcontents[] = null;
@@ -180,9 +182,9 @@ class datalynxfield_coursegroup extends datalynxfield_base {
 
         // Set user id to filter on, from url if user profile page.
         $path = $PAGE->url->get_path();
-        $isprofilepage = (strpos($path, '/user/view.php') !== false or
+        $isprofilepage = (strpos($path, '/user/view.php') !== false ||
                 strpos($path, '/user/profile.php') !== false);
-        if (!$isprofilepage or !$userid = optional_param('id', 0, PARAM_INT)) {
+        if (!$isprofilepage || !$userid = optional_param('id', 0, PARAM_INT)) {
             $userid = $USER->id;
         }
         // Get user's groups.
@@ -233,7 +235,7 @@ class datalynxfield_coursegroup extends datalynxfield_base {
             list($course, $group) = !empty($csvrecord[$csvname]) ? explode(' ',
                     $csvrecord[$csvname]) : array(0, 0);
 
-            if ($course and $group) {
+            if ($course && $group) {
                 $data->{"field_{$fieldid}_{$entryid}_course"} = $course;
                 $data->{"field_{$fieldid}_{$entryid}_groupid"} = $group;
             }

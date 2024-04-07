@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/text/renderer.php");
 
@@ -42,7 +42,7 @@ class datalynxfield_number_renderer extends datalynxfield_text_renderer {
         $fieldname = "field_{$fieldid}_{$entryid}";
         $required = !empty($options['required']);
         $content = '';
-        if (isset($entry->{"c{$fieldid}_content"}) and $entry->{"c{$fieldid}_content"} === "0" or !empty(
+        if (isset($entry->{"c{$fieldid}_content"}) && $entry->{"c{$fieldid}_content"} === "0" || !empty(
                 $entry->{"c{$fieldid}_content"})) {
             $content = $entry->{"c{$fieldid}_content"};
         }
@@ -61,11 +61,11 @@ class datalynxfield_number_renderer extends datalynxfield_text_renderer {
      * {@inheritdoc}
      * @see datalynxfield_text_renderer::render_display_mode()
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
         $outputemptystring = !empty($field->get('param4')) ? $field->get('param4') : 0;
-        if (!isset($entry->{"c{$fieldid}_content"}) and !$outputemptystring) {
+        if (!isset($entry->{"c{$fieldid}_content"}) && !$outputemptystring) {
             return 0;
         } else if (!isset($entry->{"c{$fieldid}_content"})) {
             return '';
@@ -87,7 +87,7 @@ class datalynxfield_number_renderer extends datalynxfield_text_renderer {
      * {@inheritDoc}$str
      * @see datalynxfield_text_renderer::render_search_mode()
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -120,7 +120,7 @@ class datalynxfield_number_renderer extends datalynxfield_text_renderer {
         foreach ($tags as $tag) {
             list(, $behavior, ) = $this->process_tag($tag);
             // Variable $behavior datalynx_field_behavior.
-            if ($behavior->is_required() and isset($formdata->$formfieldname)) {
+            if ($behavior->is_required() && isset($formdata->$formfieldname)) {
                 $value = optional_param($formfieldname, '', PARAM_RAW);
                 if (!is_numeric($value)) {
                     $errors[$formfieldname] = get_string('err_numeric', 'datalynx');

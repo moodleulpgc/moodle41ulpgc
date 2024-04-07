@@ -929,28 +929,32 @@ function groups_get_activity_group($cm, $update=false, $allowedgroups=null) {
         }
     }
 
-    // ecastro ULPGC. To allow all groups in separate forums
-    $separateallgroups = ($groupmode == SEPARATEGROUPS) && (count($allowedgroups) > 1) &&  isset($cm->modname) && ($cm->modname == 'forum');
-    $checkgroupmode =  $separateallgroups ?  0 : $groupmode;
-    // ecastro ULPGC    
-    _group_verify_activegroup($cm->course, $checkgroupmode, $cm->groupingid, $allowedgroups); // ecastro ULPGC checkgroupmode
+    _group_verify_activegroup($cm->course, $groupmode, $cm->groupingid, $allowedgroups); // ecastro ULPGC checkgroupmode
 
+    $separateallgroups = (($groupmode == SEPARATEGROUPS) && (count($allowedgroups) > 1) &&  isset($cm->modname) && ($cm->modname == 'forum'));  // ecasto ULPGC. To allow all groups in separate forums
     // set new active group if requested
     $changegroup = optional_param('group', -1, PARAM_INT);
     if ($update and $changegroup != -1) {
 
         if ($changegroup == 0) {
             // allgroups visible only in VISIBLEGROUPS or when accessallgroups
-            if ($groupmode == VISIBLEGROUPS or $groupmode === 'aag' or $separateallgroups) { // ecastro ULPGC $separateallgroups
+            if ($groupmode == VISIBLEGROUPS or $groupmode === 'aag') { // ecastro ULPGC $separateallgroups
                 $SESSION->activegroup[$cm->course][$groupmode][$cm->groupingid] = 0;
             }
 
         } else {
             if ($allowedgroups and array_key_exists($changegroup, $allowedgroups)) {
                 $SESSION->activegroup[$cm->course][$groupmode][$cm->groupingid] = $changegroup;
+                $separateallgroups = false; // ecastro ULPGC. To allow all groups in separate forums
             }
         }
     }
+
+    // ecastro ULPGC. To allow all groups in separate forums
+    if($separateallgroups) {
+        return 0;
+    }
+    // ecastro ULPGC    
 
     return $SESSION->activegroup[$cm->course][$groupmode][$cm->groupingid];
 }
@@ -1237,7 +1241,7 @@ function _group_verify_activegroup($courseid, $groupmode, $groupingid, array $al
             $SESSION->activegroup[$courseid][$groupmode][$groupingid] = 0; // all groups by default if user has accessallgroups
 
         } else if ($allowedgroups) {
-            if ($groupmode != SEPARATEGROUPS and $mygroups = groups_get_all_groups($courseid, $USER->id, $groupingid)) {
+            if ($groupmode != SEPARATEGROUPS && $mygroups = groups_get_all_groups($courseid, $USER->id, $groupingid)) {
                 $firstgroup = reset($mygroups);
             } else {
                 $firstgroup = reset($allowedgroups);
@@ -1407,7 +1411,7 @@ function groups_get_activity_shared_group_members($cm, $userid = null) {
     global $USER;
 
     if (empty($userid)) {
-        $userid = $USER;
+        $userid = $USER->id;
     }
 
     $groupsids = array_keys(groups_get_activity_allowed_groups($cm, $userid));

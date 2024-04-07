@@ -23,7 +23,7 @@
  */
 namespace mod_datalynx\event;
 
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * The mod_datalynx entry deleted event class.
@@ -79,17 +79,6 @@ class entry_deleted extends \core\event\base {
      */
     public function get_url() {
         return new \moodle_url('/mod/datalynx/view.php', array('d' => $this->other['dataid']));
-    }
-
-    /**
-     * Get the legacy event log data.
-     *
-     * @return array
-     */
-    public function get_legacy_logdata() {
-        return array($this->courseid, 'datalynx', 'entry_deleted',
-                'view.php?id=' . $this->contextinstanceid, $this->other['dataid'],
-                $this->contextinstanceid);
     }
 
     /**

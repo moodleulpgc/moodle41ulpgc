@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -96,7 +96,7 @@ class datalynxfield_coursegroup_renderer extends datalynxfield_renderer {
             $mform->setDefault("{$fieldname}_course", $courseid);
 
             // Ajax.
-            $options = array('coursefield' => "${fieldname}_course",
+            $options = array('coursefield' => "{$fieldname}_course",
                     'groupfield' => "{$fieldname}_group",
                     'acturl' => "$CFG->wwwroot/mod/datalynx/field/coursegroup/loadgroups.php"
             );
@@ -123,9 +123,11 @@ class datalynxfield_coursegroup_renderer extends datalynxfield_renderer {
             }
             $mform->addElement('select', "{$fieldname}_group", null, $groupmenu);
             $mform->setDefault("{$fieldname}_group", $groupid);
+            $mform->setType("{$fieldname}_group", PARAM_INT);
             $mform->disabledIf("{$fieldname}_group", "{$fieldname}_course", 'eq', '');
 
             $mform->addElement('text', "{$fieldname}_groupid", null, array('class' => 'hide'));
+            $mform->setType("{$fieldname}_groupid", PARAM_TEXT);
             $mform->setDefault("{$fieldname}_groupid", $groupid);
         }
     }
@@ -167,7 +169,7 @@ class datalynxfield_coursegroup_renderer extends datalynxfield_renderer {
                 break;
             case 'group':
                 // Return the group name.
-                if ($groupid and
+                if ($groupid &&
                         $groupname = $DB->get_field('groups', 'name', array('id' => $groupid))
                 ) {
                     return $groupname;
@@ -192,7 +194,7 @@ class datalynxfield_coursegroup_renderer extends datalynxfield_renderer {
     /**
      * Value is an array of (member,courseid,groupid) only one should be set
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
 
         if (is_array($value)) {

@@ -42,7 +42,7 @@
  * Please do not forget to use upgrade_set_timeout()
  * before any action that may take longer time to finish.
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 function xmldb_datalynx_upgrade($oldversion) {
     global $CFG, $DB;
@@ -183,7 +183,7 @@ function xmldb_datalynx_upgrade($oldversion) {
         // Move content of matrixext param1 -> param4 and param3 -> param5.
         if ($views = $DB->get_records('datalynx_views', array('type' => 'matrixext'))) {
             foreach ($views as $view) {
-                if (!empty($view->param1) or !empty($view->param3)) {
+                if (!empty($view->param1) || !empty($view->param3)) {
                     $view->param4 = $view->param1;
                     $view->param5 = $view->param3;
                     $view->param1 = null;
@@ -365,7 +365,7 @@ function xmldb_datalynx_upgrade($oldversion) {
                     $patterns = unserialize($view->patterns);
                     $newpatterns = array('view' => $patterns['view'], 'field' => array());
                     foreach ($patterns['field'] as $fieldid => $tags) {
-                        if ($fieldid < 0 and !empty($newfieldids[$fieldid])) {
+                        if ($fieldid < 0 && !empty($newfieldids[$fieldid])) {
                             $newpatterns['field'][$newfieldids[$fieldid]] = $tags;
                             $update = true;
                         } else {
@@ -389,7 +389,7 @@ function xmldb_datalynx_upgrade($oldversion) {
                     $customsort = unserialize($filter->customsort);
                     $sortfields = array();
                     foreach ($customsort as $fieldid => $sortdir) {
-                        if ($fieldid < 0 and !empty($newfieldids[$fieldid])) {
+                        if ($fieldid < 0 && !empty($newfieldids[$fieldid])) {
                             $sortfields[$newfieldids[$fieldid]] = $sortdir;
                             $update = true;
                         } else {
@@ -404,7 +404,7 @@ function xmldb_datalynx_upgrade($oldversion) {
                     $customsearch = unserialize($filter->customsearch);
                     $searchfields = array();
                     foreach ($customsearch as $fieldid => $options) {
-                        if ($fieldid < 0 and !empty($newfieldids[$fieldid])) {
+                        if ($fieldid < 0 && !empty($newfieldids[$fieldid])) {
                             $searchfields[$newfieldids[$fieldid]] = $options;
                             $update = true;
                         } else {
@@ -1014,7 +1014,7 @@ function xmldb_datalynx_upgrade($oldversion) {
         // Get all fieldids of type teammemberselect.
 
         $ids = $DB->get_fieldset_select('datalynx', 'id', 'id > 0');
-        if (!empty($ids)){
+        if (!empty($ids)) {
             list($sql, $params) = $DB->get_in_or_equal($ids, SQL_PARAMS_QM, 'param', false);
             $DB->delete_records_select('datalynx_rules', 'dataid ' . $sql, $params);
         }
@@ -1034,11 +1034,11 @@ function mod_datalynx_upgrade_behaviors() {
             $formdata = datalynx_field_behavior::get_behavior($behaviorid);
             $visibleto = $DB->get_field('datalynx_behaviors', 'visibleto', ['id' => $behaviorid]);
             $visibletoperm = unserialize($visibleto);
-            if(!empty($visibletoperm)) {
-                if(isset($visibletoperm['users']) ){
+            if (!empty($visibletoperm)) {
+                if (isset($visibletoperm['users'])) {
                     unset($visibletoperm['users']);
                 }
-                if(isset($visibletoperm['teammember']) ){
+                if (isset($visibletoperm['teammember'])) {
                     unset($visibletoperm['teammember']);
                 }
                 $formdata->visibletopermission = array_values($visibletoperm);

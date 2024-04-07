@@ -24,7 +24,7 @@
  */
 
 use \local_o365teams\coursegroups\utils;
- 
+
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir.'/grouplib.php');
 
@@ -60,7 +60,7 @@ $PAGE->set_heading($course->fullname);
 
 $output = $PAGE->get_renderer('report_o365channels');
 
-// Actions 
+// Actions
 $action = optional_param('action', '', PARAM_ALPHANUMEXT);
 $stype = optional_param('s', 0, PARAM_INT);
 $item = optional_param('g', 0, PARAM_INT);
@@ -72,8 +72,8 @@ $courseteamsobj = utils::get_teams_object($courseid);
 
 // check o365 API & configuration
 $apiconfigured = (\local_o365\utils::is_configured() === true);
-[$teamsenabled, $channelsenabled, $usergroupsenabled] = utils::enabled_mode(true); 
-                 
+[$teamsenabled, $channelsenabled, $usergroupsenabled] = utils::enabled_mode(true);
+
 $teamschannels = null;
 if($graphclient = utils::get_graphclient() AND $apiconfigured) {
     $teamschannels = new \local_o365teams\coursegroups\teamschannels($graphclient, (bool)$CFG->debugdisplay);
@@ -90,15 +90,15 @@ if(!empty($courseteamsobj)) {
 
 if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
     confirm_sesskey();
-    
+
     $itemobj = null;
     if($item) {
         $subtype = ['teamchannel', 'usergroup'];
         $params = ['type' => 'group', 'subtype' => $subtype[$stype], 'moodleid' => $item];
         $itemobj = $DB->get_record('local_o365_objects', $params);
     }
-    
-    
+
+
     $updated = [];
     $success = false;
     $message = '?';
@@ -109,8 +109,8 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                 $done = false;
                 if($stype == 0) { // means channels
                     if($channelobj = $teamschannels->add_channel_for_group($item)) {
-                        \core\notification::add(get_string('channeladded', 'report_o365channels'), 
-                                        \core\output\notification::NOTIFY_SUCCESS);    
+                        \core\notification::add(get_string('channeladded', 'report_o365channels'),
+                                        \core\output\notification::NOTIFY_SUCCESS);
                         // Trigger an channel created event.
                         report_o365channels_get_updated_and_event($channelobj, 'channel_created');
                         $success = true;
@@ -131,15 +131,15 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                                 $retrycounter++;
                                 $message = $e->getMessage();
                             }
-                        }                        
+                        }
                     } else {
 
                     }
                 } elseif($stype > 1) { // means usergroup
                     if($groupobj = $teamschannels->create_usergroup($item)) {
-                        report_o365channels_get_updated_and_event($groupobj, 'channel_created');                                        
-                        \core\notification::add(get_string('usergroupadded', 'report_o365channels'), 
-                                        \core\output\notification::NOTIFY_SUCCESS);    
+                        report_o365channels_get_updated_and_event($groupobj, 'channel_created');
+                        \core\notification::add(get_string('usergroupadded', 'report_o365channels'),
+                                        \core\output\notification::NOTIFY_SUCCESS);
                         $retrycounter = 0;
                         while ($retrycounter <= 5) { // API_CALL_RETRY_LIMIT
                             if ($retrycounter) {
@@ -147,7 +147,7 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                             }
                             try {
                                 //local_o365\feature\coursesync\main
-                                [$toadd, $toremove] = $courseteams->resync_group_owners_and_members($course->id, $groupobj->objectid);
+                                [$toadd, $toremove] = $courseteams->process_course_team_user_sync_from_moodle_to_microsoft($course->id, $groupobj->objectid);
                                 if($done = report_o365channels_get_updated_and_event($groupobj, 'channel_synced', $toadd, $toremove)) {
                                     $updated[] = $done;
                                     $message = '?';
@@ -157,8 +157,8 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                                 $retrycounter++;
                                 $message = $e->getMessage();
                             }
-                        }                        
-                    }                
+                        }
+                    }
                 }
                 if(empty($done)) {
                     $message = get_string('error_o365', 'report_o365channels', $message);
@@ -169,31 +169,31 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
         } else {
             $message = get_string('error_noitem', 'report_o365channels');
         }
-    
-    } elseif($action == 'del') {    
+
+    } elseif($action == 'del') {
         if($item) {
-            if(!empty($itemobj)) {        
+            if(!empty($itemobj)) {
                 if($stype == 0) { // means channels
                     if($success = $teamschannels->remove_group_channel($courseid, $item, $courseteamsobj->objectid)) {
                         report_o365channels_get_updated_and_event($itemobj, 'channel_deleted');
-                        \core\notification::add(get_string('channeldeleted', 'report_o365channels'), 
-                                        \core\output\notification::NOTIFY_SUCCESS);    
+                        \core\notification::add(get_string('channeldeleted', 'report_o365channels'),
+                                        \core\output\notification::NOTIFY_SUCCESS);
                     }
-                    
+
                 } elseif($stype > 1) { // means usergroup
                     if($success = $teamschannels->delete_usergroup($item)) {
                         report_o365channels_get_updated_and_event($itemobj, 'channel_deleted');
-                        \core\notification::add(get_string('usergroupdeleted', 'report_o365channels'), 
-                                        \core\output\notification::NOTIFY_SUCCESS);    
-                    }   
+                        \core\notification::add(get_string('usergroupdeleted', 'report_o365channels'),
+                                        \core\output\notification::NOTIFY_SUCCESS);
+                    }
                 }
             } else {
                 $message = get_string('error_delnonexisting', 'report_o365channels');
-            }        
+            }
         } else {
             $message = get_string('error_noitem', 'report_o365channels');
         }
-        
+
     } elseif($action == 'addteam') {
         //local_o365\feature\coursesync\main
         if($courseteams->create_group_for_course($course)) {
@@ -210,28 +210,29 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
         //local_o365\feature\coursesync\main
         if(!empty($teamschannels)) {
             if($teamo365obj->displayName != $courseteamsobj->o365name) {
+                $course->oid = $courseteamsobj->id;
                 $success = $teamschannels->update_course_team_name_extended($course, $courseteamsobj->objectid, $courseteamsobj->o365name);
             }
         }
-        [$toadd, $toremov] = $courseteams->resync_group_owners_and_members($courseid, $coursegroupobj->objectid);
+        [$toadd, $toremove] = $courseteams->process_course_team_user_sync_from_moodle_to_microsoft($courseid, $coursegroupobj->objectid);
         if($done = report_o365channels_get_updated_and_event($coursegroupobj, 'team_synced', $toadd, $toremove)) {
             $updated[] = $done;
         }
-        
+
     } elseif(($action == 'syncall') ||  (($action == 'update') && $item)) {
         $params = ['courseid' => $courseid];
         $groupwhere = '';
         if(($action != 'syncall') && ($action == 'update') && $item) {
             $groupwhere = 'AND g.id = :groupid ';
             $params['groupid'] = $item;
-        } 
-    
+        }
+
         $sql = "SELECT oc.*, g.id AS gid
-                  FROM {groups} g 
-                  JOIN {local_o365_objects} oc ON g.id = oc.moodleid AND oc.subtype = :subtype AND oc.type = 'group' 
+                  FROM {groups} g
+                  JOIN {local_o365_objects} oc ON g.id = oc.moodleid AND oc.subtype = :subtype AND oc.type = 'group'
                   WHERE g.courseid = :courseid  $groupwhere ";
         $params['subtype'] = 'teamchannel';
-        $groups = $DB->get_records_sql($sql, $params); 
+        $groups = $DB->get_records_sql($sql, $params);
         foreach($groups as $group) {
                 $done = $teamschannels->resync_channel_membership($courseid, $group->gid, $courseteamsobj->objectid, $group->objectid);
                 if(!empty($done)) {
@@ -239,12 +240,12 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
                     report_o365channels_get_updated_and_event($group, 'channel_synced');
                 }
         }
-    
+
         $params['subtype'] = 'usergroup';
-        $groups = $DB->get_records_sql($sql, $params); 
+        $groups = $DB->get_records_sql($sql, $params);
         foreach($groups as $group) {
             //local_o365\feature\coursesync\main
-            [$toadd, $toremove] = $courseteams->resync_group_owners_and_members($courseid, $groupobj->objectid);
+            [$toadd, $toremove] = $courseteams->process_course_team_user_sync_from_moodle_to_microsoft($courseid, $groupobj->objectid);
             if($done = report_o365channels_get_updated_and_event($groupobj, 'channel_synced', $toadd, $toremove)) {
                 $updated[] = $done;
             }
@@ -255,16 +256,16 @@ if($canmanage && $action && ($courseteamsobj || ($action === 'addteam'))) {
         $success = true;
         if(!is_array($updated)) {
             $updated = [$updated];
-        } 
+        }
         foreach($updated as $update) {
-            \core\notification::add(get_string('membersupdated', 'report_o365channels', $update), 
-                        \core\output\notification::NOTIFY_INFO);    
+            \core\notification::add(get_string('membersupdated', 'report_o365channels', $update),
+                        \core\output\notification::NOTIFY_INFO);
         }
     }
-    
+
     if(!$success) {
-        \core\notification::add(get_string('notdone', 'report_o365channels', $message), 
-                        \core\output\notification::NOTIFY_ERROR);    
+        \core\notification::add(get_string('notdone', 'report_o365channels', $message),
+                        \core\output\notification::NOTIFY_ERROR);
     }
 }
 
@@ -287,18 +288,18 @@ if($apiconfigured && ($teamsenabled || $usergroupsenabled)) {
         $params['userid'] = $USER->id;
     }
 
-    
-    $sql = "SELECT g.*, gg.groupingid, gi.name AS groupingname, COUNT(gm.userid) AS numusers, 
-                        oc.id AS ocid, oc.objectid, oc.metadata, oc.o365name, oc.tenant, 
+
+    $sql = "SELECT g.*, gg.groupingid, gi.name AS groupingname, COUNT(gm.userid) AS numusers,
+                        oc.id AS ocid, oc.objectid, oc.metadata, oc.o365name, oc.tenant,
                         og.id AS ogid, og.objectid AS usergroupobjectid, og.o365name AS mailnickname
              FROM {groups} g
-        LEFT JOIN {local_o365_objects} oc ON g.id = oc.moodleid AND oc.subtype = 'teamchannel' AND oc.type = 'group' 
-        LEFT JOIN {local_o365_objects} og ON g.id = og.moodleid AND og.subtype = 'usergroup' AND og.type = 'group' 
+        LEFT JOIN {local_o365_objects} oc ON g.id = oc.moodleid AND oc.subtype = 'teamchannel' AND oc.type = 'group'
+        LEFT JOIN {local_o365_objects} og ON g.id = og.moodleid AND og.subtype = 'usergroup' AND og.type = 'group'
         LEFT JOIN {groupings_groups} gg ON g.id = gg.groupid
         LEFT JOIN {groupings} gi ON gi.id = gg.groupingid
         LEFT JOIN {groups_members} gm ON g.id = gm.groupid
             WHERE g.courseid = :courseid $groupingwhere $userwhere
-        GROUP BY g.id  
+        GROUP BY g.id
         ORDER BY gi.name, g.name";
 
     $groups = $DB->get_records_sql($sql, $params);
@@ -312,28 +313,28 @@ if($apiconfigured && ($teamsenabled || $usergroupsenabled)) {
                         $deleted[] = $group->ocid;
                     }
                 }
-            
-                if(isset($group->usergroupobjectid) && $group->usergroupobjectid) {            
+
+                if(isset($group->usergroupobjectid) && $group->usergroupobjectid) {
                     if(!$success = $teamschannels->get_usergroup($group->usergroupobjectid)) {
                         $deleted[] = $group->ogid;
                     }
                 }
-            }             
+            }
         }
     }
-    
+
     if($deleted) {
         if(in_array($courseteamsobj->id, $deleted)) {
             $DB->delete_records('local_o365_teams_cache', ['objectid' => $courseteamsobj->objectid]);
         }
         if($DB->delete_records_list('local_o365_objects', 'id', $deleted)) {
-            \core\notification::warning(get_string('referencesdeleted', 'report_o365channels', count($deleted)));            
+            \core\notification::warning(get_string('referencesdeleted', 'report_o365channels', count($deleted)));
         }
         redirect($baseurl);
     }
 }
 
-// Start output 
+// Start output
 //Displaying header and heading
 echo $output->header();
 echo $output->heading($strgroupreport);
@@ -348,10 +349,10 @@ if(!$apiconfigured || !($teamsenabled || $usergroupsenabled)) {
     // Get all groupings and present selection menu.
     $groupings = $DB->get_records('groupings', ['courseid'=>$courseid], 'name');
     echo $output->print_grouping_select($groupings, $groupingid);
-    
+
     // print Team / Channels / Groups updating buttons
     echo $output->print_general_update_buttons((empty($courseteamsobj) && $teamsenabled)) ;
-    
+
     if($groups) {
         // process groups with API for usergroups
         if(!empty($teamschannels))  {
@@ -359,7 +360,7 @@ if(!$apiconfigured || !($teamsenabled || $usergroupsenabled)) {
                 if($group->links = $teamschannels->get_usergroup_urls($group)) {
                     $groups[$gid] = clone $group;
                 }
-            }             
+            }
         }
         echo $output->print_channels_table($groups, $courseteamsobj, $canmanage);
     } else {
@@ -381,19 +382,19 @@ $event->trigger();
 echo $output->footer();
 
 ////////////////////////////////////////////////////////////////////////////
-function report_o365channels_get_updated_and_event(stdclass $o365obj, string $eventname, $toadd = null, $toremove = null) {
+function report_o365channels_get_updated_and_event(stdclass $o365obj, string $eventname, $toadd = [], $toremove = []) {
     global $PAGE;
     $context = $PAGE->context;
     $done = null;
-                                
+
     if(!empty($toadd) || !empty($toremove)) {
         $done = new \stdClass();
         $done->toadd = count($toadd);
         $done->added = $done->toadd;
         $done->toremove = count($toremove);
-        $done->removed = $done->toremove;                                   
+        $done->removed = $done->toremove;
     }
-    
+
     $other = ['o365objectid' => $o365obj->objectid];
     if($o365obj->subtype == 'usergroup') {
         $other['subtype'] = 'usergroup';
@@ -403,7 +404,7 @@ function report_o365channels_get_updated_and_event(stdclass $o365obj, string $ev
                             'objectid' => $o365obj->id,
                             'other' => $other,
                         ]);
-    $event->trigger();                                
-    
+    $event->trigger();
+
     return $done;
 }

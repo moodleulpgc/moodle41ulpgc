@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -64,20 +64,20 @@ class datalynxfield_url_renderer extends datalynxfield_renderer {
 
     /**
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         global $CFG;
 
         $field = $this->_field;
         $fieldid = $field->id();
         $types = array_intersect(['link', 'image', 'imageflex', 'media'
-        ], array_keys($params));
+        ], array_keys($options));
         $type = isset($types[0]) ? $types[0] : '';
 
         $attributes = array('class' => $field->class, 'target' => $field->target);
 
         if (isset($entry->{"c{$fieldid}_content"})) {
             $url = $entry->{"c{$fieldid}_content"};
-            if (empty($url) or ($url == 'http://')) {
+            if (empty($url) || ($url == 'http://')) {
                 return '';
             }
 
@@ -119,7 +119,7 @@ class datalynxfield_url_renderer extends datalynxfield_renderer {
         return '';
     }
 
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -166,7 +166,7 @@ class datalynxfield_url_renderer extends datalynxfield_renderer {
             $isurl = filter_var($formdata->$formfieldname, FILTER_VALIDATE_URL);
             $isdefault = $formdata->$formfieldname === 'http://';
             $isempty = $formdata->$formfieldname === '';
-            if ($isurl or $isdefault or $isempty) {
+            if ($isurl || $isdefault || $isempty) {
                 continue;
             } else {
                 $errors["field_{$fieldid}_{$entryid}_grp"] = "Please enter a valid URL."; // TODO: Multilang.

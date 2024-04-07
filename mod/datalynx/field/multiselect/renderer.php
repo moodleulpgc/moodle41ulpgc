@@ -21,7 +21,7 @@
  * @copyright 2014 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . "/../renderer.php");
 
@@ -51,7 +51,7 @@ class datalynxfield_multiselect_renderer extends datalynxfield_renderer {
         $content = !empty($entry->{"c{$fieldid}_content"}) ? $entry->{"c{$fieldid}_content"} : null;
 
         $selected = array();
-        if ($entryid > 0 and $content) {
+        if ($entryid > 0 && $content) {
             $contentprepare = str_replace("#", "", $content);
             $selectedraw = explode(',', $contentprepare);
 
@@ -76,7 +76,7 @@ class datalynxfield_multiselect_renderer extends datalynxfield_renderer {
         }
 
         // Check for default values.
-        if (!$selected and $field->get('param2')) {
+        if (!$selected && $field->get('param2')) {
             $selected = $field->default_values();
         }
 
@@ -120,10 +120,10 @@ class datalynxfield_multiselect_renderer extends datalynxfield_renderer {
      * transform the raw database value into HTML suitable for displaying on the entry page
      * (non-PHPdoc)
      *
-     * @see datalynxfield_renderer::render_display_mode()
      * @return string HTML
+     *@see datalynxfield_renderer::render_display_mode()
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
 
@@ -146,7 +146,7 @@ class datalynxfield_multiselect_renderer extends datalynxfield_renderer {
             $separator = $field->separators[(int) $field->get('param3')]['chr'];
 
             // If we see a fieldgroup we simply display comma separations for now.
-            if (isset($params['fieldgroup'])) {
+            if (isset($options['fieldgroup'])) {
                 $separator = ", ";
             }
 
@@ -167,7 +167,7 @@ class datalynxfield_multiselect_renderer extends datalynxfield_renderer {
      * {@inheritDoc}
      * @see datalynxfield_renderer::render_search_mode()
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $field = $this->_field;
         $fieldid = $field->id();
         $fieldname = "f_{$i}_{$fieldid}";

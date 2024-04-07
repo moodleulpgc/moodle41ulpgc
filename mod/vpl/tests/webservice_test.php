@@ -116,7 +116,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_token
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_token() {
+    public function test_vpl_webservice_token(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -146,7 +146,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_info
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_info() {
+    public function test_vpl_webservice_info(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -167,7 +167,7 @@ class webservice_test extends base_test {
             try {
                 $res = mod_vpl_webservice::info($this->vplnotavailable->get_course_module()->id, 'bobería');
                 $this->fail('Exception expected calling mod_vpl_webservice::info');
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->assertFalse(strpos($e->getMessage(), 'password') === false);
             }
         }
@@ -183,7 +183,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_info_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_info_exceptions() {
+    public function test_vpl_webservice_info_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -206,14 +206,14 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::info($forbbidennet->get_course_module()->id, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
             mod_vpl_webservice::info($withpassword->get_course_module()->id, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -222,7 +222,7 @@ class webservice_test extends base_test {
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
             mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -232,19 +232,20 @@ class webservice_test extends base_test {
 
     private function internal_test_vpl_webservice_open($id, $files = [],
             $compilation ='', $evaluation = '',
-            $grade ='', $password = '', $userid = -1) {
+            $grade ='', $comments = '', $password = '', $userid = -1) {
         $res = mod_vpl_webservice::open($id, $password, $userid);
         $this->internal_test_files($files, $res['files']);
         $this->assertEquals($compilation, $res['compilation']);
         $this->assertEquals($evaluation, $res['evaluation']);
         $this->assertEquals($grade, $res['grade']);
+        $this->assertEquals($comments, $res['comments']);
     }
 
     /**
      * Description of test_vpl_webservice_open
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_open() {
+    public function test_vpl_webservice_open(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -320,7 +321,7 @@ class webservice_test extends base_test {
                 } else {
                     $files = ['a.c' => "int main(){\n}"];
                 }
-                $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
             }
             $id = $this->vplmultifile->get_course_module()->id;
             foreach ($this->users as $user) {
@@ -330,16 +331,16 @@ class webservice_test extends base_test {
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 4\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else if ($user == $this->students[1]) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola2\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 5\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else {
-                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', '', $user->id);
                 }
             }
             $id = $this->vplteamwork->get_course_module()->id;
@@ -352,16 +353,16 @@ class webservice_test extends base_test {
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 8\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else if ( $guser1 == $user->groupassigned) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 9\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else {
-                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', '', $user->id);
                 }
             }
         }
@@ -373,7 +374,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_open_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_open_exceptions() {
+    public function test_vpl_webservice_open_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -396,14 +397,14 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::open($forbbidennet->get_course_module()->id, '', -1);
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
             mod_vpl_webservice::open($withpassword->get_course_module()->id, 'bad password', -1);
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -412,7 +413,7 @@ class webservice_test extends base_test {
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
             mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -420,7 +421,8 @@ class webservice_test extends base_test {
         mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
     }
 
-    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1) {
+    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1, $submitedby=false) {
+        global $USER;
         $filesarray = [];
         foreach ($files as $name => $data) {
             $file = [];
@@ -434,15 +436,24 @@ class webservice_test extends base_test {
             }
             $filesarray[] = $file;
         }
-        mod_vpl_webservice::save($id, $filesarray, $password, $userid);
-        $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $userid);
+        $comments = md5("$id-$password-$userid-{time()}");
+
+        mod_vpl_webservice::save($id, $filesarray, $password, $userid, $comments);
+        if ($submitedby) {
+            if ($userid == -1) {
+                $userid = $USER->id;
+            }
+            $user = \mod_vpl::get_db_record('user', $USER->id);
+            $comments = get_string('submittedby', VPL, fullname($user)) . "\n" . $comments;
+        }
+        $this->internal_test_vpl_webservice_open($id, $files, '', '', '', $comments, '', $userid);
     }
 
     /**
      * Description of test_vpl_webservice_save
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_save() {
+    public function test_vpl_webservice_save(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -456,7 +467,7 @@ class webservice_test extends base_test {
             if ( $this->vpldefault->is_submit_able() ) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     throw new \Exception("Saving submission " . $e);
                 }
             }
@@ -468,8 +479,8 @@ class webservice_test extends base_test {
         foreach (array_merge($this->students, $this->teachers) as $user) {
             try {
                 $files['b.c'] = $files['b.c'] . $user->id;
-                $this->internal_test_vpl_webservice_save($id, $files, $password, $user->id);
-            } catch (Exception $e) {
+                $this->internal_test_vpl_webservice_save($id, $files, $password, $user->id, $user->id != $teacher->id);
+            } catch (\Throwable $e) {
                 throw new \Exception("Saving submission " . $e);
             }
         }
@@ -478,8 +489,8 @@ class webservice_test extends base_test {
             $this->setUser($user);
             try {
                 $files['b.c'] = $files['b.c'] . $user->id;
-                $this->internal_test_vpl_webservice_open($id, $files, $password);
-            } catch (Exception $e) {
+                $this->internal_test_vpl_webservice_save($id, $files, $password, -1);
+            } catch (\Throwable $e) {
                 throw new \Exception("Saving submission " . $e);
             }
         }
@@ -491,7 +502,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_save_binary
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_save_binary() {
+    public function test_vpl_webservice_save_binary(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -510,7 +521,7 @@ class webservice_test extends base_test {
             if ( $this->vpldefault->is_submit_able() ) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     throw new \Exception("Saving submission " . $e);
                 }
             }
@@ -523,7 +534,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_save_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_save_exceptions() {
+    public function test_vpl_webservice_save_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -555,14 +566,14 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::save($forbbidennet->get_course_module()->id, $files, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
             mod_vpl_webservice::save($withpassword->get_course_module()->id, $files, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -571,28 +582,28 @@ class webservice_test extends base_test {
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);;
             mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if closed.
         try {
             mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
             $this->fail('Exception expected if closed');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if example.
         try {
             mod_vpl_webservice::save($example->get_course_module()->id, $files, '');
             $this->fail('Exception expected if example');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not external copy.
         try {
             mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
             $this->fail('Exception expected if not external copy');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -606,7 +617,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_evaluate
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_evaluate() {
+    public function test_vpl_webservice_evaluate(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -626,7 +637,7 @@ class webservice_test extends base_test {
                     try {
                         $this->internal_test_vpl_webservice_save($id, $files, $password);
                         mod_vpl_webservice::evaluate($id, $password);
-                    } catch (Exception $e) {
+                    } catch (\Throwable $e) {
                         throw new \Exception("Evaluation " . $e);
                     }
                 }
@@ -649,7 +660,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_evaluate_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_evaluate_exceptions() {
+    public function test_vpl_webservice_evaluate_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -669,7 +680,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
             $this->fail('Exception expected no submission');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -682,7 +693,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -692,7 +703,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -703,7 +714,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not evaluable.
@@ -712,7 +723,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected if not evaluable');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if example.
@@ -721,7 +732,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected if example');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if closed.
@@ -730,7 +741,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected if closed');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -751,7 +762,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_get_result
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_get_result() {
+    public function test_vpl_webservice_get_result(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -771,7 +782,7 @@ class webservice_test extends base_test {
                     mod_vpl_webservice::evaluate($id, $password);
                     sleep(2);
                     mod_vpl_webservice::get_result($id, $password);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     throw new \Exception("Evaluation " . $e);
                 }
             }
@@ -781,10 +792,10 @@ class webservice_test extends base_test {
     }
 
     /**
-     * Description of test_vpl_webservice_get_result_exeptions
+     * Description of test_vpl_webservice_get_result_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_get_result_exeptions() {
+    public function test_vpl_webservice_get_result_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -804,7 +815,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($activity->get_course_module()->id, '');
             $this->fail('Exception expected no submission');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -817,7 +828,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -827,7 +838,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -838,7 +849,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not evaluable.
@@ -847,7 +858,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected if not evaluable');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if example.
@@ -856,7 +867,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected if example');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if closed.
@@ -865,7 +876,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected if closed');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);

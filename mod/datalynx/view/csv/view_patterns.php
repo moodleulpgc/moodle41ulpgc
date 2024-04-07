@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/view/view_patterns.php");
 
@@ -39,7 +39,7 @@ class datalynxview_csv_patterns extends datalynxview_patterns {
         $replacements = parent::get_replacements($tags, $entry, $options);
 
         $view = $this->_view;
-        $df = $view->get_df();
+        $df = $view->get_dl();
         $filter = $view->get_filter();
         $baseurl = new moodle_url($view->get_baseurl());
         $baseurl->param('sesskey', sesskey());

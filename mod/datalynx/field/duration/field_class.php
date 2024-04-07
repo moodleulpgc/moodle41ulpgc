@@ -22,7 +22,7 @@
  * @copyright based on the work by 2013 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 require_once("$CFG->dirroot/mod/datalynx/field/number/field_class.php");
@@ -41,12 +41,6 @@ class datalynxfield_duration extends datalynxfield_base {
      * @var boolean
      */
     protected $forfieldgroup = true;
-
-    /**
-     */
-    public function __construct($df = 0, $field = 0) {
-        parent::__construct($df, $field);
-    }
 
     /**
      * Returns time associative array of unit length.
@@ -91,22 +85,13 @@ class datalynxfield_duration extends datalynxfield_base {
         $fieldid = $this->field->id;
         $contents = array();
         $oldcontents = array();
-
         // Old contents.
         if (isset($entry->{"c{$fieldid}_content"})) {
             $oldcontents[] = $entry->{"c{$fieldid}_content"};
         }
 
         $value = reset($values);
-        // I don't understand what we are trying to do here.
-        /*
-        $rawvalue = optional_param_array("field_{$fieldid}_{$entry->id}", ['number' => ''], PARAM_RAW);
-        if ($rawvalue['number'] !== '') {
-            $contents[] = $value;
-        }
-        */
         $contents[] = $value;
-
         return array($contents, $oldcontents);
     }
 
@@ -169,7 +154,7 @@ class datalynxfield_duration extends datalynxfield_base {
 
         // For all NOT criteria except NOT Empty, exclude entries which don't meet the positive.
         // Criterion.
-        $excludeentries = (($not and $operator !== '') or (!$not and $operator === ''));
+        $excludeentries = (($not && $operator !== '') || (!$not && $operator === ''));
 
         if ($excludeentries) {
             $varcharcontent = $DB->sql_compare_text('content');

@@ -21,7 +21,7 @@
  * @copyright 2013 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 
@@ -85,8 +85,13 @@ class datalynxfield_teammemberselect extends datalynxfield_base {
     public function __construct($df = 0, $field = 0) {
         parent::__construct($df, $field);
         global $DB;
+        if (empty($this->field->param2)) {
+            $this->admissibleroles = [];
+        } else {
+            $this->admissibleroles = json_decode($this->field->param2, true);
+
+        }
         $this->teamsize = $this->field->param1;
-        $this->admissibleroles = json_decode($this->field->param2, true);
         $this->minteamsize = $this->field->param3;
         $this->listformat = $this->field->param4;
         $this->teamfield = $this->field->param5 != 0;

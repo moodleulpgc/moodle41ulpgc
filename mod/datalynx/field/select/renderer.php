@@ -22,7 +22,7 @@
  * @copyright 2016 David Bogner
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . "/../renderer.php");
 
@@ -53,7 +53,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
         $autocomplete = $field->get('param6');
 
         // Check for default value.
-        if (!$selected and $defaultval = $field->get('param2')) {
+        if (!$selected && $defaultval = $field->get('param2')) {
             $selected = (int) array_search($defaultval, $menuoptions);
         }
 
@@ -64,7 +64,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
             $select = &$mform->addElement('select', $fieldname, null);
         }
 
-        if (isset($this->_field->field->param5) && $this->_field->field->param5 > 0) {
+        if (isset($this->_field->field->param5) && is_numeric($this->_field->field->param5) && $this->_field->field->param5 > 0) {
             $disabled = $this->_field->get_disabled_values_for_user();
         } else {
             $disabled = array();
@@ -107,7 +107,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
      * {@inheritDoc}
      * @see datalynxfield_renderer::render_display_mode()
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
 
@@ -115,7 +115,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
             $selected = (int) $entry->{"c{$fieldid}_content"};
             $options = $field->options_menu();
 
-            if (!empty($params['options'])) {
+            if (!empty($options['options'])) {
                 $str = array();
                 foreach ($options as $key => $option) {
                     $isselected = (int) ($key == $selected);
@@ -125,7 +125,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
                 return $str;
             }
 
-            if (!empty($params['key'])) {
+            if (!empty($options['key'])) {
                 if ($selected) {
                     return $selected;
                 } else {
@@ -133,7 +133,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
                 }
             }
 
-            if ($selected and $selected <= count($options)) {
+            if ($selected && $selected <= count($options)) {
                 return $options[$selected];
             }
         }
@@ -146,7 +146,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
      * {@inheritDoc}
      * @see datalynxfield_renderer::render_search_mode()
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $field = $this->_field;
         $fieldid = $field->id();
         $fieldname = "f_{$i}_{$fieldid}";
@@ -175,7 +175,7 @@ class datalynxfield_select_renderer extends datalynxfield_renderer {
 
         // Not every field of this dataynx-instance has to be in the form!
         if (isset($formdata->{$formfieldname})) {
-            if (isset($this->_field->field->param5) && $this->_field->field->param5 > 0) {
+            if (isset($this->_field->field->param5) && is_numeric($this->_field->field->param5) && $this->_field->field->param5 > 0) {
                 $disabled = $this->_field->get_disabled_values_for_user($entryid);
                 $content = clean_param($formdata->{$formfieldname}, PARAM_INT);
                 if (array_search($content, $disabled) !== false) {

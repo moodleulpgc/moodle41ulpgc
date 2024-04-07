@@ -106,7 +106,7 @@ class usersmatch extends processmatchqueue {
             $mailwhere = $DB->sql_isnotempty('user', 'u.email', true, false);
         }
         
-        $sql = "SELECT u.id, u.username, u.idnumber, u.email,  ocon.id AS connid, ocon.aadupn, oobj.id AS oid, oobj.objectid, oobj.o365name 
+        $sql = "SELECT u.id, u.username, u.idnumber, u.email,  ocon.id AS connid, ocon.entraidupn, oobj.id AS oid, oobj.objectid, oobj.o365name
                 FROM {user} u 
                 LEFT JOIN {local_o365_connections}  ocon ON ocon.muserid = u.id 
                 LEFT JOIN {local_o365_objects}  oobj ON oobj.moodleid = u.id AND oobj.type = :type
@@ -141,15 +141,15 @@ class usersmatch extends processmatchqueue {
                 if(!empty($o365user)) {
                     // manage connections table
                     $matchrec->muserid = $user->id;
-                    $matchrec->aadupn = $usermatchname;
-                    if($user->aadupn && $user->aadupn != $usermatchname) {
-                        // user exists in o365, with other email, update aadupn e-mail
+                    $matchrec->entraidupn = $usermatchname;
+                    if($user->entraidupn && $user->entraidupn != $usermatchname) {
+                        // user exists in o365, with other email, update entraidupn e-mail
                         $matchrec->id = $user->connid;
                         if($DB->update_record('local_o365_connections', $matchrec)) {
                             $this->mtrace('    updated matching user '. $user->id);
                         }
                         unset($matchrec->id);                        
-                    } elseif(empty($user->aadupn)) {
+                    } elseif(empty($user->entraidupn)) {
                         // not matched user, insert
                         $matchrec->uselogin = 0;                        
                         unset($matchrec->id);

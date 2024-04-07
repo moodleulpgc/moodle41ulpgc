@@ -36,7 +36,6 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/vpl.class.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
-require_once(dirname(__FILE__).'/views/show_hide_div.class.php');
 
 // Non static due to usort error.
 function vpl_compare_filenamebylengh($f1, $f2) {
@@ -470,7 +469,7 @@ class mod_vpl_submission {
             // Other option is checking the grade_item state.
             try {
                 $dategraded = $this->get_gradebook_grade($usersid[0])->dategraded;
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 return false;
             }
             if ($dategraded != $gradeinfo['dategraded']) {
@@ -585,6 +584,31 @@ class mod_vpl_submission {
     }
 
     /**
+     * Return a fake object for the automatic grader with standard user name fields.
+     *
+     * @return object with standard user name fields.
+     */
+    public static function get_automatic_grader() {
+        $graderuser = new StdClass();
+        // Polyfill version.
+        if (method_exists('\core_user\fields', 'get_name_fields')) {
+            foreach (\core_user\fields::get_name_fields() as $name) {
+                $graderuser->$name = '';
+            }
+        } else { // Deprecated. To be removed in a future version.
+            $funcname = 'get_all_user_name_fields';
+            if (function_exists($funcname)) {
+                foreach ($funcname() as $name) {
+                    $graderuser->$name = '';
+                }
+            }
+        }
+        $graderuser->firstname = '';
+        $graderuser->lastname = get_string( 'automaticgrading', VPL );
+        return $graderuser;
+    }
+
+    /**
      *
      * @var array cache of users(graders) objects
      */
@@ -605,19 +629,9 @@ class mod_vpl_submission {
             $graderuser = self::$graders[$id];
         } else {
             if ($id <= 0) { // Automatic grading.
-                $graderuser = new StdClass();
-                if (function_exists( 'get_all_user_name_fields' )) {
-                    $fields = get_all_user_name_fields();
-                    foreach (array_keys($fields) as $name) {
-                        $graderuser->$name = '';
-                    }
-                }
-                $graderuser->firstname = '';
-                $graderuser->lastname = get_string( 'automaticgrading', VPL );
+                $graderuser = self::get_automatic_grader();
             } else {
-                $graderuser = $DB->get_record( 'user', [
-                        'id' => $id,
-                ] );
+                $graderuser = $DB->get_record('user', ['id' => $id]);
             }
             self::$graders[$id] = $graderuser;
         }
@@ -642,7 +656,7 @@ class mod_vpl_submission {
             } else if ($grade == null) {
                 // If group activity don't retrieve grade from gradebook.
                 if ( $this->vpl->is_group_activity() ) {
-                    return format_float($this->get_instance()->grade, 2, true, true);
+                    return format_float(floatval($this->get_instance()->grade), 2, true, true);
                 }
                 if (! function_exists( 'grade_get_grades' )) {
                     require_once($CFG->libdir . '/gradelib.php');
@@ -656,7 +670,7 @@ class mod_vpl_submission {
                         $gradestr .= $gradeobj->overridden ? (' <b>' . get_string( 'overridden', 'core_grades' )) . '</b>' : '';
                     }
                     return $gradestr;
-                } catch ( Exception $e ) {
+                } catch (\Throwable $e) {
                     debugging( 'Error getting grade in html format ' . $e->getMessage(), DEBUG_DEVELOPER );
                 }
             }
@@ -664,7 +678,12 @@ class mod_vpl_submission {
                 return '';
             }
             if ($scaleid > 0) {
-                $grade = format_float($this->reduce_grade($grade), 2, true, true);
+                try {
+                    $grade = format_float($this->reduce_grade($grade), 2, true, true);
+                } catch (\Throwable $e) {
+                    $strggrade = s($grade);
+                    $grade = "Numeric grade format error: '$strggrade'";
+                }
                 $ret = $grade . ' / ' . $scaleid;
             } else if ($scaleid < 0) {
                 $scaleid = - $scaleid;
@@ -694,10 +713,10 @@ class mod_vpl_submission {
         GLOBAL $PAGE;
         $ret = '';
         if (strlen($comment) > 0 || $empty) {
-            $div = new vpl_hide_show_div( true );
-            $ret = '<b>' . get_string( $title, VPL ) . $div->generate( true ) . '</b><br>';
-            $ret .= $div->begin_div( true ) . s($comment) . $div->end_div( true );
-            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_div_id(), false, true]);
+            $div = new mod_vpl\util\hide_show( true );
+            $ret = '<b>' . get_string( $title, VPL ) . $div->generate() . '</b><br>';
+            $ret .= $div->content_in_div(s($comment));
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
         }
         return $ret;
     }
@@ -732,7 +751,7 @@ class mod_vpl_submission {
             $a->gradername = fullname( $grader );
             $ret .= get_string( 'gradedonby', VPL, $a ) . '<br>';
             if ($this->vpl->get_grade() != 0) {
-                $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), false, 'core_grades') . '<br>';
+                $ret .= $this->vpl->str_restriction('gradenoun', $this->get_grade_core(), false, 'core') . '<br>';
                 if ($detailed) {
                     $ret .= $this->get_detailed_grade();
                 }
@@ -848,9 +867,9 @@ class mod_vpl_submission {
         $grade = '';
         $this->get_ce_html( $ce, $compilation, $execution, $grade, true, true );
         if (strlen( $compilation ) + strlen( $execution ) + strlen( $grade ) > 0) {
-            $div = new vpl_hide_show_div( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
-            $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . $div->generate( true ) . '</b>';
-            $ret .= $div->begin_div(true);
+            $div = new mod_vpl\util\hide_show( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
+            $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . $div->generate() . '</b>';
+            $ret .= $div->begin_div();
             $ret .= $OUTPUT->box_start();
             if (strlen( $grade ) > 0) {
                 $ret .= '<b>' . $grade . '</b><br>';
@@ -863,7 +882,7 @@ class mod_vpl_submission {
                 $ret .= $this->get_processed_comment( 'comments', $proposedcomments, true);
             }
             $ret .= $OUTPUT->box_end();
-            $ret .= $div->end_div(true);
+            $ret .= $div->end_div();
         }
         if ($return) {
             return $ret;
@@ -1010,12 +1029,12 @@ class mod_vpl_submission {
                 $html .= '</b><br>';
                 $html .= $comment;
             } else {
-                $div = new vpl_hide_show_div( false );
+                $div = new mod_vpl\util\hide_show( false );
                 $html .= $div->generate( true );
                 $html .= '<b>';
                 $html .= s( $title );
                 $html .= '</b><br>';
-                $html .= $div->begin_div( true ) . $comment . $div->end_div( true );
+                $html .= $div->content_in_div($comment);
             }
         } else if ($comment > '') { // No title comment.
             $html .= $comment;
@@ -1258,12 +1277,10 @@ class mod_vpl_submission {
             } else if ($returnrawexecution && strlen( $rawexecution ) > 0
                        && ($this->vpl->has_capability( VPL_MANAGE_CAPABILITY ))) {
                 // Show raw ejecution if manager and $returnrawexecution.
-                $div = new vpl_hide_show_div();
+                $div = new mod_vpl\util\hide_show();
                 $execution .= "<br>\n";
-                $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate( true ) . "</b><br>\n";
-                $execution .= $div->begin_div( true );
-                $execution .= '<pre>' . s( $rawexecution ) . '</pre>';
-                $execution .= $div->end_div( true );
+                $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate() . "</b><br>\n";
+                $execution .= $div->content_in_div('<pre>' . s( $rawexecution ) . '</pre>');
             }
         }
     }

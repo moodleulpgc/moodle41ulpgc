@@ -40,7 +40,7 @@ require_capability('quizaccess/wifiresilience:inspectresponses', $context);
 $form = new \quizaccess_wifiresilience\form\inspect_responses($PAGE->url);
 
 if ($form->is_cancelled()) {
-    redirect($quizurl);
+    echo '<script>setTimeout(function() {window.location="'.$quizurl.'";}, 0);</script>';
 } else if ($fromform = $form->get_data()) {
 
     // Process submission.
@@ -92,7 +92,6 @@ if ($form->is_cancelled()) {
 
         try {
             $data = json_decode($file->get_content());
-
             if (!$data) {
                 if (function_exists('json_last_error_msg')) {
                     throw new coding_exception(json_last_error_msg());
@@ -148,9 +147,23 @@ if ($form->is_cancelled()) {
                     }
 
                     $responses = openssl_decrypt($data->responses, 'AES-256-CBC', $aeskey, 0, $iv);
+
                     if (!$responses) {
                         echo $OUTPUT->notification(
                             get_string('fileunabledecrypt', 'quizaccess_wifiresilience', openssl_error_string()), 'notifyfail');
+                    } else {
+                      $postdata = array();
+                      parse_str($responses, $postdata);
+                      echo get_string('filewithoutkeyandiv', 'quizaccess_wifiresilience');
+                      echo html_writer::tag('textarea', $responses,
+                          array('id' => 'quizaccess_wifiresilience_dectypted_file_output_json', 'class' => 'inspectresponse'));
+
+
+                      echo get_string('filearraystyle', 'quizaccess_wifiresilience');
+                      echo html_writer::tag('textarea', s(var_export($postdata, true)),
+                          array('id' => 'quizaccess_wifiresilience_dectypted_file_output_array', 'class' => 'inspectresponse'));
+                    
+
                     }
                 } else {
                     $responses = $data->responses;
@@ -236,9 +249,7 @@ if ($form->is_cancelled()) {
         openssl_pkey_free($privatekey);
     }
 
-    echo $OUTPUT->confirm(get_string('decryptingcomplete', 'quizaccess_wifiresilience', 3),
-            new single_button($PAGE->url, get_string('uploadmoreresponses', 'quizaccess_wifiresilience'), 'get'),
-            new single_button($quizurl, get_string('backtothequiz', 'quizaccess_wifiresilience'), 'get'));
+    echo \html_writer::div($OUTPUT->single_button($quizurl, get_string('continue'), 'get'));
     echo $OUTPUT->footer();
 
 } else {

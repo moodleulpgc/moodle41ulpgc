@@ -20,7 +20,7 @@
  * @copyright David Bogner 2021 based on 2014 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__) . '/../classes/datalynx.php');
 
 class datalynx_field_behavior {
@@ -103,6 +103,7 @@ class datalynx_field_behavior {
 
     /**
      * Get behavior object from the behavior id.
+     *
      * @param $id
      * @return datalynx_field_behavior|false
      * @throws coding_exception
@@ -174,7 +175,7 @@ class datalynx_field_behavior {
             return true;
         }
         // If special visibletouser is set overrule other visibility options.
-        if (isset($this->visibleto['users']) AND in_array($USER->id, $this->visibleto['users'])) {
+        if (isset($this->visibleto['users']) && in_array($USER->id, $this->visibleto['users'])) {
             return true;
         }
 
@@ -185,7 +186,7 @@ class datalynx_field_behavior {
         }
         // Make a simple array.
         return $this->user_is_admin($USER) || (array_intersect($permissions, $this->visibleto['permissions'])) ||
-        ($isentryauthor && in_array(mod_datalynx\datalynx::PERMISSION_AUTHOR, $visible));
+                ($isentryauthor && in_array(mod_datalynx\datalynx::PERMISSION_AUTHOR, $visible));
     }
 
     /**
@@ -227,9 +228,9 @@ class datalynx_field_behavior {
         $user = $user ? $user : $USER;
         $permissions = $this->datalynx->get_user_datalynx_permissions($user->id, 'edit');
         return (array_intersect($permissions, $this->editableby)) ||
-        ($isentryauthor && in_array(mod_datalynx\datalynx::PERMISSION_AUTHOR, $this->editableby)) ||
-        ($ismentor && in_array(mod_datalynx\datalynx::PERMISSION_MENTOR, $this->editableby)) ||
-        (isguestuser() && in_array(mod_datalynx\datalynx::PERMISSION_GUEST, $this->editableby));
+                ($isentryauthor && in_array(mod_datalynx\datalynx::PERMISSION_AUTHOR, $this->editableby)) ||
+                ($ismentor && in_array(mod_datalynx\datalynx::PERMISSION_MENTOR, $this->editableby)) ||
+                (isguestuser() && in_array(mod_datalynx\datalynx::PERMISSION_GUEST, $this->editableby));
     }
 
     /**
@@ -245,7 +246,7 @@ class datalynx_field_behavior {
         $formdata->name = $record->name;
         $formdata->description = $record->description;
         $visible = unserialize($record->visibleto);
-        if (isset($visible['permissions'])){
+        if (isset($visible['permissions'])) {
             $formdata->visibletopermission = $visible['permissions'];
         }
         $formdata->visibletouser = $visible['users'] ?? [];
@@ -269,17 +270,17 @@ class datalynx_field_behavior {
         $record->description = $formdata->description;
 
         // Prepare formdata for serialization to be saved into a single db column.
-        if($formdata->visibletopermission) {
+        if ($formdata->visibletopermission) {
             $formdata->visibleto['permissions'] = $formdata->visibletopermission;
         } else {
             $formdata->visibleto['permissions'] = [];
         }
-        if($formdata->visibletouser) {
+        if ($formdata->visibletouser) {
             $formdata->visibleto['users'] = $formdata->visibletouser;
         } else {
             $formdata->visibleto['users'] = [];
         }
-        if($formdata->visibletoteammember) {
+        if ($formdata->visibletoteammember) {
             $formdata->visibleto['teammember'] = $formdata->visibletoteammember;
         } else {
             $formdata->visibleto['teammember'] = [];
@@ -379,14 +380,14 @@ class datalynx_field_behavior {
         global $DB;
         // Read dataid from DB and find patterns and param2 from all connected views.
         $behaviorinfo = $DB->get_record('datalynx_behaviors', array('id' => $behaviorid),
-            $fields = 'dataid, name', $strictness = IGNORE_MISSING);
+                $fields = 'dataid, name', $strictness = IGNORE_MISSING);
         $connected = $DB->get_records('datalynx_views', array('dataid' => $behaviorinfo->dataid),
-            null, 'id, patterns, param2');
+                null, 'id, patterns, param2');
         // Update every instance that still has the string ||behaviorname in it.
         foreach ($connected as $view) {
             // TODO: Is one check enough or are these separate?
             if (strpos($view->patterns, '|' . $behaviorinfo->name) !== false ||
-                strpos($view->param2, '|' . $behaviorinfo->name) !== false) {
+                    strpos($view->param2, '|' . $behaviorinfo->name) !== false) {
                 if (strpos($view->param2, '|' . $behaviorinfo->name . '|')) {
                     $view->patterns = str_replace('|' . $behaviorinfo->name . '|', '|' . $behaviorname . '|', $view->patterns);
                     $view->param2 = str_replace('|' . $behaviorinfo->name . '|', '|' . $behaviorname . '|', $view->param2);
@@ -404,6 +405,7 @@ class datalynx_field_behavior {
 
     /**
      * Get id of behavior instance.
+     *
      * @return int
      */
     public function get_id() {
@@ -421,6 +423,7 @@ class datalynx_field_behavior {
 
     /**
      * Get the description of a behavior instance.
+     *
      * @return string
      */
     public function get_description() {

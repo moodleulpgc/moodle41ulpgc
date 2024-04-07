@@ -20,7 +20,7 @@
  * @copyright 2018 michael pollak <moodle@michaelpollak.org>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../field_class.php');
 
@@ -32,12 +32,13 @@ class datalynxfield_fieldgroup extends datalynxfield_base {
      * Fieldids of the fields belonging to the fieldgroup#
      * @var integer[]
      */
-    public $fieldids = array();
+    public $fieldids = [];
 
     public function __construct($df = 0, $field = 0) {
         parent::__construct($df, $field);
-
-        $this->fieldids = json_decode($this->field->param1, true);
+        if (!empty($this->field->param1)) {
+            $this->fieldids = json_decode($this->field->param1, true);
+        }
     }
 
     protected function content_names() {

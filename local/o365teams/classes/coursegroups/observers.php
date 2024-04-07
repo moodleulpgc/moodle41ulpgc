@@ -32,11 +32,11 @@ class observers {
      * @param string $caller The calling function, used for logging.
      * @return \local_o365\rest\unified A Microsoft Graph API instance.
      */
-    public static function get_unified_api($caller = 'get_unified_api') {
+    public static function get_unified_api($caller = 'local_o365teams\coursegroups\observers\get_unified_api') {
         $clientdata = \local_o365\oauth2\clientdata::instance_from_oidc();
         $httpclient = new \local_o365\httpclient();
         $tokenresource = \local_o365\rest\unified::get_tokenresource();
-        $token = \local_o365\utils::get_app_or_system_token($tokenresource, $clientdata, $httpclient);
+        $token = \local_o365\utils::get_application_token($tokenresource, $clientdata, $httpclient);
         if (!empty($token)) {
             return new \local_o365teams\rest\unified($token, $httpclient);
         } else {

@@ -21,7 +21,7 @@
  * @copyright 2015 David Bogner
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/datalynx/field/field_class.php');
 require_once($CFG->dirroot . '/lib/filelib.php');
@@ -100,8 +100,8 @@ class datalynxfield_editor extends datalynxfield_base {
         $rec = new stdClass();
         $rec->fieldid = $fieldid;
         $rec->entryid = $entryid;
-
-        if (!$rec->id = $contentid) {
+        $rec->id = $contentid;
+        if (!$rec->id) {
             $rec->id = $DB->insert_record('datalynx_contents', $rec);
         }
         // The editor's content is an array, so reset is used in order to access the data in the.
@@ -143,7 +143,11 @@ class datalynxfield_editor extends datalynxfield_base {
             if (isset($data->{"field_{$fieldid}_{$entryid}"})) {
                 $valuearr = explode('##', $data->{"field_{$fieldid}_{$entryid}"});
                 $content = array();
-                $content['text'] = !empty($valuearr[0]) ? $valuearr[0] : null;
+                if ($csvrecord) {
+                    $content['text'] = !empty($valuearr[0]) ? htmlspecialchars_decode($valuearr[0]) : null;
+                } else {
+                    $content['text'] = !empty($valuearr[0]) ? $valuearr[0] : null;
+                }
                 $content['format'] = !empty($valuearr[1]) ? $valuearr[1] : FORMAT_HTML;
                 $content['trust'] = !empty($valuearr[2]) ? $valuearr[2] : $this->editoroptions['trusttext'];
                 $data->{"field_{$fieldid}_{$entryid}_editor"} = $content;

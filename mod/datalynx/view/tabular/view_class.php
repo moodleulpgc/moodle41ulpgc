@@ -24,7 +24,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/view/view_class.php");
 
@@ -47,7 +47,8 @@ class datalynxview_tabular extends datalynxview_base {
      */
     public function generate_default_view() {
         // Get all the fields.
-        if (!$fields = $this->_df->get_fields()) {
+        $fields = $this->_df->get_fields();
+        if (!$fields) {
             return; // You shouldn't get that far if there are no user fields.
         }
 
@@ -107,8 +108,7 @@ class datalynxview_tabular extends datalynxview_base {
 
         // Fields.
         foreach ($fields as $field) {
-
-            if ($field->field->id > 0) {
+            if (is_numeric($field->field->id) && $field->field->id > 0) {
                 $header[] = $field->field->name . " %%{$field->field->name}:bulkedit%%";
                 if ($field->type == "userinfo") {
                     $entry[] = "##author:{$field->field->name}##";
@@ -204,7 +204,7 @@ class datalynxview_tabular extends datalynxview_base {
             }
             // Assuming a simple two rows structure for now.
             // If no theader the first row should be the header.
-            if ($requireheaderrow and empty($headerrow)) {
+            if ($requireheaderrow && empty($headerrow)) {
                 // Assuming header row does not contain nested tables.
                 $trpattern = '/^<tr>[\s\S]*<\/tr>/i';
                 preg_match($trpattern, $tablehtml, $match);

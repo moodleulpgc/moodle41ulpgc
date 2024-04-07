@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -68,8 +68,13 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
     }
 
     /**
+     * Render the field of type file.
+     *
+     * @param stdClass $entry
+     * @param array $options
+     * @return string
      */
-    public function render_display_mode(stdClass $entry, array $params): ?string {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
         $entryid = $entry->id;
@@ -83,7 +88,7 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
             return '';
         }
 
-        if (!empty($params['downloadcount'])) {
+        if (!empty($options['downloadcount'])) {
             return $content2;
         }
 
@@ -92,7 +97,7 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
         // Contentid is stored in itemid for lookup. This is usable with fieldgroups.
         $files = $fs->get_area_files($field->df()->context->id, 'mod_datalynx', 'content',
                 $contentid);
-        if (!$files or !(count($files) > 1)) {
+        if (!$files || !(count($files) > 1)) {
             return '';
         }
 
@@ -104,7 +109,7 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
                 $path = "/{$field->df()->context->id}/mod_datalynx/content/$contentid";
                 // ToDo: Remove or implement altname.
                 $altname = "";
-                $strfiles[] = $this->display_file($file, $entryid, $path, $altname, $params);
+                $strfiles[] = $this->display_file($file, $entryid, $path, $altname, $options);
             }
         }
 
@@ -122,7 +127,7 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
      * @param string $value
      * @return array
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = ''): array {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = ''): array {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -200,20 +205,20 @@ class datalynxfield_file_renderer extends datalynxfield_renderer {
     protected function embed_pdf(string $fullurl, string $fieldname): string {
         global $PAGE;
         $customscale = $this->_field->get('param4');
-        if(empty($customscale)) {
+        if (empty($customscale)) {
             $customscale = 1;
         }
         $PAGE->requires->js_call_amd('mod_datalynx/pdfembed', 'renderPDF',
                 [$fullurl, $fieldname, $customscale]);
 
         $a = html_writer::tag('script', '', [
-            'src' => 'pdfjs/pdf.js']);
+                'src' => 'pdfjs/pdf.js']);
         $b = html_writer::tag('script', '', [
                 'src' => 'pdfjs/pdf.worker.js']);
 
         return '<div><a href="' . $fullurl . '" target="_blank" class="btn btn-primary">' .
                 get_string('download', 'core_repository') . ' ' .
-                get_string('application/pdf', 'core_mimetypes') .  '</a></div><br>
+                get_string('application/pdf', 'core_mimetypes') . '</a></div><br>
         <div style="width: 1800px; min-height: 1400px;" id="' . $fieldname . '"></div>
         ' . $a . $b;
     }

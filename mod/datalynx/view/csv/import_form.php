@@ -24,7 +24,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 require_once("$CFG->libdir/csvlib.class.php");
@@ -71,7 +71,7 @@ class datalynxview_csv_import_form extends moodleform {
      */
     protected function field_settings() {
         $view = $this->_view;
-        $df = $view->get_df();
+        $df = $view->get_dl();
         $mform = &$this->_form;
 
         $mform->addElement('header', 'fieldsettingshdr',
@@ -82,12 +82,12 @@ class datalynxview_csv_import_form extends moodleform {
             list($pattern, $header, ) = $column;
             $patternname = trim($pattern, '[#]');
             $header = $header ? $header : $patternname;
-
-            if (!$fieldid = $view->get_pattern_fieldid($pattern)) {
+            $fieldid = $view->get_pattern_fieldid($pattern);
+            if (!$fieldid) {
                 continue;
             }
-
-            if (!$field = $df->get_field_from_id($fieldid)) {
+            $field = $df->get_field_from_id($fieldid);
+            if (!$field) {
                 continue;
             }
 

@@ -72,17 +72,18 @@ try {
             $vpl->update();
             break;
         case 'load' :
+            $result->response = mod_vpl_edit::load($vpl, $USER->id);
             $filename = 'vpl_evaluate.cases';
             $fgm = $vpl->get_execution_fgm();
             $files = [];
             $files[$filename] = $fgm->getfiledata($filename);
-            $result->response->files = mod_vpl_edit::filestoide( $files );
+            $result->response->files = mod_vpl_edit::filestoide($files);
             $result->response->version = $fgm->getversion();
             break;
         default :
             throw new Exception( 'ajax action error: ' + $action );
     }
-} catch ( Exception $e ) {
+} catch (\Throwable $e ) {
     $result->success = false;
     $result->error = $e->getMessage();
 }

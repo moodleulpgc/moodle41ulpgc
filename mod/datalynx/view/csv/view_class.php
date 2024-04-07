@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/view/view_class.php");
 
@@ -251,13 +251,14 @@ class datalynxview_csv extends datalynxview_base {
     }
 
     /**
+     * @param $range
+     * @return void
      */
-    public function process_export($range = self::EXPORT_PAGE) {
+    public function process_export(string $range = self::EXPORT_PAGE) {
         global $CFG;
-
         require_once($CFG->libdir . '/csvlib.class.php');
-
-        if (!$csvcontent = $this->get_csv_content($range)) {
+        $csvcontent = $this->get_csv_content($range);
+        if (!$csvcontent) {
             return;
         }
         $datalynxname = $this->_df->name();
@@ -443,9 +444,6 @@ class datalynxview_csv extends datalynxview_base {
     /**
      * @param $data
      * @return bool|null
-     * @throws coding_exception
-     * @throws dml_exception
-     * @throws moodle_exception
      */
     public function execute_import($data) {
         if ($data->eids) {
@@ -490,19 +488,20 @@ class datalynxview_csv extends datalynxview_base {
         }
 
         // Csv column headers.
-        if (!$fieldnames = $cir->get_columns()) {
+        $fieldnames = $cir->get_columns();
+        if (!$fieldnames) {
             $data->error = $cir->get_error();
             return $data;
         }
 
         // Process each csv record.
-        $updateexisting = $updateexisting and !empty($csvfieldnames['Entry']);
+        $updateexisting = $updateexisting && !empty($csvfieldnames['Entry']);
         $i = 0;
         $cir->init();
         while ($csvrecord = $cir->next()) {
             $csvrecord = array_combine($fieldnames, $csvrecord);
             // Set the entry id.
-            if ($updateexisting and $csvrecord['Entry'] > 0) {
+            if ($updateexisting && $csvrecord['Entry'] > 0) {
                 $data->eids[$csvrecord['Entry']] = $entryid = $csvrecord['Entry'];
             } else {
                 $i--;
@@ -593,7 +592,7 @@ class datalynxview_csv extends datalynxview_base {
         $this->view->param2 = '';
         foreach ($fields as $field) {
 
-            if ($field->field->id > 0) {
+            if (is_numeric($field->field->id) && $field->field->id > 0) {
                 $fieldname = $field->name();
                 if ($field->type == "userinfo") {
                     $this->view->param2 .= "##author:{$fieldname}##\n";

@@ -22,13 +22,14 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_form.php");
 
 class datalynxfield_text_form extends datalynxfield_form {
 
     /**
+     * @return void
      */
     public function field_definition() {
         global $OUTPUT, $DB, $PAGE, $CFG;
@@ -91,7 +92,7 @@ class datalynxfield_text_form extends datalynxfield_form {
         // Autocompletion with content of other textfield from the same or other datalynx instance.
         //
         // Select Datalynx instance (to be stored in param9).
-        if ($datalynxs OR $this->_df->id() > 0) {
+        if ($datalynxs || $this->_df->id() > 0) {
             $dfmenu = array('' => array(0 => get_string('noautocompletion', 'datalynx')));
             $dfmenu[''][$this->_df->id()] = get_string('thisdatalynx', 'datalynx') .
                     " (" . strip_tags(format_string($this->_df->name(), true)) . ")";
@@ -205,19 +206,14 @@ class datalynxfield_text_form extends datalynxfield_form {
      * @return string[] Associative array with errors
      */
     public function validation($data, $files) {
-        global $OUTPUT;
-
         $mform = &$this->_form;
-
         $errors = parent::validation($data, $files);
-
         $fieldid = $this->_field->id();
         if (!empty($data['param8']) && !empty($fieldid)) {
             // Unique is activated, we check if there are doubles!
             // Should never happen, because we freeze it to 'no' if there are duplicates!
             if ($this->has_duplicates()) {
-                $formfieldname = "field_{$fieldid}_{$entryid}";
-                $errors[$formfieldname] = get_string('field_has_duplicate_entries', 'datalynx');
+                $errors['param8'] = get_string('field_has_duplicate_entries', 'datalynx');
             }
         }
 
@@ -239,15 +235,14 @@ class datalynxfield_text_form extends datalynxfield_form {
         }
 
         // Added id to records to make the first column something unique.
-        $records = $DB->get_records_sql("SELECT id, COUNT(*), c.content
+        $records = $DB->get_records_sql("SELECT c.fieldid, c.content, COUNT(*) as cnt
                                     FROM {datalynx_contents} c
                                     WHERE c.fieldid = :fieldid AND c.content IS NOT NULL
-                                    GROUP BY c.id, c.content
+                                    GROUP BY c.fieldid, c.content
                                     HAVING COUNT(*) > 1", array('fieldid' => $fieldid));
         if (empty($records)) {
             return false;
         }
-
         return true;
     }
 }

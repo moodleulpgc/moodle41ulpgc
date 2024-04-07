@@ -50,7 +50,7 @@ $urlparams->confirmed = optional_param('confirmed', 0, PARAM_INT);
 $df = new mod_datalynx\datalynx($urlparams->d, $urlparams->id);
 
 // Require capability.
-if (!has_capability('mod/datalynx:manageentries', $df->context) or
+if (!has_capability('mod/datalynx:manageentries', $df->context) ||
         !has_capability('mod/datalynx:managetemplates', $df->context)
 ) {
     throw new required_capability_exception($df->context, 'mod/datalynx:manageentries',
@@ -65,11 +65,11 @@ navigation_node::override_active_url(
 
 // DATA PROCESSING.
 // Import.
-if ($urlparams->vid and confirm_sesskey()) {
+if ($urlparams->vid && confirm_sesskey()) {
     $view = $df->get_view_from_id($urlparams->vid);
 
     // Process import.
-    if ($urlparams->import and confirm_sesskey()) {
+    if ($urlparams->import && confirm_sesskey()) {
         if ($view->process_data()) {
             redirect(new moodle_url('/mod/datalynx/view.php', array('d' => $urlparams->d)));
         }
@@ -87,13 +87,13 @@ if ($urlparams->vid and confirm_sesskey()) {
 }
 
 // View actions.
-if ($urlparams->duplicate and confirm_sesskey()) { // Duplicate any requested views.
+if ($urlparams->duplicate && confirm_sesskey()) { // Duplicate any requested views.
     $df->process_views('duplicate', $urlparams->duplicate, true);
 } else {
-    if ($urlparams->reset and confirm_sesskey()) { // Reset to default any requested views.
+    if ($urlparams->reset && confirm_sesskey()) { // Reset to default any requested views.
         $df->process_views('reset', $urlparams->reset, true);
     } else {
-        if ($urlparams->delete and confirm_sesskey()) { // Delete any requested views.
+        if ($urlparams->delete && confirm_sesskey()) { // Delete any requested views.
             $df->process_views('delete', $urlparams->delete, true);
         }
     }
@@ -102,7 +102,8 @@ if ($urlparams->duplicate and confirm_sesskey()) { // Duplicate any requested vi
 // Any notifications?
 $df->notifications['bad']['defaultview'] = '';
 $df->notifications['bad']['getstartedviews'] = '';
-if (!$views = $df->get_views_by_type('csv', true)) {
+$views = $df->get_views_by_type('csv', true);
+if (!$views) {
     $df->notifications['bad'][] = get_string('importnoneindatalynx', 'datalynx'); // Nothing in.
     // Database.
 }

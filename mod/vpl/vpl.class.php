@@ -545,14 +545,14 @@ class mod_vpl {
      * Get password
      */
     protected function get_password() {
-        return trim( $this->instance->password );
+        return trim($this->get_effective_setting('password'));
     }
 
     /**
      * Get password md5
      */
     protected function get_password_md5() {
-        return md5( $this->instance->id . (sesskey()) );
+        return md5($this->instance->id . sesskey());
     }
 
     /**
@@ -596,15 +596,15 @@ class mod_vpl {
     protected function password_check() {
         global $SESSION;
         if (! $this->pass_password_check()) {
-            if ( constant( 'AJAX_SCRIPT' ) ) {
-                throw new Exception( get_string( 'requiredpassword', VPL ) );
+            if (constant('AJAX_SCRIPT') ) {
+                throw new Exception(get_string('requiredpassword', VPL));
             }
             require_once('forms/password_form.php');
             $this->print_header();
-            $mform = new mod_vpl_password_form( $_SERVER['SCRIPT_NAME'], $this);
+            $mform = new mod_vpl_password_form($_SERVER['SCRIPT_NAME'], $this);
             $passattempt = 'vpl_password_attempt' . $this->get_instance()->id;
             if (isset( $SESSION->$passattempt)) {
-                vpl_notice( get_string( 'attemptnumber', VPL, $SESSION->$passattempt),
+                vpl_notice(get_string('attemptnumber', VPL, $SESSION->$passattempt),
                             'warning');
             }
             $mform->display();
@@ -618,21 +618,24 @@ class mod_vpl {
      * @return boolean
      */
     public function pass_network_check() {
-        return vpl_check_network( $this->instance->requirednet );
+        if ($this->instance->requirednet > '' && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
+            return vpl_check_network( $this->instance->requirednet );
+        }
+        return true;
     }
 
     /**
-     * Check netword restriction and show error if not passed
+     * Check network restriction and show error if not passed
      * @return void
      */
     protected function network_check() {
         if (! $this->pass_network_check()) {
-            $str = get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr();
-            if ( constant( 'AJAX_SCRIPT') ) {
-                throw new Exception( $str );
+            $str = get_string('opnotallowfromclient', VPL) . ' ' . getremoteaddr();
+            if (constant('AJAX_SCRIPT')) {
+                throw new Exception($str);
             }
             $this->print_header();
-            vpl_notice( $str , 'warning');
+            vpl_notice($str , 'warning');
             $this->print_footer();
             die();
         }
@@ -648,13 +651,20 @@ class mod_vpl {
         if ( $keys == '') {
             return true;
         }
-        if ( ! isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH']) ) {
-            return false;
+        if (isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH']) ) {
+            $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'];
+            foreach (preg_split('/\s+/', $keys) as $testkey) {
+                if (hash('sha256', $FULLME . $testkey) === $key) {
+                    return true;
+                }
+            }
         }
-        $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'];
-        foreach (preg_split('/\s+/', $keys) as $testkey) {
-            if (hash('sha256', $FULLME . $testkey) === $key) {
-                return true;
+        if (isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH']) ) {
+            $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH'];
+            foreach (preg_split('/\s+/', $keys) as $testkey) {
+                if (hash('sha256', $FULLME . $testkey) === $key) {
+                    return true;
+                }
             }
         }
         return false;
@@ -679,13 +689,13 @@ class mod_vpl {
      * @return void
      */
     protected function seb_check() {
-        if ( ! $this->pass_seb_check() ) {
-            $str = get_string( 'sebrequired_help', VPL );
-            if ( constant( 'AJAX_SCRIPT') ) {
-                throw new Exception( $str );
+        if (! $this->pass_seb_check() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
+            $str = get_string('sebrequired_help', VPL);
+            if (constant('AJAX_SCRIPT')) {
+                throw new Exception($str);
             }
             $this->print_header();
-            vpl_notice( $str , 'warning');
+            vpl_notice($str, 'warning');
             $this->print_footer();
             die();
         }
@@ -777,19 +787,19 @@ class mod_vpl {
             if ($vpl->has_capability(VPL_MANAGE_CAPABILITY) ||
                 $vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
                 $user = self::get_db_record('user', $USER->id);
-                $submittedby = get_string( 'submittedby', VPL, fullname( $user ) ) . "\n";
-                if (strpos($comments, $submittedby) === 0 ) {
+                $submittedby = get_string('submittedby', VPL, fullname($user)) . "\n";
+                if (strpos($comments, $submittedby) !== false ) {
                     $submittedby = '';
                 }
             } else {
-                $error = get_string( 'notsaved', VPL );
+                $error = get_string('notsaved', VPL);
                 return false;
             }
         }
         $lastsub = false;
         if (($lastsubins = $vpl->last_user_submission( $userid )) !== false) {
-            $lastsub = new mod_vpl_submission( $vpl, $lastsubins );
-            if ($lastsub->is_equal_to( $files, $submittedby . $comments )) {
+            $lastsub = new mod_vpl_submission($vpl, $lastsubins);
+            if ($lastsub->is_equal_to($files, $submittedby . $comments)) {
                 return $lastsubins->id;
             }
         }
@@ -1674,8 +1684,8 @@ class mod_vpl {
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0)) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
-                        $text = get_string( 'grade', 'core_grades' );
-                        $tabs[] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'core_grades' );
+                        $text = get_string('gradenoun');
+                        $tabs[] = vpl_create_tabobject( 'gradesubmission.php', $href, 'gradenoun', 'core' );
                     }
                     if ($subinstance && ($grader || $similarity)) {
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
@@ -1764,6 +1774,11 @@ class mod_vpl {
         $html .= '</b>: ';
         if ($value === null) {
             $value = $this->instance->$str;
+        }
+        if ($str == 'password') {
+            $infohs = new mod_vpl\util\hide_show();
+            $value .= $infohs->generate();
+            $value .= $infohs->content_in_span(s($this->get_instance()->password));
         }
         $html .= $value;
         return $html;
@@ -2042,14 +2057,13 @@ class mod_vpl {
         global $OUTPUT;
         global $DB;
         $html = '';
-        require_once(dirname( __FILE__ ) . '/views/show_hide_div.class.php');
         $variations = $DB->get_records(VPL_VARIATIONS, ['vpl' => $this->instance->id]);
         if (count($variations) > 0) {
-            $div = new vpl_hide_show_div();
+            $div = new mod_vpl\util\hide_show();
             $html .= '<br>';
             $html .= vpl_get_awesome_icon('variations');
-            $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate( true ) . '</b><br>';
-            $html .= $div->begin_div(true);
+            $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate() . '</b><br>';
+            $html .= $div->begin_div();
             if (! $this->instance->usevariations) {
                 $html .= '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
             }
@@ -2063,7 +2077,7 @@ class mod_vpl {
                 $html .= $OUTPUT->box( $variation->description );
                 $number ++;
             }
-            $html .= $div->end_div(true);
+            $html .= $div->end_div();
         }
         return $html;
     }
@@ -2187,7 +2201,7 @@ class mod_vpl {
      */
     public function get_effective_setting($setting, $userid = null) {
         global $USER, $DB;
-        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations'];
+        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
         if (!in_array($setting, $fields)) {
             return $this->instance->$setting;
         }

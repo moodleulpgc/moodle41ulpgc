@@ -558,7 +558,7 @@ function offlinequiz_get_answers_html($offlinequiz, $templateusage,
 
         if ($correction) {
             if ($question->options->answers[$answer]->fraction > 0) {
-                $html .= '<span style="background-color: #ffff00;">';
+                $html .= '<span style="background-color: #ffff00;"><b>';
             }
 
             if($question->options->answers[$answer]->fraction != 0) {
@@ -575,7 +575,7 @@ function offlinequiz_get_answers_html($offlinequiz, $templateusage,
 
         if ($correction) {
             if ($question->options->answers[$answer]->fraction > 0) {
-                $html .= '</span>';
+                $html .= '</b></span>';
             }
         }
 

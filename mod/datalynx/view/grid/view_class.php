@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/view/view_class.php");
 
@@ -39,7 +39,8 @@ class datalynxview_grid extends datalynxview_base {
         global $OUTPUT; // Needed for mustache implementation.
 
         // Get all the fields.
-        if (!$fields = $this->_df->get_fields()) {
+        $fields = $this->_df->get_fields();
+        if (!$fields) {
             return; // You shouldn't get that far if there are no user fields.
         }
 
@@ -85,15 +86,16 @@ class datalynxview_grid extends datalynxview_base {
         // Set content fields in responsive grid.
         $mustache = array();
         foreach ($fields as $field) {
-            if ($field->field->id > 0) {
+            // Check if the fieldid is a generic field like approve or a user defined field.
+            if (is_numeric($field->field->id) && $field->field->id > 0) {
                 $thisfield['name'] = $field->name();
                 $thisfield['tag'] = "[[{$field->name()}]]";
                 $thisfield['size'] = 3; // Show four elements per row, extend if necessary.
-                
+
                 if ($field->type == "userinfo") {
                     $thisfield['tag'] = "##author:{$field->name()}##";
                 }
-                
+
                 $mustache['fields'][] = $thisfield;
             }
         }
@@ -109,7 +111,7 @@ class datalynxview_grid extends datalynxview_base {
         $elements = array();
 
         // Prepare grid table if needed.
-        if ($name != 'newentry' and !empty($this->view->param3)) {
+        if ($name != 'newentry' && !empty($this->view->param3)) {
             $entriescount = count($entriesset);
             list($cols, $rows) = explode(' ', $this->view->param3);
             if ($entriescount < $cols) {
@@ -137,7 +139,7 @@ class datalynxview_grid extends datalynxview_base {
         foreach ($entriesset as $entrydefinitions) {
             $elements = array_merge($elements, $entrydefinitions);
             if (!empty($cells)) {
-                if (empty($percol) or $count >= $percol - 1) {
+                if (empty($percol) || $count >= $percol - 1) {
                     $count = 0;
                     $elements[] = array('html', array_shift($cells));
                 } else {

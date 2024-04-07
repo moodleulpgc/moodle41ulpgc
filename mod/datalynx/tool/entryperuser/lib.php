@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/entries_class.php");
 require_once("$CFG->dirroot/mod/datalynx/field/entryauthor/field_class.php");
@@ -35,7 +35,8 @@ class datalynxtool_entryperuser {
         global $DB;
 
         // Get gradebook users.
-        if (!$users = $df->get_gradebook_users()) {
+        $users = $df->get_gradebook_users();
+        if (!$users) {
             return;
         }
 
@@ -54,7 +55,8 @@ class datalynxtool_entryperuser {
 
         if (is_array($processed)) {
             list($strnotify, $processedeids) = $processed;
-            if ($entriesprocessed = ($processedeids ? count($processedeids) : 0)) {
+            $entriesprocessed = $processedeids ? count($processedeids) : 0;
+            if ($entriesprocessed) {
                 return array('good', $strnotify);
             }
         }

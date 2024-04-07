@@ -222,7 +222,7 @@ foreach ($ovpls as $ovpl) {
                 $cmid = $vpl->get_course_module()->id;
                 if ( ! empty($activities[$cmid])) {
                     $inssection = $activities[$cmid]->section;
-                    $add = $sectionfilter == "sec$inssection";
+                    $add = $sectionfilter == "$inssection";
                 }
             }
         }
@@ -294,7 +294,7 @@ if ($grader && ! $nograde) {
     $table->align[] = 'right';
 }
 if ($student && ! $nograde) {
-    $table->head[] = get_string( 'grade', 'core_grades' );
+    $table->head[] = get_string('gradenoun');
     $table->align[] = 'left';
 }
 if ($detailedmore) {

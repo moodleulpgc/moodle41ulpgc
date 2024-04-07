@@ -21,7 +21,7 @@
  * @copyright 2013 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -31,7 +31,7 @@ require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
  */
 class datalynxfield_teammemberselect_renderer extends datalynxfield_renderer {
 
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         global $USER, $PAGE;
 
         // Variable $field datalynxfield_teammemberselect.
@@ -69,7 +69,7 @@ class datalynxfield_teammemberselect_renderer extends datalynxfield_renderer {
             }
         }
 
-        $subscribeenabled = isset($params['subscribe']);
+        $subscribeenabled = isset($options['subscribe']);
         $selected = isset($entry->{"c{$fieldid}_content"}) ? json_decode(
                 $entry->{"c{$fieldid}_content"}, true) : [];
         $selected = $selected ? $selected : []; // TODO: Seems obsolete.
@@ -185,7 +185,7 @@ class datalynxfield_teammemberselect_renderer extends datalynxfield_renderer {
         }
     }
 
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $field = $this->_field;
         $fieldid = $field->id();
         $fieldname = "f_{$i}_{$fieldid}";

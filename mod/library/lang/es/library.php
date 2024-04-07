@@ -39,6 +39,7 @@ $string['configrolesinparams'] = 'Marcar si se quiere incluir los nombres de rol
 $string['configsecretphrase'] = 'Esta frase secreta se usa para generar un código encriptado que puede ser enviado a algunso servidores como un parámetro más.
 El código encriptado corresponde a la función MD5 de la dirección IP del usuario actual concatenada con esta frase secreta, ie. code = md5(IP.secretphrase).
 Por favor, tenga en cuenta que esto no es muy fiable ya la IP puede cambiar o ser compartida por variso ordenadores.';
+$string['currentitem'] = 'Ítem mostrado';
 $string['display'] = 'Mostrar';
 $string['displayheader'] = 'Doumento mostrado';
 $string['displaymode'] = 'Modo de visualización';
@@ -112,6 +113,7 @@ $string['printintro'] = 'Mostrar descripción del recurso';
 $string['printintro_help'] = 'Si se marca, la descripción de la actividad se muestra antes del contenido de la Biblioteca documental.';
 $string['printintroexplain'] = 'Muestra la descripción de la actividad delante del contenido';
 $string['privacy:metadata'] = 'La Biblioteca documental no almacena datos privados de los usuarios.';
+$string['remotelink'] = 'Por favor, use este identificador para citar o enlazar este ítem: {$a}';
 $string['renameold'] = 'Renombrar archivo existente';
 $string['renamenew'] = 'Renombrar archivo subido';
 $string['repository'] = 'Tipo de repositorio';

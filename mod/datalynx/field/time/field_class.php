@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 
@@ -91,7 +91,7 @@ class datalynxfield_time extends datalynxfield_base {
                     }
                 }
                 if ($enabled) {
-                    if ($year or $month or $day or $hour or $minute) {
+                    if ($year || $month || $day || $hour || $minute) {
                         $timestamp = make_timestamp($year, $month, $day, $hour, $minute, 0);
                     }
                 }
@@ -208,6 +208,17 @@ class datalynxfield_time extends datalynxfield_base {
 
             if ($timestr) {
                 $timestr = html_entity_decode($timestr);
+                // Temp fix: German month names.
+                $germanmonths = [
+                        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+                ];
+
+                // English month names
+                $englishmonths = [
+                        'January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                ];
                 // It's a timestamp.
                 if (((string) (int) $timestr === $timestr) && ($timestr <= PHP_INT_MAX) &&
                         ($timestr >= ~PHP_INT_MAX)
@@ -215,8 +226,24 @@ class datalynxfield_time extends datalynxfield_base {
                     $data->{"field_{$fieldid}_{$entryid}"} = $timestr;
                     // It's a valid time string.
                 } else {
+                    $timestr = str_replace($germanmonths, $englishmonths, $timestr);
                     if ($unixtimestamp = strtotime($timestr)) {
                         $data->{"field_{$fieldid}_{$entryid}"} = $unixtimestamp;
+                    } else {
+                        $fmt = new IntlDateFormatter(
+                                'de_DE',
+                                IntlDateFormatter::FULL,
+                                IntlDateFormatter::FULL,
+                                null,
+                                IntlDateFormatter::GREGORIAN
+                        );
+                        datefmt_set_lenient($fmt, true);
+                        $unixtimestamp = $fmt->parse($timestr);
+                        $errormsg = datefmt_get_error_message($fmt);
+                        $errorcode = datefmt_get_error_code($fmt);
+                        if ($unixtimestamp) {
+                            $data->{"field_{$fieldid}_{$entryid}"} = $unixtimestamp;
+                        }
                     }
                 }
             }

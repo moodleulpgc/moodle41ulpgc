@@ -4,6 +4,49 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r23
+
+* 2024-03-18 - Improvement: Add prefixes to the sessionStorage keys in the scrollspy implementation, resolves #598.
+* 2024-03-18 - Improvement: Switch to the active Boost Union admin sub-tab after saving a setting and the following page reload, resolves #468.
+* 2024-03-16 - Feature: Show the logged-in user's full name in the user menu, resolves #439.
+* 2024-03-16 - Bugfix: Leave the last item's link in the breadcrumb only if it's really needed, resolves #595
+
+### v4.1-r22
+
+* 2024-03-13 - Improvement: In smart menus, dynamic courses can now pick up the courses from all subcategories, resolves #395.
+* 2024-03-13 - Bugfix: Custom course fields of type "Textarea" were not conditionally hidden in the smart menu configuration, resolves #576.
+* 2024-03-01 - Feature: Show starred courses popover in the navbar, resolves #289.
+
+### v4.1-r21
+
+* 2024-02-22 - Feature: Allow the admin to change the link behind the logo in the navbar, resolves #565.
+* 2024-02-22 - Feature: Allow administrators to change the order of login items on the login page without using CSS or touching the mustache template, resolves #504.
+
+### v4.1-r20
+
+* 2024-02-21 - Bugfix: Single activity format contained unnecessary second level of navigation items, resolves #415.
+
+### v4.1-r19
+
+* 2024-02-18 - Make codechecker happier
+* 2024-02-17 - Test: Use custom step to check the menus and menu items existence, resolves #365.
+* 2024-02-12 - Feature: Allow the admin to display activity icons in course content navigation, resolves #16.
+* 2024-02-11 - Child theme support: Improve namespace of class smartmenu_helper, resolves #494.
+* 2024-02-11 - Child theme support: Update note about grandchild themes in README.md
+* 2024-02-09 - Improvement: Inherit preset setting and preset files from Boost Core instead of duplicating them into Boost Union, resolves #267.
+               Please note: The preset setting in Boost Union was practically broken up to now. Removing the duplicated setting should not break anything.
+* 2024-02-06 - Child theme support: Adapt favicon behat scenario to support Boost Union Child
+* 2024-01-30 - Child theme support: Don't force child themes to reimplement the settings to mark links and the settings to modify the course overview block, resolves #345.
+* 2024-01-30 - Child theme support: Don't force child theme to reimplement activitypurpose_MODNAME settings, resolves #370.
+* 2024-02-11 - Peer review management: Add a github action checking pull requests for use of non get_config() theme settings references, resolves #257.
+* 2024-02-09 - Improvement: Raise required Moodle core version to a full minor release again.
+
+### v4.1-r18
+
+* 2024-01-20 - Improvement: Add a side entrance login page for local logins if the local login form is disabled on the standard login page, resolves #539.
+* 2024-01-20 - Improvement: Make all block regions available for the incourse and coursecategory page layouts, resolves #543.
+* 2024-01-19 - Bugfix: Get rid of 'Undefined stdClass property' notices for static page settings, resolves #431.
+
 ### v4.1-r17
 
 * 2024-01-14 - Bugfix: Add missing theme_reset_all_caches updatecallback to markmailtolinks and markbrokenlinks settings.

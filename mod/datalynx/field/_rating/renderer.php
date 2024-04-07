@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -39,7 +39,7 @@ class datalynxfield__rating_renderer extends datalynxfield_renderer {
         $edit = !empty($options['edit']) ? $options['edit'] : false;
 
         // If edit mode or rating not active return.
-        if ($edit or (!$this->_field->df()->data->rating)) {
+        if ($edit || (!$this->_field->df()->data->rating)) {
             if ($tags) {
                 $replacements = array();
                 foreach ($tags as $tag) {
@@ -131,7 +131,7 @@ class datalynxfield__rating_renderer extends datalynxfield_renderer {
         // No edit mode for this field so just return html.
         $replacements = array();
         foreach ($tags as $tag) {
-            if ($entry->id > 0 and !empty($entry->rating)) {
+            if ($entry->id > 0 && !empty($entry->rating)) {
                 switch (trim($tag, '@')) {
                     case '##ratings:count##':
                         $str = !empty($entry->rating->count) ? $entry->rating->count : '-';
@@ -194,7 +194,7 @@ class datalynxfield__rating_renderer extends datalynxfield_renderer {
 
         if (isset($entry->rating)) {
             $rating = $entry->rating;
-            if ($rating->settings->permissions->viewall and
+            if ($rating->settings->permissions->viewall &&
                     $rating->settings->pluginpermissions->viewall
             ) {
 
@@ -221,8 +221,8 @@ class datalynxfield__rating_renderer extends datalynxfield_renderer {
 
         if (isset($entry->rating)) {
             $rating = $entry->rating;
-            if ($rating->settings->permissions->viewall and
-                    $rating->settings->pluginpermissions->viewall and !empty($rating->records)
+            if ($rating->settings->permissions->viewall &&
+                    $rating->settings->pluginpermissions->viewall && !empty($rating->records)
             ) {
                 $scalemenu = make_grades_menu($rating->settings->scale->id);
 
@@ -268,7 +268,7 @@ class datalynxfield__rating_renderer extends datalynxfield_renderer {
     /**
      */
     protected function display_bar($entry, $value) {
-        if (isset($entry->rating) and $value) {
+        if (isset($entry->rating) && $value) {
             $rating = $entry->rating;
 
             $width = round($value / $rating->settings->scale->max * 100);

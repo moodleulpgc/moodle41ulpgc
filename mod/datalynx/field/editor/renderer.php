@@ -21,7 +21,7 @@
  * @copyright 2014 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . "/../renderer.php");
 
@@ -62,13 +62,13 @@ class datalynxfield_editor_renderer extends datalynxfield_renderer {
 
     /**
      * @param stdClass $entry
-     * @param array $params
+     * @param array $options
      * @return string
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
-        $excerpt = in_array('excerpt', array_keys($params)) ? true : false;
+        $excerpt = in_array('excerpt', array_keys($options)) ? true : false;
         $contentid = isset($entry->{"c{$fieldid}_id"}) ? $entry->{"c{$fieldid}_id"} : null;
 
         if (isset($entry->{"c{$fieldid}_content"})) {
@@ -91,7 +91,7 @@ class datalynxfield_editor_renderer extends datalynxfield_renderer {
         }
     }
 
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -125,7 +125,7 @@ class datalynxfield_editor_renderer extends datalynxfield_renderer {
         foreach ($tags as $tag) {
             list(, $behavior, ) = $this->process_tag($tag);
             // Variable $behavior datalynx_field_behavior.
-            if ($behavior->is_required() and isset($formdata->$formfieldname)) {
+            if ($behavior->is_required() && isset($formdata->$formfieldname)) {
                 if (!clean_param($formdata->$formfieldname, PARAM_NOTAGS)) {
                     $errors[$formfieldname] = get_string('fieldrequired', 'datalynx');
                 }

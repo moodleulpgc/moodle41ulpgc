@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -36,7 +36,7 @@ class datalynxfield_identifier_renderer extends datalynxfield_renderer {
         $entryid = $entry->id;
 
         $content = '';
-        if ($entryid > 0 and !empty($entry->{"c{$fieldid}_content"})) {
+        if ($entryid > 0 && !empty($entry->{"c{$fieldid}_content"})) {
             $content = $entry->{"c{$fieldid}_content"};
         }
 
@@ -49,7 +49,7 @@ class datalynxfield_identifier_renderer extends datalynxfield_renderer {
         }
     }
 
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
 
@@ -61,7 +61,7 @@ class datalynxfield_identifier_renderer extends datalynxfield_renderer {
         return $content;
     }
 
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 

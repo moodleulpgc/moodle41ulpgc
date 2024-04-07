@@ -20,10 +20,12 @@
  * @copyright 2015 onwards David Bogner
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+
+defined('MOODLE_INTERNAL') || die();
+
 $plugin->component = 'mod_datalynx';
-$plugin->version = 2023121900;
-$plugin->release = 'v3.2-DataIntelligence'; // Data words like data science, data mining.
+$plugin->version = 2024022700;
+$plugin->release = 'v3.8-DataIntelligence'; // Data words like data science, data mining.
 $plugin->requires = 2022112800;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array(

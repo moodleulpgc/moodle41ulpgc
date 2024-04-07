@@ -16,3 +16,11 @@
     width: 100%;
     height: 55.0rem;    
 }
+
+.path-mod-library .playlist .icon.fa-xl {
+    font-size: 24px;
+}
+
+.path-mod-library ul.playlist li a.current {
+    font-weight: 500;
+}

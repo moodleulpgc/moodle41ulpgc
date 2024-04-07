@@ -69,3 +69,5 @@ $string['scanerrorlistnumber'] = 'The listnumber seems to be out of range. Pleas
 $string['username'] = 'Username';
 $string['waitingforanalysis'] = 'Waiting for Analysis';
 $string['ziporimagefile'] = 'ZIP- or image-file';
+//ecastro ULPGC
+$string['errorimagenotrecovered'] = 'Image file not recovered properly from moodle filesystem';

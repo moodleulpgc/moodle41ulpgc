@@ -579,6 +579,13 @@ class offlinequiz_page_scanner {
         $this->zoomy = $imagesize['height'] / A3_HEIGHT;
 
         $this->image = imagecreatefromstring($file->get_content());
+
+        // ecastro ULPGC
+        // Should not happen, but file may be corrupted or have been deleted etc.
+        if(empty($this->image)) {
+            return false;
+        }
+        // ecastro ULPGC
         if (count($corners) > 3) {
             $ok = $this->adjust(false, $corners[0], $corners[1], $corners[2], $corners[3], OQ_IMAGE_WIDTH, $scannedpageid);
         } else {

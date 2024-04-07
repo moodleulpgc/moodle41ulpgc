@@ -22,7 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_regexp;
+
 defined('MOODLE_INTERNAL') || die();
+
+use qtype_regexp_question;
+use question_attempt_step;
+use question_classified_response;
+use question_state;
+use test_question_maker;
 
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
@@ -33,10 +41,12 @@ require_once($CFG->dirroot . '/question/type/regexp/question.php');
  *
  * @copyright  2021 Joseph REZEAU
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass \question\type\regexp\question
  */
-class qtype_regexp_question_test extends advanced_testcase {
+class question_test extends \advanced_testcase {
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test compare_string_with_wildcard() method.
+     * @covers ::compare_string_with_wildcard method
      */
     public function test_compare_string_with_wildcard() {
         // Test case.
@@ -70,7 +80,8 @@ class qtype_regexp_question_test extends advanced_testcase {
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test is_complete_response() method.
+     * @covers ::is_complete_response
      */
     public function test_is_complete_response() {
         $question = test_question_maker::make_question('regexp');
@@ -83,7 +94,8 @@ class qtype_regexp_question_test extends advanced_testcase {
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test is_gradable_response method.
+     * @covers ::is_gradable_response
      */
     public function test_is_gradable_response() {
         $question = test_question_maker::make_question('regexp');
@@ -96,7 +108,8 @@ class qtype_regexp_question_test extends advanced_testcase {
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test test_grading method.
+     * @covers ::grade_response
      */
     public function test_grading() {
         $question = test_question_maker::make_question('regexp');
@@ -110,7 +123,8 @@ class qtype_regexp_question_test extends advanced_testcase {
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test get_correct_response method.
+     * @covers ::get_correct_response
      */
     public function test_get_correct_response() {
         $question = test_question_maker::make_question('regexp');
@@ -120,16 +134,18 @@ class qtype_regexp_question_test extends advanced_testcase {
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test get_question_summary method.
+     * @covers ::get_question_summary
      */
     public function test_get_question_summary() {
         $question = test_question_maker::make_question('regexp');
         $qsummary = $question->get_question_summary();
-        $this->assertEquals('French flag colors : __________', $qsummary);
+        $this->assertEquals('What are the colours of the French flag?', $qsummary);
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test summarise_response method.
+     * @covers ::summarise_response
      */
     public function test_summarise_response() {
         $question = test_question_maker::make_question('regexp');
@@ -138,7 +154,8 @@ class qtype_regexp_question_test extends advanced_testcase {
     }
 
     /**
-     * Unit tests for the REGEXP question definition class.
+     * Test classify_response method.
+     * @covers ::classify_response
      */
     public function test_classify_response() {
         $question = test_question_maker::make_question('regexp');

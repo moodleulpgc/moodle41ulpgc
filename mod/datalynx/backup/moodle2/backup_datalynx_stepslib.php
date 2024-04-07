@@ -21,7 +21,6 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
 
 /**
  * Define all the backup steps that will be used by the backup_datalynx_activity_task
@@ -173,12 +172,6 @@ class backup_datalynx_activity_structure_step extends backup_activity_structure_
                 backup_helper::is_sqlparam('mod_datalynx'),
                 backup::VAR_PARENTID));
 
-            // TODO: fix sql, this is just a temporary fix and does not provide same functionality for postgresql.
-            // SQL for mysql provides id mapping of the field datalynx view, whereas there is no id mapping for postgresql.
-            // Possible DBs: 'pgsql', 'mariadb', 'mysqli', 'mssql', 'sqlsrv' or 'oci'
-            // The cases are weird, they are formated differently in mssql, postgresql, mysql, ... fix that.
-            // else if ($CFG->dbtype == 'pgsql') {}
-            /* SELECT *, case when rev=1 then 'blabla' end FROM docs works on mysql, mssql, postgresql */
         if ($CFG->dbtype == 'mysqli' || $CFG->dbtype == 'mysql' || $CFG->dbtype == 'mariadb') {
             $field->set_source_sql(
                     "SELECT f.*,
@@ -195,8 +188,8 @@ class backup_datalynx_activity_structure_step extends backup_activity_structure_
                   WHERE f.dataid = :dataid
                GROUP BY f.id", array('dataid' => backup::VAR_PARENTID));
         } else {
-            $field->set_source_sql(
-                    "SELECT f.*
+                $field->set_source_sql(
+                        "SELECT f.*
                FROM {datalynx_fields} f
               WHERE f.dataid = :dataid
                 AND f.type != 'datalynxview'", array('dataid' => backup::VAR_PARENTID));

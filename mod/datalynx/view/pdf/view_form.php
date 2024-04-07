@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/view/view_form.php");
 
@@ -341,7 +341,8 @@ class datalynxview_pdf_form extends datalynxview_base_form {
      * @see datalynxview_base_form::get_data()
      */
     public function get_data($slashed = true) {
-        if (!$data = parent::get_data($slashed)) {
+        $data = parent::get_data($slashed);
+        if (!$data) {
             return null;
         }
 

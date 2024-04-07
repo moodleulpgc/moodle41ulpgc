@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -85,7 +85,7 @@ class datalynxfield__time_renderer extends datalynxfield_renderer {
 
     /**
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '', $activecheckbox = false) {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
 
         if (is_array($value)) {
@@ -98,6 +98,7 @@ class datalynxfield__time_renderer extends datalynxfield_renderer {
 
         $elements = array();
         $elements[] = &$mform->createElement('date_time_selector', "f_{$i}_{$fieldid}_from", get_string('from'));
+        // TODO: Fix form rendering and get rid of $activecheckbox.
         if ($activecheckbox) {
             $elements[] = &$mform->createElement('checkbox', "f_{$i}_{$fieldid}_from_active", get_string('activate', 'datalynx'), null, array('size' => 1));
             foreach (array('year', 'month', 'day', 'hour', 'minute') as $fieldidentifier) {

@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 
@@ -62,8 +62,8 @@ class datalynxfield__comment extends datalynxfield_no_content {
     public function permissions($params) {
         global $USER;
 
-        if (has_capability('mod/datalynx:managecomments', $this->df->context) or
-                ($params->commentarea == 'activity' and $params->itemid == $USER->id) or
+        if (has_capability('mod/datalynx:managecomments', $this->df->context) ||
+                ($params->commentarea == 'activity' && $params->itemid == $USER->id) ||
                 ($params->commentarea == 'entry')
         ) {
             return array('post' => true, 'view' => true);
@@ -77,7 +77,7 @@ class datalynxfield__comment extends datalynxfield_no_content {
         global $DB, $USER;
 
         // Validate context.
-        if (empty($params->context) or $params->context->id != $this->df->context->id) {
+        if (empty($params->context) || $params->context->id != $this->df->context->id) {
             throw new comment_exception('invalidcontextid', 'datalynx');
         }
 
@@ -92,7 +92,7 @@ class datalynxfield__comment extends datalynxfield_no_content {
         }
 
         // Validate comment area.
-        if ($params->commentarea != 'entry' and $params->commentarea != 'activity') {
+        if ($params->commentarea != 'entry' && $params->commentarea != 'activity') {
             throw new comment_exception('invalidcommentarea');
         }
 
@@ -119,7 +119,7 @@ class datalynxfield__comment extends datalynxfield_no_content {
                 // Group access.
                 if ($entry->groupid) {
                     $groupmode = groups_get_activity_groupmode($this->df->cm, $this->df->course);
-                    if ($groupmode == SEPARATEGROUPS and
+                    if ($groupmode == SEPARATEGROUPS &&
                             !has_capability('moodle/site:accessallgroups', $this->df->context)
                     ) {
                         if (!groups_is_member($entry->groupid)) {
@@ -135,7 +135,7 @@ class datalynxfield__comment extends datalynxfield_no_content {
             if ($comment = $DB->get_record('comments', array('id' => $params->commentid
             ))
             ) {
-                if ($comment->commentarea != 'entry' and $comment->commentarea != 'activity') {
+                if ($comment->commentarea != 'entry' && $comment->commentarea != 'activity') {
                     throw new comment_exception('invalidcommentarea');
                 }
                 if ($comment->contextid != $params->context->id) {

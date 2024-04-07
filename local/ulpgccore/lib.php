@@ -378,8 +378,8 @@ function local_ulpgccore_get_userfields() {
  */
 function local_ulpgccore_get_course_details($courseorid) {
     global $DB;
-    
-    if(is_int($courseorid) || ctype_digit($courseorid)) {
+
+    if(is_int($courseorid) || is_string($courseorid)) {
         $course = $DB->get_record('course', array('id'=>$courseorid), '*', MUST_EXIST);
     } else {
         $course = $courseorid;
@@ -408,7 +408,7 @@ function local_ulpgccore_get_course_details($courseorid) {
 function local_ulpgccore_get_category_details($categoryorid) {
     global $DB;
     
-    if(is_int($categoryorid) || ctype_digit($categoryorid)) {
+    if(is_int($categoryorid) || is_string($categoryorid)) {
         $category = $DB->get_record('course_categories', array('id'=>$categoryorid), '*', MUST_EXIST);
     } else {
         $category = $categoryorid;

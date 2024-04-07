@@ -21,7 +21,7 @@
  * @copyright 2016 David Bogner
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . "/../renderer.php");
 
@@ -60,9 +60,9 @@ class datalynxfield_tag_renderer extends datalynxfield_renderer {
      * {@inheritDoc}
      * @see datalynxfield_renderer::render_display_mode()
      */
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         global $OUTPUT;
-        
+
         $str = '';
         $field = $this->_field;
         $fieldid = $field->id();
@@ -78,7 +78,7 @@ class datalynxfield_tag_renderer extends datalynxfield_renderer {
             return implode("#", $exportstring);
         }
         $str = $OUTPUT->tag_list($items, null, 'datalynx-tags');
-        if (isset($params['nolink'])) {
+        if (isset($options['nolink'])) {
             $str = preg_replace("/<b>.+<\/b>/i", '', $str);
             $str = preg_replace("/<a[^>]*(href=\"[^\"]+?\")([^>]*?)(\/?)>([^<]+)(<\/a>)/i", '<span$2>$4</span>', $str);
         }
@@ -102,7 +102,7 @@ class datalynxfield_tag_renderer extends datalynxfield_renderer {
      * {@inheritDoc}
      * @see datalynxfield_renderer::render_search_mode()
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
 
         $field = $this->_field;
         $fieldid = $field->id();
@@ -133,7 +133,7 @@ class datalynxfield_tag_renderer extends datalynxfield_renderer {
         foreach ($tags as $tag) {
             list(, $behavior, ) = $this->process_tag($tag);
             // Variable $behavior datalynx_field_behavior.
-            if ($behavior->is_required() and !is_array($formdata->$formfieldname)) {
+            if ($behavior->is_required() && !is_array($formdata->$formfieldname)) {
                 $errors[$formfieldname] = get_string('fieldrequired', 'datalynx');
             }
         }

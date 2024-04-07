@@ -915,7 +915,7 @@ function theme_boost_union_get_emailbrandinghtmlpreview() {
     $mail = $OUTPUT->render_from_template('core/email_html', $mailtemplatecontext);
 
     // And compose mail preview.
-    $previewtemplatecontext = ['mail' => $mail, 'type' => 'html', 'monospace' => false];
+    $previewtemplatecontext = ['mail' => $mail, 'type' => 'Html', 'monospace' => false];
     $preview = $OUTPUT->render_from_template('theme_boost_union/emailpreview', $previewtemplatecontext);
 
     return $preview;
@@ -946,7 +946,7 @@ function theme_boost_union_get_emailbrandingtextpreview() {
     $mail = nl2br($OUTPUT->render_from_template('core/email_text', $mailtemplatecontext));
 
     // And compose mail preview.
-    $previewtemplatecontext = ['mail' => $mail, 'type' => 'text', 'monospace' => true];
+    $previewtemplatecontext = ['mail' => $mail, 'type' => 'Text', 'monospace' => true];
     $preview = $OUTPUT->render_from_template('theme_boost_union/emailpreview', $previewtemplatecontext);
 
     return $preview;
@@ -1633,8 +1633,8 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
             $defaultpurpose = MOD_PURPOSE_OTHER;
         }
         // If the activity purpose setting is set and differs from the activity's default purpose.
-        $configname = 'activitypurpose'.$modname;
-        if (isset($theme->settings->{$configname}) && $theme->settings->{$configname} != $defaultpurpose) {
+        $activitypurpose = get_config('theme_boost_union', 'activitypurpose'.$modname);
+        if ($activitypurpose && $activitypurpose != $defaultpurpose) {
             // Add CSS to modify the activity purpose color in the activity chooser and the activity icon.
             $scss .= '.activity.modtype_'.$modname.' .activityiconcontainer.courseicon,';
             $scss .= '.modchoosercontainer .modicon_'.$modname.'.activityiconcontainer,';
@@ -1642,8 +1642,8 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
             $scss .= '.block_recentlyaccesseditems .theme-boost-union-'.$modname.'.activityiconcontainer,';
             $scss .= '.block_timeline .theme-boost-union-mod_'.$modname.'.activityiconcontainer {';
             // If the purpose is now different than 'other', change the background color to the new color.
-            if ($theme->settings->{$configname} != MOD_PURPOSE_OTHER) {
-                $scss .= 'background-color: var(--activity' . $theme->settings->{$configname} . ') !important;';
+            if ($activitypurpose != MOD_PURPOSE_OTHER) {
+                $scss .= 'background-color: var(--activity' . $activitypurpose . ') !important;';
 
                 // Otherwise, the background color is set to light grey (as there is no '--activityother' variable).
             } else {
@@ -1654,7 +1654,7 @@ function theme_boost_union_get_scss_for_activity_icon_purpose($theme) {
                 $scss .= '.activityicon, .icon { filter: brightness(0) invert(1); }';
             }
             // If the default purpose was not 'other' and now it is, make the icon black.
-            if ($theme->settings->{$configname} == MOD_PURPOSE_OTHER) {
+            if ($activitypurpose == MOD_PURPOSE_OTHER) {
                 $scss .= '.activityicon, .icon { filter: none; }';
             }
             $scss .= '}';
@@ -1676,8 +1676,8 @@ function theme_boost_union_get_scss_to_mark_external_links($theme) {
     $scss = '';
 
     // If the corresponding setting is set to 'yes'.
-    if (isset($theme->settings->markexternallinks) &&
-            $theme->settings->markexternallinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+    $markexternallinksconfig = get_config('theme_boost_union', 'markexternallinks');
+    if (isset($markexternallinksconfig) && $markexternallinksconfig == THEME_BOOST_UNION_SETTING_SELECT_YES) {
 
         // Get the scope setting.
         $scope = get_config('theme_boost_union', 'markexternallinksscope');
@@ -1756,8 +1756,8 @@ function theme_boost_union_get_scss_to_mark_broken_links($theme) {
     $scss = '';
 
     // If the corresponding setting is set to 'yes'.
-    if (isset($theme->settings->markbrokenlinks) &&
-            $theme->settings->markbrokenlinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+    $markbrokenlinksconfig = get_config('theme_boost_union', 'markbrokenlinks');
+    if (isset($markbrokenlinksconfig) && $markbrokenlinksconfig == THEME_BOOST_UNION_SETTING_SELECT_YES) {
         // Set font color to the 'danger' color.
         $scss .= 'a[href*="/brokenfile.php"] {
             color: $danger;
@@ -1790,8 +1790,8 @@ function theme_boost_union_get_scss_to_mark_mailto_links($theme) {
     $scss = '';
 
     // If the corresponding setting is set to 'yes'.
-    if (isset($theme->settings->markmailtolinks) &&
-            $theme->settings->markmailtolinks == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+    $markmailtolinksconfig = get_config('theme_boost_union', 'markmailtolinks');
+    if (isset($markmailtolinksconfig) && $markmailtolinksconfig == THEME_BOOST_UNION_SETTING_SELECT_YES) {
         // Get the scope setting.
         $scope = get_config('theme_boost_union', 'markmailtolinksscope');
 
@@ -1835,12 +1835,13 @@ function theme_boost_union_get_scss_courseoverview_block($theme) {
     $blockselector = '.block_myoverview.block div[data-region="courses-view"]';
 
     // Get the course image setting, defaults to true if the setting does not exist.
-    if (!isset($theme->settings->courseoverviewshowcourseimages)) {
+    $courseoverviewshowcourseimagesconfig = get_config('theme_boost_union', 'courseoverviewshowcourseimages');
+    if (!isset($courseoverviewshowcourseimagesconfig)) {
         $showcourseimagescard = true;
         $showcourseimageslist = true;
         $showimagessummary = true;
     } else {
-        $showcourseimages = explode(',', $theme->settings->courseoverviewshowcourseimages);
+        $showcourseimages = explode(',', $courseoverviewshowcourseimagesconfig);
         $showcourseimagescard = in_array(THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_CARD, $showcourseimages);
         $showcourseimageslist = in_array(THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_LIST, $showcourseimages);
         $showimagessummary = in_array(THEME_BOOST_UNION_SETTING_COURSEOVERVIEW_SHOWCOURSEIMAGES_SUMMARY, $showcourseimages);
@@ -1862,8 +1863,9 @@ function theme_boost_union_get_scss_courseoverview_block($theme) {
     }
 
     // Get the course progress setting, defaults to true if the setting does not exist.
-    if (!isset($theme->settings->courseoverviewshowcourseprogress) ||
-            $theme->settings->courseoverviewshowcourseprogress == THEME_BOOST_UNION_SETTING_SELECT_YES) {
+    $courseoverviewshowcourseprogressconfig = get_config('theme_boost_union', 'courseoverviewshowcourseprogress');
+    if (!isset($courseoverviewshowcourseprogressconfig) ||
+            $courseoverviewshowcourseprogressconfig == THEME_BOOST_UNION_SETTING_SELECT_YES) {
         $showcourseprogress = true;
     } else {
         $showcourseprogress = false;
@@ -1873,6 +1875,76 @@ function theme_boost_union_get_scss_courseoverview_block($theme) {
     if (!$showcourseprogress) {
         $scss .= $blockselector.' .progress-text { display: none !important; }'.PHP_EOL;
     }
+
+    return $scss;
+}
+
+/**
+ * Helper function which returns an array of login methods on the login page.
+ *
+ * @return array
+ */
+function theme_boost_union_get_loginpage_methods() {
+    return [1 => 'local',
+            2 => 'idp',
+            3 => 'firsttimesignup',
+            4 => 'guest',
+    ];
+}
+
+/**
+ * Returns the SCSS code to re-order the elements of the login form, depending on the theme settings loginorder*.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string
+ */
+function theme_boost_union_get_scss_login_order($theme) {
+    // Initialize SCSS snippet.
+    $scss = '';
+
+    // Get the login methods.
+    $loginmethods = theme_boost_union_get_loginpage_methods();
+
+    // If the default orders are unchanged.
+    $unchanged = true;
+    foreach ($loginmethods as $key => $lm) {
+        $setting = get_config('theme_boost_union', 'loginorder'.$lm);
+        if ($setting != $key) {
+            $unchanged = false;
+        }
+    }
+    if ($unchanged == true) {
+        // Hide the first login-divider (as we have added login-dividers to all orderable login methods,
+        // but do not want a divider between the page heading and the first login method).
+        $scss .= '#theme_boost_union-loginorder .theme_boost_union-loginmethod:first-of-type .login-divider { display: none; }';
+
+        // Return the SCSS code as we are done.
+        return $scss;
+    }
+
+    // Make the loginform a flexbox.
+    $scss .= '#theme_boost_union-loginorder { display: flex; flex-direction: column; }';
+
+    // Initialize a variable to detect the very first method.
+    $veryfirstmethodname = '';
+    $veryfirstmethodorder = 99; // This assumes that we will never have more than 99 login methods which should be fair.
+
+    // Iterate over all login methods.
+    foreach ($loginmethods as $lm) {
+        // Set the flexbox order for this login method.
+        $setting = get_config('theme_boost_union', 'loginorder'.$lm);
+        $scss .= '#theme_boost_union-loginorder-'.$lm.' { order: '.$setting.'; }';
+
+        // If no other login method has a lower order than this one.
+        if ($setting < $veryfirstmethodorder) {
+            // Remember this login method as very first method.
+            $veryfirstmethodorder = $setting;
+            $veryfirstmethodname = $lm;
+        }
+    }
+
+    // Hide the first login-divider - similar to the 'unchanged settings' case, but in this case based on the flexbox orders.
+    $scss .= '#theme_boost_union-loginorder-'.$veryfirstmethodname.' .login-divider { display: none; }';
 
     return $scss;
 }
@@ -2059,4 +2131,98 @@ function theme_boost_union_yesno_to_boolstring($var) {
     } else {
         return 'false';
     }
+}
+
+/**
+ * Returns the HTML code for the starred courses popover.
+ * It fetches all favorite courses and renders them as a popover menu.
+ *
+ * This function is copied and modified from block_starredcourses_external::get_starred_courses()
+ *
+ * @return string HTML to display in the navbar.
+ */
+function theme_boost_union_get_navbar_starredcoursespopover() {
+    global $USER, $OUTPUT;
+
+    // The popover is relevant only for logged-in users. If the user is not logged in, return directly.
+    if (!isloggedin()) {
+        return '';
+    }
+
+    // If the popover is disabled, return directly.
+    $setting = get_config('theme_boost_union', 'shownavbarstarredcourses');
+    if (!isset($setting) || $setting != THEME_BOOST_UNION_SETTING_SELECT_YES) {
+        return '';
+    }
+
+    // Get the user context.
+    $usercontext = context_user::instance($USER->id);
+
+    // Get the user favourites service, scoped to a single user (their favourites only).
+    $userservice = \core_favourites\service_factory::get_service_for_user_context($usercontext);
+
+    // Get the favourites, by type, for the user.
+    $favourites = $userservice->find_favourites_by_type('core_course', 'courses');
+
+    // If there aren't any favourite courses, return directly.
+    if (!$favourites) {
+        return '';
+    }
+
+    // Pick the course IDs from the course objects.
+    $favouritecourseids = array_map(
+        function($favourite) {
+            return $favourite->itemid;
+        }, $favourites);
+
+    // Get all courses that the current user is enrolled in, restricted down to favourites.
+    $filteredcourses = [];
+    if ($favouritecourseids) {
+        $courses = course_get_enrolled_courses_for_logged_in_user(0, 0, null, null,
+            COURSE_DB_QUERY_LIMIT, $favouritecourseids);
+        list($filteredcourses, $processedcount) = course_filter_courses_by_favourites(
+            $courses,
+            $favouritecourseids,
+            0
+        );
+    }
+    // Grab the course ids.
+    $filteredcourseids = array_column($filteredcourses, 'id');
+
+    // Filter out any favourites that are not in the list of enroled courses.
+    $filteredfavourites = array_filter($favourites, function($favourite) use ($filteredcourseids) {
+        return in_array($favourite->itemid, $filteredcourseids);
+    });
+
+    // Compose the template context.
+    $coursesfortemplate = [];
+    foreach ($filteredfavourites as $favourite) {
+        $course = get_course($favourite->itemid);
+        $context = \context_course::instance($favourite->itemid);
+        $canviewhiddencourses = has_capability('moodle/course:viewhiddencourses', $context);
+
+        if ($course->visible || $canviewhiddencourses) {
+            $coursesfortemplate[] = [
+                'url' => new \moodle_url('/course/view.php', ['id' => $course->id]),
+                'fullname' => $course->fullname,
+                'visible' => $course->visible == 1,
+            ];
+        }
+    }
+
+    // Sort the favourites by name (if there is anything to be sorted).
+    if (count($coursesfortemplate) > 1) {
+        usort($coursesfortemplate, function($a, $b) {
+            if ($a['fullname'] == $b['fullname']) {
+                return 0;
+            }
+
+            return strcasecmp(trim($a['fullname']), trim($b['fullname']));
+        });
+    }
+
+    // Compose the popover menu.
+    $html = $OUTPUT->render_from_template('theme_boost_union/popover-favourites', ['favourites' => $coursesfortemplate]);
+
+    return $html;
 }

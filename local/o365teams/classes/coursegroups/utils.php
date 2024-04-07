@@ -80,7 +80,7 @@ class utils extends \local_o365\feature\coursesync\utils {
         $httpclient = new httpclient();
         $clientdata = clientdata::instance_from_oidc();
         $tokenresource = unified::get_tokenresource();
-        $unifiedtoken = \local_o365\utils::get_app_or_system_token($tokenresource, $clientdata, $httpclient);
+        $unifiedtoken = \local_o365\utils::get_application_token($tokenresource, $clientdata, $httpclient);
 
         if (empty($unifiedtoken)) {
             return false;
@@ -95,11 +95,11 @@ class utils extends \local_o365\feature\coursesync\utils {
      * @param string $caller The calling function, used for logging.
      * @return unified|bool A Microsoft Graph API instance.
      */
-    public static function get_unified_api(string $caller = 'local_o365/feature/coursesync/get_unified_api') {
+    public static function get_unified_api(string $caller = 'local_o365teams/coursegroups/utils/get_unified_api') {
         $clientdata = clientdata::instance_from_oidc();
         $httpclient = new httpclient();
         $tokenresource = unified::get_tokenresource();
-        $token = \local_o365\utils::get_app_or_system_token($tokenresource, $clientdata, $httpclient);
+        $token = \local_o365\utils::get_application_token($tokenresource, $clientdata, $httpclient);
         if (!empty($token)) {
             return new unified($token, $httpclient);
         } else {

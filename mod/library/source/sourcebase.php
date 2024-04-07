@@ -62,6 +62,8 @@ abstract class library_source_base {
     
     /** @var class the repository object. */
     public $repository = null;
+    /** @var stdclass remote resource data. */
+    protected $remote = null;
     
 
     /**
@@ -87,6 +89,8 @@ abstract class library_source_base {
         if($this->use_repository()) {
             $this->set_repository();
         }
+
+        $this->remote = new StdClass();
     }
 
     /**
@@ -130,8 +134,14 @@ abstract class library_source_base {
 
         return false;
     }    
-    
-    
+
+    /**
+     * Gets the remote resource
+     */
+    public function get_remote() {
+        return $this->remote;
+    }
+
     /**
      * Localize searchpattern with module instance data.
      * @param $parameters associative array with param names and values
@@ -188,7 +198,7 @@ abstract class library_source_base {
     
         if($this->displaymode == LIBRARY_DISPLAYMODE_FILE) {
             if($files = $this->search_files($search)) {
-                $files = array_slice($files, 0, 1);
+                //$files = array_slice($files, 0, 1);
             }
         } else {
             if($this->searchpattern) { 
@@ -197,11 +207,10 @@ abstract class library_source_base {
                 $files = $this->list_files($this->pathname);
             }
         }
-    
         return $files;
     }
-    
-    
+
+
     /**
      * Get an existing moodle file by reference .
      * @param $source record from the database.
@@ -245,7 +254,7 @@ abstract class library_source_base {
     /**local_
      * Override this function to get the source.
      */
-    public function get_source_content($contextid, $itemid) {
+    public function get_source_content($contextid, $itemid, $mediaid = 0) {
     
         $target = null;
 
@@ -275,7 +284,19 @@ abstract class library_source_base {
             foreach($old as $dfile) {
                 //$dfile->delete();
             }
-            $target = reset($new);
+            if($this->displaymode == LIBRARY_DISPLAYMODE_FILE) {
+                if($mediaid == 0) {
+                    $target = reset($new);
+                } else {
+                    foreach($new as $idx => $file) {
+                        if($file->id == $mediaid) {
+                            $target = $new[$idx];
+                        }
+                    }
+                }
+            } else {
+                $target = $new;
+            }
         }
 
         return $target;

@@ -835,7 +835,7 @@ function offlinequiz_check_scanned_participants_page($offlinequiz, offlinequiz_p
                 $scannedpage->listnumber > $maxlistnumber) {
             $scannedpage->status = 'error';
             $scannedpage->error = 'invalidlistnumber';
-            # for the unlikely case that the listnumber is out of range, due to scanning errors
+            // for the unlikely case that the listnumber is out of range, due to scanning errors
             if ($scannedpage->listnumber > 50000) {
                 $scannedpage->listnumber = 9999;
                 echo $OUTPUT->notification(get_string('scanerrorlistnumber', 'offlinequiz_rimport'), 'error');
@@ -893,7 +893,7 @@ function offlinequiz_check_scanned_participants_page($offlinequiz, offlinequiz_p
 
                     $scannedpage->status = 'error';
                     $scannedpage->error = 'invalidlistnumber';
-                    # for the unlikely case that the listnumber is out of range, due to scanning errors
+                    // for the unlikely case that the listnumber is out of range, due to scanning errors
                     if ($scannedpage->listnumber > 50000) {
                         $scannedpage->listnumber = 9999;
                         echo $OUTPUT->notification(get_string('scanerrorlistnumber', 'offlinequiz_rimport'), 'error');
@@ -984,7 +984,6 @@ function offlinequiz_process_scanned_participants_page($offlinequiz, offlinequiz
 
     // Check if all users are in the offlinequiz_p_list.
     if ($scannedpage->status == 'ok') {
-
 //         $list = $DB->get_record('offlinequiz_p_lists', array('offlinequizid' => $offlinequiz->id)); //,
 //         //        'listnumber' => $scannedpage->listnumber));
 //         $userdata = $DB->get_records('offlinequiz_participants', array('listid' => $list->id));

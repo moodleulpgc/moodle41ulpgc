@@ -21,7 +21,7 @@
  * @copyright 2016 onwards David Bogner
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
 
@@ -148,6 +148,7 @@ class datalynx_field_behavior_form extends moodleform {
         }
         return $fields;
     }
+
     /**
      * Get all users in moodle instance for autocomplete list.
      * TODO: Really all users or only those with access to this datalynx instance?
@@ -158,11 +159,11 @@ class datalynx_field_behavior_form extends moodleform {
     public function get_allusers() {
         global $DB;
         $allusers = [];
-        $tempusers = $DB->get_records('user', array(), '', $fields='id, firstname, lastname');
+        $tempusers = $DB->get_records('user', array(), '', $fields = 'id, firstname, lastname');
 
-        foreach($tempusers as $userdata) {
+        foreach ($tempusers as $userdata) {
             // Remove empties to make list more usable.
-            if($userdata->lastname == '') {
+            if ($userdata->lastname == '') {
                 continue;
             }
             $allusers[$userdata->id] = "$userdata->firstname $userdata->lastname";

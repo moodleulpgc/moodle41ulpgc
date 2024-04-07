@@ -39,6 +39,8 @@ $string['configtitlelook'] = 'Look';
 // Settings: General settings tab.
 // ... Section: Theme presets.
 $string['presetheading'] = 'Theme presets';
+$string['presetheading_desc'] = 'Theme presets can be used to dramatically alter the appearance of the theme. Boost Union does not re-implement the theme preset setting. If you want to use theme presets, please set them directly in Boost. Boost Union will inherit and use the configured preset.';
+$string['presetbutton'] = 'Set theme preset in Boost';
 
 // Settings: SCSS tab.
 $string['scsstab'] = 'SCSS';
@@ -206,9 +208,25 @@ $string['loginprovidersheading'] = 'Login providers';
 // ... ... Setting: Local login form.
 $string['loginlocalloginenablesetting'] = 'Local login';
 $string['loginlocalloginenablesetting_desc'] = 'With this setting, you control if the local login form is shown on the login page or not. By default, the local login form is shown and users an login into the site as normal. If you disable this setting, the local login form is hidden. This allows you to just provide login buttons for external identity providers like OAuth2 or OIDC.';
+$string['loginlocalloginenablesetting_note'] = 'Please note: As soon as you hide the local login form, you risk that admins cannot log in anymore with a local account if there is a problem with the external identity provider. To allow local logins anyway in such cases, a <a href="{$a->url}">side entrance local login page</a> is provided. On this side entrance local login page, all of Moodle\'s login security measures apply as well.';
+$string['loginlocalloginformhead'] = 'Local login';
+$string['loginlocalloginlocalnotdisabled'] = 'The local login is enabled on the standard login form. There is no need to log in on this local login page here. Please use the <a href="{$a->url}">standard login page</a> for logging in.';
+// ... ... Setting: Local login intro.
+$string['loginlocalshowintrosetting'] = 'Local login intro';
+$string['loginlocalshowintrosetting_desc'] = 'With this setting, you control if a <em>\'{$a}\'</em> intro is shown above the local login form or not. By default, the intro is not shown. But if you enable it, this intro may help users to understand which credentials to use in the local login form, especially if you provide more than one login method or if you have changed the order of the login methods.';
+$string['loginlocalintro'] = 'Login with your Moodle account';
 // ... ... Setting: IDP login intro.
 $string['loginidpshowintrosetting'] = 'IDP login intro';
 $string['loginidpshowintrosetting_desc'] = 'With this setting, you control if the <em>\'{$a}\'</em> intro is shown above the IDP login buttons or not. By default, the intro is shown and users will be quickly informed what the IDP buttons are about. If you disable this setting, the IDP intro is hidden. This allows you to provide a clean user login interface if you just use external identity providers like OAuth2 or OIDC.';
+// ... Section: Login order.
+$string['loginorderheading'] = 'Login order';
+$string['loginorderheading_desc'] = 'With these settings, you control the order of the login methods in the login form. The presented order will be defined from lowest to highest ordinal number, skipping all login methods and login form elements which are disabled in Moodle.';
+$string['loginorderheading_note'] = 'Technical note: The presented order will be realized with CSS flexbox orders, not by rearranging the login widgets in the HTML DOM. This should be fine on all modern browsers but might not work on really old browsers.';
+// ... ... Settings: Login order.
+$string['loginorderlocalsetting'] = 'Local login';
+$string['loginorderidpsetting'] = 'IDP login';
+$string['loginorderfirsttimesignupsetting'] = 'Information for first time visitors & Self registration';
+$string['loginorderguestsetting'] = 'Guest login';
 
 // Settings: Dashboard / My courses tab.
 $string['dashboardtab'] = 'Dashboard / My courses';
@@ -239,6 +257,16 @@ $string['courseheaderimagelayoutstackedlight'] = 'Course title stacked on course
 $string['courseheaderimagelayoutheadingabove'] = 'Course title above of course image';
 $string['courseheaderimageposition'] = 'Course header image position';
 $string['courseheaderimageposition_desc'] = 'With this setting, you control the positioning of the course header image within the course header image container. The first value is the horizontal position, the second value is the vertical position.';
+// ... Section: Course index.
+$string['courseindexheading'] = 'Course Index';
+// ... ... Setting: Course index.
+$string['courseindexmodiconenabled'] = 'Display activity type icons in course index';
+$string['courseindexmodiconenabled_desc'] = 'When enabled, the corresponding activity type icon is displayed in front of the index row with the title of the activity. In doing so, the course activity type is either replacing the course completion indicator which is moved from the front to the end of the course index row line, or colored in by the completion state color.';
+$string['courseindexcompletioninfoposition'] = 'Position of activity completion indication';
+$string['courseindexcompletioninfoposition_desc'] = 'Choose the position where the completion indication is displayed. <em>End of line</em> displays the standard completion indicator at the end of the course index row line. <em>Start of line</em> displays the standard completion indicator at the start of the course index row line. <em>Icon color</em> does not show the standard completion indicator, but encodes the completion information as background of the course module icon.';
+$string['courseindexcompletioninfopositionendofline'] = 'End of line';
+$string['courseindexcompletioninfopositioniconcolor'] = 'Icon color';
+$string['courseindexcompletioninfopositionstartofline'] = 'Start of line';
 
 // Settings: E-Mail branding tab.
 $string['emailbrandingtab'] = 'E-Mail branding';
@@ -403,12 +431,27 @@ $string['primarynavigationheading'] = 'Primary navigation';
 $string['hidenodesprimarynavigationsetting'] = 'Hide nodes in primary navigation';
 $string['hidenodesprimarynavigationsetting_desc'] = 'With this setting, you can hide one or multiple nodes from the primary navigation.<br /><br />
 Please note: Here, you can just remove navigation nodes. But if you want to add custom navigation nodes, please consider using <a href="{$a->url}">Boost Union\'s smart menu functionality</a>.';
+// ... ... Settings: Alternative logo link URL.
+$string['alternativelogolinkurlsetting'] = 'Alternative logo link URL';
+$string['alternativelogolinkurlsetting_desc'] = 'With this setting, you can set an alternative link URL which will be used as link on the logo in the navigation bar. You can use this setting to, for example, link to your organization\'s website instead of the Moodle frontpage to maintain a homogeneous navigation bar throughout all of your organization\'s systems.';
+
 // ... Section: User menu.
 $string['usermenuheading'] = 'User menu';
+// ... ... Settings: Show full name in the user menu.
+$string['showfullnameinusermenussetting'] = 'Show full name in the user menu';
+$string['showfullnameinusermenussetting_desc'] = 'With this setting, you can show the logged-in user\'s full name at the top of the user menu. This can be especially helpful for exam situations where teachers have to confirm that the user is logged in with his own account, but it might also be helpful for the user himself. In contrast to the Classic theme which shows the user\'s full name in the navbar near the avatar, this approach here does not claim any additional rare space in the navbar.';
+$string['showfullnameinusermenussetting_loggedinas'] = 'You are logged in as:';
 // ... ... Settings: Add preferred language link to language menu.
 $string['addpreferredlangsetting'] = 'Add preferred language link to language menu';
 $string['addpreferredlangsetting_desc'] = 'With this setting, you can add a \'Set preferred language\' setting to the language menu within the user menu. Understandably, this setting is only processed if the setting <a href="{$a->url1}">Display language menu</a> is enabled, and if at least <a href="{$a->url2}">a second language pack is installed</a> and <a href="{$a->url3}">offered for selection</a>.';
 $string['setpreferredlanglink'] = 'Set preferred language';
+// ... Section: Navbar heading.
+$string['navbarheading'] = 'Navbar';
+// ... ... Setting: Show starred courses popover in the navbar.
+$string['shownavbarstarredcoursessetting'] = 'Show starred courses popover in the navbar';
+$string['shownavbarstarredcoursessetting_desc'] = 'With this setting, you can show a popover menu with links to starred courses next to the messages and notifications menus.';
+$string['shownavbarstarredcourses_config'] = 'Set starred courses on the \'My courses\' page';
+$string['shownavbarstarredcourses_label'] = 'Starred courses';
 // ... Section: Breadcrumbs.
 $string['breadcrumbsheading'] = 'Breadcrumbs';
 // ... ... Setting: Course category breadcrumb.
@@ -1015,6 +1058,8 @@ $string['smartmenusdynamiccoursescompletionstatusenrolled'] = 'Enrolled';
 $string['smartmenusdynamiccoursescompletionstatusinprogress'] = 'In progress';
 $string['smartmenusdynamiccoursescoursecategory'] = 'Course category';
 $string['smartmenusdynamiccoursescoursecategory_help'] = 'The dynamic courses menu item list will contain all courses from the selected course categories.';
+$string['smartmenusdynamiccoursescoursecategorysubcats'] = 'Include subcategories';
+$string['smartmenusdynamiccoursescoursecategorysubcats_help'] = 'If checked, the dynamic courses menu will also contain all courses from the subcategories of the selected courses categories.';
 $string['smartmenusdynamiccoursesdaterange'] = 'Date range';
 $string['smartmenusdynamiccoursesdaterange_help'] = 'The dynamic courses menu item list will contain all courses which fall into the selected date range.';
 $string['smartmenusdynamiccoursesdaterangefuture'] = 'Future';

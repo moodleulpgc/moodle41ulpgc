@@ -35,7 +35,7 @@ use moodle_url;
 use stdClass;
 use moodle_exception;
 use comment;
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class datalynx
@@ -172,7 +172,7 @@ class datalynx {
         $this->context = context_module::instance($this->cm->id);
 
         // Set groups.
-        if ($this->cm->groupmode and in_array($this->cm->groupmode, $this->internalgroupmodes)) {
+        if ($this->cm->groupmode && in_array($this->cm->groupmode, $this->internalgroupmodes)) {
             $this->groupmode = $this->cm->groupmode;
         } else {
             $this->groupmode = groups_get_activity_groupmode($this->cm);
@@ -393,7 +393,7 @@ class datalynx {
         $urlparams = array();
         if (!empty($params->urlparams)) {
             foreach ($params->urlparams as $param => $value) {
-                if ($value != 0 and $value != '') {
+                if ($value != 0 && $value != '') {
                     $urlparams[$param] = $value;
                 }
             }
@@ -411,15 +411,15 @@ class datalynx {
         // If datalynx activity closed don't let students in.
         if (!$manager) {
             $timenow = time();
-            if (!empty($this->data->timeavailable) and $this->data->timeavailable > $timenow) {
+            if (!empty($this->data->timeavailable) && $this->data->timeavailable > $timenow) {
                 throw new moodle_exception('notopenyet', 'datalynx', '',
                         userdate($this->data->timeavailable));
             }
         }
 
         // RSS.
-        if (!empty($params->rss) and !empty($CFG->enablerssfeeds) and
-                !empty($CFG->datalynx_enablerssfeeds) and $this->data->rssarticles > 0
+        if (!empty($params->rss) && !empty($CFG->enablerssfeeds) &&
+                !empty($CFG->datalynx_enablerssfeeds) && $this->data->rssarticles > 0
         ) {
             require_once("$CFG->libdir/rsslib.php");
             $rsstitle = format_string($this->course->shortname) . ': %fullname%';
@@ -442,7 +442,7 @@ class datalynx {
             $PAGE->set_url("/mod/datalynx/$page.php", $urlparams);
 
             // Blocks editing button (omit in embedded datalynxs).
-            if ($page != 'embed' and $PAGE->user_allowed_editing()) {
+            if ($page != 'embed' && $PAGE->user_allowed_editing()) {
                 // Teacher editing mode.
                 if ($urlparams['edit'] != -1) {
                     $USER->editing = $urlparams['edit'];
@@ -620,7 +620,7 @@ class datalynx {
         if ($manager) {
             $viewrecords = $this->get_view_records();
             if (empty($viewrecords)) {
-                if ($page == 'view' or $page == 'embed') {
+                if ($page == 'view' || $page == 'embed') {
                     $getstarted = new stdClass();
                     $getstarted->presets = html_writer::link(
                             new moodle_url('/mod/datalynx/preset/index.php', array('d' => $thisid)),
@@ -666,7 +666,7 @@ class datalynx {
         }
 
         // Print intro.
-        if (!empty($params->intro) and $params->intro) {
+        if (!empty($params->intro) && $params->intro) {
             $this->print_intro();
         }
 
@@ -714,7 +714,7 @@ class datalynx {
      * TODO: consider moving into the view
      */
     public function print_groups_menu($view, $filter) {
-        if ($this->groupmode and !in_array($this->groupmode, $this->internalgroupmodes)) {
+        if ($this->groupmode && !in_array($this->groupmode, $this->internalgroupmodes)) {
             $returnurl = new moodle_url("/mod/datalynx/{$this->pagefile}.php",
                     array('d' => $this->id(), 'view' => $view, 'filter' => $filter));
             groups_print_activity_menu($this->cm, $returnurl . '&amp;');
@@ -786,23 +786,24 @@ class datalynx {
      * @param int $datalynxid The id of the datalynx whose content should be displayed.
      * @param int $viewid The id of the datalynx's view whose content should be displayed.
      * @param int $eids The id of the datalynx entrie that should be displayed.
-     * @param int $options Pass options what should be displayed, esp. to hide control interfaces.
+     * @param array $options bool skiplogincheck, bool tohtml, string pagelayout.
      * @return string
      */
-    public static function get_content_inline($datalynxid, $viewid = 0, $eids = null, $options = array('tohtml' => true)) {
+    public static function get_content_inline(int $datalynxid, int $viewid = 0, ?int $eids = null, array $options = array('tohtml' => true)) {
         global $CFG;
         require_once($CFG->dirroot . '/mod/datalynx/view/view_class.php');
         $urlparams = new stdClass();
         $datalynx = new datalynx($datalynxid, null);
         $urlparams->d = $datalynxid;
         $urlparams->view = $viewid;
+        $skiplogincheck = $options['skiplogincheck'] ?? false;
 
         // It's used nowhere but keeping for backwards compatibility.
         $urlparams->pagelayout = 'external';
         $filteroptions = true;
 
         // In case we come from the app, do stuff.
-        if (isset($options['pagelayout']) AND $options['pagelayout'] == 'mobile') {
+        if (isset($options['pagelayout']) && $options['pagelayout'] == 'mobile') {
             $urlparams->pagelayout = 'mobile';
             $filteroptions = array('eids' => $eids);
         }
@@ -814,7 +815,7 @@ class datalynx {
 
         $pageparams = array('js' => true, 'css' => true, 'rss' => true, 'modjs' => true,
                 'completion' => true, 'comments' => true, 'urlparams' => $urlparams);
-        $datalynx->set_page('external', $pageparams);
+        $datalynx->set_page('external', $pageparams, $skiplogincheck);
         $type = $datalynx->views[$viewid]->type;
         require_once($CFG->dirroot . "/mod/datalynx/view/$type/view_class.php");
         $viewclass = "datalynxview_$type";
@@ -822,7 +823,7 @@ class datalynx {
 
         if ($view = new $viewclass($datalynxid, $viewid, $filteroptions)) {
             $view->set_content();
-            $view->get_df()->_currentview = $datalynx->_currentview;
+            $view->get_dl()->_currentview = $datalynx->_currentview;
             $viewcontent = $view->display($options);
             return "$viewcontent";
         }
@@ -1031,7 +1032,7 @@ class datalynx {
     public function get_fields($exclude = null, $menu = false, $forceget = false, $sort = ''): array {
         global $DB;
 
-        if (!$this->fields or $forceget) {
+        if (!$this->fields || $forceget) {
             $this->fields = array();
             // Collate user fields.
             if ($fields = $DB->get_records('datalynx_fields', array('dataid' => $this->id()), $sort)) {
@@ -1044,12 +1045,12 @@ class datalynx {
         // Collate all fields.
         $fields = $this->fields + $this->get_internal_fields();
 
-        if (empty($exclude) and !$menu) {
+        if (empty($exclude) && !$menu) {
             return $fields;
         } else {
             $retfields = array();
             foreach ($fields as $fieldid => $field) {
-                if (!empty($exclude) and in_array($fieldid, $exclude)) {
+                if (!empty($exclude) && in_array($fieldid, $exclude)) {
                     continue;
                 }
                 if ($menu) {
@@ -1141,7 +1142,7 @@ class datalynx {
         // Collate the fields for processing.
         if ($fieldids = explode(',', $fids)) {
             foreach ($fieldids as $fieldid) {
-                if ($fieldid > 0 and isset($dffields[$fieldid])) {
+                if (is_numeric($fieldid) && $fieldid > 0 && isset($dffields[$fieldid])) {
                     $fields[$fieldid] = $dffields[$fieldid];
                 }
             }
@@ -1150,7 +1151,7 @@ class datalynx {
         $processedfids = array();
         $strnotify = '';
 
-        if (empty($fields) and $action != 'add') {
+        if (empty($fields) && $action != 'add') {
             $this->notifications['bad'][] = get_string("fieldnoneforaction", 'datalynx');
             return false;
         } else {
@@ -1361,12 +1362,12 @@ class datalynx {
      * @param string $sort SQL ORDER BY clause
      * @return array an array of datalynx_views entry objects
      */
-    public function get_view_records($forceget = false, $sort = '') {
+    public function get_view_records($forceget = false, $sort = ''): array {
         global $DB;
-        if (empty($this->views) or $forceget) {
+        if (empty($this->views) || $forceget) {
             $views = array();
             if (!$views = $DB->get_records('datalynx_views', array('dataid' => $this->id()), $sort)) {
-                return false;
+                return [];
             }
             $this->views = array();
             foreach ($views as $viewid => $view) {
@@ -1376,6 +1377,22 @@ class datalynx {
             }
         }
         return $this->views;
+    }
+
+    /**
+     * Get view by name
+     *
+     * @param string $viewname
+     * @return stdClass
+     */
+    public function get_view_by_name(string $viewname): ?stdClass {
+        $views = $this->get_view_records(true);
+        foreach ($views as $view) {
+            if($view->name === $viewname) {
+                return $view;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1417,14 +1434,14 @@ class datalynx {
      * @param int $viewid
      * @return bool|mixed
      */
-    public function get_current_view_from_id($viewid = 0) {
+    public function get_current_view_from_id(int $viewid = 0) {
         if ($views = $this->get_view_records()) {
-            if ($viewid and isset($views[$viewid])) {
+            if ($viewid && isset($views[$viewid])) {
                 $view = $views[$viewid];
                 // If can't find the requested, try the default.
             } else {
-                if ($viewid = $this->data->defaultview and isset($views[$viewid])) {
-                    $view = $views[$viewid];
+                if ($this->data->defaultview && isset($views[$this->data->defaultview])) {
+                    $view = $views[$this->data->defaultview];
                 } else {
                     return false;
                 }
@@ -1442,12 +1459,13 @@ class datalynx {
      * @return bool|mixed
      */
     public function get_view_from_id($viewid = 0) {
-        if ($views = $this->get_view_records()) {
-            if ($viewid and isset($views[$viewid])) {
+        $views = $this->get_view_records();
+        if (!empty($views)) {
+            if ($viewid && isset($views[$viewid])) {
                 $view = $views[$viewid];
                 // If can't find the requested, try the default.
             } else {
-                if ($viewid = $this->data->defaultview and isset($views[$viewid])) {
+                if ($viewid = $this->data->defaultview && isset($views[$viewid])) {
                     $view = $views[$viewid];
                 } else {
                     return false;
@@ -1492,7 +1510,8 @@ class datalynx {
      * @return array|bool
      */
     public function get_views_by_type($type, $forceget = false) {
-        if (!$views = $this->get_view_records($forceget)) {
+        $views = $this->get_view_records($forceget);
+        if (!empty($views)) {
             return false;
         }
 
@@ -1513,16 +1532,16 @@ class datalynx {
      * @param string $sort
      * @return array of view objects indexed by view id or false if no views are found
      */
-    public function get_views($exclude = null, $forceget = false, $sort = '') {
-        if (!$this->get_view_records($forceget, $sort)) {
+    public function get_views(array $exclude = [], bool $forceget = false, string $sort = '') {
+        if (empty($this->get_view_records($forceget, $sort))) {
             return false;
         }
 
         static $views = null;
-        if ($views === null or $forceget) {
+        if ($views === null || $forceget) {
             $views = array();
             foreach ($this->views as $viewid => $view) {
-                if (!empty($exclude) and in_array($viewid, $exclude)) {
+                if (!empty($exclude) && in_array($viewid, $exclude)) {
                     continue;
                 }
                 $views[$viewid] = $this->get_view($view);
@@ -1532,19 +1551,19 @@ class datalynx {
     }
 
     /**
-     * Get all views visible to the user of a datalynx instance as an array indexed by viewid
+     * Get all viewnames visible to the user of a datalynx instance as an array indexed by viewid
      *
      * @param string $exclude
      * @param boolean $forceget
      * @param string $sort
-     * @return string[viewid]
+     * @return array $viewids[viewid]
      */
     public function get_views_menu($exclude = null, $forceget = false, $sort = '') {
         $views = array();
 
-        if ($this->get_view_records($forceget, $sort)) {
+        if (!empty($this->get_view_records($forceget, $sort))) {
             foreach ($this->views as $viewid => $view) {
-                if (!empty($exclude) and in_array($viewid, $exclude)) {
+                if (!empty($exclude) && in_array($viewid, $exclude)) {
                     continue;
                 }
                 $views[$viewid] = $view->name;
@@ -1672,7 +1691,7 @@ class datalynx {
 
         if ($vids) { // Some views are specified for action.
             $views = array();
-            $viewobjs = $this->get_views(false, true);
+            $viewobjs = $this->get_views([], true);
             foreach (explode(',', $vids) as $vid) {
                 if (!empty($viewobjs[$vid])) {
                     $views[$vid] = $viewobjs[$vid];
@@ -1800,7 +1819,7 @@ class datalynx {
                                 $files = $fs->get_area_files($contextid, $component, $filearea,
                                         $oldviewid);
                                 foreach ($files as $file) {
-                                    if ($file->is_directory() and $file->get_filepath() === '/') {
+                                    if ($file->is_directory() && $file->get_filepath() === '/') {
                                         continue;
                                     }
                                     $filerecord = array('contextid' => $contextid,
@@ -1887,7 +1906,7 @@ class datalynx {
             $gradebookroles = '';
         }
 
-        if (!empty($CFG->enablegroupings) and $this->cm->groupmembersonly) {
+        if (!empty($CFG->enablegroupings) && $this->cm->groupmembersonly) {
             $groupingsusers = groups_get_grouping_members($this->cm->groupingid, 'u.id', 'u.id');
             $gusers = $groupingsusers ? array_keys($groupingsusers) : null;
         }
@@ -1925,7 +1944,7 @@ class datalynx {
      * @throws \dml_exception
      */
     public function user_at_max_entries($perinterval = false) {
-        if ($this->data->maxentries < 0 or
+        if ($this->data->maxentries < 0 ||
                 has_capability('mod/datalynx:manageentries', $this->context)
         ) {
             return false;
@@ -1953,7 +1972,7 @@ class datalynx {
         } else {
             // Check the number of entries required against the number of entries already made.
             $numentries = $this->user_num_entries();
-            if ($this->data->entriesrequired and $numentries < $this->data->entriesrequired) {
+            if ($this->data->entriesrequired && $numentries < $this->data->entriesrequired) {
                 $entriesleft = $this->data->entriesrequired - $numentries;
                 if (!empty($options['notify'])) {
                     echo $OUTPUT->notification(
@@ -1967,7 +1986,7 @@ class datalynx {
             } else {
                 // Check the number of entries required before to view other participant's entries.
                 // Against the number of entries already made (doesn't apply to teachers).
-                if ($this->data->entriestoview and $numentries < $this->data->entriestoview) {
+                if ($this->data->entriestoview && $numentries < $this->data->entriestoview) {
                     $entrieslefttoview = $this->data->entriestoview - $numentries;
                     if (!empty($options['notify'])) {
                         echo $OUTPUT->notification(
@@ -1999,12 +2018,12 @@ class datalynx {
             }
 
             // For others, it depends on the entry.
-            if (isset($entry->id) and $entry->id > 0) {
+            if (isset($entry->id) && $entry->id > 0) {
                 if (has_capability('mod/datalynx:exportownentry', $this->context)) {
-                    if (!$this->data->grouped and $USER->id == $entry->userid) {
+                    if (!$this->data->grouped && $USER->id == $entry->userid) {
                         return true;
                     } else {
-                        if ($this->data->grouped and groups_is_member($entry->groupid)) {
+                        if ($this->data->grouped && groups_is_member($entry->groupid)) {
                             return true;
                         }
                     }
@@ -2031,7 +2050,7 @@ class datalynx {
         }
 
         // Anonymous/guest can only add entries if enabled.
-        if ((!isloggedin() or isguestuser()) and empty($entry->id) and $CFG->datalynx_anonymous and
+        if ((!isloggedin() || isguestuser()) && empty($entry->id) && $CFG->datalynx_anonymous &&
                 $this->data->anonymous
         ) {
             return true;
@@ -2045,17 +2064,17 @@ class datalynx {
             $now = time();
 
             // If there is an activity timeframe, we must be inside the timeframe right now.
-            if ($timeavailable and !($now >= $timeavailable) or
-                    ($timedue and !($now < $timedue) and !$allowlate)
+            if ($timeavailable && !($now >= $timeavailable) ||
+                    ($timedue && !($now < $timedue) && !$allowlate)
             ) {
                 return false;
             }
 
             // If group mode is enabled user has to be in the right group.
-            if ($this->groupmode and !in_array($this->groupmode, $this->internalgroupmodes) and
-                    !has_capability('moodle/site:accessallgroups', $this->context) and (($this->currentgroup and
-                                    !groups_is_member($this->currentgroup)) or
-                            (!$this->currentgroup and $this->groupmode == VISIBLEGROUPS))
+            if ($this->groupmode && !in_array($this->groupmode, $this->internalgroupmodes) &&
+                    !has_capability('moodle/site:accessallgroups', $this->context) && (($this->currentgroup &&
+                                    !groups_is_member($this->currentgroup)) ||
+                            (!$this->currentgroup && $this->groupmode == VISIBLEGROUPS))
             ) {
                 return false; // For members only.
             }
@@ -2064,8 +2083,9 @@ class datalynx {
             if (!empty($entry->id)) {
                 // Entry owner.
                 // TODO groups_is_member queries DB for each entry!
-                if (empty($USER->id) or (!$this->data->grouped and $USER->id != $entry->userid and !$this->teammember_can_edit($entry)) or
-                        ($this->data->grouped and !groups_is_member($entry->groupid))
+                if (empty($USER->id) ||
+                        (!$this->data->grouped && $USER->id != $entry->userid && !$this->teammember_can_edit($entry)) ||
+                        ($this->data->grouped && !groups_is_member($entry->groupid))
                 ) {
                     return false; // Who are you anyway???
                 }
@@ -2145,11 +2165,11 @@ class datalynx {
         static $numentries = null;
         static $numentriesintervaled = null;
 
-        if (!$perinterval and !is_null($numentries)) {
+        if (!$perinterval && !is_null($numentries)) {
             return $numentries;
         }
 
-        if ($perinterval and !is_null($numentriesintervaled)) {
+        if ($perinterval && !is_null($numentriesintervaled)) {
             return $numentriesintervaled;
         }
 
@@ -2172,7 +2192,7 @@ class datalynx {
         }
 
         // Time interval.
-        if ($timeinterval = $this->data->timeinterval and $perinterval) {
+        if ($timeinterval = $this->data->timeinterval && $perinterval) {
             $timeavailable = $this->data->timeavailable;
             $elapsed = time() - $timeavailable;
             $intervalstarttime = (floor($elapsed / $timeinterval) * $timeinterval) + $timeavailable;
@@ -2392,7 +2412,7 @@ class datalynx {
         $data->coursename = $this->course->shortname;
         $data->datalynxname = $this->name();
         if (isset($data->view)) {
-            $data->datalynxbaselink = html_writer::link($data->view->get_df()->get_baseurl(),
+            $data->datalynxbaselink = html_writer::link($data->view->get_dl()->get_baseurl(),
                     $data->datalynxname);
             $data->datalynxlink = html_writer::link($data->view->get_baseurl(), $data->datalynxname);
         }

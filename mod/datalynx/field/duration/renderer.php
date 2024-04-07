@@ -22,7 +22,7 @@
  * @copyright based on the work by 2013 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -39,7 +39,7 @@ class datalynxfield_duration_renderer extends datalynxfield_renderer {
         $mform->addElement('duration', $fieldname, '', array('optional' => null));
         $mform->setType($fieldname, PARAM_ALPHANUMEXT);
 
-        if ($entryid > 0 and !empty($entry->{"c{$fieldid}_content"})) {
+        if ($entryid > 0 && !empty($entry->{"c{$fieldid}_content"})) {
             $number = $entry->{"c{$fieldid}_content"};
             $mform->setDefault($fieldname, $number);
         }
@@ -50,7 +50,7 @@ class datalynxfield_duration_renderer extends datalynxfield_renderer {
         }
     }
 
-    public function render_display_mode(stdClass $entry, array $params) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $field = $this->_field;
         $fieldid = $field->id();
 
@@ -65,7 +65,7 @@ class datalynxfield_duration_renderer extends datalynxfield_renderer {
             return $duration;
         }
 
-        $format = !empty($params['format']) ? $params['format'] : '';
+        $format = !empty($options['format']) ? $options['format'] : '';
         if ($duration !== '') {
             list($value, $unit) = $field->seconds_to_unit($duration);
             $units = $field->get_units();
@@ -94,7 +94,7 @@ class datalynxfield_duration_renderer extends datalynxfield_renderer {
         return '';
     }
 
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -141,7 +141,7 @@ class datalynxfield_duration_renderer extends datalynxfield_renderer {
         foreach ($tags as $tag) {
             list(, $behavior, ) = $this->process_tag($tag);
             // Variable $behavior datalynx_field_behavior.
-            if ($behavior->is_required() and isset($formdata->$formfieldname)) {
+            if ($behavior->is_required() && isset($formdata->$formfieldname)) {
                 $value = optional_param_array($formfieldname, [], PARAM_RAW)['number'];
                 $intvalue = intval($value);
                 if ($value !== "$intvalue") {

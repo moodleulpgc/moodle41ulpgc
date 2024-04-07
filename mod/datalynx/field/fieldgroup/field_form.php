@@ -20,7 +20,7 @@
  * @copyright 2018 michael pollak <moodle@michaelpollak.org>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_form.php");
 
@@ -87,7 +87,7 @@ class datalynxfield_fieldgroup_form extends datalynxfield_form {
         // Check if all fieldnames are actually found and only fieldtypes are entered that have been tested.
         $fields = $this->_df->get_fields(null, false, true);
         foreach ($data['param1'] as $fieldid) {
-            if (!(array_key_exists($fieldid, $fields) and $fields[$fieldid]->for_use_in_fieldgroup())) {
+            if (!(array_key_exists($fieldid, $fields) && $fields[$fieldid]->for_use_in_fieldgroup())) {
                 $errors['param1'] = get_string('unsupportedfield', 'datalynx', $fields[$fieldid]->type);
             }
         }
@@ -97,12 +97,14 @@ class datalynxfield_fieldgroup_form extends datalynxfield_form {
     /**
      * This function is overriden to decode param1 field from JSON notation into an array
      *
-     * @param array $data new contents of the form
+     * @param array|stdClass $data new contents of the form
      */
     public function set_data($data) {
-        $elements = json_decode($data->param1, true);
-        $elements = $elements == null ? array() : $elements;
-        $data->param1 = array();
+        $elements = [];
+        if (!empty($data->param1)) {
+            $elements = json_decode($data->param1, true);
+        }
+        $data->param1 = [];
         foreach ($elements as $element) {
             $data->param1[] = $element;
         }

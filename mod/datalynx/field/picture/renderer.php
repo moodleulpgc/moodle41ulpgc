@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/file/renderer.php");
 
@@ -64,11 +64,16 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
         }
     }
 
-    public function render_display_mode(stdClass $entry, array $params) {
+    /**
+     * Render the field of type picture.
+     *
+     * @param stdClass $entry
+     * @param array $options
+     * @return string
+     */
+    public function render_display_mode(stdClass $entry, array $options): string {
         global $CFG, $PAGE;
-
         $PAGE->requires->js_call_amd('mod_datalynx/zoomable', 'init');
-
         $field = $this->_field;
         $fieldid = $field->id();
         $entryid = $entry->id;
@@ -82,7 +87,7 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
             return '';
         }
 
-        if (!empty($params['downloadcount'])) {
+        if (!empty($options['downloadcount'])) {
             return $content2;
         }
 
@@ -90,26 +95,24 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
         $files = $fs->get_area_files($field->df()->context->id, 'mod_datalynx', 'content', $contentid);
 
         // If we see no file attached we are done here.
-        if (!$files or !(count($files) > 1)) {
+        if (!$files || !(count($files) > 1)) {
             return '';
         }
 
         $altname = empty($content1) ? '' : s($content1);
 
-        if (!empty($params['alt'])) {
+        if (!empty($options['alt'])) {
             return $altname;
         }
 
         $strfiles = array();
         foreach ($files as $file) {
             if (!$file->is_directory()) {
-
                 $filename = $file->get_filename();
                 $filenameinfo = pathinfo($filename);
                 $path = "/{$field->df()->context->id}/mod_datalynx/content/$contentid";
-
                 if (strpos($filename, 'thumb_') === false) {
-                    $strfiles[] = $this->display_file($file, $path, $altname, $params);
+                    $strfiles[] = $this->display_file($file, $entryid, $path, $altname, $options);
                 }
             }
         }
@@ -124,13 +127,21 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
 
     /**
      */
-    public function pluginfile_patterns() {
+    public function pluginfile_patterns(): array {
         $fieldname = $this->_field->name();
         return array("[[{$fieldname}]]", "[[{$fieldname}:thumb]]", "[[{$fieldname}:linked]]",
                 "[[{$fieldname}:lightbox]]");
     }
 
-    protected function display_file($file, $path, $altname, $params = null) {
+    /**
+     * @param stored_file $file
+     * @param int $entryid
+     * @param $path
+     * @param $altname
+     * @param $params
+     * @return moodle_url|string
+     */
+    protected function display_file(stored_file $file, int $entryid, string $path, string $altname = '', ?array $params = null) {
         $field = $this->_field;
 
         $imgattr = array('style' => array());
@@ -174,7 +185,7 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
                 }
             }
         }
-        
+
         // Extension to display and embed videos.
         if ($this->is_valid_video($file)) {
             $filename = $file->get_filename();
@@ -192,7 +203,7 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
             $video = html_writer::empty_tag('video controls', $videoattr);
             return $video;
         }
-        
+
         // Embed Audio.
         if ($this->is_valid_audio($file)) {
             $filename = $file->get_filename();
@@ -201,14 +212,14 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
             $audio = html_writer::empty_tag('audio controls', $audioattr);
             return $audio;
         }
-        
+
         return '';
     }
 
     /**
      * Array of patterns this field supports
      */
-    public function patterns() {
+    public function patterns(): array {
         $fieldname = $this->_field->name();
 
         $patterns = parent::patterns();
@@ -232,7 +243,7 @@ class datalynxfield_picture_renderer extends datalynxfield_file_renderer {
         }
         return true;
     }
-    
+
     /**
      * Verifies the file is a valid audio file based on simplified is_valid_image.
      * @return bool true if file ok

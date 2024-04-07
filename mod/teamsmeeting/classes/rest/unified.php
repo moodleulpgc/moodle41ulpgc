@@ -56,7 +56,7 @@ class unified extends \local_o365\rest\unified {
             //print_object($msg);
             \local_o365\utils::debug($msg, $caller);
         } else {
-            $token = \local_o365\utils::get_app_or_system_token($tokenresource, $clientdata, $httpclient);
+            $token = \local_o365\utils::get_application_token($tokenresource, $clientdata, $httpclient);
         }
         
         if (!empty($token)) {

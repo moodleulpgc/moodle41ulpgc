@@ -50,10 +50,10 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when tokenizer is not valid
      */
-    public function test_unexisted_tokenizer() {
+    public function test_unexisted_tokenizer(): void {
         try {
             tokenizer_factory::get('not_a_valid_language');
-        } catch (Exception $exe) {
+        } catch (\Throwable $exe) {
             $mssg = 'not_a_valid_language is not available';
             $expectedmssg = assertf::get_error('not_a_valid_language', $mssg);
             $this->assertSame($expectedmssg, $exe->getMessage());
@@ -63,10 +63,10 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test vpl_tokenizer_factory::get when tokenizer is not valid
      */
-    public function test_unexisted_tokenizer_with_vpl() {
+    public function test_unexisted_tokenizer_with_vpl(): void {
         try {
             vpl_tokenizer_factory::get('not_a_valid_language');
-        } catch (Exception $exe) {
+        } catch (\Throwable $exe) {
             $mssg = 'not_a_valid_language is not available';
             $expectedmssg = assertf::get_error('not_a_valid_language', $mssg);
             $this->assertSame($expectedmssg, $exe->getMessage());
@@ -76,14 +76,8 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when old tokenizer is used
      */
-    public function test_old_tokenizer() {
+    public function test_old_tokenizer(): void {
         $tokenizer = tokenizer_factory::get('prolog');
-        $this->check_tokenizer($tokenizer, 'prolog', false);
-
-        $tokenizer = tokenizer_factory::get('prolog');
-        $this->check_tokenizer($tokenizer, 'prolog', false);
-
-        $tokenizer = vpl_tokenizer_factory::get('prolog');
         $this->check_tokenizer($tokenizer, 'prolog', false);
 
         $tokenizer = vpl_tokenizer_factory::get('prolog');
@@ -93,17 +87,11 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when new tokenizer is used
      */
-    public function test_new_tokenizer() {
+    public function test_new_tokenizer(): void {
         $tokenizerlangs = tokenizer_similarity_utils::get_tokenizer_langs();
 
         foreach ($tokenizerlangs as $namelang) {
             $tokenizer = tokenizer_factory::get($namelang);
-            $this->check_tokenizer($tokenizer, $namelang, true);
-
-            $tokenizer = tokenizer_factory::get($namelang);
-            $this->check_tokenizer($tokenizer, $namelang, true);
-
-            $tokenizer = vpl_tokenizer_factory::get($namelang);
             $this->check_tokenizer($tokenizer, $namelang, true);
 
             $tokenizer = vpl_tokenizer_factory::get($namelang);
@@ -112,12 +100,8 @@ class tokenizer_factory_test extends \advanced_testcase {
     }
 
     private function check_tokenizer($tokenizer, $namelang, $newtokenizer=false) {
-        if ($newtokenizer === false) {
-            $this->assertTrue(isset($tokenizer) === true);
-            $this->assertSame('vpl_tokenizer_' . $namelang, get_class($tokenizer));
-        } else {
-            $this->assertTrue(isset($tokenizer) === true);
-            $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
-        }
+        $this->assertTrue(isset($tokenizer) === true);
+        $classname = $newtokenizer === false ? 'vpl_tokenizer_' . $namelang : 'mod_vpl\tokenizer\tokenizer';
+        $this->assertSame($classname, get_class($tokenizer));
     }
 }

@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/view/view_class.php");
 require_once("$CFG->libdir/pdflib.php");
@@ -243,7 +243,7 @@ class datalynxview_pdf extends datalynxview_base {
             $pagecontent = $this->set_page_bookmarks($pdf, $pagecontent);
 
             // Set frame.
-            if ($pagecount < 1 AND $this->_settings->pdfframefirstpageonly) {
+            if ($pagecount < 1 && $this->_settings->pdfframefirstpageonly) {
                 $this->set_frame($pdf);
             }
             if (!$this->_settings->pdfframefirstpageonly) {
@@ -405,7 +405,8 @@ class datalynxview_pdf extends datalynxview_base {
      */
     public function generate_default_view() {
         // Get all the fields.
-        if (!$fields = $this->_df->get_fields()) {
+        $fields = $this->_df->get_fields();
+        if (!$fields) {
             return; // You shouldn't get that far if there are no user fields.
         }
 
@@ -723,7 +724,7 @@ class datalynxview_pdf extends datalynxview_base {
             $fs = get_file_storage();
             foreach ($matches[1] as $imagepath) {
                 // Moodle does not replace spaces prior to creating a hashvalue for the file.
-                if (!$file = $fs->get_file_by_hash(sha1(urldecode($imagepath))) or $file->is_directory()) {
+                if (!$file = $fs->get_file_by_hash(sha1(urldecode($imagepath))) || $file->is_directory()) {
                     continue;
                 }
                 $filename = $file->get_filename();

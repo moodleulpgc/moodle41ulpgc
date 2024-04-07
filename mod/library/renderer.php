@@ -26,6 +26,19 @@ defined('MOODLE_INTERNAL') || die();
 
 class mod_library_renderer extends plugin_renderer_base {
 
+    /** @var stdclass remote resource data. */
+    protected $remoteinfo = null;
+
+    /**
+    * Set remote resource info data
+    * @param stdClass $remote info object of remote resource
+    * @return void
+    */
+    public function set_remote_info($remote) {
+        if(isset($remote->id)) {
+            $this->remoteinfo = $remote;
+        }
+    }
 
     /**
     * Print library heading.
@@ -33,7 +46,6 @@ class mod_library_renderer extends plugin_renderer_base {
     */
     public function print_heading() {
         $library = $this->page->activityrecord;
-        echo $this->heading(format_string($library->name), 2);
         groups_print_activity_menu($this->page->cm, $this->page->url);
         $currentgroup = groups_get_activity_group($this->page->cm, true);
         
@@ -57,16 +69,57 @@ class mod_library_renderer extends plugin_renderer_base {
         }
 
         if ($ignoresettings || !empty($options['printintro']) || $extraintro) {
-            $gotintro = trim(strip_tags($library->intro));
-            if ($gotintro || $extraintro || $info) {
+            if (!empty($options['printintro']) || $extraintro) {
                 echo $this->box_start('mod_introbox', 'libraryintro');
-                if ($gotintro) {
+                if (!empty($options['printintro'])) {
                     echo format_module_intro('library', $library, $cm->id);
                 }
                 echo $extraintro;
-                echo html_writer::div($info, ' content');
                 echo $this->box_end();
             }
+        }
+
+/*
+        $info = true;
+        $this->remoteinfo = new stdClass();
+        $this->remoteinfo->title = " este es el título ";
+        $this->remoteinfo->identifier = "https://hdl.handle.net/11730/sudoc/1541";
+
+        $media = new stdclass();
+        $media->id = "2548";
+        $media->filename = "este es el nombre del fichero.pdf";
+
+        $this->remoteinfo->media[] = clone $media;
+        $media->id = "35478";
+        $media->filename = "este es el nombre del SEGUNDO fichero.pdf";
+        $this->remoteinfo->media[] = clone $media;
+
+        $media->id = "12457";
+        $media->filename = "este es el nombre del TERCER fichero.pdf";
+        $this->remoteinfo->media[] = clone $media;
+*/
+        if($info && isset($this->remoteinfo->title)) {
+            echo $this->box_start('sourceinfo', 'source_remote_info');
+            echo $this->heading(format_string($this->remoteinfo->title), 3);
+            $link = html_writer::link($this->remoteinfo->identifier, $this->remoteinfo->identifier);
+            echo $this->box(get_string('remotelink', 'library', $link), 'remotelink');
+
+            if(count($this->remoteinfo->media) > 1) {
+                $url = new moodle_url($this->page->url, ['id' => $this->page->cm->id]);
+                $playlist = [];
+                $mediaid = optional_param('mediaid', 0, PARAM_INT);
+                foreach($this->remoteinfo->media as $idx => $media) {
+                    $url->param('mediaid',$media->id);
+                    $current = '';
+                    if( ($mediaid == $media->id) || (($mediaid == 0) && ($idx == 0))) {
+                        $current = ' &nbsp; ' . $this->pix_icon('i/checkedcircle', get_string('currentitem', 'library'),
+                                                                'moodle', ['class' => 'fa-xl current text-success']);
+                    }
+                    $playlist[] = html_writer::link($url, $media->filename, ['class' => ($current ? 'current' : '')]) .$current ;
+                }
+                echo html_writer::alist($playlist, ['class' => 'playlist']);
+            }
+            echo $this->box_end();
         }
     }
 
@@ -79,8 +132,8 @@ class mod_library_renderer extends plugin_renderer_base {
 
         echo $this->header();
         $this->print_heading();
-        $this->print_intro();
-        
+        $this->print_intro(false, true);
+
         echo $this->notification(get_string('filenotfound', 'library', $filename));
         echo $this->footer();
         
@@ -146,14 +199,7 @@ class mod_library_renderer extends plugin_renderer_base {
 
         echo $this->header();
         $this->print_heading();
-
-        //print_object($file);
-        $info = '';
-        if(isset($file->handle)) {
-            $info = $file->title.'<br />'.$file->filename.' | ';
-            $info .= html_writer::link($file->handle, $file->handle);
-        }
-        $this->print_intro(false, $info);
+        $this->print_intro(false, true);
 
         echo $code;
 
@@ -182,7 +228,7 @@ class mod_library_renderer extends plugin_renderer_base {
             
             echo $this->header();
             $this->print_heading();
-            $this->print_intro();
+            $this->print_intro(false, true);
 
             echo $this->footer();
             die;
@@ -282,13 +328,11 @@ EOF;
 
         echo $this->header();
         $this->print_heading();
-        $this->print_intro();
-
+        $this->print_intro(false, true);
         $library = $this->page->activityrecord;
         $cm = $this->page->cm;
         $options = empty($library->displayoptions) ? array() : unserialize($library->displayoptions);
 
-        
         $library->mainfile = $file->filename; // $file->get_filename();
         echo '<div class="libraryworkaround">';
         switch (library_get_final_display_type($library)) {
@@ -338,7 +382,7 @@ EOF;
     public function print_folder($folder) {
         echo $this->header();
         $this->print_heading();
-        $this->print_intro();
+        $this->print_intro(false, false);
         echo $this->display_folder($folder);
 
         echo $this->footer();

@@ -21,7 +21,7 @@
  * @copyright 2014 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . "/../multiselect/renderer.php");
 
@@ -60,7 +60,7 @@ class datalynxfield_checkbox_renderer extends datalynxfield_multiselect_renderer
         $mform->addGroup($elemgrp, $fieldname, null, $separator, true);
 
         $selected = array();
-        if ($entryid > 0 and $content) {
+        if ($entryid > 0 && $content) {
             $contentprepare = str_replace("#", "", $content);
             $selectedraw = explode(',', $contentprepare);
 
@@ -70,7 +70,7 @@ class datalynxfield_checkbox_renderer extends datalynxfield_multiselect_renderer
         }
 
         // Check for default values.
-        if (!$selected and $field->get('param2')) {
+        if (!$selected && $field->get('param2')) {
             $selected = $field->default_values();
         }
 

@@ -23,7 +23,7 @@
  */
 namespace mod_datalynx\event;
 
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  *
@@ -73,17 +73,6 @@ class view_deleted extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/datalynx/view.php',
                 array('d' => $this->other['dataid'], 'vid' => $this->objectid));
-    }
-
-    /**
-     * Get the legacy event log data.
-     *
-     * @return array
-     */
-    public function get_legacy_logdata() {
-        return array($this->courseid, 'datalynx', 'view_deleted',
-                'view.php?d=' . $this->other['dataid'] . '&amp;vid=' . $this->objectid,
-                $this->other['dataid'], $this->contextinstanceid);
     }
 
     /**

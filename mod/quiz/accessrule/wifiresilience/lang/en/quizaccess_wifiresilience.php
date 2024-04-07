@@ -28,21 +28,29 @@ $string['answerchanged'] = 'Answer changed';
 $string['attempt'] = 'Attempt';
 $string['backtothequiz'] = 'Back to the quiz';
 $string['changesmadereallygoaway'] = 'Your responses have not been saved to the server. Are you sure you want to leave this attempt.';
-$string['countrealofflinetime'] = 'Deduct offline time (if available)';
-$string['countrealofflinetime_help'] = 'Deduct offline time from attempt time based on "real_offline_time". The attempt time, and regradless of the option (in the form below) you choose, will be minus the total offline time (time the user was not able to commence work in specific questions due to lack of internet).<br><br>Important: This value is already calculated in final submission time. This option only works with attempts that have not been selected as "finished".';
 $string['createasnewattempt'] = 'Create as new attempt.';
 $string['createasnewattempt_help'] = '***Carefull*** Create as new attempt';
 $string['createnewattempt'] = 'Create new attempt';
 $string['currentissue'] = 'Current issue';
-$string['dangeryes'] = 'Yes (<font color="red">!!Danger!!</font>)';
+$string['dangeryes'] = 'Yes';
 $string['dataprocessedsuccessfully'] = 'Data processed successfully ({$a}).';
 $string['decryptingcomplete'] = 'Decrypting file complete';
 $string['decryptingfile'] = 'Decrypting file {$a}';
 $string["delete"] = 'Delete';
 $string["download"] = 'Download';
 $string["downloadfile"] = 'Download as a file';
-$string['description'] = 'This exam is in <strong>Wifi Resilience</strong> mode.';
-$string['descriptionlink'] = 'Upload exported responses';
+$string['description'] = 'This exam is in <strong>Wifi Resilience</strong> mode.<br />
+<p style="text-align:left">
+Only use Wifi Resilience Mode when:
+<ul style="text-align:left">
+<li>All content in the test is uploaded directly to Moodle, e.g. no links to files, websites or pictures that refer to external servers.
+<li>The question types that you use in the test do not require an external server, e.g. Stack, Code Expert, Code Runner.
+<li>There is no video in the test.
+</ul>
+<ul style="text-align:left">The use of Safe Exam Browser is strongly recommended.</p>
+</p>
+';
+$string['descriptionlink'] = 'Upload response files';
 $string['downloadedecryptedfile'] = 'Download decrypted File';
 $string['excludelist'] = 'Exclude files';
 $string['excludelist_help'] = 'Link/file per line. Exclude specific files/links from caching with service worker. This is useful when you want some files or links to be in NetworkOnly (never get cached) mode.';
@@ -183,7 +191,7 @@ $string['finishattemptsafterupload'] = 'Submit and finish the attempt contained 
 $string['fromfile'] = 'Submission time in uploaded file';
 $string['inspect'] = 'Inspect response files';
 $string['inspectingfile'] = 'Inspecting file {$a}';
-$string['inspectingfiledesc'] = 'Here you can decrypt emergency files, and encrypt them again. Please use this tool with caution. The inspection tool is built to give the exam admins the option to modify exam attempts; such as, but not limited to, course ID, exam ID, submission time, answer modification, etc. ';
+$string['inspectingfiledesc'] = 'Here you can decrypt and check response files. Administrators can use this inspection tool to view test attempts, including the course ID, test ID, submission time, etc.';
 $string['inspectionprocessedsuccessfully'] = 'Data loaded successfully.';
 $string['lastsaved'] = 'Last saved: {$a}';
 $string['lastsavedtotheserver'] = 'Last saved to the server: {$a}';
@@ -238,7 +246,7 @@ $string['reference'] = 'Reference';
 $string['refreshserviceworker'] = 'Refresh service worker';
 $string['resetserviceworker'] = 'Reset service worker';
 $string['responsefiles'] = 'Response files';
-$string['responsefiles_help'] = 'During a quiz attempt you can download a response file by clicking on the blinking wireless network connection status icon. You may do this several times to save different versions of your response file. The filename contains the prefix Wifiresilience, date and timestamp and the extension .eth. (example: Wifiresilience-crs229-cm643-id558-u8-a25197-d201803010842.eth). If not configured otherwise the file is saved in the "download folder".';
+$string['responsefiles_help'] = 'Here you can upload response files from students who were offline when they submitted the test. The response file contains the answers saved offline by the student in question. The response files are saved in the download directory on the student\'s computer. A <b>new attempt</b> is created for each uploaded response file. If, for example, an attempt already exists, the attempt created is the second one. Existing attempts are <b>never</b> overwritten.';
 $string['reviewthisattempt'] = 'Review this attempt';
 $string['rule1start'] = '1. <font color=grey>[Wifiresilience-SW] Wifiresilience-exams-sw.js is Registering..</font>';
 $string['rule1success'] = '1. <font color=green>[Wifiresilience-SW] Service-Worker registration successful. <span id="sw_kind"></span>';
@@ -275,6 +283,7 @@ $string['ruleswnotregisteredstop'] = 'Service Worker is not registered (Might ha
 $string['ruleswnotregisteredupdate'] = 'Service Worker is not registered (Might have errors, or not included in this page scope, or already deregistered), you can not update it now.';
 $string['savefailed'] = 'Note: From time to time you should:';
 $string['savetheresponses'] = 'Download copy of answers';
+$string['emergencyfileoptions'] = 'You can also download a copy of the answers';
 $string['savingdots'] = 'Saving to server...';
 $string['savingtryagaindots'] = 'Trying again to save to the server ...';
 $string['serviceworkermgmt'] = 'Service worker management';
@@ -288,7 +297,7 @@ $string['submitallandfinishtryagain'] = 'Submit all and finish (try again)';
 $string['syncedfiles'] = 'Synced response files in background';
 $string['syncserviceworker'] = 'Fire Background Sync';
 $string['takeattemptfromjson'] = 'Use unencrypted attempt ID';
-$string['takeattemptfromjson_help'] = '***READ CAREFULLY*** If an attempt is already damaged or if you want to create new attempt to continue on it and avoid question sequence integrity issues, then use this option with absolute care!. Please note that the attempt ID still needs to match an actual attempt, whether created before, or just created by administrator (logged in as student) in order to create an  attempt and to to build on it (in order to upload student original response file - emergency file - we need a valid attempt).<br /><br /><font color="red">Please DO NOT tick this box unless you fully understand how attempts are managed!</font>';
+$string['takeattemptfromjson_help'] = 'You should only use this option if the response file is not accepted by Moodle, e.g. because the student\'s attempt is corrupt or no longer exists. Please note that the attempt ID in the response file must always correspond to an actual attempt. The attempt must first be created by the participant or by the administrator (logged in as the participant affected).';
 $string['techerrors'] = 'Display technical errors';
 $string['techerrors_help'] = 'This feature is useful to understand the underlying technical reason for the failure of exam submission. It only shows the error at the bottom of the submission page if there is any.';
 $string['technicalchecks'] = 'Storage checks for current browser';

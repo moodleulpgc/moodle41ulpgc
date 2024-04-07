@@ -21,7 +21,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
@@ -40,7 +40,7 @@ class datalynxview_base_form extends moodleform {
     public function __construct($view, $action = null, $customdata = null, $method = 'post', $target = '',
             $attributes = null, $editable = true) {
         $this->_view = $view;
-        $this->_df = $view->get_df();
+        $this->_df = $view->get_dl();
         $attributes['id'] = 'datalynx-view-edit-form';
         parent::__construct($action, $customdata, $method, $target, $attributes, $editable);
     }
@@ -81,7 +81,8 @@ class datalynxview_base_form extends moodleform {
         $mform->addElement('checkbox', 'visible[8]', '', get_string('visible_8', 'datalynx'), 1);
 
         // Filter.
-        if (!$filtersmenu = $df->get_filter_manager()->get_filters(null, true)) {
+        $filtersmenu = $df->get_filter_manager()->get_filters(null, true);
+        if (!$filtersmenu) {
             $filtersmenu = array(0 => get_string('filtersnonedefined', 'datalynx'));
         } else {
             $filtersmenu = array(0 => get_string('choose')) + $filtersmenu;

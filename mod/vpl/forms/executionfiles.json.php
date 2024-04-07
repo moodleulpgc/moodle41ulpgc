@@ -70,9 +70,10 @@ try {
             $vpl->update();
             break;
         case 'load' :
+            $result->response = mod_vpl_edit::load($vpl, $USER->id);
             $fgm = $vpl->get_execution_fgm();
             $files = $fgm->getallfiles();
-            $result->response->files = mod_vpl_edit::filestoide( $files );
+            $result->response->files = mod_vpl_edit::filestoide($files);
             $result->response->version = $fgm->getversion();
             break;
         case 'run' :
@@ -95,7 +96,7 @@ try {
         default :
             throw new Exception( 'ajax action error: ' + $action);
     }
-} catch ( Exception $e ) {
+} catch (\Throwable $e) {
     $result->success = false;
     $result->error = $e->getMessage();
 }

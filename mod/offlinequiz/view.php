@@ -69,7 +69,6 @@ $event->trigger();
 
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
-
 //Start getting Data
 $status = [];
 $sql = "SELECT og.id, og.groupnumber, count(ogq.id) questions, og.sumgrades
@@ -191,12 +190,9 @@ $url = new moodle_url('/mod/offlinequiz/navigate.php', ['id' => $id, 'tab' => 't
 $preview['link'] = $url->out(false);
 $preview['text'] = get_string('forms', 'offlinequiz');
 
-
-
 $preparationsteps[] = $editquestion;
 $preparationsteps[] = $preview;
 $templatedata['preparationsteps'] = $preparationsteps;
-
 
 //Start evaluationsteps.
 $evaluationsteps = [];
@@ -210,7 +206,6 @@ $uploaddata['resultsavailable'] = $status['resultscount'];
 $url = new moodle_url('/mod/offlinequiz/report.php',['mode' => 'correct', 'q' => $offlinequiz->id]);
 $uploaddata['correcturl'] = $url->out(false);
 $upload['expandedcontent'] = $OUTPUT->render_from_template('mod_offlinequiz/teacher_view_upload', $uploaddata);
-
 
 if(!$status['docscreated']) {
   $upload['status'] = 'open';
@@ -231,7 +226,6 @@ $url = new moodle_url('/mod/offlinequiz/report.php', ['mode' => 'rimport', 'q' =
 
 $upload['link'] = $url->out(false);
 $upload['text'] = get_string('upload', 'offlinequiz');
-
 
 $overview = [];
 $resultsublistcontext = [];
@@ -403,7 +397,6 @@ if (has_capability('mod/offlinequiz:manage', $context)) {
             echo '</div>';
         }
     }
-
 }
 
 // Finish the page.

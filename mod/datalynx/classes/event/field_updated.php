@@ -23,7 +23,7 @@
  */
 namespace mod_datalynx\event;
 
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  *
@@ -73,16 +73,6 @@ class field_updated extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/mod/datalynx/field.php',
                 array('d' => $this->other['dataid'], 'vid' => $this->objectid));
-    }
-
-    /**
-     * Get the legacy event log data.
-     *
-     * @return array
-     */
-    public function get_legacy_logdata() {
-        return array($this->courseid, 'datalynx', 'field_updated',
-                'view.php?d=' . $this->other['dataid'], $this->other['dataid'], $this->contextinstanceid);
     }
 
     /**

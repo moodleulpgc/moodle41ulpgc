@@ -1,5 +1,5 @@
 @mod @mod_datalynx @dev @_file_upload
-Feature: In datalynx filter approved and not approved entries from multiple students
+Feature: Filter approved and not approved entries from multiple students
   In order to view approved and not approved entries
   As teacher
   I need to have a filter searching for approved and not approved entries
@@ -30,7 +30,7 @@ Feature: In datalynx filter approved and not approved entries from multiple stud
     And I add to the "Datalynx Test Instance" datalynx the following fields:
       | type             | name               | description | param1                     | param2   | param3 |
       | text             | Text               |             |                            |          |        |
-    And I follow "Filters"
+    And I follow the datalynx "Filters" link
     And I follow "Add a filter"
     And I set the field "name" to "notapprovedfilter"
     And I set the field "searchandor0" to "AND"
@@ -91,12 +91,12 @@ Feature: In datalynx filter approved and not approved entries from multiple stud
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Datalynx Test Instance"
-    And I follow "Manage"
-    And I follow "Views"
+    And I follow the datalynx "Manage" link
+    And I follow the datalynx "Views" link
     And I follow "Manage view"
     And I click on "//td[text()='Text of student1']/following-sibling::td/a[@class='datalynxfield__approve']" "xpath_element"
     Then I wait until "approved" "text" exists
-    And I follow "Manage"
+    And I follow the datalynx "Manage" link
     And I follow "Notapproved view"
     Then I should not see "Text of student1"
     But I should see "Text of student2"

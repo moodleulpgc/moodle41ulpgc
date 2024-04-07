@@ -655,21 +655,23 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
         
         $intendedowners = utils::get_channel_owner_object_ids_by_coursegroup($courseid, $groupid);
         $intendedmembers = utils::get_channel_member_object_ids_by_coursegroup($courseid, $groupid);
-        
+
+        $toaddowners = [];
+        $toremoveowners = [];
         if (!empty($currentowners)) {
             $toaddowners = array_diff($intendedteamowners, $currentowners);
             $toremoveowners = array_diff($currentowners, $intendedteamowners);
         } else {
             $toaddowners = $intendedteamowners;
-            $toremoveowners = [];
         }
 
+        $toaddmembers = [];
+        $toremovemembers = [];
         if (!empty($currentmembers)) {
             $toaddmembers = array_diff($intendedteammembers, $currentmembers);
             $toremovemembers = array_diff($currentmembers, $intendedteammembers);
         } else {
             $toaddmembers = $intendedteammembers;
-            $toremovemembers = [];
         }
 
         //Check if channel object is created
@@ -830,7 +832,7 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
     /**
      * Update group name for the given course using this extented settings 
      *
-     * @param stdClass $course
+     * @param stdClass $course, expects oid in course
      * @param string $courseobjectid azure ID for the course in local_o365_objects table
      * @param string $courseo365name current name for course in local_o365_objects table
      *
@@ -1338,7 +1340,7 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
 
             foreach($courses as $course) {
                 try {
-                    $coursessync->resync_group_owners_and_members($course->courseid, $course->objectid);
+                    $coursessync->process_course_team_user_sync_from_moodle_to_microsoft($course->courseid, $course->objectid);
     
                 } catch (\Exception $e) {
                     // Do nothing.
@@ -1504,7 +1506,6 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
                 }
 
                 try {
-
                     if($course->subtype == 'course') {
                         if($this->update_course_group_name_extended($course, $course->objectid, $course->o365name)) {
                             $coursesprocessed++;
@@ -1514,8 +1515,6 @@ class teamschannels { // extends \local_o365\feature\coursesync\main {
                             $coursesprocessed++;
                         }
                     }
-
-
                 } catch (\Exception $e) {
                     // Do nothing.
                     $this->mtrace("    ...   name change failed for '{$course->subtype}' named '{$course->o365name}': " . $e->getMessage() );

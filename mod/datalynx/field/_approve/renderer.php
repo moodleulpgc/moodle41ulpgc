@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -36,13 +36,13 @@ class datalynxfield__approve_renderer extends datalynxfield_renderer {
         $df = $this->_field->df();
 
         $canapprove = has_capability('mod/datalynx:approve', $df->context);
-        $edit = !empty($options['edit']) ? $options['edit'] and $canapprove : false;
+        $edit = !empty($options['edit']) ? $options['edit'] && $canapprove : false;
         $replacements = array();
         // Just one tag, empty until we check df settings.
         $replacements['##approve##'] = '';
 
         if ($df->data->approval) {
-            if (!$entry or $edit) {
+            if (!$entry || $edit) {
                 $replacements['##approve##'] = array('', array(array($this, 'display_edit'), array($entry)));
 
                 // Existing entry to browse.
@@ -57,7 +57,7 @@ class datalynxfield__approve_renderer extends datalynxfield_renderer {
 
     /**
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $field = $this->_field;
         $fieldid = $field->id();
 

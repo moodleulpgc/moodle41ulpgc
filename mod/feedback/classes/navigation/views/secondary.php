@@ -80,14 +80,14 @@ class secondary extends core_secondary {
 
             // Reorder the existing nodes in settings so the active node scan can pick it up.
             $existingnode = $settingsnav->find('questionnode', self::TYPE_CUSTOM);
-            /*
+
             // ecastro ULPGC removed 
-            if ($existingnode) {
-                $node->add_node($existingnode);
-                $nodes[self::TYPE_CUSTOM] += ['questionnode' => 3];
+            if (!empty($existingnode)) {
+                //$node->add_node($existingnode);
+                //$nodes[self::TYPE_CUSTOM] += ['questionnode' => 3];
+                $existingnode->remove(); // ecastro ULPGC removed
             }
-            */
-            $existingnode->remove(); // ecastro ULPGC removed
+
             // We have finished inserting the initial structure.
             // Populate the menu with the rest of the nodes available.
             $this->load_remaining_nodes($mainnode, $nodes, $rootnode);

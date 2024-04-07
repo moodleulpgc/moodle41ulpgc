@@ -328,6 +328,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
             return '';
         }
 
+        //print_object($contextheader);
         // Generate the heading first and before everything else as we might have to do an early return.
         if (!isset($contextheader->heading)) {
             $heading = $this->heading($this->page->heading, $contextheader->headinglevel, 'h2');
@@ -393,6 +394,12 @@ class core_renderer extends \theme_boost\output\core_renderer {
         $context = $this->page->context;
         if (($this->page->pagelayout !== 'incourse' && $this->page->pagelayout !== 'frametop')
             || $context->contextlevel != CONTEXT_MODULE) {
+            return '';
+        }
+
+        $theme = theme_config::load('moove');
+        //print_object($theme->settings);
+        if($theme->settings->activitynavigation == THEME_MOOVE_SETTING_SELECT_NO) {
             return '';
         }
 

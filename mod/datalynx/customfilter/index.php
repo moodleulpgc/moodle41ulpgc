@@ -46,6 +46,7 @@ $dl = new mod_datalynx\datalynx($urlparams->d, $urlparams->id);
 require_capability('mod/datalynx:managetemplates', $dl->context);
 
 $dl->set_page('customfilter/index', array('modjs' => true, 'urlparams' => $urlparams));
+require_login($dl->data->course, false, $dl->cm);
 
 navigation_node::override_active_url(
         new moodle_url('/mod/datalynx/customfilter/index.php', array('id' => $dl->cm->id)));
@@ -54,22 +55,22 @@ $fm = $dl->get_customfilter_manager();
 
 // DATA PROCESSING.
 // ADD, UPDATE a new filter.
-if ($urlparams->update and confirm_sesskey()) {
+if ($urlparams->update && confirm_sesskey()) {
     $fm->process_filters('update', $urlparams->fid, true);
-} else if ($urlparams->duplicate and confirm_sesskey()) { // DUPLICATE any requested filters.
+} else if ($urlparams->duplicate && confirm_sesskey()) { // DUPLICATE any requested filters.
     $fm->process_filters('duplicate', $urlparams->duplicate, $urlparams->confirmed);
-} else if ($urlparams->delete and confirm_sesskey()) { // DELETE any requested filters.
+} else if ($urlparams->delete && confirm_sesskey()) { // DELETE any requested filters.
     $fm->process_filters('delete', $urlparams->delete, $urlparams->confirmed);
-} else if ($urlparams->visible and confirm_sesskey()) { // Set filter's VISIBILITY.
+} else if ($urlparams->visible && confirm_sesskey()) { // Set filter's VISIBILITY.
     $fm->process_filters('visible', $urlparams->visible, true);
 }
 
 // Edit a new filter.
-if ($urlparams->new and confirm_sesskey()) {
+if ($urlparams->new && confirm_sesskey()) {
     $filter = $fm->get_filter_from_id($fm::BLANK_FILTER);
     $filterform = $fm->get_customfilter_backend_form($filter);
     $fm->display_filter_form($filterform, $filter, $urlparams);
-} else if ($urlparams->fedit and confirm_sesskey()) { // Or edit existing filter.
+} else if ($urlparams->fedit && confirm_sesskey()) { // Or edit existing filter.
     $filter = $fm->get_filter_from_id($urlparams->fid);
     $filterform = $fm->get_customfilter_backend_form($filter);
     $fm->display_filter_form($filterform, $filter, $urlparams);

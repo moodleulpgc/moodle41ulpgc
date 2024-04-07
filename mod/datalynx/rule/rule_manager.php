@@ -20,7 +20,7 @@
  * @copyright 2015 Ivan Šakić
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(dirname(__FILE__)) . '/classes/datalynx.php');
 
@@ -209,7 +209,7 @@ class datalynx_rule_manager {
     public function get_rules($exclude = null, $menu = false, $forceget = false) {
         global $DB;
 
-        if (!$this->_customrules or $forceget) {
+        if (!$this->_customrules || $forceget) {
             $this->_customrules = array();
             // Collate user rules.
             if ($rules = $DB->get_records('datalynx_rules', array('dataid' => $this->_df->id()))) {
@@ -220,12 +220,12 @@ class datalynx_rule_manager {
         }
 
         $rules = $this->_customrules;
-        if (empty($exclude) and !$menu) {
+        if (empty($exclude) && !$menu) {
             return $rules;
         } else {
             $retrules = array();
             foreach ($rules as $ruleid => $rule) {
-                if (!empty($exclude) and in_array($ruleid, $exclude)) {
+                if (!empty($exclude) && in_array($ruleid, $exclude)) {
                     continue;
                 }
                 if ($menu) {
@@ -255,7 +255,7 @@ class datalynx_rule_manager {
         // Collate the rules for processing.
         if ($ruleids = explode(',', $rids)) {
             foreach ($ruleids as $ruleid) {
-                if ($ruleid > 0 and isset($dfrules[$ruleid])) {
+                if ($ruleid > 0 && isset($dfrules[$ruleid])) {
                     $rules[$ruleid] = $dfrules[$ruleid];
                 }
             }
@@ -264,7 +264,7 @@ class datalynx_rule_manager {
         $processedrids = array();
         $strnotify = '';
 
-        if (empty($rules) and $action != 'add') {
+        if (empty($rules) && $action != 'add') {
             $df->notifications['bad'][] = get_string("rulenoneforaction", 'datalynx');
             return false;
         } else {
@@ -520,7 +520,7 @@ class datalynx_rule_manager {
         $data->siteurl = $CFG->wwwroot;
         $data->coursename = !empty($data->coursename) ? $data->coursename : 'Unspecified course';
         $data->datalynxname = !empty($data->datalynxname) ? $data->datalynxname : 'Unspecified datalynx';
-        $data->entryid = implode(array_keys($data->items), ',');
+        $data->entryid = implode(',', array_keys($data->items));
 
         if ($df->data->singleview) {
             $entryurl = new moodle_url($data->url,

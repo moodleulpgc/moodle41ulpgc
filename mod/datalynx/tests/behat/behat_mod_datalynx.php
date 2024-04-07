@@ -51,7 +51,8 @@ class behat_mod_datalynx extends behat_base {
     public function i_add_to_the_datalynx_the_following_fields($activityname, TableNode $table) {
 
         $this->execute("behat_general::click_link", $this->escape($activityname));
-        $this->execute("behat_general::click_link", "Manage");
+        $csstarget = '.nav-item [title="Manage"]';
+        $this->execute('behat_general::i_click_on', [$csstarget, 'css_element']);
         $this->execute("behat_general::click_link", "Fields");
 
         $fields = $table->getHash();
@@ -182,8 +183,8 @@ class behat_mod_datalynx extends behat_base {
      */
     public function i_add_to_datalynx_the_view_of_type_with($activityname, $viewtype, TableNode $viewformdata) {
         $this->execute("behat_general::click_link", $this->escape($activityname));
-        $this->execute("behat_general::click_link", $this->escape("Manage"));
-        $this->execute("behat_general::click_link", $this->escape("Views"));
+        $csstarget = '.nav-item [title="Manage"]';
+        $this->execute('behat_general::i_click_on', [$csstarget, 'css_element']);
         $this->execute("behat_forms::i_select_from_the_singleselect", array($viewtype, 'type'));
         $this->execute("behat_forms::i_set_the_following_fields_to_these_values", $viewformdata);
         $this->execute('behat_forms::press_button', get_string('savechanges'));
@@ -290,5 +291,30 @@ class behat_mod_datalynx extends behat_base {
     public function i_close_the_autocomplete_suggestions_list() {
         $csstarget = ".col-form-label";
         $this->execute('behat_general::i_click_on', [$csstarget, 'css_element']);
+    }
+
+    /**
+     * Follow the datalynx link of the elements matching the selector.
+     *
+     * @When /^I follow the datalynx "(?P<link_string>(?:[^"]|\\")*)" link$/
+     */
+    public function i_follow_the_datalynx_link($linktext) {
+        $page = $this->getSession()->getPage();
+        switch ($linktext) {
+            case 'Filters':
+                // Code to handle the "Filters" case.
+                $link = $page->find('css', sprintf('.nav-item [title="Filters"]', $linktext));
+                break;
+            case 'Manage':
+                $link = $page->find('css', sprintf('.nav-item [title="Manage"]', $linktext));
+                break;
+            case 'Views':
+                $link = $page->find('css', sprintf('.nav-item [title="Views"]', $linktext));
+                break;
+        }
+        if (null === $link) {
+            throw new \RuntimeException(sprintf('The link "%s" was not found or is not visible', $linktext));
+        }
+        $link->click();
     }
 }

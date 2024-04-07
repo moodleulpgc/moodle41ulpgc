@@ -76,11 +76,11 @@ class page_created extends \core\event\base {
      * @param template $template
      * @return page_created
      */
-    public static function create_from_page(\stdClass $page, template $template) : page_created {
-        $data = array(
+    public static function create_from_page(\stdClass $page, template $template): page_created {
+        $data = [
             'context' => $template->get_context(),
             'objectid' => $page->id,
-        );
+        ];
 
         return self::create($data);
     }
@@ -94,7 +94,7 @@ class page_created extends \core\event\base {
             return new \moodle_url('/mod/customcert/manage_templates.php');
         } else {
             return new \moodle_url('/mod/customcert/view.php',
-                array('id' => $this->contextinstanceid));
+                ['id' => $this->contextinstanceid]);
         }
     }
 
@@ -104,7 +104,7 @@ class page_created extends \core\event\base {
      * @return string[]
      */
     public static function get_objectid_mapping() {
-        return array('db' => 'customcert_pages', 'restore' => 'customcert_pages');
+        return ['db' => 'customcert_pages', 'restore' => 'customcert_pages'];
     }
 
     /**

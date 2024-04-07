@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/renderer.php");
 
@@ -41,7 +41,7 @@ class datalynxfield__comment_renderer extends datalynxfield_renderer {
         $replacements = array_fill_keys($tags, '');
 
         // No edit mode for this field so just return html.
-        if ($entry->id > 0 and !empty($CFG->usecomments)) {
+        if ($entry->id > 0 && !empty($CFG->usecomments)) {
             foreach ($tags as $tag) {
                 switch (trim($tag, '@')) {
                     case '##comments:count##':

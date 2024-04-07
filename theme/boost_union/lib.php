@@ -89,6 +89,10 @@ define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDDARK', 'stackeddark')
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_STACKEDLIGHT', 'stackedlight');
 define('THEME_BOOST_UNION_SETTING_COURSEIMAGELAYOUT_HEADINGABOVE', 'headingabove');
 
+define('THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_STARTOFLINE', 'startofline');
+define('THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_ENDOFLINE', 'endofline');
+define('THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_ICONCOLOR', 'iconcolor');
+
 define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_NOCHANGE', 'nochange');
 define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_LIGHT', 'light');
 define('THEME_BOOST_UNION_SETTING_CONTENTSTYLE_LIGHTSHADOW', 'lightshadow');
@@ -135,17 +139,15 @@ function theme_boost_union_get_main_scss_content($theme) {
     global $CFG;
 
     $scss = '';
-    $filename = !empty($theme->settings->preset) ? $theme->settings->preset : null;
-    $fs = get_file_storage();
 
-    $context = context_system::instance();
+    // Include pre.scss from Boost Union.
     $scss .= file_get_contents($CFG->dirroot . '/theme/boost_union/scss/boost_union/pre.scss');
-    if ($filename && ($presetfile = $fs->get_file($context->id, 'theme_boost_union', 'preset', 0, '/', $filename))) {
-        $scss .= $presetfile->get_content();
-    } else {
-        // Safety fallback - maybe new installs etc.
-        $scss .= file_get_contents($CFG->dirroot . '/theme/boost_union/scss/preset/default.scss');
-    }
+
+    // Get and include the main SCSS from Boost Core.
+    // This particularly covers the theme preset which is set in Boost Core and not Boost Union.
+    $scss .= theme_boost_get_main_scss_content(theme_config::load('boost'));
+
+    // Include post.scss from Boost Union.
     $scss .= file_get_contents($CFG->dirroot . '/theme/boost_union/scss/boost_union/post.scss');
 
     return $scss;
@@ -347,7 +349,7 @@ function theme_boost_union_get_extra_scss($theme) {
     // Instead, the flavour is overriding the background image later in flavours/styles.php.
 
     // For the rest of this function, we add SCSS snippets to the SCSS stack based on enabled admin settings.
-    // This is done here as it is quite easy to do. As an alternative, it could also been done in post.css by using
+    // This is done here as it is quite easy to do. As an alternative, it could also been done in post.scss by using
     // SCSS variables with @if conditions and SCSS variables. However, we preferred to do it here in a single place.
 
     // Setting: Activity icon purpose.
@@ -364,6 +366,9 @@ function theme_boost_union_get_extra_scss($theme) {
 
     // Setting: Course overview block.
     $content .= theme_boost_union_get_scss_courseoverview_block($theme);
+
+    // Setting: Login order.
+    $content .= theme_boost_union_get_scss_login_order($theme);
 
     return $content;
 }
@@ -604,4 +609,25 @@ function theme_boost_union_output_fragment_icons_list($args) {
         // Return the rendered icon list.
         return $OUTPUT->render_from_template('theme_boost_union/fontawesome-iconpicker-popover', ['options' => $icons]);
     }
+}
+
+/**
+ * Returns the html for the starred courses popover menu.
+ *
+ * @return string
+ */
+function theme_boost_union_render_navbar_output() {
+    global $CFG;
+
+    // Require local library.
+    require_once($CFG->dirroot . '/theme/boost_union/locallib.php');
+
+    // Initialize the navbar content.
+    $content = '';
+
+    // Setting: Show starred courses popover in the navbar.
+    $content .= theme_boost_union_get_navbar_starredcoursespopover();
+
+    // Return.
+    return $content;
 }

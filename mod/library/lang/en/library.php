@@ -43,6 +43,7 @@ Select the files you may want to delete by picking them to the box using the app
 You may add several files, from different folders. 
 
 The box contains a flat list but files keep record of the original folder where they where placed, and deleted there.';
+$string['currentitem'] = 'Current item';
 $string['delfilesdone'] = '{$a} files removed from repository';
 $string['display'] = 'Display mode';
 $string['displayheader'] = 'Document Display';
@@ -110,6 +111,7 @@ $string['printintro'] = 'Display page description';
 $string['printintro_help'] = 'If checked, the activity description is displayed before the content files.';
 $string['printintroexplain'] = 'Display page description above content?';
 $string['privacy:metadata'] = 'The Document Library plugin does not store any personal data.';
+$string['remotelink'] = 'Please, use this identifier to cite or link this item: {$a}';
 $string['renameold'] = 'Rename existing file';
 $string['renamenew'] = 'Rename new file';
 $string['repository'] = 'Repository type';

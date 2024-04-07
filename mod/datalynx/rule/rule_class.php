@@ -21,7 +21,7 @@
  * @copyright based on the work by 2013 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . "/../classes/datalynx.php");
 
@@ -154,8 +154,8 @@ abstract class datalynx_rule_base {
         if (!empty($fromform)) {
             $this->set_rule($fromform);
         }
-
-        if (!$this->rule->id = $DB->insert_record('datalynx_rules', $this->rule)) {
+        $this->rule->id = $DB->insert_record('datalynx_rules', $this->rule);
+        if (!$this->rule->id) {
             echo $OUTPUT->notification('Insertion of new rule failed!');
             return false;
         } else {

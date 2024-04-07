@@ -39,7 +39,6 @@ $scannedpageid = optional_param('pageid', 0, PARAM_INT);
 $overwrite     = optional_param('overwrite', 0, PARAM_INT);
 $action        = optional_param('action', 'load', PARAM_TEXT);
 $userchanged   = optional_param('userchanged', 0, PARAM_INT);
-$useridnumber  = optional_param('useridnumber', '', PARAM_TEXT); // ecastro ULPGC
 
 if (!$scannedpage = $DB->get_record('offlinequiz_scanned_pages', array('id' => $scannedpageid))) {
     print_error('noscannedpage', 'offlinequiz', $CFG->wwwroot . '/course/view.php?id=' . $COURSE->id, $scannedpageid);
@@ -130,6 +129,12 @@ if (property_exists($scannedpage, 'id')) {
     // Load the stored image and adjust the hotspots from scratch.
     $sheetloaded = $scanner->load_stored_image($scannedpage->filename, $corners);
 }
+// ecastro ULPGC
+if(!$sheetloaded) {
+    $scannedpage->status = 'error';
+    $scannedpage->error = 'imagenotrecovered';
+}
+// ecastro ULPGC
 
 // Make a first check.
 if (!$scanner->check_deleted()) {
@@ -234,7 +239,9 @@ onClick=\"self.close(); return false;\"><br />";
     }
 
     $usernumber = required_param('usernumber', PARAM_TEXT);
+
     // ecastro ULPGC
+    $useridnumber  = optional_param('useridnumber', '', PARAM_TEXT);
     if($useridnumber) {
         $usernumber = trim($useridnumber);
     }
@@ -306,6 +313,7 @@ onClick=\"self.close(); return false;\"><br />";
 
     $usernumber = required_param('usernumber', PARAM_TEXT);
     // ecastro ULPGC
+    $useridnumber  = optional_param('useridnumber', '', PARAM_TEXT);
     if($useridnumber) {
         $usernumber = $useridnumber;
     }
@@ -1032,7 +1040,7 @@ if ($scannedpage->status == 'ok' ||
 
     // ecastro ULPGC
     echo "<label for=\"useridnumber\">".get_string('idnumber')."</label>";
-    echo "<input class=\"imagebutton\" type=\"text\" name=\"useridnumber\" value=\"".$useridnumber. "\"><br />";
+    echo "<input class=\"imagebutton useridnumberbox\" type=\"text\" name=\"useridnumber\" value=\"".$useridnumber. "\"><br />";
     // ecastro ULPGC
 
     if ($scannedpage->error == 'usernotincourse' && $offlinequizconfig->oneclickenrol) {
@@ -1144,7 +1152,6 @@ echo "</form>\n";
 if ($sheetloaded) {
     // Print hotspots for userkey.
     $userkeyhotspots = $scanner->export_hotspots_userid(OQ_IMAGE_WIDTH);
-
     foreach ($userkeyhotspots as $key => $hotspot) {
         // ecastro ULPGC
         if($key == 'moodleid') {

@@ -28,6 +28,7 @@ use theme_boost_union\admin_setting_configstoredfilealwayscallback;
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig || has_capability('theme/boost_union:configure', context_system::instance())) {
+    global $PAGE;
 
     // How this file works:
     // This theme's settings are divided into multiple settings pages.
@@ -126,37 +127,15 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
 
         // Create theme presets heading.
         $name = 'theme_boost_union/presetheading';
+        $preseturl = new moodle_url('/admin/settings.php', ['section' => 'themesettingboost'], 'theme_boost_general');
         $title = get_string('presetheading', 'theme_boost_union', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
-        $tab->add($setting);
-
-        // Replicate the preset setting from theme_boost, but use our own file area.
-        $name = 'theme_boost_union/preset';
-        $title = get_string('preset', 'theme_boost', null, true);
-        $description = get_string('preset_desc', 'theme_boost', null, true);
-        $default = 'default.scss';
-
-        $context = context_system::instance();
-        $fs = get_file_storage();
-        $files = $fs->get_area_files($context->id, 'theme_boost_union', 'preset', 0, 'itemid, filepath, filename', false);
-
-        $choices = [];
-        foreach ($files as $file) {
-            $choices[$file->get_filename()] = $file->get_filename();
-        }
-        $choices['default.scss'] = 'default.scss';
-        $choices['plain.scss'] = 'plain.scss';
-
-        $setting = new admin_setting_configthemepreset($name, $title, $description, $default, $choices, 'boost_union');
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $tab->add($setting);
-
-        // Replicate the preset files setting from theme_boost.
-        $name = 'theme_boost_union/presetfiles';
-        $title = get_string('presetfiles', 'theme_boost', null, true);
-        $description = get_string('presetfiles_desc', 'theme_boost', null, true);
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'preset', 0,
-                ['maxfiles' => 20, 'accepted_types' => ['.scss']]);
+        $description = get_string('presetheading_desc', 'theme_boost_union', null, true).'<br />'.
+            // We would love to use $OUTPUT->single_button($preseturl, ...) here, but this results in the fact
+            // that the settings page redirects to the Boost Core settings after saving for an unknown reason.
+            html_writer::link($preseturl,
+                    get_string('presetbutton', 'theme_boost_union', null, true),
+                    ['class' => 'btn btn-secondary my-3']);
+        $setting = new admin_setting_heading($name, $title, $description);
         $tab->add($setting);
 
         // Add tab to settings page.
@@ -665,9 +644,21 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Setting: Local login.
         $name = 'theme_boost_union/loginlocalloginenable';
         $title = get_string('loginlocalloginenablesetting', 'theme_boost_union', null, true);
-        $description = get_string('loginlocalloginenablesetting_desc', 'theme_boost_union', null, true);
+        $localloginurl = new moodle_url('/theme/boost_union/locallogin.php');
+        $description = get_string('loginlocalloginenablesetting_desc', 'theme_boost_union', null, true).'<br /><br />'.
+                get_string('loginlocalloginenablesetting_note', 'theme_boost_union', ['url' => $localloginurl], true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_YES, $yesnooption);
         $tab->add($setting);
+
+        // Setting: Local login intro.
+        $name = 'theme_boost_union/loginlocalshowintro';
+        $title = get_string('loginlocalshowintrosetting', 'theme_boost_union', null, true);
+        $description = get_string('loginlocalshowintrosetting_desc', 'theme_boost_union',
+                get_string('loginlocalintro', 'theme_boost_union'), true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/loginlocalshowintro', 'theme_boost_union/loginlocalloginenable', 'neq',
+            THEME_BOOST_UNION_SETTING_SELECT_YES);
 
         // Setting: IDP login intro.
         $name = 'theme_boost_union/loginidpshowintro';
@@ -675,6 +666,28 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $description = get_string('loginidpshowintrosetting_desc', 'theme_boost_union', get_string('potentialidps', 'auth'), true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_YES, $yesnooption);
         $tab->add($setting);
+
+        // Create login order heading.
+        $name = 'theme_boost_union/loginorderheading';
+        $title = get_string('loginorderheading', 'theme_boost_union', null, true);
+        $description = get_string('loginorderheading_desc', 'theme_boost_union', null, true).'<br /><br />'.
+                get_string('loginorderheading_note', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, $description);
+        $tab->add($setting);
+
+        // Create the login order settings without code duplication.
+        $loginmethods = theme_boost_union_get_loginpage_methods();
+        $loginmethodsoptions = [];
+        foreach ($loginmethods as $key => $lm) {
+            $loginmethodsoptions[$key] = $key;
+        }
+        foreach ($loginmethods as $key => $lm) {
+            $name = 'theme_boost_union/loginorder'.$lm;
+            $title = get_string('loginorder'.$lm.'setting', 'theme_boost_union', null, true);
+            $setting = new admin_setting_configselect($name, $title, null, $key, $loginmethodsoptions);
+            $setting->set_updatedcallback('theme_reset_all_caches');
+            $tab->add($setting);
+        }
 
         // Add tab to settings page.
         $page->add($tab);
@@ -803,6 +816,36 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
                 THEME_BOOST_UNION_SETTING_IMAGEPOSITION_CENTER_CENTER, $courseheaderimagepositionoptions);
         $tab->add($setting);
         $page->hide_if('theme_boost_union/courseheaderimageposition', 'theme_boost_union/courseheaderimageenabled', 'neq',
+                THEME_BOOST_UNION_SETTING_SELECT_YES);
+
+        // Create course index heading.
+        $name = 'theme_boost_union/courseindexheading';
+        $title = get_string('courseindexheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Display activity type icons in course index.
+        $name = 'theme_boost_union/courseindexmodiconenabled';
+        $title = get_string('courseindexmodiconenabled', 'theme_boost_union', null, true);
+        $description = get_string('courseindexmodiconenabled_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Setting:  Position of activity completion indication.
+        $name = 'theme_boost_union/courseindexcompletioninfoposition';
+        $title = get_string('courseindexcompletioninfoposition', 'theme_boost_union', null, true);
+        $description = get_string('courseindexcompletioninfoposition_desc', 'theme_boost_union', null, true);
+        $courseindexcompletioninfopositionoptions = [
+                THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_ENDOFLINE =>
+                        get_string('courseindexcompletioninfopositionendofline', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_STARTOFLINE =>
+                        get_string('courseindexcompletioninfopositionstartofline', 'theme_boost_union'),
+                THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_ICONCOLOR =>
+                        get_string('courseindexcompletioninfopositioniconcolor', 'theme_boost_union'), ];
+        $setting = new admin_setting_configselect($name, $title, $description,
+                THEME_BOOST_UNION_SETTING_COMPLETIONINFOPOSITION_ENDOFLINE, $courseindexcompletioninfopositionoptions);
+        $tab->add($setting);
+        $page->hide_if('theme_boost_union/courseindexcompletioninfoposition', 'theme_boost_union/courseindexmodiconenabled', 'neq',
                 THEME_BOOST_UNION_SETTING_SELECT_YES);
 
         // Add tab to settings page.
@@ -1274,10 +1317,24 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
+        // Setting: Alternative logo link URL.
+        $name = 'theme_boost_union/alternativelogolinkurl';
+        $title = get_string('alternativelogolinkurlsetting', 'theme_boost_union', null, true);
+        $description = get_string('alternativelogolinkurlsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configtext($name, $title, $description, '', PARAM_URL);
+        $tab->add($setting);
+
         // Create user menu heading.
         $name = 'theme_boost_union/usermenuheading';
         $title = get_string('usermenuheading', 'theme_boost_union', null, true);
         $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Show full name in the user menu.
+        $name = 'theme_boost_union/showfullnameinusermenu';
+        $title = get_string('showfullnameinusermenussetting', 'theme_boost_union', null, true);
+        $description = get_string('showfullnameinusermenussetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
         $tab->add($setting);
 
         // Setting: Add preferred language link to language menu.
@@ -1291,6 +1348,20 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
                 ['url1' => $langmenuurl, 'url2' => $langtoolurl, 'url3' => $langlisturl],
                 true);
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Create navbar heading.
+        $name = 'theme_boost_union/navbarheading';
+        $title = get_string('navbarheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Show starred courses popover in the navbar.
+        $name = 'theme_boost_union/shownavbarstarredcourses';
+        $title = get_string('shownavbarstarredcoursessetting', 'theme_boost_union', null, true);
+        $description = get_string('shownavbarstarredcoursessetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
         // Create breadcrumbs heading.
@@ -1428,8 +1499,8 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $pagelayouts = [
             'standard' => $partialregions,
             'admin' => $partialregions,
-            'coursecategory' => $partialregions,
-            'incourse' => $partialregions,
+            'coursecategory' => $allavailableregions,
+            'incourse' => $allavailableregions,
             'mypublic' => $partialregions,
             'report' => $partialregions,
             'course' => $allavailableregions,
@@ -2577,4 +2648,7 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
                 'theme/boost_union:configure');
         $ADMIN->add('theme_boost_union', $flavourspage);
     }
+
+    // Add JS to remember the active admin tab to the page.
+    $PAGE->requires->js_call_amd('theme_boost_union/admintabs', 'init');
 }

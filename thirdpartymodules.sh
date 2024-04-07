@@ -207,6 +207,13 @@ git submodule add https://github.com/deraadt/moodle-block_simple_clock.git      
 
 git submodule add https://github.com/mudrd8mz/moodle-block_todo.git                     blocks/todo
 
+# Custom fields
+git submodule add git@github.com:andrewhancox/moodle-customfield_duration.git   customfield/duration
+git submodule add git@github.com:andrewhancox/moodle-customfield_file.git           customfield/file
+git submodule add git@github.com:call-learning/moodle-customfield_multiselect.git   customfield/multiselect
+git submodule add git@github.com:paulholden/moodle-customfield_picture.git          customfield/picture
+git submodule add git@github.com:soorajsingh/moodle-customfield_dynamic.git         customfield/dynamic
+
 #Course formats
 git submodule add https://github.com/brandaorodrigo/moodle-format_board.git         course/format/board
 git submodule add https://github.com/brandaorodrigo/moodle-format_buttons.git       course/format/buttons
@@ -234,7 +241,6 @@ git submodule add https://edugit.org/nik/moodle-filter_jmol.git                 
 #git submodule add https://github.com/geoffrowland/moodle-filter_jmol.git            filter/jmol
 #git submodule add https://github.com/frederic-nevers/moodle-filter_multiembed.git   filter/multiembed
 #git submodule add https://github.com/JosePFs/moodle-filter_tabs.git                 filter/tabs
-
 
 #Advanced  Grading methods
 #git submodule add  https://github.com/marcusgreen/moodle-gradingform_btec.git       grade/grading/form/btec
@@ -345,7 +351,7 @@ git submodule add https://github.com/microsoft/moodle-theme_boost_o365teams.git 
 git submodule add https://github.com/willianmano/moodle-theme_moove.git             theme/moove
 git submodule add https://github.com/dbnschools/moodle-theme_learnr.git             theme/learnr
 git submodule add https://github.com/moodle-an-hochschulen/moodle-theme_boost_union.git     theme/boost_union
-#git submodule add 
+#git submodule add git@github.com:hribeir0/moodle-theme_stream.git theme/stream
 
 # Testing, temporal
 git submodule add https://gitlab.com/adapta/moodle-tool_bulkchangeprofilefields.git            admin/tool/bulkchangeprofilefields
@@ -356,5 +362,10 @@ git submodule add https://github.com/brickfield/moodle-gradereport_rubrics.git  
 #git submodule add https://github.com/catalyst/moodle-assignsubmission_automaticextension.git     mod/assign/submission/automaticextension
 git submodule add https://gricad-gitlab.univ-grenoble-alpes.fr/moodle-plugins/moodle-atto_code.git             lib/editor/atto/plugins/code
 git submodule add https://gitlab.com/dne-elearning/moodle-magistere/moodle-atto_fontawesomepicker.git   lib/editor/atto/plugins/fontawesomepicker
+git submodule add git@github.com:UNIMOODLE/moodle-quizaccess_sebprogram.git     mod/quiz/accessrule/sebprogram
+git submodule add git@github.com:UNIMOODLE/moodle-quizaccess_quiztimer.git      mod/quiz/accessrule/quiztimer
+git submodule add git@github.com:UNIMOODLE/moodle-qbank_quiztimer.git           question/bank/quiztimer
 
+
+#git@github.com:srobotta/moodle-tiny_htmlblock.git
 #git submodule add https://github.com/UNIMOODLE/moodle-mod_hybridteaching.git               mod/hybridteaching

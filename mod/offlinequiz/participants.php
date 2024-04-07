@@ -439,7 +439,6 @@ switch($mode) {
             // Print the tabs.
             offlinequiz_print_tabs($offlinequiz,'tabdownloadparticipantsforms', $cm);
             echo $OUTPUT->heading_with_help(get_string('createpdfsparticipants', 'offlinequiz'), 'participants', 'offlinequiz');
-            
         }
         // Show update button.
         ?>

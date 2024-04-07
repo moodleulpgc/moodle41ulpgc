@@ -22,7 +22,7 @@
  * @copyright based on the work by 2012 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 require_once("$CFG->dirroot/lib/resourcelib.php");
@@ -63,7 +63,7 @@ class datalynxfield_file extends datalynxfield_base {
         $filemanager = $alttext = $editor = null;
         if (!empty($values)) {
             foreach ($values as $name => $value) {
-                if (!empty($name) and !empty($value)) {
+                if (!empty($name) && !empty($value)) {
                     ${$name} = $value; // Sets $filemanager etc.
                 }
             }
@@ -144,7 +144,7 @@ class datalynxfield_file extends datalynxfield_base {
         $csvname = $importsettings[$fieldname]['name'];
         $fileurls = explode(',', $csvrecord[$csvname]);
 
-        // Prepare the draftarea where to put all files
+        // Prepare the draftarea where to put all files.
         $draftitemid = file_get_submitted_draft_itemid("field_{$fieldid}_{$entryid}_filemanager");
         // For draftareas we use usercontextid for some reason, this is consistent with the ajax call.
         $contextid = context_user::instance($USER->id)->id;

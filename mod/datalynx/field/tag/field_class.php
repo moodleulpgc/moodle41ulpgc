@@ -21,7 +21,7 @@
  * @copyright 2016 David Bogner
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/field_class.php");
 
@@ -59,7 +59,8 @@ class datalynxfield_tag extends datalynxfield_option_multiple {
         $rec->entryid = $entryid;
 
         // Remove content from entry and remove tags from item when tags were removed in entry.
-        if (empty($tags) && $rec->id = $contentid) {
+        $rec->id = $contentid;
+        if (empty($tags) && $rec->id) {
             $rec->content = "";
             $DB->update_record('datalynx_contents', $rec);
             core_tag_tag::remove_all_item_tags('mod_datalynx', 'datalynx_contents', $contentid);
@@ -67,7 +68,8 @@ class datalynxfield_tag extends datalynxfield_option_multiple {
         }
 
         // Create empty datalynx_contents entry in order to get id for processing tags.
-        if (!$rec->id = $contentid) {
+        $rec->id = $contentid;
+        if (!$rec->id) {
             $rec->id = $DB->insert_record('datalynx_contents', $rec);
         }
         core_tag_tag::set_item_tags('mod_datalynx', 'datalynx_contents', $rec->id, $this->df->context, $tags);
@@ -149,7 +151,7 @@ class datalynxfield_tag extends datalynxfield_option_multiple {
             $operator = '';
         }
 
-        if ($operator === 'ANY_OF' OR $operator === 'ALL_OF') {
+        if ($operator === 'ANY_OF' || $operator === 'ALL_OF') {
             foreach ($value as $key => $searchstring) {
                 $xname = $name . $key;
 

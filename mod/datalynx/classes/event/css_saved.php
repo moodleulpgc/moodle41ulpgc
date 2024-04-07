@@ -23,7 +23,7 @@
  */
 namespace mod_datalynx\event;
 
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 /**
  *
@@ -73,16 +73,5 @@ class css_saved extends \core\event\base {
         return new \moodle_url('/mod/datalynx/view.php',
                 array('d' => $this->objectid, 'cssedit' => 1
                 ));
-    }
-
-    /**
-     * Get the legacy event log data.
-     *
-     * @return array
-     */
-    public function get_legacy_logdata() {
-        return array($this->courseid, 'datalynx', 'css_saved',
-                'view.php?d=' . $this->objectid . '&cssedit=1', $this->objectid,
-                $this->contextinstanceid);
     }
 }

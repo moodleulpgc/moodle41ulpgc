@@ -1336,3 +1336,9 @@ input#showviewbutton {
     background-color: #f8f9fa;
     padding: 1em;
 }
+
+/** ecastro ULPGC **/
+input.imagebutton.useridnumberbox {
+    width: 7.0rem;
+    margin-left: 0.5rem;
+}

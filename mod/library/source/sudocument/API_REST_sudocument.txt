@@ -555,3 +555,633 @@ de donde se puede construir el enlace de descarga que sería algo así:
 <a href="https://sudocument.ulpgc.es/page/objetodigital?id=[o:filename]
 ">[o:source]</a>
 
+
+//////////////////////////////////////////////////////////////////////////////////////
+Respuesta API
+Array
+(
+    [0] => stdClass Object
+        (
+            [@context] => https://apinodo.ulpgc.es/api-context
+            [@id] => https://apinodo.ulpgc.es/api/items/28566
+            [@type] => Array
+                (
+                    [0] => o:Item
+                    [1] => dctype:Text
+                )
+
+            [o:id] => 28566
+            [o:is_public] => 1
+            [o:owner] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/users/5
+                    [o:id] => 5
+                )
+
+            [o:resource_class] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/resource_classes/31
+                    [o:id] => 31
+                )
+
+            [o:resource_template] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/resource_templates/3
+                    [o:id] => 3
+                )
+
+            [o:thumbnail] =>
+            [o:title] => Apuntes de turismo y desarrollo sostenible
+            [thumbnail_display_urls] => stdClass Object
+                (
+                    [large] => /application/asset/thumbnails/default.png?v=3.2.3
+                    [medium] => /application/asset/thumbnails/default.png?v=3.2.3
+                    [square] => /application/asset/thumbnails/default.png?v=3.2.3
+                )
+
+            [o:created] => stdClass Object
+                (
+                    [@value] => 2020-07-16T08:04:27+00:00
+                    [@type] => http://www.w3.org/2001/XMLSchema#dateTime
+                )
+
+            [o:modified] => stdClass Object
+                (
+                    [@value] => 2021-09-09T08:10:30+00:00
+                    [@type] => http://www.w3.org/2001/XMLSchema#dateTime
+                )
+
+            [o:media] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/media/28615
+                            [o:id] => 28615
+                        )
+
+                )
+
+            [o:item_set] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/item_sets/9286
+                            [o:id] => 9286
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/item_sets/25653
+                            [o:id] => 25653
+                        )
+
+                    [2] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/item_sets/25656
+                            [o:id] => 25656
+                        )
+
+                )
+
+            [o:site] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/sites/2
+                            [o:id] => 2
+                        )
+
+                )
+
+            [dcterms:title] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 1
+                            [property_label] => Title
+                            [is_public] => 1
+                            [@value] => Apuntes de turismo y desarrollo sostenible
+                            [@language] => es
+                        )
+
+                )
+
+            [dcterms:creator] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 2
+                            [property_label] => Creator
+                            [is_public] => 1
+                            [@value] => Araña Padilla, Jorge E.
+                            [@language] => es
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 2
+                            [property_label] => Creator
+                            [is_public] => 1
+                            [@value] => González Hernández, Jorge E.
+                            [@language] => es
+                        )
+
+                    [2] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 2
+                            [property_label] => Creator
+                            [is_public] => 1
+                            [@value] => León González, Carmelo J.
+                            [@language] => es
+                        )
+
+                )
+
+            [dcterms:identifier] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => uri
+                            [property_id] => 10
+                            [property_label] => Identifier
+                            [is_public] => 1
+                            [@id] => https://hdl.handle.net/11730/sudoc/1021
+                        )
+
+                )
+
+            [dcterms:date] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 7
+                            [property_label] => Date
+                            [is_public] => 1
+                            [@value] => 2012
+                            [@language] => es
+                        )
+
+                )
+
+            [bibo:shortDescription] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 116
+                            [property_label] => shortDescription
+                            [is_public] => 1
+                            [@value] => Turismo sostenible
+                            [@language] => es
+                        )
+
+                )
+
+            [dcterms:type] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 8
+                            [property_label] => Type
+                            [is_public] => 1
+                            [@value] => Libro
+                            [@language] => es
+                        )
+
+                )
+
+            [dcterms:subject] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 3
+                            [property_label] => Subject
+                            [is_public] => 1
+                            [@value] => 531290 Economía sectorial: turismo
+                            [@language] => es
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 3
+                            [property_label] => Subject
+                            [is_public] => 1
+                            [@value] => 590208 Política del medio ambiente
+                            [@language] => es
+                        )
+
+                )
+
+            [dcterms:language] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 12
+                            [property_label] => Language
+                            [is_public] => 1
+                            [@value] => spa
+                            [@language] => es
+                        )
+
+                )
+
+            [isbd:P1076] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 438
+                            [property_label] => has label name and catalogue number
+                            [is_public] => 1
+                            [@value] => 4033 Grado en Turismo
+                            [@language] => es
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 438
+                            [property_label] => has label name and catalogue number
+                            [is_public] => 1
+                            [@value] => 43321
+                            [@language] => es
+                        )
+
+                )
+
+            [o-module-comment:comment] => Array
+                (
+                )
+
+        )
+
+    [1] => stdClass Object
+        (
+            [@context] => https://apinodo.ulpgc.es/api-context
+            [@id] => https://apinodo.ulpgc.es/api/items/226759
+            [@type] => Array
+                (
+                    [0] => o:Item
+                    [1] => dctype:Text
+                )
+
+            [o:id] => 226759
+            [o:is_public] => 1
+            [o:owner] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/users/2
+                    [o:id] => 2
+                )
+
+            [o:resource_class] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/resource_classes/31
+                    [o:id] => 31
+                )
+
+            [o:resource_template] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/resource_templates/3
+                    [o:id] => 3
+                )
+
+            [o:thumbnail] =>
+            [o:title] => Apuntes de turismo y desarrollo sostenible (prueba)
+            [thumbnail_display_urls] => stdClass Object
+                (
+                    [large] => https://apinodo.ulpgc.es/files/large/313c8fe40cd10e2d44167dd5d956ef226d2bf1ed.jpg
+                    [medium] => https://apinodo.ulpgc.es/files/medium/313c8fe40cd10e2d44167dd5d956ef226d2bf1ed.jpg
+                    [square] => https://apinodo.ulpgc.es/files/square/313c8fe40cd10e2d44167dd5d956ef226d2bf1ed.jpg
+                )
+
+            [o:created] => stdClass Object
+                (
+                    [@value] => 2024-02-07T12:17:59+00:00
+                    [@type] => http://www.w3.org/2001/XMLSchema#dateTime
+                )
+
+            [o:modified] => stdClass Object
+                (
+                    [@value] => 2024-02-07T12:27:14+00:00
+                    [@type] => http://www.w3.org/2001/XMLSchema#dateTime
+                )
+
+            [o:media] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/media/226760
+                            [o:id] => 226760
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/media/226761
+                            [o:id] => 226761
+                        )
+
+                    [2] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/media/226762
+                            [o:id] => 226762
+                        )
+
+                )
+
+            [o:item_set] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/item_sets/9286
+                            [o:id] => 9286
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/item_sets/25653
+                            [o:id] => 25653
+                        )
+
+                    [2] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/item_sets/25656
+                            [o:id] => 25656
+                        )
+
+                )
+
+            [o:site] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [@id] => https://apinodo.ulpgc.es/api/sites/2
+                            [o:id] => 2
+                        )
+
+                )
+
+            [dcterms:title] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 1
+                            [property_label] => Title
+                            [is_public] => 1
+                            [@value] => Apuntes de turismo y desarrollo sostenible (prueba)
+                        )
+
+                )
+
+            [dcterms:creator] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 2
+                            [property_label] => Creator
+                            [is_public] => 1
+                            [@value] => Araña Padilla, Jorge E.
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 2
+                            [property_label] => Creator
+                            [is_public] => 1
+                            [@value] => González Hernández, Jorge E.
+                        )
+
+                    [2] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 2
+                            [property_label] => Creator
+                            [is_public] => 1
+                            [@value] => León González, Carmelo J.
+                        )
+
+                )
+
+            [dcterms:identifier] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 10
+                            [property_label] => Identifier
+                            [is_public] => 1
+                            [@value] => https://hdl.handle.net/11730/sudoc/123456789
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => uri
+                            [property_id] => 10
+                            [property_label] => Identifier
+                            [is_public] => 1
+                            [@id] => https://hdl.handle.net/11730/sudoc/1541
+                        )
+
+                )
+
+            [dcterms:date] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => numeric:timestamp
+                            [property_id] => 7
+                            [property_label] => Date
+                            [is_public] => 1
+                            [@value] => 2012
+                            [@type] => http://www.w3.org/2001/XMLSchema#gYear
+                        )
+
+                )
+
+            [dcterms:created] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => numeric:timestamp
+                            [property_id] => 20
+                            [property_label] => Date Created
+                            [is_public] => 1
+                            [@value] => 2012
+                            [@type] => http://www.w3.org/2001/XMLSchema#gYear
+                        )
+
+                )
+
+            [dcterms:dateSubmitted] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => numeric:timestamp
+                            [property_id] => 45
+                            [property_label] => Date Submitted
+                            [is_public] => 1
+                            [@value] => 2012
+                            [@type] => http://www.w3.org/2001/XMLSchema#gYear
+                        )
+
+                )
+
+            [bibo:shortDescription] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 116
+                            [property_label] => shortDescription
+                            [is_public] => 1
+                            [@value] => Turismo sostenible
+                        )
+
+                )
+
+            [dcterms:type] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => customvocab:2
+                            [property_id] => 8
+                            [property_label] => Type
+                            [is_public] => 1
+                            [@id] => http://purl.org/coar/resource_type/c_2f33
+                            [o:label] => Libro
+                        )
+
+                )
+
+            [dcterms:subject] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => valuesuggest:unesco:unesco6
+                            [property_id] => 3
+                            [property_label] => Subject
+                            [is_public] => 1
+                            [@value] => 531290 Economía sectorial: turismo
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => valuesuggest:unesco:unesco6
+                            [property_id] => 3
+                            [property_label] => Subject
+                            [is_public] => 1
+                            [@value] => 590208 Política del medio ambiente
+                        )
+
+                )
+
+            [dcterms:language] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => valuesuggest:lc:iso6392
+                            [property_id] => 12
+                            [property_label] => Language
+                            [is_public] => 1
+                            [@id] => http://id.loc.gov/vocabulary/iso639-2/spa
+                            [o:label] => spa
+                        )
+
+                )
+
+            [isbd:P1076] => Array
+                (
+                    [0] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 438
+                            [property_label] => has label name and catalogue number
+                            [is_public] => 1
+                            [@value] => 4033 Grado en Turismo
+                        )
+
+                    [1] => stdClass Object
+                        (
+                            [type] => literal
+                            [property_id] => 438
+                            [property_label] => has label name and catalogue number
+                            [is_public] => 1
+                            [@value] => 43321
+                        )
+
+                )
+
+            [o-module-comment:comment] => Array
+                (
+                )
+
+        )
+
+)
+
+SUdocument@ resource
+
+stdClass Object
+(
+    [id] => 226759
+    [media] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/media/226760
+                    [o:id] => 226760
+                )
+
+            [1] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/media/226761
+                    [o:id] => 226761
+                )
+
+            [2] => stdClass Object
+                (
+                    [@id] => https://apinodo.ulpgc.es/api/media/226762
+                    [o:id] => 226762
+                )
+
+        )
+
+    [timemodified] => 1707308834
+    [title] => Apuntes de turismo y desarrollo sostenible (prueba)
+    [date] => 2012
+    [identifier] => https://hdl.handle.net/11730/sudoc/1541
+)
+
+SUdocument@ resource
+
+SUdocument@ media files
+
+Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 226760
+            [filename] => M-111_4033_00_00-43321-000-2012.pdf
+            [source] => 313c8fe40cd10e2d44167dd5d956ef226d2bf1ed.pdf
+            [timemodified] => 1707308834
+            [handle] => https://hdl.handle.net/11730/sudoc/1541
+            [title] => Apuntes de turismo y desarrollo sostenible (prueba)
+        )
+
+)
+
+SUdocument@ media files
+
+
+

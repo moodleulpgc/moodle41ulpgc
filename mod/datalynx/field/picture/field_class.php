@@ -22,7 +22,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->dirroot/mod/datalynx/field/file/field_class.php");
 
@@ -65,9 +65,9 @@ class datalynxfield_picture extends datalynxfield_file {
             return false;
         }
         // Have the dimensions changed?
-        $updatefile = $oldfield->param7 != $this->field->param7 or
+        $updatefile = $oldfield->param7 != $this->field->param7 ||
         $oldfield->param8 != $this->field->param8;
-        $updatethumb = $oldfield->param9 != $this->field->param9 or
+        $updatethumb = $oldfield->param9 != $this->field->param9 ||
         $oldfield->param10 != $this->field->param10;
         if ($oldfield && ($updatefile || $updatethumb)) {
             // Check through all existing records and update the thumbnail.
@@ -140,7 +140,7 @@ class datalynxfield_picture extends datalynxfield_file {
                     $maxheight = !empty($this->field->param8) ? $this->field->param8 : '';
 
                     // If either width or height try to (re)generate.
-                    if ($maxwidth or $maxheight) {
+                    if ($maxwidth || $maxheight) {
                         // This may fail for various reasons.
                         try {
                             global $DB;
@@ -163,7 +163,7 @@ class datalynxfield_picture extends datalynxfield_file {
                     }
 
                     // If either width or height try to (re)generate, otherwise delete what exists.
-                    if ($thumbwidth or $thumbheight) {
+                    if ($thumbwidth || $thumbheight) {
 
                         $filerecord = array('contextid' => $this->df->context->id,
                                 'component' => 'mod_datalynx', 'filearea' => 'thumb',

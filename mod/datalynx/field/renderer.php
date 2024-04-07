@@ -21,7 +21,7 @@
  * @copyright based on the work  by 2011 Itamar Tzadok
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') or die();
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../behavior/behavior.php');
 require_once(dirname(__FILE__) . '/../renderer/renderer.php');
@@ -236,7 +236,7 @@ abstract class datalynxfield_renderer {
      * @param array $options rendering options
      * @return string HTML representation of the field
      */
-    public function render_display_mode(stdClass $entry, array $options) {
+    public function render_display_mode(stdClass $entry, array $options): string {
         $fieldid = $this->_field->id();
 
         if (isset($entry->{"c{$fieldid}_content"})) {
@@ -317,7 +317,7 @@ abstract class datalynxfield_renderer {
         $fieldname = "f_{$entry->id}_$fieldid";
 
         $content = '';
-        if ($entry->id > 0 and !empty($entry->{"c{$fieldid}_content"})) {
+        if ($entry->id > 0 && !empty($entry->{"c{$fieldid}_content"})) {
             $content = $entry->{"c{$fieldid}_content"};
         }
 
@@ -337,7 +337,7 @@ abstract class datalynxfield_renderer {
      * @param string $value
      * @return array
      */
-    public function render_search_mode(MoodleQuickForm &$mform, $i = 0, $value = '') {
+    public function render_search_mode(MoodleQuickForm &$mform, int $i = 0, string $value = '') {
         $fieldid = $this->_field->id();
         $fieldname = "f_{$i}_$fieldid";
 
@@ -356,7 +356,7 @@ abstract class datalynxfield_renderer {
         // The default menu category for fields.
         $patternsmenu = array();
         foreach ($this->patterns() as $tag => $pattern) {
-            if ($showall or $pattern[self::PATTERN_SHOW_IN_MENU]) {
+            if ($showall || $pattern[self::PATTERN_SHOW_IN_MENU]) {
                 // Which category.
                 if (!empty($pattern[self::PATTERN_CATEGORY])) {
                     $cat = $pattern[self::PATTERN_CATEGORY];

@@ -46,6 +46,42 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
       | home,myhome           | Home           | Dashboard           |
       | courses,siteadminnode | My courses     | Site administration |
 
+  Scenario Outline: Setting: Alternative logo link URL.
+    Given the following config values are set as admin:
+      | config                 | value     | plugin            |
+      | alternativelogolinkurl | <setting> | theme_boost_union |
+    And the following config values are set as admin:
+      # We set the start page to the Dashboard to be able to distinguish the used link URL by the '/my/' path later.
+      | config          | value |
+      | defaulthomepage | 1     |
+    When I log in as "admin"
+    And I am on homepage
+    Then the "href" attribute of ".navbar-brand" "css_element" should contain "<href>"
+
+    Examples:
+      | setting         | href            |
+      |                 | /my/            |
+      | https://foo.bar | https://foo.bar |
+
+  @javascript
+  Scenario Outline: Setting:  Show full name in the user menu.
+    Given the following config values are set as admin:
+      | config                 | value     | plugin            |
+      | showfullnameinusermenu | <setting> | theme_boost_union |
+    And the following "users" exist:
+      | username     | firstname | lastname |
+      | menutestuser | Menutest  | User     |
+    When I log in as "menutestuser"
+    And I click on "User menu" "button" in the ".usermenu" "css_element"
+    Then ".usermenu .loggedinas" "css_element" <shouldornot> exist
+    And I <shouldornot> see "You are logged in as:" in the ".usermenu .carousel-inner" "css_element"
+    And I <shouldornot> see "Menutest User" in the ".usermenu .carousel-inner" "css_element"
+
+    Examples:
+      | setting | shouldornot |
+      | yes     | should      |
+      | no      | should not  |
+
   @javascript
   Scenario Outline: Setting: Add preferred language link to language menu.
     Given the following "language packs" exist:
@@ -60,11 +96,64 @@ Feature: Configuring the theme_boost_union plugin for the "Navigation" tab on th
     And I click on "User menu" "button" in the ".usermenu" "css_element"
     And I click on "Language" "link" in the ".usermenu" "css_element"
     Then I <shouldornot> see "Set preferred language" in the ".usermenu .carousel-item.submenu" "css_element"
+    Examples:
+      | setting | shouldornot |
+      | yes     | should      |
+      | no      | should not  |
+
+  @javascript
+  Scenario Outline: Setting: Show starred courses popover in the navbar.
+    Given the following config values are set as admin:
+      | config                   | value     | plugin            |
+      | shownavbarstarredcourses | <setting> | theme_boost_union |
+    And the theme cache is purged and the theme is reloaded
+    When I log in as "student1"
+    And I follow "My courses"
+    And I click on ".coursemenubtn" "css_element" in the "//div[@class='card dashboard-card' and contains(.,'Course 1')]" "xpath_element"
+    And I click on "Star this course" "link" in the "//div[@class='card dashboard-card' and contains(.,'Course 1')]" "xpath_element"
+    And I reload the page
+    Then "nav.navbar #usernavigation .popover-region-favourites" "css_element" <shouldornot> be visible
 
     Examples:
       | setting | shouldornot |
       | yes     | should      |
       | no      | should not  |
+
+  @javascript
+  Scenario: Setting: Show starred courses popover in the navbar (and make sure that I see the right courses there).
+    Given the following config values are set as admin:
+      | config                   | value | plugin            |
+      | shownavbarstarredcourses | yes   | theme_boost_union |
+    And the following "courses" exist:
+      | fullname | shortname |
+      | Course 2 | C2        |
+      | Course 3 | C3        |
+      | Course 4 | C4        |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | student1 | C2     | student |
+      | student1 | C3     | student |
+      | student1 | C4     | student |
+    And the theme cache is purged and the theme is reloaded
+    When I log in as "student1"
+    And I follow "My courses"
+    And I click on ".coursemenubtn" "css_element" in the "//div[@class='card dashboard-card' and contains(.,'Course 2')]" "xpath_element"
+    And I click on "Star this course" "link" in the "//div[@class='card dashboard-card' and contains(.,'Course 2')]" "xpath_element"
+    And I click on ".coursemenubtn" "css_element" in the "//div[@class='card dashboard-card' and contains(.,'Course 3')]" "xpath_element"
+    And I click on "Star this course" "link" in the "//div[@class='card dashboard-card' and contains(.,'Course 3')]" "xpath_element"
+    And I log out
+    And I log in as "admin"
+    And I am on "Course 3" course homepage
+    And I navigate to course participants
+    And I click on "Unenrol" "icon" in the "student1" "table_row"
+    And I click on "Unenrol" "button" in the "Unenrol" "dialogue"
+    And I log out
+    And I log in as "student1"
+    And I click on "nav.navbar #usernavigation .popover-region-favourites .nav-link" "css_element"
+    Then I should not see "Course 1" in the ".popover-region-favourites .popover-region-content-container" "css_element"
+    And I should see "Course 2" in the ".popover-region-favourites .popover-region-content-container" "css_element"
+    And I should not see "Course 3" in the ".popover-region-favourites .popover-region-content-container" "css_element"
+    And I should not see "Course 4" in the ".popover-region-favourites .popover-region-content-container" "css_element"
 
   Scenario Outline: Setting: Course category breadcrumbs
     Given the following "categories" exist:
