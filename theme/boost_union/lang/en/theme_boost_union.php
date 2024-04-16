@@ -33,6 +33,18 @@ $string['githubissueslink'] = '<a href="https://github.com/moodle-an-hochschulen
 // Settings: General strings.
 $string['dontchange'] = 'Do not change anything';
 
+// Settings: Overview page.
+$string['settingsoverview'] = 'Settings overview';
+$string['settingsoverview_title'] = 'Boost Union settings overview';
+$string['settingsoverview_look_desc'] = 'Settings for branding your Moodle site are located here: Colors, icons, images, sizing and, of course, custom SCSS.';
+$string['settingsoverview_feel_desc'] = 'Settings for the overall behaviour of your Moodle site are located here: Navigation items, navigation helpers, blocks and links.';
+$string['settingsoverview_content_desc'] = 'Settings for the global content of your Moodle site are located here: Footer, static pages, info banners, advertisement tiles and sliders.';
+$string['settingsoverview_functionality_desc'] = 'Settings for additional useful global or course-related functionality on your Moodle site are located here.';
+$string['settingsoverview_flavours_desc'] = 'With flavours, you can diversify the look of your Moodle site between cohorts and / or course categories.';
+$string['settingsoverview_smartmenus_desc'] = 'With smart menus, you can extend the navigation items of your Moodle site in the main menu and the user menus well as introduce a bottom menu or a top menu.';
+$string['settingsoverview_all'] = 'All settings on one page';
+$string['settingsoverview_all_desc'] = 'Here, you can open the standard Moodle category settings page for Boost Union that shows all settings on one page. But beware, it is really packed.';
+
 // Settings: Look page.
 $string['configtitlelook'] = 'Look';
 
@@ -464,13 +476,11 @@ $string['backtotop'] = 'Back to top';
 $string['backtotopbuttonsetting'] = 'Back to top button';
 $string['backtotopbuttonsetting_desc'] = 'With this setting a back to top button will appear in the bottom right corner of the page as soon as the user scrolls down the page. A button like this existed already on Boost in Moodle Core until Moodle 3.11, but was removed in 4.0. With Boost Union, you can bring it back.';
 // ... ... Setting: Scroll-spy
-$string['scrollspy'] = 'Scroll-spy';
 $string['scrollspysetting'] = 'Scroll-spy';
 $string['scrollspysetting_desc'] = 'With this setting, upon toggling edit mode on and off, the scroll position at where the user was when performing the toggle is preserved.';
-// ... ... Setting: Activity navigation
-$string['activitynavigation'] = 'Activity navigation';
-$string['activitynavigationsetting'] = 'Activity navigation elements';
-$string['activitynavigationsetting_desc'] = 'With this setting the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource become displayed. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0. With Boost Union, you can bring them back.';
+// ... ... Setting: Activity & section navigation
+$string['activitynavigationsetting'] = 'Activity & section navigation elements';
+$string['activitynavigationsetting_desc'] = 'With this setting, the elements to jump to the previous and next activity/resource as well as the pull down menu to jump to a distinct activity/resource become displayed. Furthermore, within courses using the \'one section per page\' mode, similar elements for the previous and next section are displayed as well. UI elements like this existed already on Boost in Moodle Core until Moodle 3.11, but were removed in 4.0. With Boost Union, you can bring them back.';
 
 // Settings: Blocks tab.
 $string['blockstab'] = 'Blocks';

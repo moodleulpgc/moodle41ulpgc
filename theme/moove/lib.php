@@ -524,6 +524,14 @@ function theme_moove_get_course_related_hints() {
     // Initialize HTML code.
     $html = '';
 
+    // ULPGC message
+    if (get_config('local_ulpgccore', 'showglobalalert') && !get_user_preferences('user_read_globalmessage') && 
+        $PAGE->has_set_url() &&
+        ($PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE) ||
+        $PAGE->url->compare(new moodle_url('/my/'), URL_MATCH_BASE))) {
+        $html .= local_ulpgccore_get_alert_message();
+    }
+
     // If the setting showhintcoursehidden is set and the visibility of the course is hidden and
     // a hint for the visibility will be shown.
     if (get_config('theme_moove', 'showhintcoursehidden') == THEME_MOOVE_SETTING_SELECT_YES

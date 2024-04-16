@@ -25,14 +25,14 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qformat_glossary';
-$plugin->version   = 2016072806;
+$plugin->version   = 2016072807;
 $plugin->release   = '1.0.2';
 
 $plugin->requires  = 2018051400;
 
 $plugin->maturity  = MATURITY_STABLE;
 
-$plugin->dependencies = array(
+$plugin->dependencies = [
     'mod_glossary' => 2013110500,
     'qformat_xml' => 2013110500,
-);
+];

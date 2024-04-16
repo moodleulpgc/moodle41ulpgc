@@ -3823,7 +3823,10 @@ function examboard_process_allocateusers($examboard, $fromform) {
         
         reset($potential);
         while(count($examinees) < $fromform->usersperexam) {
-            list($userid, $tutors) = each($potential); 
+            //list($userid, $tutors) = each($potential);
+            $userid = key($potential);
+            $tutors = current($potential);
+            next($potential);
             if($userid && !in_array($userid, $examinees) && !array_intersect($members, $tutors)) {
                 // OK, this userid  is not listed, add to exam
                 $newmember->userid = $userid;

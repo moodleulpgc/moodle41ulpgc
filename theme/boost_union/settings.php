@@ -37,20 +37,30 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
     // stupid "Too much data passed as arguments to js_call_amd..." debugging message if we would
     // pack all settings onto just one settings page.
     // To achieve this goal, we create a custom admin settings category and fill it with several settings pages.
-    // However, there is still the $settings variable which is expected by Moodle coreto be filled with the theme
-    // settings and which is automatically added to the admin settings tree in one settings page.
-    // To avoid that there appears an empty "Boost Union" settings page near our own custom settings category,
-    // we set $settings to null.
 
-    // Avoid that the theme settings page is auto-created.
-    $settings = null;
+    // However, there is still the $settings variable which is expected by Moodle core to be filled with the theme
+    // settings and which is automatically linked from the theme selector page.
+    // To avoid that there appears a broken "Boost Union" settings page, we redirect the user to a settings
+    // overview page if he opens this page.
+    $mainsettingspageurl = new moodle_url('/admin/settings.php', ['section' => 'themesettingboost_union']);
+    if ($ADMIN->fulltree && $PAGE->has_set_url() && $PAGE->url->compare($mainsettingspageurl)) {
+        redirect(new moodle_url('/theme/boost_union/settings_overview.php'));
+    }
 
     // Create custom admin settings category.
-    $ADMIN->add('themes', new admin_category('theme_boost_union',
+    $ADMIN->add('appearance', new admin_category('theme_boost_union',
             get_string('pluginname', 'theme_boost_union', null, true)));
 
     // Create empty settings page structure to make the site administration work on non-admin pages.
     if (!$ADMIN->fulltree) {
+        // Create Overview page
+        // (and allow users with the theme/boost_union:configure capability to access it).
+        $overviewpage = new admin_externalpage('theme_boost_union_overview',
+                get_string('settingsoverview', 'theme_boost_union', null, true),
+                new moodle_url('/theme/boost_union/settings_overview.php'),
+                'theme/boost_union:configure');
+        $ADMIN->add('theme_boost_union', $overviewpage);
+
         // Create Look settings page
         // (and allow users with the theme/boost_union:configure capability to access it).
         $tab = new admin_settingpage('theme_boost_union_look',
@@ -113,7 +123,6 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Prepare regular expression for checking if the value is a percent number (from 0% to 100%) or a pixel number
         // (with 3 or 4 digits) or a viewport width number (from 0 to 100).
         $widthregex = '/^((\d{1,2}|100)%)|((\d{1,2}|100)vw)|(\d{3,4}px)$/';
-
 
         // Create Look settings page with tabs
         // (and allow users with the theme/boost_union:configure capability to access it).
@@ -1406,7 +1415,7 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
-        // Setting: Activity navigation.
+        // Setting: Activity & section navigation.
         $name = 'theme_boost_union/activitynavigation';
         $title = get_string('activitynavigationsetting', 'theme_boost_union', null, true);
         $description = get_string('activitynavigationsetting_desc', 'theme_boost_union', null, true);
@@ -2638,15 +2647,6 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
 
         // Add settings page to the admin settings category.
         $ADMIN->add('theme_boost_union', $page);
-
-
-        // Create Flavours settings page as external page
-        // (and allow users with the theme/boost_union:configure capability to access it).
-        $flavourspage = new admin_externalpage('theme_boost_union_flavours',
-                get_string('configtitleflavours', 'theme_boost_union', null, true),
-                new moodle_url('/theme/boost_union/flavours/overview.php'),
-                'theme/boost_union:configure');
-        $ADMIN->add('theme_boost_union', $flavourspage);
     }
 
     // Add JS to remember the active admin tab to the page.

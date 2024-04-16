@@ -71,14 +71,21 @@ class qformat_glossary extends qformat_xml {
                     $expout .= glossary_end_tag("CATEGORY", 5, true);
                     $expout .= glossary_end_tag("CATEGORIES", 4, true);
                 };
-                $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4, $question->contextid,
-                    'qtype_match', 'subquestion', $subquestion->id);
+                $expout .= $this->glossary_xml_export_files(
+                    'ENTRYFILES',
+                    4,
+                    $question->contextid,
+                    'qtype_match',
+                    'subquestion',
+                    $subquestion->id
+                );
                 $expout .= glossary_end_tag("ENTRY", 3, true);
             }
-
         }
-        if ($question->qtype == 'shortanswer' ||
-                ($question->qtype == 'multichoice' && !empty($question->options->single))) {
+        if (
+            $question->qtype == 'shortanswer' ||
+                ($question->qtype == 'multichoice' && !empty($question->options->single))
+        ) {
             $expout .= glossary_start_tag("ENTRY", 3, true);
             $answers = $question->options->answers;
             reset($answers);
@@ -127,21 +134,28 @@ class qformat_glossary extends qformat_xml {
                 $expout .= glossary_end_tag("CATEGORY", 5, true);
                 $expout .= glossary_end_tag("CATEGORIES", 4, true);
             };
-            $expout .= $this->glossary_xml_export_files('ENTRYFILES', 4,
-                $question->contextid, 'question', 'questiontext', $question->id);
+            $expout .= $this->glossary_xml_export_files(
+                'ENTRYFILES',
+                4,
+                $question->contextid,
+                'question',
+                'questiontext',
+                $question->id
+            );
 
             // Write the question tags.
-            if ((get_config('core', 'version') >= 2016120503) &&
-                    ($tags = core_tag_tag::get_item_tags_array('core_question', 'question', $question->id))) {
+            if (
+                (get_config('core', 'version') >= 2016120503) &&
+                    ($tags = core_tag_tag::get_item_tags_array('core_question', 'question', $question->id))
+            ) {
                 $expout .= glossary_start_tag("TAGS", 4);
                 foreach ($tags as $tag) {
-                    $expout .= glossary_full_tag ("TAG", 5, false, $tag);
+                    $expout .= glossary_full_tag("TAG", 5, false, $tag);
                 }
                 $expout .= glossary_end_tag("TAGS", 4);
             }
 
             $expout .= glossary_end_tag("ENTRY", 3, true);
-
         }
         return $expout;
     }
@@ -161,8 +175,16 @@ class qformat_glossary extends qformat_xml {
     protected function glossary_xml_export_files($tag, $taglevel, $contextid, $component, $filearea, $itemid) {
         $co = '';
         $fs = get_file_storage();
-        if ($files = $fs->get_area_files(
-            $contextid, $component, $filearea, $itemid, 'itemid,filepath,filename', false)) {
+        if (
+            $files = $fs->get_area_files(
+                $contextid,
+                $component,
+                $filearea,
+                $itemid,
+                'itemid,filepath,filename',
+                false
+            )
+        ) {
             $co .= glossary_start_tag($tag, $taglevel, true);
             foreach ($files as $file) {
                 $co .= glossary_start_tag('FILE', $taglevel + 1, true);
@@ -221,8 +243,8 @@ class qformat_glossary extends qformat_xml {
      * @return array question objects
      */
     public function readquestions($lines) {
-        $uncategorizedquestions = array();
-        $categorizedquestions = array();
+        $uncategorizedquestions = [];
+        $categorizedquestions = [];
 
         // We just need it as one big string.
         $lines = implode('', $lines);
@@ -251,7 +273,7 @@ class qformat_glossary extends qformat_xml {
                     // If no categories are specified, place it in the current one.
                     $qo = $this->import_headers($xmlentry);
                     $uncategorizedquestions[] = $qo;
-                    $xmlcategories = array();
+                    $xmlcategories = [];
                 }
                 foreach ($xmlcategories as $category) {
                     // Place copy in each category that is specified.
@@ -291,17 +313,19 @@ class qformat_glossary extends qformat_xml {
         $qo->questiontext = $definition;
 
         // Import files embedded in the entry text.
-        $questiontext = $this->import_text_with_files($xmlentry,
-            array());
+        $questiontext = $this->import_text_with_files(
+            $xmlentry,
+            []
+        );
         $qo->questiontext = $questiontext['text'];
-        $qo->name = s(substr(utf8_decode($definition), 0, 50));
+        $qo->name = s(substr(mb_convert_encoding($definition, 'ISO-8859-1', 'UTF-8'), 0, 50));
         if ($format == FORMAT_HTML) {
-            $qo->name = s(substr(utf8_decode(html_to_text($definition)), 0, 50));
+            $qo->name = s(substr(mb_convert_encoding(html_to_text($definition), 'ISO-8859-1', 'UTF-8'), 0, 50));
         }
         $qo->answer[0] = $concept;
         $qo->usecase = $usecase;
         $qo->fraction[0] = 1;
-        $qo->feedback[0] = array();
+        $qo->feedback[0] = [];
         $qo->feedback[0]['text'] = '';
         $qo->feedback[0]['format'] = FORMAT_PLAIN;
 
@@ -317,7 +341,7 @@ class qformat_glossary extends qformat_xml {
             $aliasname = trim(trusttext_strip($xmlalias['#']['NAME'][0]['#']));
             $qo->answer[$k + 1] = $aliasname;
             $qo->fraction[$k + 1] = 1;
-            $qo->feedback[$k + 1] = array();
+            $qo->feedback[$k + 1] = [];
             $qo->feedback[$k + 1]['text'] = '';
             $qo->feedback[$k + 1]['format'] = FORMAT_PLAIN;
         }
@@ -339,13 +363,24 @@ class qformat_glossary extends qformat_xml {
      * @return string processed text.
      */
     public function import_text_with_files($data, $path, $defaultvalue = '', $defaultformat = 'html') {
-        $field  = array();
-        $field['text'] = $this->getpath($data,
-                array_merge($path, array('#', 'DEFINITION', 0, '#')), $defaultvalue, true);
-        $field['format'] = $this->trans_format($this->getpath($data,
-                array_merge($path, array('@', 'FORMAT')), $defaultformat));
-        $itemid = $this->import_files_as_draft($this->getpath($data,
-                array_merge($path, array('#', 'ENTRYFILES', 0, '#', 'FILE')), array(), false));
+        $field  = [];
+        $field['text'] = $this->getpath(
+            $data,
+            array_merge($path, ['#', 'DEFINITION', 0, '#']),
+            $defaultvalue,
+            true
+        );
+        $field['format'] = $this->trans_format($this->getpath(
+            $data,
+            array_merge($path, ['@', 'FORMAT']),
+            $defaultformat
+        ));
+        $itemid = $this->import_files_as_draft($this->getpath(
+            $data,
+            array_merge($path, ['#', 'ENTRYFILES', 0, '#', 'FILE']),
+            [],
+            false
+        ));
         if (!empty($itemid)) {
             $field['itemid'] = $itemid;
         }
@@ -366,24 +401,24 @@ class qformat_glossary extends qformat_xml {
         }
         $fs = get_file_storage();
         $itemid = file_get_unused_draft_itemid();
-        $filepaths = array();
+        $filepaths = [];
         foreach ($xml as $file) {
-            $filename = $this->getpath($file, array('#', 'FILENAME', 0, '#'), '', true);
-            $filepath = $this->getpath($file, array('#', 'FILEPATH', 0, '#'), '/', true);
-            $contents = $this->getpath($file, array('#', 'CONTENTS', 0, '#'), '/', true);
+            $filename = $this->getpath($file, ['#', 'FILENAME', 0, '#'], '', true);
+            $filepath = $this->getpath($file, ['#', 'FILEPATH', 0, '#'], '/', true);
+            $contents = $this->getpath($file, ['#', 'CONTENTS', 0, '#'], '/', true);
             $fullpath = $filepath . $filename;
             if (in_array($fullpath, $filepaths)) {
                 debugging('Duplicate file in XML: ' . $fullpath, DEBUG_DEVELOPER);
                 continue;
             }
-            $filerecord = array(
+            $filerecord = [
                 'contextid' => context_user::instance($USER->id)->id,
                 'component' => 'user',
                 'filearea'  => 'draft',
                 'itemid'    => $itemid,
                 'filepath'  => $filepath,
                 'filename'  => $filename,
-            );
+            ];
             $fs->create_file_from_string($filerecord, base64_decode($contents));
             $filepaths[] = $fullpath;
         }
@@ -403,15 +438,16 @@ class qformat_glossary extends qformat_xml {
             return;
         }
 
-        if (core_tag_tag::is_enabled('core_question', 'question')
+        if (
+            core_tag_tag::is_enabled('core_question', 'question')
             && array_key_exists('TAGS', $xmlentry['#'])
-            && !empty($xmlentry['#']['TAGS'][0]['#']['TAG'])) {
-            $qo->tags = array();
+            && !empty($xmlentry['#']['TAGS'][0]['#']['TAG'])
+        ) {
+            $qo->tags = [];
             foreach ($xmlentry['#']['TAGS'][0]['#']['TAG'] as $tagdata) {
                 $qo->tags[] = $tagdata['#'];
             }
             return $qo->tags;
         }
     }
-
 }

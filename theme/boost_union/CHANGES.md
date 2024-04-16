@@ -4,6 +4,21 @@ moodle-theme_boost_union
 Changes
 -------
 
+### v4.1-r25
+
+* 2024-04-10 - Regression: Using Fontawesome 6 icons was broken on Moodle 4.1, resolves #624.
+
+### v4.1-r24
+
+* 2024-04-01 - Bugfix: Site support form success message is now shown above advert tiles / the slider on frontpage, partly resolves #488.
+* 2024-04-01 - Bugfix: In smart menus, the search for cohorts in restrict visibility by cohorts didn't work for more than 25 cohorts, resolves #462.
+* 2024-04-01 - Improvement: Enhance the activitynavigation setting description to cover section navigation as well, resolves #536.
+* 2024-03-30 - Bugfix: Smart menu divider did not work for user menu submenus, resolves #537.
+* 2024-03-25 - Backport: Boost Union settings were moved to an admin settings category of its own to support the new theme chooser on Moodle 4.4, resolves #482.
+               This change was backported to this Moodle major version.
+               Child theme support: If you are running a Boost Union Child theme, please make sure to adapt your child theme to our latest boilerplate.
+* 2024-03-22 - Backport: Align the before_standard_html_head() function with the new hook callback on Moodle 4.4, resolves #604.
+
 ### v4.1-r23
 
 * 2024-03-18 - Improvement: Add prefixes to the sessionStorage keys in the scrollspy implementation, resolves #598.
