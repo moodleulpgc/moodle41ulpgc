@@ -101,7 +101,7 @@ class mod_dialogue_renderer extends plugin_renderer_base {
             }
         }
 
-        $candelete = ((has_capability('mod/dialogue:delete', $context) and $USER->id == $conversation->author->id) or
+        $candelete = ((has_capability('mod/dialogue:delete', $context) && $USER->id == $conversation->author->id) ||
                        has_capability('mod/dialogue:deleteany', $context));
 
         if ($candelete) {
@@ -258,7 +258,7 @@ class mod_dialogue_renderer extends plugin_renderer_base {
                     }
                 }
 
-                if (isset($record->subject) and isset($record->body)) {
+                if (isset($record->subject) && isset($record->body)) {
                     $subject = empty($record->subject) ? get_string('nosubject', 'dialogue') : $record->subject;
                     $summaryline = dialogue_generate_summary_line($subject, $record->body, $record->bodyformat, '', '', $cm->id, $record->conversationid); // ecastro ULPGC
                     $html .= html_writer::start_tag('td');
@@ -825,7 +825,7 @@ class mod_dialogue_renderer extends plugin_renderer_base {
         $html .= html_writer::link($viewurl, get_string('viewconversations', 'dialogue'));
         $html .= html_writer::end_tag('li');
         // Experimental: link conversation by role listing.
-        if (!empty($config->viewconversationsbyrole) and has_capability('mod/dialogue:viewbyrole', $context)) {
+        if (!empty($config->viewconversationsbyrole) && has_capability('mod/dialogue:viewbyrole', $context)) {
             $active = ($currentpage == 'viewconversationsbyrole') ? array('class' => 'active') : array();
             $html .= html_writer::start_tag('li', $active);
             $viewurl = new moodle_url('viewconversationsbyrole.php', array('id' => $cm->id));

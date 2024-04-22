@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Make changes for PHP 8.2 compliance
+
 ## 3.0.0
 
 * Make plugin works from Moodle 3.5 onwards.

@@ -19,7 +19,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for switched role - Enable the setting
     Given the following config values are set as admin:
-      | config                   | value | plugin             |
+      | config                   | value | plugin            |
       | showswitchedroleincourse | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -32,26 +32,60 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint in hidden courses - Enable the setting
     Given the following config values are set as admin:
-      | config               | value | plugin             |
+      | config               | value | plugin            |
       | showhintcoursehidden | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I navigate to "Settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Course visibility | Hide |
     And I click on "Save and display" "button"
     Then I should see "This course is currently hidden. Only enrolled teachers can access this course when hidden." in the ".course-hint-hidden" "css_element"
     When I am on "Course 1" course homepage
-    When I navigate to "Settings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I set the following fields to these values:
       | Course visibility | Show |
     And I click on "Save and display" "button"
     Then I should not see "This course is currently hidden. Only enrolled teachers can access this course when hidden."
     And ".course-hint-hidden" "css_element" should not exist
 
+  Scenario: Setting: Show hint for forum notifications in hidden courses - Enable the setting
+    Given the following "activity" exists:
+      | course   | C1            |
+      | activity | forum         |
+      | idnumber | Announcements |
+      | name     | Announcements |
+    And the following config values are set as admin:
+      | config                     | value | plugin            |
+      | showhintcoursehidden       | yes   | theme_boost_union |
+      | showhintforumnotifications | yes   | theme_boost_union |
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I navigate to "Settings" in current page administration
+    And I set the following fields to these values:
+      | Course visibility | Hide |
+    And I click on "Save and display" "button"
+    And I am on the "Announcements" "forum activity" page
+    Then I should see "This course is currently hidden. This means that students will not be notified online or by email of any messages you post in this forum." in the ".course-hint-hidden" "css_element"
+    When I click on "Add discussion topic" "link"
+    And I click on "#id_advancedadddiscussion" "css_element"
+    Then I should see "This course is currently hidden. This means that students will not be notified online or by email of any messages you post in this forum." in the ".course-hint-hidden" "css_element"
+    And I set the field "Subject" to "My post"
+    And I set the field "Message" to "My message"
+    And I click on "Post to forum" "button"
+    When I click on "My post" "link"
+    Then I should see "This course is currently hidden. This means that students will not be notified online or by email of any messages you post in this forum." in the ".course-hint-hidden" "css_element"
+    When I am on "Course 1" course homepage
+    And I navigate to "Settings" in current page administration
+    And I set the following fields to these values:
+      | Course visibility | Show |
+    And I click on "Save and display" "button"
+    Then I should not see "This course is currently hidden. This means that students will not be notified online or by email of any messages you post in this forum."
+    And ".course-hint-hidden" "css_element" should not exist
+
   Scenario: Setting: Show hint guest for access - Enable the setting
     Given the following config values are set as admin:
-      | config                    | value | plugin             |
+      | config                    | value | plugin            |
       | showhintcourseguestaccess | yes   | theme_boost_union |
     And the following "users" exist:
       | username |
@@ -93,7 +127,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for self enrolment without enrolment key - Enable the setting
     Given the following config values are set as admin:
-      | config                  | value | plugin             |
+      | config                  | value | plugin            |
       | showhintcourseselfenrol | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -112,7 +146,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for self enrolment without enrolment key - Enable the setting and check that the call for action is shown
     Given the following config values are set as admin:
-      | config                  | value | plugin             |
+      | config                  | value | plugin            |
       | showhintcourseselfenrol | yes   | theme_boost_union |
     And the following "users" exist:
       | username |
@@ -146,7 +180,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for self enrolment without an enrolment key - Enable the setting and check that it is hidden when new enrolments are disabled
     Given the following config values are set as admin:
-      | config                  | value | plugin             |
+      | config                  | value | plugin            |
       | showhintcourseselfenrol | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -167,7 +201,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for self enrolment without an enrolment key - Enable the setting and check that it is hidden when a password is set
     Given the following config values are set as admin:
-      | config                  | value | plugin             |
+      | config                  | value | plugin            |
       | showhintcourseselfenrol | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -188,7 +222,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for self enrolment without an enrolment key - Enable the setting and check the hints depending on the configured start and / or end dates
     Given the following config values are set as admin:
-      | config                  | value | plugin             |
+      | config                  | value | plugin            |
       | showhintcourseselfenrol | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -202,14 +236,14 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     And ".course-hint-selfenrol" "css_element" should exist
     When I click on "Self enrolment (Student)" "link" in the ".course-hint-selfenrol" "css_element"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 0             |
-      | id_enrolenddate_enabled   | 1             |
+      | id_enrolstartdate_enabled | 0       |
+      | id_enrolenddate_enabled   | 1       |
     # We can't use the ##yesterday## notation here.
-      | id_enrolenddate_day       | 1             |
-      | id_enrolenddate_month     | January       |
-      | id_enrolenddate_year      | 2019          |
-      | id_enrolenddate_hour      | 00            |
-      | id_enrolenddate_minute    | 00            |
+      | id_enrolenddate_day       | 1       |
+      | id_enrolenddate_month     | January |
+      | id_enrolenddate_year      | 2019    |
+      | id_enrolenddate_hour      | 00      |
+      | id_enrolenddate_minute    | 00      |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should not see "This course is currently visible to everyone and self enrolment without an enrolment key is"
@@ -217,14 +251,14 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     When I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Self enrolment (Student)" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 0             |
-      | id_enrolenddate_enabled   | 1             |
+      | id_enrolstartdate_enabled | 0       |
+      | id_enrolenddate_enabled   | 1       |
     # We can't use the ##tomorrow## notation here. This test will break in the year 2050.
-      | id_enrolenddate_day       | 1             |
-      | id_enrolenddate_month     | January       |
-      | id_enrolenddate_year      | 2050          |
-      | id_enrolenddate_hour      | 00            |
-      | id_enrolenddate_minute    | 00            |
+      | id_enrolenddate_day       | 1       |
+      | id_enrolenddate_month     | January |
+      | id_enrolenddate_year      | 2050    |
+      | id_enrolenddate_hour      | 00      |
+      | id_enrolenddate_minute    | 00      |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should see "This course is currently visible to everyone and self enrolment without an enrolment key is possible."
@@ -233,14 +267,14 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     When I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Self enrolment (Student)" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 1             |
+      | id_enrolstartdate_enabled | 1       |
     # We can't use the ##yesterday## notation here.
-      | id_enrolstartdate_day     | 1             |
-      | id_enrolstartdate_month   | January       |
-      | id_enrolstartdate_year    | 2019          |
-      | id_enrolstartdate_hour    | 00            |
-      | id_enrolstartdate_minute  | 00            |
-      | id_enrolenddate_enabled   | 0             |
+      | id_enrolstartdate_day     | 1       |
+      | id_enrolstartdate_month   | January |
+      | id_enrolstartdate_year    | 2019    |
+      | id_enrolstartdate_hour    | 00      |
+      | id_enrolstartdate_minute  | 00      |
+      | id_enrolenddate_enabled   | 0       |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should see "This course is currently visible to everyone and self enrolment without an enrolment key is possible."
@@ -249,14 +283,14 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     When I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Self enrolment (Student)" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 1             |
+      | id_enrolstartdate_enabled | 1       |
     # We can't use the ##tomorrow## notation here. This test will break in the year 2050.
-      | id_enrolstartdate_day     | 1             |
-      | id_enrolstartdate_month   | January       |
-      | id_enrolstartdate_year    | 2050          |
-      | id_enrolstartdate_hour    | 00            |
-      | id_enrolstartdate_minute  | 00            |
-      | id_enrolenddate_enabled   | 0             |
+      | id_enrolstartdate_day     | 1       |
+      | id_enrolstartdate_month   | January |
+      | id_enrolstartdate_year    | 2050    |
+      | id_enrolstartdate_hour    | 00      |
+      | id_enrolstartdate_minute  | 00      |
+      | id_enrolenddate_enabled   | 0       |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should see "This course is currently visible to everyone and self enrolment without an enrolment key is planned to become possible."
@@ -265,20 +299,20 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     When I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Self enrolment (Student)" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 1             |
+      | id_enrolstartdate_enabled | 1       |
     # We can't use the ##Monday next week## notation here. This test will break in the year 2050.
-      | id_enrolstartdate_day     | 1             |
-      | id_enrolstartdate_month   | January       |
-      | id_enrolstartdate_year    | 2050          |
-      | id_enrolstartdate_hour    | 00            |
-      | id_enrolstartdate_minute  | 00            |
-      | id_enrolenddate_enabled   | 1             |
+      | id_enrolstartdate_day     | 1       |
+      | id_enrolstartdate_month   | January |
+      | id_enrolstartdate_year    | 2050    |
+      | id_enrolstartdate_hour    | 00      |
+      | id_enrolstartdate_minute  | 00      |
+      | id_enrolenddate_enabled   | 1       |
     # We can't use the ##Tuesday next week## notation here. This test will break in the year 2050.
-      | id_enrolenddate_day       | 2             |
-      | id_enrolenddate_month     | January       |
-      | id_enrolenddate_year      | 2050          |
-      | id_enrolenddate_hour      | 00            |
-      | id_enrolenddate_minute    | 00            |
+      | id_enrolenddate_day       | 2       |
+      | id_enrolenddate_month     | January |
+      | id_enrolenddate_year      | 2050    |
+      | id_enrolenddate_hour      | 00      |
+      | id_enrolenddate_minute    | 00      |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should see "This course is currently visible to everyone and self enrolment without an enrolment key is planned to become possible."
@@ -287,20 +321,20 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     When I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Self enrolment (Student)" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 1             |
+      | id_enrolstartdate_enabled | 1       |
     # We can't use the ##yesterday## notation here.
-      | id_enrolstartdate_day     | 1             |
-      | id_enrolstartdate_month   | January       |
-      | id_enrolstartdate_year    | 2019          |
-      | id_enrolstartdate_hour    | 00            |
-      | id_enrolstartdate_minute  | 00            |
-      | id_enrolenddate_enabled   | 1             |
+      | id_enrolstartdate_day     | 1       |
+      | id_enrolstartdate_month   | January |
+      | id_enrolstartdate_year    | 2019    |
+      | id_enrolstartdate_hour    | 00      |
+      | id_enrolstartdate_minute  | 00      |
+      | id_enrolenddate_enabled   | 1       |
     # We can't use the ##tomorrow## notation here. This test will break in the year 2050.
-      | id_enrolenddate_day       | 1             |
-      | id_enrolenddate_month     | January       |
-      | id_enrolenddate_year      | 2050          |
-      | id_enrolenddate_hour      | 00            |
-      | id_enrolenddate_minute    | 00            |
+      | id_enrolenddate_day       | 1       |
+      | id_enrolenddate_month     | January |
+      | id_enrolenddate_year      | 2050    |
+      | id_enrolenddate_hour      | 00      |
+      | id_enrolenddate_minute    | 00      |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should see "This course is currently visible to everyone and self enrolment without an enrolment key is possible."
@@ -309,20 +343,20 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     When I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Self enrolment (Student)" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 1             |
+      | id_enrolstartdate_enabled | 1       |
     # We can't use the ##3 days ago## notation here.
-      | id_enrolstartdate_day     | 1             |
-      | id_enrolstartdate_month   | January       |
-      | id_enrolstartdate_year    | 2018          |
-      | id_enrolstartdate_hour    | 00            |
-      | id_enrolstartdate_minute  | 00            |
-      | id_enrolenddate_enabled   | 1             |
+      | id_enrolstartdate_day     | 1       |
+      | id_enrolstartdate_month   | January |
+      | id_enrolstartdate_year    | 2018    |
+      | id_enrolstartdate_hour    | 00      |
+      | id_enrolstartdate_minute  | 00      |
+      | id_enrolenddate_enabled   | 1       |
     # We can't use the ##2 days ago## notation here.
-      | id_enrolenddate_day       | 1             |
-      | id_enrolenddate_month     | January       |
-      | id_enrolenddate_year      | 2019          |
-      | id_enrolenddate_hour      | 00            |
-      | id_enrolenddate_minute    | 00            |
+      | id_enrolenddate_day       | 1       |
+      | id_enrolenddate_month     | January |
+      | id_enrolenddate_year      | 2019    |
+      | id_enrolenddate_hour      | 00      |
+      | id_enrolenddate_minute    | 00      |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should not see "This course is currently visible to everyone and self enrolment without an enrolment key is"
@@ -330,7 +364,7 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
 
   Scenario: Setting: Show hint for self enrolment without an enrolment key - Enable the setting and add more than one self enrolment instance
     Given the following config values are set as admin:
-      | config                  | value | plugin             |
+      | config                  | value | plugin            |
       | showhintcourseselfenrol | yes   | theme_boost_union |
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -347,14 +381,14 @@ Feature: Configuring the theme_boost_union plugin for the "Courses" tab on the "
     And I am on the "Course 1" "enrolment methods" page
     And I click on "Edit" "link" in the "Custom self enrolment" "table_row"
     And I set the following fields to these values:
-      | id_enrolstartdate_enabled | 0             |
-      | id_enrolenddate_enabled   | 1             |
+      | id_enrolstartdate_enabled | 0       |
+      | id_enrolenddate_enabled   | 1       |
     # We can't use the ##tomorrow## notation here. This test will break in the year 2050.
-      | id_enrolenddate_day       | 1             |
-      | id_enrolenddate_month     | January       |
-      | id_enrolenddate_year      | 2050          |
-      | id_enrolenddate_hour      | 00            |
-      | id_enrolenddate_minute    | 00            |
+      | id_enrolenddate_day       | 1       |
+      | id_enrolenddate_month     | January |
+      | id_enrolenddate_year      | 2050    |
+      | id_enrolenddate_hour      | 00      |
+      | id_enrolenddate_minute    | 00      |
     And I press "Save changes"
     And I am on "Course 1" course homepage
     Then I should see "This course is currently visible to everyone and self enrolment without an enrolment key is possible."

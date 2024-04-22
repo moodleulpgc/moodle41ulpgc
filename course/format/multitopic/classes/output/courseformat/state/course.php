@@ -52,10 +52,12 @@ class course extends base_course {
      * @return stdClass data context for a mustache template
      */
     public function export_for_template(\renderer_base $output): stdClass {
+        global $CFG;
         $data = parent::export_for_template($output);
 
         $data->firstsectionlist = [];
         $data->secondsectionlist = [];
+        $data->draganddropsectionmoveafter = $CFG->version >= 2023120100;
 
         $format = $this->format;
         $sectionsextra = $format->fmt_get_sections_extra();
@@ -64,7 +66,7 @@ class course extends base_course {
 
         foreach ($sectionsextra as $sectionextra) {
             $section = $sectionextra->sectionbase;
-            if ($format->is_section_visible($section)) {
+            if (empty($section->component) && $format->is_section_visible($section)) {
                 if ($sectionextra->levelsan <= 0) {
                     $parentid = $section->id;
                     $lastparentid = $section->id;

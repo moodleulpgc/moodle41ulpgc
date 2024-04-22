@@ -25,6 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 class block_section extends block_list {
+    private $section;
+
     public function init() {
         $this->title = get_string('pluginname', 'block_section');
     }

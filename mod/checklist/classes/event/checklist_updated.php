@@ -15,24 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_checklist course module viewed event.
+ * The mod_checklist checklist updated event.
  *
  * @package    mod_checklist
- * @copyright  2014 Davo Smith <moodle@davosmith.co.uk>
+ * @copyright  2024 Andrew Hancox <andrewdchancox@googlemail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace mod_checklist\event;
 
 /**
- * The mod_checklist course module viewed event class.
+ * The mod_checklist checklist updated class.
  *
  * @package    mod_checklist
- * @since      Moodle 2.7
- * @copyright  2014 Davo Smith <moodle@davosmith.co.uk>
+ * @since      Moodle 4.1
+ * @copyright  2024 Andrew Hancox <andrewdchancox@googlemail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_module_viewed extends \core\event\course_module_viewed {
+class checklist_updated extends \core\event\base {
 
     /**
      * Init method.
@@ -40,9 +40,27 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @return void
      */
     protected function init() {
-        $this->data['crud'] = 'r';
-        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'checklist';
+    }
+
+    /**
+     * Returns localised general event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('eventchecklistupdated', 'mod_checklist');
+    }
+
+    /**
+     * Returns description of what happened.
+     *
+     * @return string
+     */
+    public function get_description() {
+        return "The user with id '$this->userid' has updated the checklist with the course module id '$this->contextinstanceid'";
     }
 
     /**

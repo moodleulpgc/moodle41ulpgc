@@ -4,6 +4,13 @@ moodle-theme_boost_union
 Changes
 -------
 
+### Unreleased
+
+* 2024-04-20 - Bugfix: Footnote ignored paragraph breaks, resolves #623.
+* 2024-04-20 - Improvement: Add hint that notifications don't work within forums for hidden courses, resolves #98.
+* 2024-04-20 - Bugfix: Correct order for in-course breadcrumb when sections exist in it (First categories then sections), solves #317.
+* 2024-04-20 - Cleanup: Add proper JS promise error handling, resolves #435.
+
 ### v4.1-r25
 
 * 2024-04-10 - Regression: Using Fontawesome 6 icons was broken on Moodle 4.1, resolves #624.
