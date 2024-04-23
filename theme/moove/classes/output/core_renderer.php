@@ -48,9 +48,10 @@ class core_renderer extends \theme_boost\output\core_renderer {
      * @auth ecastro @ULPGC
      */
     protected function render_user_picture(\user_picture $userpicture) {
+        global $USER;
         $user = $userpicture->user;
         // only check permissions when viewable picture
-        if($user->picture && !$user->imagealt && $hidepicture = get_config('local_ulpgccore', 'hidepicture')) {
+        if($user->picture && !($USER->id == $user->id) && !$user->imagealt && $hidepicture = get_config('local_ulpgccore', 'hidepicture')) {
             if(!$canview = has_capability('moodle/course:viewhiddenuserfields', $this->page->context)) {
                 $userpicture->user->picture = 0;
             }

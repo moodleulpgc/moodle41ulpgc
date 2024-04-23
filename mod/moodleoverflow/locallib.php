@@ -2243,7 +2243,7 @@ function moodleoverflow_update_all_grades_for_cm($moodleoverflowid) {
     if ($moodleoverflow->grademaxgrade > 0 && $moodleoverflow->gradescalefactor > 0) {
 
         // Get all users id.
-        $params = ['moodleoverflowid' => $moodleoverflowid, 'moodleoverflowid2' => $moodleoverflowid];
+        $params = ['moodleoverflowid' => $moodleoverflow->id, 'moodleoverflowid2' => $moodleoverflow->id]; // ecastro ULPGC
         $sql = 'SELECT DISTINCT u.userid FROM (
                     SELECT p.userid as userid
                     FROM {moodleoverflow_discussions} d, {moodleoverflow_posts} p

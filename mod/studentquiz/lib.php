@@ -395,7 +395,7 @@ function studentquiz_get_extra_capabilities() {
  * @param stdClass $coursemodule The coursemodule object (record).
  * @return cached_cm_info An object on information.
  */
-function studentquiz_get_coursemodule_info(stdClass $coursemodule): cached_cm_info {
+function studentquiz_get_coursemodule_info(stdClass $coursemodule): cached_cm_info | bool {
     global $DB;
 
     $studentquiz = $DB->get_record('studentquiz',
