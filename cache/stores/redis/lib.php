@@ -396,6 +396,12 @@ class cachestore_redis extends cache_store implements cache_is_key_aware, cache_
      * @return int The number of key/value pairs successfuly set.
      */
     public function set_many(array $keyvaluearray) {
+        // ecastro ULPGC https://tracker.moodle.org/browse/MDL-80208
+        if (empty($keyvaluearray)) {
+            return 0;
+        }
+        // ecastro ULPGC
+
         $pairs = [];
         $usettl = false;
         if ($this->definition->get_ttl()) {

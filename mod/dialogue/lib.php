@@ -602,7 +602,8 @@ function dialogue_pluginfile($course, $cm, $context, $filearea, $args, $forcedow
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
     $fullpath = "/$context->id/mod_dialogue/$filearea/$itemid/$relativepath";
-    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) || $file->is_directory()) {
+    $file = $fs->get_file_by_hash(sha1($fullpath)); // ecastro ULPGC adapt PHP8
+    if (empty($file) || $file->is_directory()) {
         return false;
     }
 
